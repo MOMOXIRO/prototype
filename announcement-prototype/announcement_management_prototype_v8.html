@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>公告管理原型 V3</title>
+<title>公告管理原型</title>
 <style>
 :root{
   --bg:#f5f6fa;--panel:#fff;--line:#e6eaf2;--text:#1f2430;--muted:#97a0b3;
@@ -55,6 +55,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none;box-shadow:var
 .grid3 > .hidden{display:none !important}
 .field{display:flex;flex-direction:column;gap:6px;min-width:0}
 .label{font-size:13px;font-weight:500;color:#334155}
+.label .req{color:#ef4444;margin-right:2px;font-weight:700}
 .control{height:34px;border:1px solid var(--field-line);border-radius:7px;padding:0 10px;width:100%;background:#fff;color:#1f2937;font-size:14px;transition:border-color .15s ease,box-shadow .15s ease}
 .control:hover{border-color:#c4d0e6}
 .control:focus{border-color:var(--pri)}
@@ -91,7 +92,10 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .icon-btn{width:32px;height:32px;border:none;border-radius:6px;background:var(--pri);color:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 8px rgba(47,107,255,.25);transition:transform .12s ease,background .12s ease}
 .icon-btn:hover{background:var(--pri-hover)}
 .icon-btn:active{transform:translateY(1px)}
+.icon-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.icon-btn:disabled:hover{background:var(--pri)}
 .icon-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.data-table tr.is-disabled td{color:#94a3b8}
 .shelf-action{display:inline-flex;align-items:center;gap:5px;margin-right:4px;color:#64748b;font-size:12px;cursor:pointer}
 .shelf-switch{position:relative;width:34px;height:18px;display:inline-block}
 .shelf-switch input{position:absolute;opacity:0;pointer-events:none}
@@ -109,6 +113,9 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .tabs{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:0 18px;gap:4px 10px;background:#fff}
 .tab{border:none;background:transparent;padding:10px 4px;cursor:pointer;color:#334155;border-bottom:2px solid transparent;font-size:13px;font-weight:500;white-space:nowrap}
 .tab.active{color:#2563eb;border-bottom-color:#2563eb;font-weight:600}
+.lang-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);background:#fff;padding:0 18px}
+.lang-toolbar .tabs{flex:1 1 auto;min-width:0;border-bottom:none;padding:0;background:transparent}
+.lang-toolbar .head-actions{flex:0 0 auto;padding-bottom:8px;align-self:center}
 .tokens{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .token{height:30px;padding:0 12px;border:1px solid var(--pri);background:var(--pri);color:#fff;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;box-shadow:0 4px 10px rgba(47,107,255,.24)}
 .token:hover{background:var(--pri-hover)}
@@ -129,6 +136,22 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .param-range .range-mid{flex:0 0 auto;color:#9aa5b6;font-weight:600}
 .param-type-stack{display:flex;flex-direction:column;gap:6px;min-width:128px}
 .param-type-stack .control{width:100%;box-sizing:border-box}
+.check-panel{position:relative;border:1px solid #d5ddeb;border-radius:8px;background:#fff;z-index:1}
+.check-panel.is-open{z-index:30}
+.check-panel-head{display:flex;align-items:center;gap:6px;padding:7px 10px;background:#eef4ff;border-radius:8px;font-size:12px;color:#334155;font-weight:500;cursor:pointer;user-select:none}
+.check-panel.is-open .check-panel-head{border-radius:8px 8px 0 0;border-bottom:1px solid #dbe4ff}
+.check-panel-head .check-panel-all-wrap{display:inline-flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
+.check-panel-summary{color:#64748b;font-weight:400;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.check-panel-toggle{margin-left:auto;border:none;background:transparent;color:#64748b;font-size:12px;cursor:pointer;padding:0 2px;flex:0 0 auto}
+.check-panel-body{display:none;position:absolute;left:0;right:0;top:calc(100% - 1px);grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;padding:10px;max-height:180px;overflow:auto;background:#fff;border:1px solid #d5ddeb;border-top:none;border-radius:0 0 8px 8px;box-shadow:0 10px 24px rgba(15,23,42,.12);z-index:31}
+.check-panel.is-open .check-panel-body{display:grid}
+.check-panel-item{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#334155;cursor:pointer;user-select:none;min-width:0}
+.check-panel-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.check-panel-head input,
+.check-panel-item input{width:14px;height:14px;accent-color:var(--pri);cursor:pointer;flex:0 0 auto}
+.target-check-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start;position:relative;z-index:2}
+.target-check-row .field{min-width:0;position:relative}
+.target-check-row .label{margin-bottom:0}
 .form-stack{display:flex;flex-direction:column;gap:16px}
 .form-stack .field .control,
 .form-stack .field .range-wrap{width:100%;box-sizing:border-box}
@@ -177,6 +200,10 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .article-view .article-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;font-size:12px;color:#94a3b8}
 .article-view .article-title{margin:0 0 14px;font-size:18px;line-height:1.45;font-weight:700;color:var(--text)}
 .article-view .article-body{margin:0;white-space:pre-line;line-height:1.85;color:#334155;font-size:14px}
+.article-view .article-title.is-placeholder,
+.article-view .article-body.is-placeholder,
+.popup-card-demo .popup-title.is-placeholder,
+.popup-card-demo .popup-text.is-placeholder{color:#94a3b8;font-weight:400}
 .article-view .article-time{margin-top:18px;padding-top:14px;border-top:1px solid #eef2f7;font-size:12px;color:#64748b;line-height:1.7;white-space:pre-line}
 .preview-popup-view{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px 16px;box-sizing:border-box;background:rgba(15,23,42,.45);z-index:2}
 .preview-popup-view.hidden{display:none !important}
@@ -191,8 +218,8 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .footer-bar.end{justify-content:flex-end}
 
 .modal-mask.hidden{display:none !important}
-@media(max-width:1000px){.layout{grid-template-columns:1fr}.preview{position:static}}
-@media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr}.page{padding:12px}.filter-actions{margin-left:0;width:100%}.name-filter,.project-filter,.status-filter,.date-filter{width:100%}.recurrence-inline .control{min-width:100%;flex:1 1 100%}.lang-sync-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}.preview{position:static}.target-check-row{grid-template-columns:1fr}}
+@media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr}.page{padding:12px}.filter-actions{margin-left:0;width:100%}.name-filter,.project-filter,.status-filter,.date-filter{width:100%}.recurrence-inline .control{min-width:100%;flex:1 1 100%}.lang-sync-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.check-panel-body{grid-template-columns:repeat(2,minmax(0,1fr))}.target-check-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -227,10 +254,15 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
       <div class="filter-item status-filter">
         <select class="control">
           <option>全部状态</option>
-          <option>草稿</option>
           <option>待开始</option>
           <option>进行中</option>
           <option>已结束</option>
+        </select>
+      </div>
+      <div class="filter-item status-filter">
+        <select class="control" id="shelfFilter">
+          <option>全部上架状态</option>
+          <option>已上架</option>
           <option>已下架</option>
         </select>
       </div>
@@ -253,37 +285,8 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
   </div>
   <div class="table-wrap">
     <table class="data-table">
-      <thead><tr><th>公告标题</th><th>所属项目</th><th>发布方式</th><th>开始时间</th><th>结束时间</th><th>创建人</th><th>创建时间</th><th>状态</th><th>操作</th></tr></thead>
-      <tbody id="noticeRows">
-          <tr><td>系统维护通知</td><td>Dana</td><td>预约发布</td><td>2026-07-20 09:00 Asia/Jakarta</td><td>2026-07-20 10:00 Asia/Jakarta</td><td>Admin</td><td>2026-07-01 10:00</td><td><span class="pill warn">待开始</span></td><td>
-  <div class="icon-actions">
-    <label class="shelf-action" title="切换上架/下架状态"><span class="shelf-switch"><input type="checkbox" checked onchange="toggleShelf(this)"><span class="shelf-slider"></span></span><span class="shelf-text">上架</span></label>
-    <button class="icon-btn" title="编辑" aria-label="编辑" onclick="openEdit(this)">
-      <svg viewBox="0 0 24 24"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3Z"/><path d="m14 8 3 3"/></svg>
-    </button>
-    <button class="icon-btn" title="复制" aria-label="复制" onclick="copyNotice(this)">
-      <svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
-    </button>
-    <button class="icon-btn" title="操作日志" aria-label="操作日志" onclick="viewOperationLog(this)">
-      <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/><path d="M12 7v5l3 2"/></svg>
-    </button>
-  </div>
-</td></tr>
-          <tr><td>每周福利提醒</td><td>TW</td><td>循环发布</td><td>周一 09:00 Asia/Singapore</td><td>周三 18:00 Asia/Singapore</td><td>Jenny</td><td>2026-07-05 15:30</td><td><span class="pill ok">进行中</span></td><td>
-  <div class="icon-actions">
-    <label class="shelf-action" title="切换上架/下架状态"><span class="shelf-switch"><input type="checkbox" checked onchange="toggleShelf(this)"><span class="shelf-slider"></span></span><span class="shelf-text">上架</span></label>
-    <button class="icon-btn" title="编辑" aria-label="编辑" onclick="openEdit(this)">
-      <svg viewBox="0 0 24 24"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3Z"/><path d="m14 8 3 3"/></svg>
-    </button>
-    <button class="icon-btn" title="复制" aria-label="复制" onclick="copyNotice(this)">
-      <svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
-    </button>
-    <button class="icon-btn" title="操作日志" aria-label="操作日志" onclick="viewOperationLog(this)">
-      <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/><path d="M12 7v5l3 2"/></svg>
-    </button>
-  </div>
-</td></tr>
-      </tbody>
+      <thead><tr><th>公告标题</th><th>所属项目</th><th>发布方式</th><th>发布时间</th><th>到期时间</th><th>创建人</th><th>创建时间</th><th>状态</th><th>操作</th></tr></thead>
+      <tbody id="noticeRows"></tbody>
     </table>
   </div>
 </section>
@@ -295,23 +298,63 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
         <div class="head"><div><div class="title" id="editorTitle">新增公告</div></div></div>
         <div class="body">
           <div class="form-stack">
-          <div class="grid3">
-            <div class="field"><label class="label">投放项目 *</label><select id="targetProject" class="control"><option value="Dana">Dana</option><option value="TW">TW</option></select></div>
-            <div class="field"><label class="label">投放 APP *</label><select id="targetApp" class="control"><option value="DANA App">DANA App</option><option value="TW App">TW App</option><option value="Partner App">Partner App</option></select></div>
-            <div class="field"><label class="label">基准时区 *</label><select id="baseTimezone" class="control" onchange="requestBaseTzChange(this)">
+          <div class="grid2">
+            <div class="field"><label class="label"><span class="req">*</span>投放项目</label><select id="targetProject" class="control"><option value="Dana">Dana</option><option value="TW">TW</option></select></div>
+            <div class="field"><label class="label"><span class="req">*</span>基准时区</label><select id="baseTimezone" class="control" onchange="requestBaseTzChange(this)">
               <option value="Asia/Jakarta">UTC+7 印度尼西亚 / Asia/Jakarta</option>
               <option value="Asia/Singapore">UTC+8 新加坡 / Asia/Singapore</option>
               <option value="Africa/Lagos">UTC+1 尼日利亚 / Africa/Lagos</option>
               <option value="Europe/London">UTC+0 英国 / Europe/London</option>
             </select></div>
           </div>
+          <div class="target-check-row">
+          <div class="field">
+            <label class="label"><span class="req">*</span>投放 APP</label>
+            <div class="check-panel" id="targetAppPanel">
+              <div class="check-panel-head" onclick="toggleCheckPanelExpand('targetAppPanel')">
+                <label class="check-panel-all-wrap" onclick="event.stopPropagation()">
+                  <input class="check-panel-all" type="checkbox" checked onchange="toggleCheckPanelAll('targetAppPanel',this.checked)">全选
+                </label>
+                <span class="check-panel-summary" id="targetAppPanelSummary"></span>
+                <button type="button" class="check-panel-toggle" tabindex="-1">展开</button>
+              </div>
+              <div class="check-panel-body" id="targetAppOptions"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label"><span class="req">*</span>APP版本</label>
+            <div class="check-panel" id="targetAppVersionPanel">
+              <div class="check-panel-head" onclick="toggleCheckPanelExpand('targetAppVersionPanel')">
+                <label class="check-panel-all-wrap" onclick="event.stopPropagation()">
+                  <input class="check-panel-all" type="checkbox" checked onchange="toggleCheckPanelAll('targetAppVersionPanel',this.checked)">全选
+                </label>
+                <span class="check-panel-summary" id="targetAppVersionPanelSummary"></span>
+                <button type="button" class="check-panel-toggle" tabindex="-1">展开</button>
+              </div>
+              <div class="check-panel-body" id="targetAppVersionOptions"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label"><span class="req">*</span>地区选择</label>
+            <div class="check-panel" id="targetRegionPanel">
+              <div class="check-panel-head" onclick="toggleCheckPanelExpand('targetRegionPanel')">
+                <label class="check-panel-all-wrap" onclick="event.stopPropagation()">
+                  <input class="check-panel-all" type="checkbox" checked onchange="toggleCheckPanelAll('targetRegionPanel',this.checked)">ALL
+                </label>
+                <span class="check-panel-summary" id="targetRegionPanelSummary"></span>
+                <button type="button" class="check-panel-toggle" tabindex="-1">展开</button>
+              </div>
+              <div class="check-panel-body" id="targetRegionOptions"></div>
+            </div>
+          </div>
+          </div>
           <div class="grid3" id="publishConfigRow">
-            <div class="field"><label class="label">发布方式 *</label><select id="publishMode" class="control" onchange="togglePublishMode()"><option value="scheduled" selected>预约发布</option><option value="recurring">循环发布</option></select></div>
-            <div class="field" id="startTimeField"><label class="label" id="startTimeLabel">开始时间 *</label><input id="eventStartTime" class="control" type="datetime-local" value="2026-07-20T09:00" onfocus="this.dataset.previous=this.value" onchange="onCoreTimeChange(this)"></div>
-            <div class="field hidden" id="recurrenceTypeField"><label class="label">循环规则 *</label><select id="recurrenceType" class="control" onchange="toggleRecurrenceType()"><option value="daily" selected>每日</option><option value="weekly">每周</option><option value="monthly">每月</option></select></div>
-            <div class="field" id="endTimeField"><label class="label">结束时间 *</label><input id="eventEndTime" class="control" type="datetime-local" value="2026-07-20T10:00" onfocus="this.dataset.previous=this.value" onchange="onCoreTimeChange(this)"></div>
+            <div class="field"><label class="label"><span class="req">*</span>发布方式</label><select id="publishMode" class="control" onchange="togglePublishMode()"><option value="immediate" selected>立即发布</option><option value="scheduled">预约发布</option><option value="recurring">循环发布</option></select></div>
+            <div class="field" id="startTimeField"><label class="label" id="startTimeLabel"><span class="req">*</span>发布时间</label><input id="eventStartTime" class="control" type="datetime-local" value="2026-07-20T09:00" onfocus="this.dataset.previous=this.value" onchange="onCoreTimeChange(this)"></div>
+            <div class="field hidden" id="recurrenceTypeField"><label class="label"><span class="req">*</span>循环规则</label><select id="recurrenceType" class="control" onchange="toggleRecurrenceType()"><option value="daily" selected>每日</option><option value="weekly">每周</option><option value="monthly">每月</option></select></div>
+            <div class="field" id="endTimeField"><label class="label" id="endTimeLabel"><span class="req">*</span>到期时间</label><input id="eventEndTime" class="control" type="datetime-local" value="2026-07-20T10:00" onfocus="this.dataset.previous=this.value" onchange="onCoreTimeChange(this)"></div>
             <div class="field recurrence-time-range hidden" id="recurrenceTimeRangeField">
-              <label class="label">时间区间 *</label>
+              <label class="label"><span class="req">*</span>时间区间</label>
               <div class="range-wrap">
                 <input id="recurrenceStartTime" type="time" step="1" value="09:00:00" title="每次开始时间" onchange="onRecurrenceTimeChange()">
                 <span class="range-mid">~</span>
@@ -321,7 +364,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
           </div>
           <div id="recurrenceDayRow" class="grid3 recurrence-day-row hidden">
             <div class="field">
-              <label class="label">每次开始 *</label>
+              <label class="label"><span class="req">*</span>每次开始</label>
               <select id="weeklyStartDay" class="control weekly-day hidden" onchange="onRecurrenceTimeChange()">
                 <option value="">开始周几</option>
                 <option value="1" selected>周一</option>
@@ -344,7 +387,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
               </select>
             </div>
             <div class="field">
-              <label class="label">每次结束 *</label>
+              <label class="label"><span class="req">*</span>每次结束</label>
               <select id="weeklyEndDay" class="control weekly-day hidden" onchange="onRecurrenceTimeChange()">
                 <option value="">结束周几</option>
                 <option value="1">周一</option>
@@ -378,27 +421,30 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
       <div class="card">
         <div class="head">
           <div><div class="title">公告内容</div></div>
+        </div>
+        <div class="body" style="padding-bottom:12px">
+          <div class="field"><label class="label">公告模板</label><select id="editorTplSelect" class="control" onchange="applyTemplateFromEditor(this.value)"><option value="">不使用模板</option></select></div>
+        </div>
+        <div class="lang-toolbar">
+          <div class="tabs" id="editorLangTabs"></div>
           <div class="head-actions">
             <button class="btn ghost compact" type="button" onclick="openLangSync('notice')">同步</button>
             <button class="btn compact" type="button" onclick="openParamManager('notice')">参数管理</button>
           </div>
         </div>
-        <div class="tabs" id="editorLangTabs"></div>
         <div class="body">
-          <div class="field"><label class="label">公告模板</label><select id="editorTplSelect" class="control" onchange="applyTemplateFromEditor(this.value)"><option value="">不使用模板</option></select></div>
-          <div style="height:16px"></div>
-          <div class="field"><label class="label">公告标题 *</label><input id="titleInput" class="control" placeholder="列表中将直接展示此标题"></div>
+          <div class="field"><label class="label"><span class="req">*</span>公告标题</label><input id="titleInput" class="control" placeholder="请填写公告标题"></div>
           <div style="height:16px"></div>
           <div class="field">
-            <label class="label">公告正文 *</label>
+            <label class="label"><span class="req">*</span>公告正文</label>
             <div class="tokens" id="tokenBar" style="margin:0 0 10px"></div>
-            <textarea id="bodyInput" class="control"></textarea>
+            <textarea id="bodyInput" class="control" placeholder="请输入公告正文"></textarea>
             <div class="body-actions">
               <label class="check-row"><input id="enablePopup" type="checkbox" onchange="togglePopupContent()">弹窗展示形式</label>
             </div>
             <div id="popupContentPanel" class="popup-panel hidden">
               <div class="field">
-                <label class="label">弹窗展示内容 *</label>
+                <label class="label"><span class="req">*</span>弹窗展示内容</label>
                 <div class="tokens" id="popupTokenBar" style="margin:0 0 10px"></div>
                 <textarea id="popupInput" class="control" placeholder="请输入弹窗展示内容，可插入参数"></textarea>
               </div>
@@ -431,13 +477,8 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
         <div class="phoneBody">
           <div id="previewBodyView" class="preview-body-view">
             <div class="article-view">
-              <div class="article-meta">
-                <span>公告正文</span>
-                <span id="previewStatus"></span>
-              </div>
               <h3 class="article-title" id="previewTitle"></h3>
               <p class="article-body" id="previewBody"></p>
-              <div class="article-time" id="period"></div>
             </div>
           </div>
           <div id="previewPopupView" class="preview-popup-view hidden">
@@ -454,7 +495,6 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
   </div>
   <div class="footer-bar">
     <button class="btn ghost" onclick="cancelEdit()">取消</button>
-    <button class="btn ghost" onclick="saveDraft()">保存草稿</button>
     <button class="btn primary compact" onclick="saveNotice()">保存</button>
   </div>
 </section>
@@ -465,7 +505,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
   </div>
   <div class="table-wrap">
     <table class="data-table">
-      <thead><tr><th>模板名称</th><th>模板说明</th><th>创建人</th><th>创建时间</th><th>操作</th></tr></thead>
+      <thead><tr><th>模板名称</th><th>模板说明</th><th>创建人</th><th>创建时间</th><th>状态</th><th>操作</th></tr></thead>
       <tbody id="templateRows"></tbody>
     </table>
   </div>
@@ -480,25 +520,27 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
       <div class="card">
         <div class="head">
           <div><div class="title" id="templateEditorTitle">新增公告模板</div></div>
+        </div>
+        <div class="lang-toolbar">
+          <div class="tabs" id="templateLangTabs"></div>
           <div class="head-actions">
             <button class="btn ghost compact" type="button" onclick="openLangSync('template')">同步</button>
             <button class="btn compact" type="button" onclick="openParamManager('template')">参数管理</button>
           </div>
         </div>
-        <div class="tabs" id="templateLangTabs"></div>
         <div class="body">
-          <div class="field"><label class="label">公告标题 *</label><input id="templateTitleInput" class="control" placeholder="将作为模板标题在列表中展示"></div>
+          <div class="field"><label class="label"><span class="req">*</span>公告标题</label><input id="templateTitleInput" class="control" placeholder="请填写公告标题"></div>
           <div style="height:16px"></div>
           <div class="field">
-            <label class="label">公告正文 *</label>
+            <label class="label"><span class="req">*</span>公告正文</label>
             <div class="tokens" id="templateTokenBar" style="margin:0 0 10px"></div>
-            <textarea id="templateBodyInput" class="control" placeholder="请输入模板默认正文，可插入参数"></textarea>
+            <textarea id="templateBodyInput" class="control" placeholder="请输入公告正文"></textarea>
             <div class="body-actions">
               <label class="check-row"><input id="templateEnablePopup" type="checkbox" onchange="toggleTemplatePopupContent()">弹窗展示形式</label>
             </div>
             <div id="templatePopupContentPanel" class="popup-panel hidden">
               <div class="field">
-                <label class="label">弹窗展示内容 *</label>
+                <label class="label"><span class="req">*</span>弹窗展示内容</label>
                 <div class="tokens" id="templatePopupTokenBar" style="margin:0 0 10px"></div>
                 <textarea id="templatePopupInput" class="control" placeholder="请输入弹窗展示内容，可插入参数"></textarea>
               </div>
@@ -530,10 +572,6 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
         <div class="phoneBody">
           <div id="templatePreviewBodyView" class="preview-body-view">
             <div class="article-view">
-              <div class="article-meta">
-                <span>公告正文</span>
-                <span>模板预览</span>
-              </div>
               <h3 class="article-title" id="templatePreviewTitle"></h3>
               <p class="article-body" id="templatePreviewBody"></p>
             </div>
@@ -622,28 +660,42 @@ function findMissingLang(copyObj,fields){
 
 function sampleMaintCopy(){
   return ensureCopy({
-    en:{title:'System Maintenance Notice',body:'System maintenance will begin at {start_time} and is expected to end at {end_time}. Full service resumes at {resume_time}.',popup:''},
-    zhHant:{title:'系統維護通知',body:'系統維護將於 {start_time} 開始，預計於 {end_time} 結束，服務將於 {resume_time} 全面恢復。',popup:''},
-    id:{title:'Pemberitahuan Pemeliharaan Sistem',body:'Pemeliharaan sistem akan dimulai pada {start_time} dan diperkirakan selesai pada {end_time}. Layanan pulih sepenuhnya pada {resume_time}.',popup:''},
-    vi:{title:'Thông báo bảo trì hệ thống',body:'Bảo trì hệ thống sẽ bắt đầu lúc {start_time} và dự kiến kết thúc lúc {end_time}. Dịch vụ khôi phục hoàn toàn lúc {resume_time}.',popup:''},
-    enIN:{title:'System Maintenance Notice',body:'System maintenance will begin at {start_time} and is expected to end at {end_time}. Full service resumes at {resume_time}.',popup:''},
-    fil:{title:'Abiso sa Pagpapanatili ng Sistema',body:'Magsisimula ang maintenance sa {start_time} at inaasahang matatapos sa {end_time}. Ganap na babalik ang serbisyo sa {resume_time}.',popup:''},
-    es:{title:'Aviso de mantenimiento del sistema',body:'El mantenimiento comenzará a las {start_time} y se espera que termine a las {end_time}. El servicio se restablecerá por completo a las {resume_time}.',popup:''},
-    pt:{title:'Aviso de manutenção do sistema',body:'A manutenção começará em {start_time} e deve terminar em {end_time}. O serviço será totalmente restaurado em {resume_time}.',popup:''},
-    th:{title:'ประกาศบำรุงรักษาระบบ',body:'ระบบจะเริ่มบำรุงรักษาเวลา {start_time} และคาดว่าจะสิ้นสุดเวลา {end_time} บริการจะกลับมาใช้งานได้เต็มที่เวลา {resume_time}',popup:''}
+    en:{title:'System Maintenance Notice',body:'Dear ${name}, system maintenance will begin at ${start_time} and is expected to end at ${end_time}. Full service resumes at ${resume_time}. If needed, contact us via ${email} or ${mobile}.',popup:''},
+    zhHant:{title:'系統維護通知',body:'尊敬的 ${name}，系統維護將於 ${start_time} 開始，預計於 ${end_time} 結束，服務將於 ${resume_time} 全面恢復。如需協助可透過 ${email} 或 ${mobile} 聯繫我們。',popup:''},
+    id:{title:'Pemberitahuan Pemeliharaan Sistem',body:'Yth. ${name}, pemeliharaan sistem akan dimulai pada ${start_time} dan diperkirakan selesai pada ${end_time}. Layanan pulih sepenuhnya pada ${resume_time}. Hubungi kami via ${email} atau ${mobile} jika diperlukan.',popup:''},
+    vi:{title:'Thông báo bảo trì hệ thống',body:'Kính gửi ${name}, bảo trì hệ thống sẽ bắt đầu lúc ${start_time} và dự kiến kết thúc lúc ${end_time}. Dịch vụ khôi phục hoàn toàn lúc ${resume_time}. Liên hệ ${email} hoặc ${mobile} nếu cần hỗ trợ.',popup:''},
+    enIN:{title:'System Maintenance Notice',body:'Dear ${name}, system maintenance will begin at ${start_time} and is expected to end at ${end_time}. Full service resumes at ${resume_time}. Contact us via ${email} or ${mobile} if needed.',popup:''},
+    fil:{title:'Abiso sa Pagpapanatili ng Sistema',body:'Dear ${name}, magsisimula ang maintenance sa ${start_time} at inaasahang matatapos sa ${end_time}. Ganap na babalik ang serbisyo sa ${resume_time}. Makipag-ugnayan sa ${email} o ${mobile} kung kailangan.',popup:''},
+    es:{title:'Aviso de mantenimiento del sistema',body:'Estimado/a ${name}, el mantenimiento comenzará a las ${start_time} y se espera que termine a las ${end_time}. El servicio se restablecerá por completo a las ${resume_time}. Contáctenos en ${email} o ${mobile} si lo necesita.',popup:''},
+    pt:{title:'Aviso de manutenção do sistema',body:'Prezado(a) ${name}, a manutenção começará em ${start_time} e deve terminar em ${end_time}. O serviço será totalmente restaurado em ${resume_time}. Contate-nos por ${email} ou ${mobile} se necessário.',popup:''},
+    th:{title:'ประกาศบำรุงรักษาระบบ',body:'เรียน ${name} ระบบจะเริ่มบำรุงรักษาเวลา ${start_time} และคาดว่าจะสิ้นสุดเวลา ${end_time} บริการจะกลับมาใช้งานได้เต็มที่เวลา ${resume_time} ติดต่อ ${email} หรือ ${mobile} หากต้องการความช่วยเหลือ',popup:''}
   });
 }
 function sampleEventCopy(){
   return ensureCopy({
-    en:{title:'Limited-Time Event Is Live',body:'The event runs during {activity_window}. Rewards are sent at {reward_time}.',popup:'Event is live!\nTime: {activity_window}\nRewards: {reward_time}'},
-    zhHant:{title:'限時活動正式開啟',body:'活動將於 {activity_window} 開展，獎勵將於 {reward_time} 發放，快來參與吧！',popup:'活動火熱進行中！時間：{activity_window}\n獎勵發放：{reward_time}'},
-    id:{title:'Acara Terbatas Telah Dimulai',body:'Acara berlangsung pada {activity_window}. Hadiah dibagikan pada {reward_time}.',popup:'Acara sedang berlangsung!\nWaktu: {activity_window}\nHadiah: {reward_time}'},
-    vi:{title:'Sự kiện giới hạn đã bắt đầu',body:'Sự kiện diễn ra trong {activity_window}. Phần thưởng được gửi lúc {reward_time}.',popup:'Sự kiện đang diễn ra!\nThời gian: {activity_window}\nPhần thưởng: {reward_time}'},
-    enIN:{title:'Limited-Time Event Is Live',body:'The event runs during {activity_window}. Rewards are sent at {reward_time}.',popup:'Event is live!\nTime: {activity_window}\nRewards: {reward_time}'},
-    fil:{title:'Nagsimula na ang Limited-Time Event',body:'Tumatakbo ang event sa {activity_window}. Ipapadala ang rewards sa {reward_time}.',popup:'Live na ang event!\nOras: {activity_window}\nRewards: {reward_time}'},
-    es:{title:'El evento por tiempo limitado ya está activo',body:'El evento se realiza durante {activity_window}. Las recompensas se envían a las {reward_time}.',popup:'¡El evento está en vivo!\nHora: {activity_window}\nRecompensas: {reward_time}'},
-    pt:{title:'O evento por tempo limitado já começou',body:'O evento ocorre durante {activity_window}. As recompensas são enviadas em {reward_time}.',popup:'O evento está ao vivo!\nHorário: {activity_window}\nRecompensas: {reward_time}'},
-    th:{title:'กิจกรรมแบบจำกัดเวลาเปิดแล้ว',body:'กิจกรรมจัดขึ้นในช่วง {activity_window} และจะส่งรางวัลเวลา {reward_time}',popup:'กิจกรรมกำลังดำเนินการ!\nเวลา: {activity_window}\nรางวัล: {reward_time}'}
+    en:{title:'Limited-Time Event Is Live',body:'Hi ${name}, the event runs during ${activity_window}. Rewards are sent at ${reward_time}.',popup:'Hi ${name}!\nEvent is live!\nTime: ${activity_window}\nRewards: ${reward_time}'},
+    zhHant:{title:'限時活動正式開啟',body:'親愛的 ${name}，活動將於 ${activity_window} 開展，獎勵將於 ${reward_time} 發放，快來參與吧！',popup:'${name}，活動火熱進行中！時間：${activity_window}\n獎勵發放：${reward_time}'},
+    id:{title:'Acara Terbatas Telah Dimulai',body:'Hai ${name}, acara berlangsung pada ${activity_window}. Hadiah dibagikan pada ${reward_time}.',popup:'Hai ${name}!\nAcara sedang berlangsung!\nWaktu: ${activity_window}\nHadiah: ${reward_time}'},
+    vi:{title:'Sự kiện giới hạn đã bắt đầu',body:'Xin chào ${name}, sự kiện diễn ra trong ${activity_window}. Phần thưởng được gửi lúc ${reward_time}.',popup:'Xin chào ${name}!\nSự kiện đang diễn ra!\nThời gian: ${activity_window}\nPhần thưởng: ${reward_time}'},
+    enIN:{title:'Limited-Time Event Is Live',body:'Hi ${name}, the event runs during ${activity_window}. Rewards are sent at ${reward_time}.',popup:'Hi ${name}!\nEvent is live!\nTime: ${activity_window}\nRewards: ${reward_time}'},
+    fil:{title:'Nagsimula na ang Limited-Time Event',body:'Hi ${name}, tumatakbo ang event sa ${activity_window}. Ipapadala ang rewards sa ${reward_time}.',popup:'Hi ${name}!\nLive na ang event!\nOras: ${activity_window}\nRewards: ${reward_time}'},
+    es:{title:'El evento por tiempo limitado ya está activo',body:'Hola ${name}, el evento se realiza durante ${activity_window}. Las recompensas se envían a las ${reward_time}.',popup:'¡Hola ${name}!\n¡El evento está en vivo!\nHora: ${activity_window}\nRecompensas: ${reward_time}'},
+    pt:{title:'O evento por tempo limitado já começou',body:'Olá ${name}, o evento ocorre durante ${activity_window}. As recompensas são enviadas em ${reward_time}.',popup:'Olá ${name}!\nO evento está ao vivo!\nHorário: ${activity_window}\nRecompensas: ${reward_time}'},
+    th:{title:'กิจกรรมแบบจำกัดเวลาเปิดแล้ว',body:'สวัสดี ${name} กิจกรรมจัดขึ้นในช่วง ${activity_window} และจะส่งรางวัลเวลา ${reward_time}',popup:'สวัสดี ${name}!\nกิจกรรมกำลังดำเนินการ!\nเวลา: ${activity_window}\nรางวัล: ${reward_time}'}
+  });
+}
+
+function sampleSimpleCopy(titleZh,bodyZh,titleEn,bodyEn,popupZh='',popupEn=''){
+  return ensureCopy({
+    en:{title:titleEn,body:bodyEn,popup:popupEn},
+    zhHant:{title:titleZh,body:bodyZh,popup:popupZh},
+    id:{title:titleEn,body:bodyEn,popup:popupEn},
+    vi:{title:titleEn,body:bodyEn,popup:popupEn},
+    enIN:{title:titleEn,body:bodyEn,popup:popupEn},
+    fil:{title:titleEn,body:bodyEn,popup:popupEn},
+    es:{title:titleEn,body:bodyEn,popup:popupEn},
+    pt:{title:titleEn,body:bodyEn,popup:popupEn},
+    th:{title:titleEn,body:bodyEn,popup:popupEn}
   });
 }
 
@@ -669,7 +721,28 @@ let templatePreviewMode='body';
 let templateDraftParams=[];
 let templateDraftCopy=emptyCopy();
 
-// 公告参数：时间 / 时间区间；精度：日期 / 日期时间 / 时间
+// 固定参数：非时间类，系统默认提供，不可新增/编辑/删除
+const FIXED_PARAMS=[
+  {name:'email',desc:'邮箱',type:'fixed',value:'邮箱'},
+  {name:'name',desc:'姓名',type:'fixed',value:'名字'},
+  {name:'mobile',desc:'手机号',type:'fixed',value:'手机号'}
+];
+const FIXED_PARAM_NAMES=new Set(FIXED_PARAMS.map(p=>p.name));
+
+function isFixedParam(p){
+  return !!(p&&(p.type==='fixed'||FIXED_PARAM_NAMES.has(p.name)));
+}
+function stripFixedParams(list){
+  return (list||[]).filter(p=>!isFixedParam(p)).map(normalizeParam);
+}
+function ensureFixedParams(list){
+  return deepCopy(FIXED_PARAMS).concat(stripFixedParams(list));
+}
+function paramToken(name){
+  return '${'+name+'}';
+}
+
+// 公告自定义参数：时间 / 时间区间；精度：日期 / 日期时间 / 时间
 let noticeParams=[];
 const defaultParams=[
   {name:'start_time',desc:'开始时间',type:'time',precision:'datetime',value:'2026-07-20T09:00'},
@@ -677,26 +750,176 @@ const defaultParams=[
   {name:'resume_time',desc:'恢复时间',type:'time',precision:'datetime',value:'2026-07-20T12:00'}
 ];
 
-// 公告模板
+// 公告模板（模拟数据）
 let templates=[
-  {id:1,name:'系统维护模板',desc:'停机维护类公告通用模板',creator:'Admin',updated:'2026-07-01 10:00',enablePopup:false,
+  {id:1,name:'系统维护模板',desc:'停机维护类公告通用模板',creator:'Admin',updated:'2026-07-01 10:00',enabled:true,enablePopup:false,
    copy:sampleMaintCopy(),
    params:[
      {name:'start_time',desc:'开始时间',type:'time',precision:'datetime',value:'2026-07-20T09:00'},
      {name:'end_time',desc:'结束时间',type:'time',precision:'datetime',value:'2026-07-20T10:00'},
      {name:'resume_time',desc:'恢复时间',type:'time',precision:'datetime',value:'2026-07-20T12:00'}
    ]},
-  {id:2,name:'活动上线模板',desc:'运营活动开始/结束通知模板',creator:'Jenny',updated:'2026-07-05 15:30',enablePopup:true,
+  {id:2,name:'活动上线模板',desc:'运营活动开始/结束通知模板',creator:'Jenny',updated:'2026-07-05 15:30',enabled:true,enablePopup:true,
    copy:sampleEventCopy(),
    params:[
      {name:'activity_window',desc:'活动时间',type:'time_range',precision:'datetime',start:'2026-08-01T10:00',end:'2026-08-07T22:00'},
      {name:'reward_time',desc:'奖励发放时间',type:'time',precision:'datetime',value:'2026-08-08T10:00'},
      {name:'signup_period',desc:'报名日期',type:'time_range',precision:'date',start:'2026-07-20',end:'2026-07-31'}
-   ]}
+   ]},
+  {id:3,name:'版本更新模板',desc:'App 版本强制/建议更新通知',creator:'Ken',updated:'2026-07-08 11:20',enabled:true,enablePopup:true,
+   copy:sampleSimpleCopy('版本更新提醒','親愛的 ${name}，請於 ${start_time} 前更新至最新版本，以獲得更好體驗。','Version Update Reminder','Dear ${name}, please update to the latest version before ${start_time} for a better experience.','請儘快更新','Please update soon'),
+   params:[{name:'start_time',desc:'更新截止时间',type:'time',precision:'datetime',value:'2026-07-25T23:59'}]},
+  {id:4,name:'支付异常模板',desc:'支付通道异常与恢复通知',creator:'Mina',updated:'2026-07-09 09:40',enabled:true,enablePopup:false,
+   copy:sampleSimpleCopy('支付服務異常通知','${name}，支付通道將於 ${start_time} ~ ${end_time} 暫時不可用，請稍後重試。','Payment Service Disruption','${name}, payment channels will be unavailable from ${start_time} to ${end_time}. Please try again later.'),
+   params:[
+     {name:'start_time',desc:'开始时间',type:'time',precision:'datetime',value:'2026-07-18T01:00'},
+     {name:'end_time',desc:'结束时间',type:'time',precision:'datetime',value:'2026-07-18T03:00'}
+   ]},
+  {id:5,name:'节日活动模板',desc:'节日促销/限时活动通用模板',creator:'Jenny',updated:'2026-07-10 16:00',enabled:true,enablePopup:true,
+   copy:sampleSimpleCopy('節日活動開啟','親愛的 ${name}，活動時間：${activity_window}，獎勵發放：${reward_time}。','Festival Event Live','Hi ${name}, event time: ${activity_window}. Rewards at ${reward_time}.','活動進行中','Event in progress'),
+   params:[
+     {name:'activity_window',desc:'活动时间',type:'time_range',precision:'date',start:'2026-08-15',end:'2026-08-20'},
+     {name:'reward_time',desc:'奖励时间',type:'time',precision:'datetime',value:'2026-08-21T10:00'}
+   ]},
+  {id:6,name:'账户安全模板',desc:'异常登录/安全提醒',creator:'Admin',updated:'2026-07-11 14:15',enabled:true,enablePopup:true,
+   copy:sampleSimpleCopy('賬戶安全提醒','親愛的 ${name}，檢測到與手機號 ${mobile} / 郵箱 ${email} 相關的異常登錄，請於 ${start_time} 前完成安全驗證。','Account Security Alert','Dear ${name}, unusual login related to mobile ${mobile} / email ${email} was detected. Please complete verification before ${start_time}.','請立即驗證','Verify now'),
+   params:[{name:'start_time',desc:'验证截止',type:'time',precision:'datetime',value:'2026-07-16T18:00'}]},
+  {id:7,name:'KYC 截止模板',desc:'KYC 资料补全提醒',creator:'Leo',updated:'2026-07-12 10:05',enabled:false,enablePopup:false,
+   copy:sampleSimpleCopy('KYC 資料補全提醒','尊敬的 ${name}，請於 ${end_time} 前完成 KYC，以免影響提現。如有問題請聯繫 ${email}。','KYC Completion Reminder','Dear ${name}, please complete KYC before ${end_time} to avoid withdrawal limits. Contact ${email} if needed.'),
+   params:[{name:'end_time',desc:'截止时间',type:'time',precision:'date',value:'2026-07-31'}]},
+  {id:8,name:'每日签到模板',desc:'循环签到活动提醒',creator:'Jenny',updated:'2026-07-13 09:00',enabled:true,enablePopup:true,
+   copy:sampleSimpleCopy('每日簽到提醒','${name}，每日 ${activity_window} 開放簽到，別錯過獎勵！','Daily Check-in Reminder','Hi ${name}, check-in is open daily during ${activity_window}. Don’t miss rewards!','去簽到','Check in'),
+   params:[{name:'activity_window',desc:'签到时段',type:'time_range',precision:'time',start:'09:00',end:'23:59'}]},
+  {id:9,name:'客服升级模板',desc:'客服服务时段调整通知',creator:'Mina',updated:'2026-07-14 17:30',enabled:true,enablePopup:false,
+   copy:sampleSimpleCopy('客服服務時段調整','${name}，客服在線時間調整為 ${activity_window}，亦可透過 ${mobile} 聯繫我們，感謝理解。','Customer Support Hours Update','Hi ${name}, support hours are updated to ${activity_window}. You can also reach us via ${mobile}. Thanks for your understanding.'),
+   params:[{name:'activity_window',desc:'服务时段',type:'time_range',precision:'time',start:'08:00',end:'22:00'}]},
+  {id:10,name:'旧活动归档模板',desc:'历史活动复用模板（已停用）',creator:'Ken',updated:'2026-06-20 12:00',enabled:false,enablePopup:false,
+   copy:sampleSimpleCopy('歷史活動通知','本模板已停用，僅供參考。','Legacy Campaign Notice','This template is disabled and kept for reference only.'),
+   params:[]}
 ];
-let templateSeq=3;
+let templateSeq=11;
+
+// 公告列表模拟数据
+const sampleNotices=[
+  {name:'系统维护通知',project:'Dana',publishMode:'预约发布',publishTime:'2026-07-20 09:00 Asia/Jakarta',expireTime:'2026-07-20 10:00 Asia/Jakarta',creator:'Admin',createdAt:'2026-07-01 10:00',status:'待开始',shelved:true},
+  {name:'每周福利提醒',project:'TW',publishMode:'循环发布',publishTime:'周一 09:00 Asia/Singapore',expireTime:'周三 18:00 Asia/Singapore',creator:'Jenny',createdAt:'2026-07-05 15:30',status:'进行中',shelved:true},
+  {name:'新版本强制更新',project:'Dana',publishMode:'立即发布',publishTime:'立即 Asia/Jakarta',expireTime:'2026-07-25 23:59 Asia/Jakarta',creator:'Ken',createdAt:'2026-07-08 11:25',status:'进行中',shelved:true},
+  {name:'支付通道临时维护',project:'Dana',publishMode:'预约发布',publishTime:'2026-07-18 01:00 Asia/Jakarta',expireTime:'2026-07-18 03:00 Asia/Jakarta',creator:'Mina',createdAt:'2026-07-09 09:42',status:'已结束',shelved:true},
+  {name:'夏日嘉年华活动',project:'TW',publishMode:'预约发布',publishTime:'2026-08-01 10:00 Asia/Singapore',expireTime:'2026-08-07 22:00 Asia/Singapore',creator:'Jenny',createdAt:'2026-07-10 16:08',status:'待开始',shelved:true},
+  {name:'异常登录安全提醒',project:'Dana',publishMode:'立即发布',publishTime:'立即 Asia/Jakarta',expireTime:'2026-07-16 18:00 Asia/Jakarta',creator:'Admin',createdAt:'2026-07-11 14:20',status:'已结束',shelved:false},
+  {name:'KYC 资料补全通知',project:'TW',publishMode:'预约发布',publishTime:'2026-07-15 09:00 Asia/Singapore',expireTime:'2026-07-31 23:59 Asia/Singapore',creator:'Leo',createdAt:'2026-07-12 10:10',status:'进行中',shelved:true},
+  {name:'每日签到奖励开启',project:'Dana',publishMode:'循环发布',publishTime:'每日 09:00 Asia/Jakarta',expireTime:'每日 23:59 Asia/Jakarta',creator:'Jenny',createdAt:'2026-07-13 09:05',status:'进行中',shelved:true},
+  {name:'客服服务时段调整',project:'TW',publishMode:'立即发布',publishTime:'立即 Asia/Singapore',expireTime:'2026-08-31 23:59 Asia/Singapore',creator:'Mina',createdAt:'2026-07-14 17:35',status:'进行中',shelved:false},
+  {name:'提现限额升级说明',project:'Dana',publishMode:'预约发布',publishTime:'2026-07-22 12:00 Asia/Jakarta',expireTime:'2026-08-01 12:00 Asia/Jakarta',creator:'Ken',createdAt:'2026-07-15 11:00',status:'待开始',shelved:true},
+  {name:'新手礼包领取提醒',project:'TW',publishMode:'循环发布',publishTime:'周一 10:00 Africa/Lagos',expireTime:'周日 22:00 Africa/Lagos',creator:'Jenny',createdAt:'2026-07-15 18:40',status:'进行中',shelved:true},
+  {name:'双十一活动预告',project:'Dana',publishMode:'预约发布',publishTime:'2026-11-01 00:00 Asia/Jakarta',expireTime:'2026-11-12 23:59 Asia/Jakarta',creator:'Admin',createdAt:'2026-07-16 09:12',status:'待开始',shelved:true},
+  {name:'欧洲区假期安排',project:'TW',publishMode:'预约发布',publishTime:'2026-08-10 00:00 Europe/London',expireTime:'2026-08-18 23:59 Europe/London',creator:'Leo',createdAt:'2026-07-16 15:22',status:'待开始',shelved:true},
+  {name:'旧春节活动复盘',project:'Dana',publishMode:'立即发布',publishTime:'立即 Asia/Jakarta',expireTime:'2026-02-20 23:59 Asia/Jakarta',creator:'Ken',createdAt:'2026-02-01 10:00',status:'已结束',shelved:true},
+  {name:'合伙人佣金规则更新',project:'TW',publishMode:'预约发布',publishTime:'2026-07-28 09:00 Asia/Singapore',expireTime:'2026-09-30 23:59 Asia/Singapore',creator:'Mina',createdAt:'2026-07-17 13:48',status:'待开始',shelved:true}
+];
 
 function deepCopy(o){return JSON.parse(JSON.stringify(o))}
+
+const TARGET_APP_OPTIONS=['DANA App','TW App','Partner App','BtcDana','ForexDana','GoTrading','FDTrek'];
+const TARGET_APP_VERSION_OPTIONS=['1.0.0','1.2.0','2.0.0','2.1.5','3.0.0','Latest'];
+const TARGET_REGION_OPTIONS=[
+  {value:'+62 [ID]',label:'+62 [ID]'},
+  {value:'+84 [VN]',label:'+84 [VN]'},
+  {value:'+63 [PH]',label:'+63 [PH]'},
+  {value:'+234 [NG]',label:'+234 [NG]'},
+  {value:'+52 [MX]',label:'+52 [MX]'},
+  {value:'+66 [TH]',label:'+66 [TH]'},
+  {value:'+91 [IN]',label:'+91 [IN]'},
+  {value:'+55 [BR]',label:'+55 [BR]'},
+  {value:'OTHER',label:'OTHER'}
+];
+
+function renderCheckPanelOptions(containerId,options,panelId,selected){
+  const box=document.getElementById(containerId);
+  if(!box)return;
+  const selectedSet=new Set(selected||[]);
+  box.innerHTML=options.map(opt=>{
+    const value=typeof opt==='string'?opt:opt.value;
+    const label=typeof opt==='string'?opt:opt.label;
+    const checked=selectedSet.has(value)?'checked':'';
+    return `<label class="check-panel-item"><input type="checkbox" value="${value}" ${checked} onchange="refreshCheckPanelAll('${panelId}')"><span title="${label}">${label}</span></label>`;
+  }).join('');
+  refreshCheckPanelAll(panelId);
+}
+
+function initTargetCheckPanels(defaults){
+  const appSelected=defaults?.apps||TARGET_APP_OPTIONS.slice();
+  const versionSelected=defaults?.versions||TARGET_APP_VERSION_OPTIONS.slice();
+  const regionSelected=defaults?.regions||TARGET_REGION_OPTIONS.map(o=>o.value);
+  renderCheckPanelOptions('targetAppOptions',TARGET_APP_OPTIONS,'targetAppPanel',appSelected);
+  renderCheckPanelOptions('targetAppVersionOptions',TARGET_APP_VERSION_OPTIONS,'targetAppVersionPanel',versionSelected);
+  renderCheckPanelOptions('targetRegionOptions',TARGET_REGION_OPTIONS,'targetRegionPanel',regionSelected);
+  ['targetAppPanel','targetAppVersionPanel','targetRegionPanel'].forEach(id=>{
+    const panel=document.getElementById(id);
+    if(panel) panel.classList.remove('is-open');
+    updateCheckPanelToggle(id);
+  });
+}
+
+function toggleCheckPanelExpand(panelId){
+  const panel=document.getElementById(panelId);
+  if(!panel)return;
+  const willOpen=!panel.classList.contains('is-open');
+  // 同时只展开一个，避免互相遮挡
+  ['targetAppPanel','targetAppVersionPanel','targetRegionPanel'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.classList.toggle('is-open',willOpen&&id===panelId);
+    updateCheckPanelToggle(id);
+  });
+}
+
+function updateCheckPanelToggle(panelId){
+  const panel=document.getElementById(panelId);
+  const btn=panel?.querySelector('.check-panel-toggle');
+  if(!panel||!btn)return;
+  btn.textContent=panel.classList.contains('is-open')?'收起':'展开';
+}
+
+function closeAllCheckPanels(event){
+  if(event&&event.target&&event.target.closest&&event.target.closest('.check-panel'))return;
+  ['targetAppPanel','targetAppVersionPanel','targetRegionPanel'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.classList.remove('is-open');
+    updateCheckPanelToggle(id);
+  });
+}
+document.addEventListener('click',closeAllCheckPanels);
+
+function updateCheckPanelSummary(panelId){
+  const summary=document.getElementById(panelId+'Summary');
+  if(!summary)return;
+  const boxes=[...document.querySelectorAll('#'+panelId+' .check-panel-body input[type="checkbox"]')];
+  const checked=boxes.filter(b=>b.checked).length;
+  const total=boxes.length;
+  summary.textContent=total?(checked===total?`已全选（${total}）`:`已选 ${checked}/${total}`):'';
+}
+
+function toggleCheckPanelAll(panelId,checked){
+  document.querySelectorAll('#'+panelId+' .check-panel-body input[type="checkbox"]').forEach(el=>{el.checked=!!checked});
+  refreshCheckPanelAll(panelId);
+}
+
+function refreshCheckPanelAll(panelId){
+  const boxes=[...document.querySelectorAll('#'+panelId+' .check-panel-body input[type="checkbox"]')];
+  const all=document.querySelector('#'+panelId+' .check-panel-all');
+  if(all){
+    all.checked=boxes.length>0&&boxes.every(b=>b.checked);
+    all.indeterminate=boxes.some(b=>b.checked)&&!all.checked;
+  }
+  updateCheckPanelSummary(panelId);
+}
+
+function getCheckedValues(panelId){
+  return [...document.querySelectorAll('#'+panelId+' .check-panel-body input[type="checkbox"]:checked')].map(el=>el.value);
+}
+
 function showPage(p){
   if(listPage) listPage.classList.toggle('hidden',p!=='list');
   if(editorPage) editorPage.classList.toggle('hidden',p!=='editor');
@@ -727,12 +950,12 @@ function loadInputs(){
 function resetEditor(){
   copy=emptyCopy();
   enablePopupDisplay=false;
-  noticeParams=deepCopy([
+  noticeParams=ensureFixedParams([
     {name:'start_time',desc:'开始时间',type:'time',precision:'datetime',value:'2026-07-20T09:00'},
     {name:'end_time',desc:'结束时间',type:'time',precision:'datetime',value:'2026-07-20T10:00'}
   ]);baseTz='Asia/Jakarta';baseTimezone.value=baseTz;
   eventStartTime.value='2026-07-20T09:00';eventEndTime.value='2026-07-20T10:00';
-  publishMode.value='scheduled';recurrenceType.value='daily';
+  publishMode.value='immediate';recurrenceType.value='daily';
   if(recurrenceStartTime) recurrenceStartTime.value='09:00:00';
   if(recurrenceEndTime) recurrenceEndTime.value='18:00:00';
   if(weeklyStartDay) weeklyStartDay.value='1';
@@ -743,6 +966,7 @@ function resetEditor(){
   if(enablePopup) enablePopup.checked=false;
   previewMode='body';
   togglePopupContent(false);
+  initTargetCheckPanels();
 }
 function openCreate(){
   try{
@@ -773,8 +997,9 @@ function openEdit(button){
   resetEditor();
   if(row?.children[1]?.textContent)targetProject.value=row.children[1].textContent.trim();
   if(row?.children[2]?.textContent.includes('循环'))publishMode.value='recurring';
+  else if(row?.children[2]?.textContent.includes('立即'))publishMode.value='immediate';
   else publishMode.value='scheduled';
-  copy=ensureCopy(templates[0].copy);noticeParams=deepCopy(defaultParams);lang=DEFAULT_LANG;loadInputs();renderNoticeParams();togglePublishMode();showPage('editor');setLang(DEFAULT_LANG)
+  copy=ensureCopy(templates[0].copy);noticeParams=ensureFixedParams(defaultParams);lang=DEFAULT_LANG;loadInputs();renderNoticeParams();togglePublishMode();showPage('editor');setLang(DEFAULT_LANG)
 }
 function setLang(v){
   saveCopy();
@@ -851,9 +1076,10 @@ function fmt(d,tz,language=lang){const locale=langLocales[language]||'en-GB';ret
 function fmtInput(d,tz){let parts=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(d),o={};parts.forEach(x=>o[x.type]=x.value);return `${o.year}-${o.month}-${o.day}T${o.hour}:${o.minute}`}
 function resolveParams(text,tz){
   syncRecurringCoreTimes();
+  syncImmediatePublishTime();
   let out=text;
   noticeParams.forEach(p=>{
-    out=out.replaceAll('{'+p.name+'}',formatParamDisplay(p,tz));
+    out=out.replaceAll(paramToken(p.name),formatParamDisplay(p,tz));
   });
   return out;
 }
@@ -861,11 +1087,16 @@ function paramPrecisionLabel(precision){
   return {date:'日期',datetime:'日期时间',time:'时间'}[precision]||'日期时间';
 }
 function paramTypeLabel(type,precision){
+  if(type==='fixed') return '固定参数';
   const t={time:'时间',time_range:'时间区间',date_range:'时间区间'}[type]||'时间';
   return precision?`${t} · ${paramPrecisionLabel(precision)}`:t;
 }
 function normalizeParam(p){
   if(!p)return p;
+  if(isFixedParam(p)){
+    const fixed=FIXED_PARAMS.find(f=>f.name===p.name)||p;
+    return {...fixed,type:'fixed'};
+  }
   const out={...p};
   if(out.type==='date_range'){
     out.type='time_range';
@@ -887,6 +1118,7 @@ function formatParamValueText(v,precision){
 function formatParamDisplay(p,tz=baseTz){
   if(!p)return '--';
   const np=normalizeParam(p);
+  if(np.type==='fixed') return np.value||'--';
   const precision=np.precision;
   if(np.type==='time_range'){
     if(precision==='datetime'){
@@ -902,14 +1134,20 @@ function formatParamDisplay(p,tz=baseTz){
 function formatParamTableValue(p){
   if(!p)return '—';
   const np=normalizeParam(p);
+  if(np.type==='fixed') return '系统自动填充';
   if(np.type==='time_range'){
     return `${formatParamValueText(np.start,np.precision)} ~ ${formatParamValueText(np.end,np.precision)}`;
   }
   return formatParamValueText(np.value,np.precision);
 }
+function syncImmediatePublishTime(){
+  if(publishMode.value!=='immediate')return;
+  eventStartTime.value=fmtInput(new Date(),baseTz);
+}
 function calcStatus(){
   syncRecurringCoreTimes();
-  if(!eventStartTime.value||!eventEndTime.value)return '草稿';
+  syncImmediatePublishTime();
+  if(!eventStartTime.value||!eventEndTime.value)return '待开始';
   const now=new Date(),start=parse(eventStartTime.value,baseTz),end=parse(eventEndTime.value,baseTz);
   if(now<start)return '待开始';
   if(now<end)return '进行中';
@@ -994,34 +1232,42 @@ function recurrenceSummary(){
   return `每月 ${s} ${st} ~ ${e} ${et}`;
 }
 function renderPreview(){
-  if(!previewTitle)return;saveCopy();const tz=previewTz.value;
+  if(!previewTitle)return;
+  saveCopy();
+  const tz=previewTz.value;
   syncRecurringCoreTimes();
   syncPreviewModeUI();
-  previewTitle.textContent=resolveParams(copy[lang].title,tz)||'请填写公告标题';
-  previewBody.textContent=resolveParams(copy[lang].body,tz)||'请填写公告正文';
+  const titleText=(resolveParams(copy[lang].title||'',tz)||'').trim();
+  const bodyText=(resolveParams(copy[lang].body||'',tz)||'').trim();
+  const popupText=(resolveParams(copy[lang].popup||'',tz)||'').trim();
+  previewTitle.textContent=titleText||'请填写公告标题';
+  previewTitle.style.display='';
+  previewTitle.classList.toggle('is-placeholder',!titleText);
+  previewBody.textContent=bodyText||'请输入公告正文';
+  previewBody.style.display='';
+  previewBody.classList.toggle('is-placeholder',!bodyText);
   if(previewPopup){
-    previewPopup.textContent=resolveParams(copy[lang].popup||'请填写弹窗展示内容',tz)||'请填写弹窗展示内容';
+    previewPopup.textContent=popupText||'请填写弹窗展示内容';
+    previewPopup.style.display='';
+    previewPopup.classList.toggle('is-placeholder',!popupText);
   }
-  if(previewPopupTitle) previewPopupTitle.textContent=resolveParams(copy[lang].title,tz)||'弹窗预览';
-  if(publishMode.value==='recurring'){
-    const start=eventStartTime.value?fmt(parse(eventStartTime.value,baseTz),tz):'--';
-    const end=eventEndTime.value?fmt(parse(eventEndTime.value,baseTz),tz):'--';
-    period.textContent='发布时间：'+start+' ~ '+end+(recurrenceSummary()?' · '+recurrenceSummary():'');
-  }else{
-    const start=eventStartTime.value?fmt(parse(eventStartTime.value,baseTz),tz):'--';
-    const end=eventEndTime.value?fmt(parse(eventEndTime.value,baseTz),tz):'--';
-    period.textContent='发布时间：'+start+' ~ '+end;
+  if(previewPopupTitle){
+    previewPopupTitle.textContent=titleText||'请填写公告标题';
+    previewPopupTitle.style.display='';
+    previewPopupTitle.classList.toggle('is-placeholder',!titleText);
   }
-  previewStatus.textContent=calcStatus();
 }
 function togglePublishMode(){
   const mode=publishMode.value;
   const isRecurring=mode==='recurring';
-  startTimeField.classList.toggle('hidden',isRecurring);
+  const isImmediate=mode==='immediate';
+  startTimeField.classList.toggle('hidden',isRecurring||isImmediate);
   endTimeField.classList.toggle('hidden',isRecurring);
   if(recurrenceTypeField) recurrenceTypeField.classList.toggle('hidden',!isRecurring);
   if(recurrenceTimeRangeField) recurrenceTimeRangeField.classList.toggle('hidden',!isRecurring);
-  startTimeLabel.textContent='开始时间 *';
+  if(startTimeLabel) startTimeLabel.innerHTML='<span class="req">*</span>发布时间';
+  if(endTimeLabel) endTimeLabel.innerHTML='<span class="req">*</span>到期时间';
+  if(isImmediate) syncImmediatePublishTime();
   if(isRecurring) syncRecurringCoreTimes();
   else if(recurrenceDayRow) recurrenceDayRow.classList.add('hidden');
   toggleRecurrenceType();renderNoticeParams();
@@ -1037,7 +1283,7 @@ function toggleRecurrenceType(){
   renderPreview();
 }
 function onCoreTimeChange(el){
-  if(editingPublished&&!confirm('正在修改已发布公告的开始或结束时间。确认继续并重新计算公告状态吗？')){
+  if(editingPublished&&!confirm('正在修改已发布公告的发布或到期时间。确认继续并重新计算公告状态吗？')){
     el.value=el.dataset.previous||el.value;
     renderPreview();return;
   }
@@ -1068,7 +1314,9 @@ function applyBaseTzChange(mode){
 function validateNotice(){
   if(!baseTimezone.value)return '请选择基准时区';
   if(!targetProject.value)return '请选择投放项目';
-  if(!targetApp.value)return '请选择投放 APP';
+  if(!getCheckedValues('targetAppPanel').length)return '请选择投放 APP';
+  if(!getCheckedValues('targetAppVersionPanel').length)return '请选择 APP 版本';
+  if(!getCheckedValues('targetRegionPanel').length)return '请选择地区';
   if(publishMode.value==='recurring'){
     if(!recurrenceStartTime.value)return '请填写每次开始时间';
     if(!recurrenceEndTime.value)return '请填写每次结束时间';
@@ -1084,11 +1332,16 @@ function validateNotice(){
     syncRecurringCoreTimes();
     const start=parse(eventStartTime.value,baseTz),end=parse(eventEndTime.value,baseTz);
     if(!(end>start))return '每次结束时间必须晚于每次开始时间';
-  }else{
-    if(!eventStartTime.value)return '请填写开始时间';
-    if(!eventEndTime.value)return '请填写结束时间';
+  }else if(publishMode.value==='immediate'){
+    if(!eventEndTime.value)return '请填写到期时间';
+    syncImmediatePublishTime();
     const start=parse(eventStartTime.value,baseTz),end=parse(eventEndTime.value,baseTz);
-    if(end<=start)return '结束时间必须晚于开始时间';
+    if(end<=start)return '到期时间必须晚于当前发布时间';
+  }else{
+    if(!eventStartTime.value)return '请填写发布时间';
+    if(!eventEndTime.value)return '请填写到期时间';
+    const start=parse(eventStartTime.value,baseTz),end=parse(eventEndTime.value,baseTz);
+    if(end<=start)return '到期时间必须晚于发布时间';
   }
   const missingTitle=findMissingLang(copy,['title']);
   if(missingTitle){setLang(missingTitle.code);return '请完善 '+missingTitle.name+' 的公告标题';}
@@ -1104,18 +1357,20 @@ function saveNotice(){
   saveCopy();
   const error=validateNotice();if(error){alert(error);return}
   let n=primaryCopyTitle(copy);if(!n){alert('请填写公告标题');return}
-  const usesTime=Object.values(copy).some(c=>/\{[a-zA-Z0-9_]+\}/.test(c.body));
+  const usesTime=Object.values(copy).some(c=>/\$\{[a-zA-Z0-9_]+\}/.test(c.body));
   if(!usesTime&&!confirm('多语言正文中未引用任何参数，确认继续保存吗？'))return;
   if(!editing){
     let tr=document.createElement('tr');
-    const pub=publishMode.value==='recurring'?'循环发布':'预约发布';
+    const pub=publishMode.value==='recurring'?'循环发布':(publishMode.value==='immediate'?'立即发布':'预约发布');
     const pt=publishMode.value==='recurring'
       ?(recurrenceType.value==='daily'?formatClock(recurrenceStartTime.value):(recurrenceType.value==='weekly'?weekdayLabel(weeklyStartDay.value)+' ':'')+(recurrenceType.value==='monthly'?(monthlyStartDay.value+'号 '):'')+formatClock(recurrenceStartTime.value))+' '+baseTz
-      :eventStartTime.value.replace('T',' ')+' '+baseTz;
+      :(publishMode.value==='immediate'?'立即 '+baseTz:eventStartTime.value.replace('T',' ')+' '+baseTz);
     const et=publishMode.value==='recurring'
       ?(recurrenceType.value==='daily'?formatClock(recurrenceEndTime.value):(recurrenceType.value==='weekly'?weekdayLabel(weeklyEndDay.value)+' ':'')+(recurrenceType.value==='monthly'?(monthlyEndDay.value+'号 '):'')+formatClock(recurrenceEndTime.value))+' '+baseTz
       :eventEndTime.value.replace('T',' ')+' '+baseTz;
-    tr.innerHTML=buildNoticeRow(n,targetProject.value,pub,pt,et,'Admin',currentCreatedAt(),calcStatus());noticeRows.prepend(tr)
+    tr.innerHTML=buildNoticeRow(n,targetProject.value,pub,pt,et,'Admin',currentCreatedAt(),calcStatus(),true);
+    tr.dataset.shelved='1';
+    noticeRows.prepend(tr)
   }
   showPage('list');showToast('公告已保存，所有时间将以统一时间戳存储');
 }
@@ -1124,9 +1379,11 @@ function searchNotices(){
   const nameInput=document.querySelector('.name-filter input');
   const projectSelect=document.querySelector('.project-filter select');
   const statusSelect=document.querySelector('.status-filter select');
+  const shelfSelect=document.getElementById('shelfFilter');
   const keyword=(nameInput?.value||'').trim().toLowerCase();
   const project=projectSelect?.value||'全部项目';
   const status=statusSelect?.value||'全部状态';
+  const shelf=shelfSelect?.value||'全部上架状态';
   const from=createdFrom?.value||'';
   const to=createdTo?.value||'';
   if(from&&to&&from>to){showToast('创建时间开始日期不能晚于结束日期');return;}
@@ -1136,12 +1393,14 @@ function searchNotices(){
     const rowProject=(row.children[1]?.textContent||'').trim();
     const rowCreated=(row.children[6]?.textContent||'').trim().slice(0,10);
     const rowStatus=(row.children[7]?.textContent||'').trim();
+    const rowShelf=row.dataset.shelved==='0'?'已下架':'已上架';
     const matchName=!keyword || name.includes(keyword);
     const matchProject=project==='全部项目' || rowProject===project;
     const matchStatus=status==='全部状态' || rowStatus===status;
+    const matchShelf=shelf==='全部上架状态' || rowShelf===shelf;
     const matchFrom=!from || rowCreated>=from;
     const matchTo=!to || rowCreated<=to;
-    const show=matchName && matchProject && matchStatus && matchFrom && matchTo;
+    const show=matchName && matchProject && matchStatus && matchShelf && matchFrom && matchTo;
     row.style.display=show?'':'none';
     if(show) visible++;
   });
@@ -1152,9 +1411,11 @@ function resetNoticeFilters(){
   const nameInput=document.querySelector('.name-filter input');
   const projectSelect=document.querySelector('.project-filter select');
   const statusSelect=document.querySelector('.status-filter select');
+  const shelfSelect=document.getElementById('shelfFilter');
   if(nameInput) nameInput.value='';
   if(projectSelect) projectSelect.value='全部项目';
   if(statusSelect) statusSelect.value='全部状态';
+  if(shelfSelect) shelfSelect.value='全部上架状态';
   if(createdFrom) createdFrom.value='';
   if(createdTo) createdTo.value='';
   document.querySelectorAll('#noticeRows tr').forEach(row=>row.style.display='');
@@ -1216,7 +1477,7 @@ function getLangSyncCurrentCode(){
 function openLangSync(source='notice'){
   langSyncSource=source==='template'?'template':'notice';
   langSyncOpen=true;
-  // 仅保存当前语言草稿，不切换语言、不改动下层表单展示
+  // 仅保存当前语言内容，不切换语言、不改动下层表单展示
   if(langSyncSource==='template') saveTemplateLanguage();
   else saveCopy();
   const current=getLangSyncCurrentCode();
@@ -1280,7 +1541,8 @@ function rowData(button){
     expireTime:row.children[4]?.textContent.trim()||'',
     creator:row.children[5]?.textContent.trim()||'',
     createdAt:row.children[6]?.textContent.trim()||'',
-    status:row.children[7]?.textContent.trim()||''
+    status:row.children[7]?.textContent.trim()||'',
+    shelf:row.dataset.shelved==='0'?'已下架':'已上架'
   };
 }
 
@@ -1294,7 +1556,7 @@ function viewOperationLog(button){
   ] : [
     ['Jenny','2026-07-14 10:45','编辑公告，修改开始时间和结束时间'],
     ['Jenny','2026-07-14 10:36','编辑公告，修改印尼语公告内容'],
-    ['Jenny','2026-07-14 10:28','编辑公告，调整参数 {start_time}'],
+    ['Jenny','2026-07-14 10:28','编辑公告，调整参数 ${start_time}'],
     ['Admin','2026-07-13 18:22','新增公告，配置中文、印尼语和英文内容']
   ];
   const body=`
@@ -1321,15 +1583,16 @@ function copyNotice(button){
   editorTitle.textContent='复制公告';
   resetEditor();
   if(d.project)targetProject.value=d.project;
+  initTargetCheckPanels();
   copy=ensureCopy(templates[0].copy);
   const baseTitle=primaryCopyTitle(copy)||d.name||'公告';
   if(copy.zhHant) copy.zhHant.title=baseTitle+' - 副本';
   if(copy.en) copy.en.title=baseTitle+' - Copy';
-  noticeParams=deepCopy(defaultParams);
+  noticeParams=ensureFixedParams(defaultParams);
   lang=DEFAULT_LANG;
   loadInputs();
   renderNoticeParams();
-  publishMode.value=d.publishMode.includes('循环')?'recurring':'scheduled';
+  publishMode.value=d.publishMode.includes('循环')?'recurring':(d.publishMode.includes('立即')?'immediate':'scheduled');
   togglePublishMode();
   showPage('editor');
   setLang(DEFAULT_LANG);
@@ -1338,9 +1601,7 @@ function copyNotice(button){
 
 function toggleShelf(input){
   const row=input.closest('tr');
-  const statusCell=row?.children[7];
-  const pill=statusCell?.querySelector('.pill');
-  if(!pill)return;
+  if(!row)return;
   const willShelf=input.checked;
   const action=willShelf?'上架':'下架';
   const name=row.children[0]?.textContent.trim()||'';
@@ -1353,18 +1614,9 @@ function toggleShelf(input){
     '确定',
     ()=>{
       input.checked=willShelf;
+      row.dataset.shelved=willShelf?'1':'0';
       const text=input.closest('.shelf-action')?.querySelector('.shelf-text');
-      if(willShelf){
-        const restored=row.dataset.previousStatus||'待开始';
-        pill.textContent=restored;
-        pill.className='pill '+statusClassName(restored);
-        if(text)text.textContent='上架';
-      }else{
-        row.dataset.previousStatus=pill.textContent.trim();
-        pill.textContent='已下架';
-        pill.className='pill draft';
-        if(text)text.textContent='下架';
-      }
+      if(text)text.textContent=willShelf?'上架':'下架';
       closeModal();
       showToast(`公告已${action}`);
     },
@@ -1373,33 +1625,20 @@ function toggleShelf(input){
 }
 
 function cancelEdit(){
+  const isCreate=!editing;
   openModal(
-    '取消编辑',
-    '未保存的内容将丢失',
-    '<div class="confirm-text">确认取消并返回公告列表吗？</div>',
+    isCreate?'取消新增':'取消编辑',
+    '',
+    `<div class="confirm-text">${isCreate
+      ?'当前内容将<strong>不会保存</strong>，确认取消并返回公告列表吗？'
+      :'未保存的修改将<strong>不会保存</strong>，确认取消并返回公告列表吗？'}</div>`,
     '确认取消',
-    ()=>{closeModal();showPage('list');showToast('已取消编辑')}
-  );
-}
-
-function saveDraft(){
-  saveCopy();
-  const name=primaryCopyTitle(copy)||(titleInput.value||'').trim()||'未命名公告';
-  openModal(
-    '保存草稿',
-    '确认将当前公告保存为草稿吗？',
-    `<div class="confirm-text">公告标题：<strong>${name}</strong><br>草稿保存后可在公告列表中继续编辑。</div>`,
-    '确认保存',
     ()=>{
-      if(!editing){
-        const tr=document.createElement('tr');
-        tr.innerHTML=buildNoticeRow(name,targetProject.value,'草稿','—','—','Admin',currentCreatedAt(),'草稿');
-        noticeRows.prepend(tr);
-      }
       closeModal();
       showPage('list');
-      showToast('草稿已保存');
-    }
+      showToast(isCreate?'已取消，内容未保存':'已取消编辑，修改未保存');
+    },
+    '继续编辑'
   );
 }
 
@@ -1423,15 +1662,18 @@ function buildParamRowsHtml(){
   const rows=list.map((p,i)=>{
     const np=normalizeParam(p);
     if(paramEditIndex===i) return buildParamEditRowHtml(np,i);
+    const ops=isFixedParam(np)
+      ?`<span style="color:var(--muted);font-size:12px">不可修改</span>`
+      :`<div class="icon-actions">
+        <button class="btn compact" onclick="editNoticeParam(${i})">编辑</button>
+        <button class="btn compact" onclick="deleteNoticeParam(${i})">删除</button>
+      </div>`;
     return `<tr>
-      <td class="mono">{${np.name}}</td>
+      <td class="mono">${paramToken(np.name)}</td>
       <td>${np.desc||'—'}</td>
       <td><span class="pill">${paramTypeLabel(np.type,np.precision)}</span></td>
       <td>${formatParamTableValue(np)}</td>
-      <td><div class="icon-actions">
-        <button class="btn compact" onclick="editNoticeParam(${i})">编辑</button>
-        <button class="btn compact" onclick="deleteNoticeParam(${i})">删除</button>
-      </div></td>
+      <td>${ops}</td>
     </tr>`;
   }).join('');
 
@@ -1532,10 +1774,10 @@ function renderNoticeParams(){
 
 function renderTokenBar(){
   const html=noticeParams.length
-    ?noticeParams.map(p=>`<button class="token" onclick="insertToken('{${p.name}}','body')" title="{${p.name}}">${p.desc||p.name}</button>`).join('')
+    ?noticeParams.map(p=>`<button class="token" onclick="insertToken('${paramToken(p.name)}','body')" title="${paramToken(p.name)}">${p.desc||p.name}</button>`).join('')
     :'<span style="color:var(--muted);font-size:12px">请先在参数管理中新增参数</span>';
   const popupHtml=noticeParams.length
-    ?noticeParams.map(p=>`<button class="token" onclick="insertToken('{${p.name}}','popup')" title="{${p.name}}">${p.desc||p.name}</button>`).join('')
+    ?noticeParams.map(p=>`<button class="token" onclick="insertToken('${paramToken(p.name)}','popup')" title="${paramToken(p.name)}">${p.desc||p.name}</button>`).join('')
     :'<span style="color:var(--muted);font-size:12px">请先在参数管理中新增参数</span>';
   const bar=document.getElementById('tokenBar');
   const popupBar=document.getElementById('popupTokenBar');
@@ -1597,6 +1839,8 @@ function addNoticeParam(){
 
 function editNoticeParam(i){
   if(paramEditIndex!==null){showToast('请先完成当前参数编辑');return;}
+  const p=getActiveParams()[i];
+  if(isFixedParam(p)){showToast('固定参数不可修改');return;}
   paramEditIndex=i;
   openParamManager(paramSource);
   setTimeout(()=>document.getElementById('npName')?.focus(),30);
@@ -1605,12 +1849,14 @@ function editNoticeParam(i){
 function saveInlineParam(i){
   const p=readInlineParamForm();
   if(!p)return;
+  if(FIXED_PARAM_NAMES.has(p.name)){showToast('email / name / mobile 为固定参数，不可占用');return;}
   const list=getActiveParams();
   if(i===-1){
     if(list.some(x=>x.name===p.name)){showToast('参数名称已存在');return;}
     list.push(p);
-    showToast('参数已新增，可在正文中插入 {'+p.name+'}');
+    showToast('参数已新增，可在正文中插入 '+paramToken(p.name));
   }else{
+    if(isFixedParam(list[i])){showToast('固定参数不可修改');return;}
     if(list.some((x,idx)=>idx!==i&&x.name===p.name)){showToast('参数名称已存在');return;}
     list[i]=p;
     showToast('参数已更新');
@@ -1627,6 +1873,8 @@ function cancelInlineParam(){
 
 function deleteNoticeParam(i){
   if(paramEditIndex!==null){showToast('请先完成当前参数编辑');return;}
+  const p=getActiveParams()[i];
+  if(isFixedParam(p)){showToast('固定参数不可删除');return;}
   getActiveParams().splice(i,1);
   openParamManager(paramSource);
   refreshActiveParamUI();
@@ -1636,22 +1884,54 @@ function deleteNoticeParam(i){
 /* ========== 公告模板 ========== */
 function renderTemplates(){
   const rows=document.getElementById('templateRows');
-  rows.innerHTML=templates.length?templates.map(t=>`<tr>
+  rows.innerHTML=templates.length?templates.map(t=>{
+    const enabled=t.enabled!==false;
+    return `<tr class="${enabled?'':'is-disabled'}">
     <td>${t.name}</td>
     <td>${t.desc||'—'}</td>
     <td>${t.creator||'Admin'}</td>
     <td>${t.updated}</td>
-    <td>${buildTemplateActionButtons(t.id)}</td>
-  </tr>`).join('')
-  :'<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:20px">暂无模板</td></tr>';
+    <td><span class="pill ${enabled?'ok':'draft'}">${enabled?'启用':'停用'}</span></td>
+    <td>${buildTemplateActionButtons(t.id,enabled)}</td>
+  </tr>`;
+  }).join('')
+  :'<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:20px">暂无模板</td></tr>';
 }
 
-function buildTemplateActionButtons(id){
+function buildTemplateActionButtons(id,enabled){
+  const isOn=enabled!==false;
   return `<div class="icon-actions">
-    <button class="icon-btn" title="引用模板发送" aria-label="引用模板发送" onclick="createFromTemplate(${id})"><svg viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9 22 2z"/></svg></button>
+    <label class="shelf-action" title="${isOn?'停用模板':'启用模板'}">
+      <span class="shelf-switch"><input type="checkbox" ${isOn?'checked':''} onchange="toggleTemplateEnabled(${id},this)"><span class="shelf-slider"></span></span>
+      <span class="shelf-text">${isOn?'启用':'停用'}</span>
+    </label>
+    <button class="icon-btn" title="引用模板发送" aria-label="引用模板发送" ${isOn?'':'disabled'} onclick="createFromTemplate(${id})"><svg viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9 22 2z"/></svg></button>
     <button class="icon-btn" title="编辑" aria-label="编辑" onclick="openTemplateEditor(${id})"><svg viewBox="0 0 24 24"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3Z"/><path d="m14 8 3 3"/></svg></button>
     <button class="icon-btn" title="删除" aria-label="删除" onclick="deleteTemplate(${id})"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
   </div>`;
+}
+
+function toggleTemplateEnabled(id,input){
+  const t=templates.find(x=>x.id===id);
+  if(!t||!input)return;
+  const willEnable=input.checked;
+  const action=willEnable?'启用':'停用';
+  input.checked=!willEnable;
+  if(modalPanel) modalPanel.style.width='min(420px,100%)';
+  openModal(
+    `确认${action}模板`,
+    '',
+    `<div class="confirm-text">确认${action}模板 <strong>${t.name}</strong> 吗？${willEnable?'启用后可在新增公告时引用。':'停用后将不可再引用该模板创建公告。'}</div>`,
+    '确定',
+    ()=>{
+      t.enabled=willEnable;
+      renderTemplates();
+      fillTemplateSelect();
+      closeModal();
+      showToast(`模板已${action}`);
+    },
+    '取消'
+  );
 }
 
 function saveTemplateLanguage(){
@@ -1685,7 +1965,7 @@ function setTemplateLanguage(nextLang){
 function resolveTemplateParams(text,tz){
   let out=text||'';
   templateDraftParams.forEach(p=>{
-    out=out.replaceAll('{'+p.name+'}',formatParamDisplay(p,tz));
+    out=out.replaceAll(paramToken(p.name),formatParamDisplay(p,tz));
   });
   return out;
 }
@@ -1729,10 +2009,25 @@ function renderTemplatePreview(){
   const tz=templatePreviewTz?.value||baseTz;
   const langKey=templateLang||DEFAULT_LANG;
   const c=templateDraftCopy[langKey]||{};
-  templatePreviewTitle.textContent=resolveTemplateParams(c.title,tz)||'请填写公告标题';
-  templatePreviewBody.textContent=resolveTemplateParams(c.body,tz)||'请填写公告正文';
-  if(templatePreviewPopup) templatePreviewPopup.textContent=resolveTemplateParams(c.popup||'请填写弹窗展示内容',tz)||'请填写弹窗展示内容';
-  if(templatePreviewPopupTitle) templatePreviewPopupTitle.textContent=resolveTemplateParams(c.title,tz)||'弹窗预览';
+  const titleText=(resolveTemplateParams(c.title||'',tz)||'').trim();
+  const bodyText=(resolveTemplateParams(c.body||'',tz)||'').trim();
+  const popupText=(resolveTemplateParams(c.popup||'',tz)||'').trim();
+  templatePreviewTitle.textContent=titleText||'请填写公告标题';
+  templatePreviewTitle.style.display='';
+  templatePreviewTitle.classList.toggle('is-placeholder',!titleText);
+  templatePreviewBody.textContent=bodyText||'请输入公告正文';
+  templatePreviewBody.style.display='';
+  templatePreviewBody.classList.toggle('is-placeholder',!bodyText);
+  if(templatePreviewPopup){
+    templatePreviewPopup.textContent=popupText||'请填写弹窗展示内容';
+    templatePreviewPopup.style.display='';
+    templatePreviewPopup.classList.toggle('is-placeholder',!popupText);
+  }
+  if(templatePreviewPopupTitle){
+    templatePreviewPopupTitle.textContent=titleText||'请填写公告标题';
+    templatePreviewPopupTitle.style.display='';
+    templatePreviewPopupTitle.classList.toggle('is-placeholder',!titleText);
+  }
 }
 
 function openTemplateEditor(id){
@@ -1740,7 +2035,7 @@ function openTemplateEditor(id){
   editingTemplateId=t?t.id:null;
   templateEditorTitle.textContent=t?'编辑公告模板':'新增公告模板';
   templateDraftCopy=ensureCopy(t?t.copy:null);
-  templateDraftParams=t?deepCopy(t.params||[]).map(normalizeParam):[];
+  templateDraftParams=ensureFixedParams(t?t.params||[]:[]);
   templateEnablePopupDisplay=!!(t&&t.enablePopup);
   templatePreviewMode='body';
   templateLang=null;
@@ -1756,10 +2051,10 @@ function openTemplateEditor(id){
 function renderTemplateTokenBars(){
   const empty='<span style="color:var(--muted);font-size:12px">请先在参数管理中新增参数</span>';
   const bodyHtml=templateDraftParams.length
-    ?templateDraftParams.map(p=>`<button class="token" type="button" onclick="insertTemplateToken('{${p.name}}','body')" title="{${p.name}}">${p.desc||p.name}</button>`).join('')
+    ?templateDraftParams.map(p=>`<button class="token" type="button" onclick="insertTemplateToken('${paramToken(p.name)}','body')" title="${paramToken(p.name)}">${p.desc||p.name}</button>`).join('')
     :empty;
   const popupHtml=templateDraftParams.length
-    ?templateDraftParams.map(p=>`<button class="token" type="button" onclick="insertTemplateToken('{${p.name}}','popup')" title="{${p.name}}">${p.desc||p.name}</button>`).join('')
+    ?templateDraftParams.map(p=>`<button class="token" type="button" onclick="insertTemplateToken('${paramToken(p.name)}','popup')" title="${paramToken(p.name)}">${p.desc||p.name}</button>`).join('')
     :empty;
   const bodyBar=document.getElementById('templateTokenBar');
   const popupBar=document.getElementById('templatePopupTokenBar');
@@ -1795,9 +2090,10 @@ function saveTemplate(){
   if(existing){
     existing.name=name;
     existing.copy=ensureCopy(templateDraftCopy);
-    existing.params=deepCopy(templateDraftParams).map(normalizeParam);
+    existing.params=stripFixedParams(templateDraftParams);
     existing.enablePopup=!!templateEnablePopupDisplay;
     existing.updated=updated;
+    if(existing.enabled===undefined) existing.enabled=true;
   }else{
     templates.push({
       id:templateSeq++,
@@ -1805,9 +2101,10 @@ function saveTemplate(){
       desc:'',
       creator:'Admin',
       updated,
+      enabled:true,
       enablePopup:!!templateEnablePopupDisplay,
       copy:ensureCopy(templateDraftCopy),
-      params:deepCopy(templateDraftParams).map(normalizeParam)
+      params:stripFixedParams(templateDraftParams)
     });
   }
   fillTemplateSelect();
@@ -1830,13 +2127,15 @@ function fillTemplateSelect(){
   const sel=document.getElementById('editorTplSelect');
   if(!sel)return;
   const cur=sel.value;
-  sel.innerHTML='<option value="">不使用模板</option>'+templates.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
-  sel.value=cur;
+  const enabledTemplates=templates.filter(t=>t.enabled!==false);
+  sel.innerHTML='<option value="">不使用模板</option>'+enabledTemplates.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  if(cur && enabledTemplates.some(t=>String(t.id)===String(cur))) sel.value=cur;
+  else sel.value='';
 }
 
 function applyTemplate(t){
   copy=ensureCopy(t.copy);
-  noticeParams=deepCopy(t.params||[]).map(normalizeParam);
+  noticeParams=ensureFixedParams(t.params||[]);
   enablePopupDisplay=!!t.enablePopup;
   previewMode='body';
   paramSource='notice';
@@ -1854,12 +2153,22 @@ function applyTemplateFromEditor(id){
   }
   const t=templates.find(x=>x.id===Number(id));
   if(!t)return;
+  if(t.enabled===false){
+    showToast('该模板已停用，无法引用');
+    fillTemplateSelect();
+    return;
+  }
   applyTemplate(t);
   showToast('已沿用模板「'+t.name+'」的文案、参数与弹窗设置');
 }
 
 function createFromTemplate(id){
   const t=templates.find(x=>x.id===id);
+  if(!t)return;
+  if(t.enabled===false){
+    showToast('该模板已停用，无法引用创建公告');
+    return;
+  }
   editing=false;editingPublished=false;
   editorTitle.textContent='新增公告（引用模板）';
   resetEditor();
@@ -1872,13 +2181,13 @@ function createFromTemplate(id){
 }
 
 function statusClassName(status){
-  return status==='进行中'?'ok':status==='待开始'?'warn':status==='草稿'||status==='已下架'?'draft':'';
+  return status==='进行中'?'ok':status==='待开始'?'warn':status==='已结束'?'draft':'';
 }
 
-function buildActionButtons(status){
-  const isDraft=status==='草稿';
+function buildActionButtons(shelved){
+  const isOn=!!shelved;
   return `<div class="icon-actions">
-    <label class="shelf-action" title="${isDraft?'草稿不可上架':'切换上架/下架状态'}"><span class="shelf-switch"><input type="checkbox" ${isDraft?'disabled':'checked'} onchange="toggleShelf(this)"><span class="shelf-slider"></span></span><span class="shelf-text">${isDraft?'草稿':'上架'}</span></label>
+    <label class="shelf-action" title="切换上架/下架"><span class="shelf-switch"><input type="checkbox" ${isOn?'checked':''} onchange="toggleShelf(this)"><span class="shelf-slider"></span></span><span class="shelf-text">${isOn?'上架':'下架'}</span></label>
     <button class="icon-btn" title="编辑" onclick="openEdit(this)"><svg viewBox="0 0 24 24"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3Z"/><path d="m14 8 3 3"/></svg></button>
     <button class="icon-btn" title="复制" onclick="copyNotice(this)"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>
     <button class="icon-btn" title="操作日志" onclick="viewOperationLog(this)"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/><path d="M12 7v5l3 2"/></svg></button>
@@ -1891,15 +2200,27 @@ function currentCreatedAt(){
   return `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
 }
 
-function buildNoticeRow(name,project,publishMode,publishTime,expireTime,creator,createdAt,status){
+function buildNoticeRow(name,project,publishMode,publishTime,expireTime,creator,createdAt,status,shelved=true){
   const statusClass=statusClassName(status);
-  return `<td>${name}</td><td>${project}</td><td>${publishMode}</td><td>${publishTime}</td><td>${expireTime}</td><td>${creator}</td><td>${createdAt}</td><td><span class="pill ${statusClass}">${status}</span></td><td>${buildActionButtons(status)}</td>`;
+  const onShelf=shelved!==false;
+  return `<td>${name}</td><td>${project}</td><td>${publishMode}</td><td>${publishTime}</td><td>${expireTime}</td><td>${creator}</td><td>${createdAt}</td><td><span class="pill ${statusClass}">${status}</span></td><td>${buildActionButtons(onShelf)}</td>`;
+}
+
+function renderSampleNotices(){
+  const rows=document.getElementById('noticeRows');
+  if(!rows)return;
+  rows.innerHTML=sampleNotices.map(n=>{
+    const onShelf=n.shelved!==false;
+    return `<tr data-shelved="${onShelf?'1':'0'}">${buildNoticeRow(n.name,n.project,n.publishMode,n.publishTime,n.expireTime,n.creator,n.createdAt,n.status,onShelf)}</tr>`;
+  }).join('');
 }
 
 try{
   renderLangSwitchers();
-  noticeParams=deepCopy(defaultParams);
+  initTargetCheckPanels();
+  noticeParams=ensureFixedParams(defaultParams);
   fillTemplateSelect();
+  renderSampleNotices();
   loadInputs();
   renderNoticeParams();
   togglePublishMode();
