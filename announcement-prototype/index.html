@@ -542,10 +542,6 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
     <aside class="card preview">
       <div class="head"><div><div class="title">用户端预览</div></div></div>
       <div class="body" style="padding-bottom:0">
-        <div class="grid2">
-          <select id="previewLang" class="control" onchange="setLang(this.value)"></select>
-          <div class="control" style="display:flex;align-items:center;color:var(--muted);background:#f8fafc;cursor:default">当前基准时区为：GMT+3</div>
-        </div>
         <div class="preview-mode" id="previewModeBar">
           <button type="button" class="preview-mode-btn active" id="previewModeBodyBtn" onclick="setPreviewMode('body')">公告正文预览</button>
           <button type="button" class="preview-mode-btn" id="previewModePopupBtn" onclick="setPreviewMode('popup')" disabled title="请先选择「公告正文 + 弹窗」">弹窗预览</button>
