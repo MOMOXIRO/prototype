@@ -225,9 +225,16 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .check-row{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#334155;cursor:pointer;user-select:none}
 .check-row input{width:16px;height:16px;accent-color:var(--pri);cursor:pointer}
 .popup-panel{margin-top:14px;padding-top:14px;border-top:1px dashed #e2e8f0}
-.popup-inline-panel{margin-top:18px;padding-top:16px;border-top:1px dashed #e2e8f0}
+.popup-inline-panel{margin-top:0}
 .popup-inline-panel.hidden{display:none !important}
 .popup-inline-title{font-size:14px;font-weight:600;color:#1f2937;margin-bottom:12px}
+.content-mode-tabs{display:flex;gap:8px;margin-bottom:14px}
+.content-mode-tabs.hidden{display:none !important}
+.content-mode-tab{height:32px;padding:0 14px;border:1px solid var(--field-line);background:#fff;border-radius:7px;color:#64748b;font-size:13px;cursor:pointer}
+.content-mode-tab:hover{border-color:#c4d0e6;color:var(--text)}
+.content-mode-tab.active{border-color:var(--pri);background:#eff4ff;color:var(--pri);font-weight:600}
+.content-mode-tab:disabled{opacity:.45;cursor:not-allowed}
+#bodyContentPanel.hidden{display:none !important}
 .popup-preview{margin-top:12px;padding:12px;border:1px solid #dbe4ff;border-radius:10px;background:#f5f8ff}
 .popup-preview .label{margin-bottom:6px;color:var(--pri)}
 .popup-preview p{margin:0;white-space:pre-line;line-height:1.7;color:#334155;font-size:13px}
@@ -483,13 +490,28 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
         </div>
         <div class="body" style="padding-bottom:12px">
           <div class="form-stack">
-            <div class="field"><label class="label">公告模板</label><select id="editorTplSelect" class="control" onchange="applyTemplateFromEditor(this.value)"><option value="">不使用模板</option></select></div>
-            <div class="field">
-              <label class="label"><span class="req">*</span>展示形式</label>
-              <select id="displayFormat" class="control" onchange="onDisplayFormatChange()">
-                <option value="body_only" selected>仅公告正文</option>
-                <option value="body_popup">公告正文 + 弹窗</option>
-              </select>
+            <div class="grid2">
+              <div class="field"><label class="label">公告模板</label><select id="editorTplSelect" class="control" onchange="applyTemplateFromEditor(this.value)"><option value="">不使用模板</option></select></div>
+              <div class="field">
+                <label class="label"><span class="req">*</span>展示形式</label>
+                <select id="displayFormat" class="control" onchange="onDisplayFormatChange()">
+                  <option value="body_only" selected>仅公告正文</option>
+                  <option value="body_popup">公告正文 + 弹窗</option>
+                </select>
+              </div>
+            </div>
+            <div id="popupSettingsRow" class="grid2 hidden">
+              <div class="field">
+                <label class="label"><span class="req">*</span>弹窗结束方式</label>
+                <select id="popupEndMode" class="control" onchange="onPopupConfigChange()">
+                  <option value="follow_expire" selected>跟随公告到期</option>
+                  <option value="custom">指定时间</option>
+                </select>
+              </div>
+              <div class="field hidden" id="popupEndTimeField">
+                <label class="label"><span class="req">*</span>弹窗结束时间</label>
+                <input id="popupEndTime" class="control" type="datetime-local" value="2026-07-20T10:00">
+              </div>
             </div>
           </div>
         </div>
@@ -501,88 +523,24 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
           </div>
         </div>
         <div class="body">
-          <div class="field"><label class="label"><span class="req">*</span>公告标题</label><input id="titleInput" class="control" placeholder="请填写公告标题"></div>
-          <div style="height:16px"></div>
-          <div class="field">
-            <label class="label"><span class="req">*</span>公告正文</label>
-            <div class="tokens" id="tokenBar" style="margin:0 0 10px"></div>
-            <textarea id="bodyInput" class="control" placeholder="请输入公告正文"></textarea>
+          <div class="field"><label class="label"><span class="req">*</span>公告标题</label><input id="titleInput" class="control" placeholder="请填写公告标题（正文与弹窗共用）"></div>
+          <div style="height:14px"></div>
+          <div class="content-mode-tabs hidden" id="contentModeTabs">
+            <button type="button" class="content-mode-tab active" id="contentModeBodyTab" onclick="setContentEditMode('body')">公告正文</button>
+            <button type="button" class="content-mode-tab" id="contentModePopupTab" onclick="setContentEditMode('popup')">弹窗内容</button>
+          </div>
+          <div id="bodyContentPanel">
+            <div class="field">
+              <label class="label"><span class="req">*</span>公告正文</label>
+              <div class="tokens" id="tokenBar" style="margin:0 0 10px"></div>
+              <textarea id="bodyInput" class="control" placeholder="请输入公告正文"></textarea>
+            </div>
           </div>
           <div id="popupConfigPanel" class="popup-inline-panel hidden">
-            <div class="popup-inline-title">弹窗配置</div>
-            <div class="form-stack">
-              <div class="grid3" id="popupNormalRow">
-                <div class="field">
-                  <label class="label"><span class="req">*</span>弹窗开始方式</label>
-                  <select id="popupStartMode" class="control" onchange="onPopupConfigChange()">
-                    <option value="follow_start" selected>跟随公告开始</option>
-                    <option value="custom">指定时间</option>
-                  </select>
-                </div>
-                <div class="field hidden" id="popupStartTimeField">
-                  <label class="label"><span class="req">*</span>弹窗开始时间</label>
-                  <input id="popupStartTime" class="control" type="datetime-local" value="2026-07-20T09:00">
-                </div>
-                <div class="field">
-                  <label class="label"><span class="req">*</span>弹窗结束方式</label>
-                  <select id="popupEndMode" class="control" onchange="onPopupConfigChange()">
-                    <option value="follow_expire" selected>跟随公告到期</option>
-                    <option value="custom">指定时间</option>
-                  </select>
-                </div>
-                <div class="field hidden" id="popupEndTimeField">
-                  <label class="label"><span class="req">*</span>弹窗结束时间</label>
-                  <input id="popupEndTime" class="control" type="datetime-local" value="2026-07-20T10:00">
-                </div>
-                <div class="field">
-                  <label class="label"><span class="req">*</span>弹窗频率</label>
-                  <select id="popupFreqNormal" class="control">
-                    <option value="once">仅展示一次</option>
-                    <option value="each_login" selected>每次登录展示一次</option>
-                    <option value="daily">每天展示一次</option>
-                  </select>
-                </div>
-              </div>
-              <div class="grid3 hidden" id="popupRecurringRow">
-                <div class="field">
-                  <label class="label"><span class="req">*</span>弹窗开始规则</label>
-                  <select id="popupLoopStartMode" class="control" onchange="onPopupConfigChange()">
-                    <option value="follow_publish" selected>跟随每次发布</option>
-                    <option value="delay">发布后延迟</option>
-                  </select>
-                </div>
-                <div class="field hidden" id="popupDelayField">
-                  <label class="label"><span class="req">*</span>延迟</label>
-                  <div class="duration-wrap">
-                    <input id="popupDelayValue" class="control num" type="number" min="1" value="5">
-                    <select id="popupDelayUnit" class="control unit">
-                      <option value="minute" selected>分钟</option>
-                      <option value="hour">小时</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="field">
-                  <label class="label"><span class="req">*</span>弹窗持续时长</label>
-                  <div class="duration-wrap">
-                    <input id="popupDurationValue" class="control num" type="number" min="1" value="1">
-                    <span class="duration-unit-text">天</span>
-                  </div>
-                </div>
-                <div class="field">
-                  <label class="label"><span class="req">*</span>弹窗频率</label>
-                  <select id="popupFreqLoop" class="control">
-                    <option value="once">仅展示一次</option>
-                    <option value="each_login">每次登录展示一次</option>
-                    <option value="daily">每天展示一次</option>
-                    <option value="each_instance" selected>每次循环实例展示一次</option>
-                  </select>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label"><span class="req">*</span>弹窗展示内容</label>
-                <div class="tokens" id="popupTokenBar" style="margin:0 0 10px"></div>
-                <textarea id="popupInput" class="control" placeholder="请输入弹窗展示内容，可插入参数"></textarea>
-              </div>
+            <div class="field">
+              <label class="label"><span class="req">*</span>弹窗展示内容</label>
+              <div class="tokens" id="popupTokenBar" style="margin:0 0 10px"></div>
+              <textarea id="popupInput" class="control" placeholder="请输入弹窗展示内容，可插入参数"></textarea>
             </div>
           </div>
         </div>
@@ -821,7 +779,7 @@ function sampleSimpleCopy(titleZh,bodyZh,titleEn,bodyEn,popupZh='',popupEn=''){
 }
 
 let copy=sampleMaintCopy();
-let lang=DEFAULT_LANG,editing=false,editingPublished=false,enablePopupDisplay=false,previewMode='body';
+let lang=DEFAULT_LANG,editing=false,editingPublished=false,enablePopupDisplay=false,previewMode='body',contentEditMode='body';
 
 const BASE_TZ='Africa/Nairobi'; // 固定 GMT+3
 const BASE_TZ_LABEL='GMT+3';
@@ -1116,13 +1074,14 @@ function resetEditor(){
   if(displayDurationValue) displayDurationValue.value='1';
   if(weeklyExecDay) weeklyExecDay.value='1';
   if(monthlyExecDay) monthlyExecDay.value='1';
-  if(popupStartMode) popupStartMode.value='follow_start';
   if(popupEndMode) popupEndMode.value='follow_expire';
-  if(popupLoopStartMode) popupLoopStartMode.value='follow_publish';
+  if(popupEndTime) popupEndTime.value='2026-07-20T10:00';
   fillTemplateSelect();
   if(editorTplSelect) editorTplSelect.value='';
   if(displayFormat) displayFormat.value='body_only';
   previewMode='body';
+  contentEditMode='body';
+  enablePopupDisplay=false;
   syncDisplayFormatUI(false);
   initTargetCheckPanels();
   onPublishConfigChange();
@@ -1206,13 +1165,52 @@ function insertToken(t,target='body'){
 }
 function onDisplayFormatChange(fromUser=true){
   enablePopupDisplay=(displayFormat?.value==='body_popup');
+  if(!enablePopupDisplay) contentEditMode='body';
+  else if(fromUser) contentEditMode='body';
   syncDisplayFormatUI(fromUser);
+}
+function setContentEditMode(mode){
+  if(mode==='popup'&&!enablePopupDisplay){
+    showToast('请先选择「公告正文 + 弹窗」');
+    return;
+  }
+  contentEditMode=mode==='popup'?'popup':'body';
+  syncContentEditModeUI();
+  if(contentEditMode==='popup'){
+    previewMode='popup';
+    syncPreviewModeUI();
+  }else if(previewMode==='popup'){
+    previewMode='body';
+    syncPreviewModeUI();
+  }
+  renderPreview();
+}
+function syncContentEditModeUI(){
+  const tabs=document.getElementById('contentModeTabs');
+  const bodyPanel=document.getElementById('bodyContentPanel');
+  const popupPanel=document.getElementById('popupConfigPanel');
+  const popupSettings=document.getElementById('popupSettingsRow');
+  const bodyTab=document.getElementById('contentModeBodyTab');
+  const popupTab=document.getElementById('contentModePopupTab');
+  if(popupSettings) popupSettings.classList.toggle('hidden',!enablePopupDisplay);
+  if(tabs) tabs.classList.toggle('hidden',!enablePopupDisplay);
+  if(!enablePopupDisplay) contentEditMode='body';
+  if(bodyTab) bodyTab.classList.toggle('active',contentEditMode==='body');
+  if(popupTab){
+    popupTab.disabled=!enablePopupDisplay;
+    popupTab.classList.toggle('active',contentEditMode==='popup');
+  }
+  // 标题始终共用；弹窗结束设置固定在展示形式下；此处仅切换正文/弹窗文案
+  if(bodyPanel) bodyPanel.classList.toggle('hidden',enablePopupDisplay&&contentEditMode==='popup');
+  if(popupPanel) popupPanel.classList.toggle('hidden',!(enablePopupDisplay&&contentEditMode==='popup'));
 }
 function syncDisplayFormatUI(fromUser=true){
   if(displayFormat) displayFormat.value=enablePopupDisplay?'body_popup':'body_only';
-  const panel=document.getElementById('popupConfigPanel');
-  if(panel) panel.classList.toggle('hidden',!enablePopupDisplay);
-  if(!enablePopupDisplay&&previewMode==='popup') previewMode='body';
+  if(!enablePopupDisplay){
+    contentEditMode='body';
+    if(previewMode==='popup') previewMode='body';
+  }
+  syncContentEditModeUI();
   onPopupConfigChange();
   syncPreviewModeUI();
   if(fromUser){saveCopy();renderPreview()}
@@ -1463,24 +1461,16 @@ function onPublishConfigChange(){
   renderNoticeParams();
 }
 function onPopupConfigChange(){
-  const isRecurring=publishMode?.value==='recurring';
   const validity=validityType?.value||'';
-  const longTerm=!isRecurring&&(validity==='permanent');
-  if(popupNormalRow) popupNormalRow.classList.toggle('hidden',isRecurring);
-  if(popupRecurringRow) popupRecurringRow.classList.toggle('hidden',!isRecurring);
-
-  if(!isRecurring){
-    const endSel=popupEndMode;
-    if(endSel){
-      const followOpt=[...endSel.options].find(o=>o.value==='follow_expire');
-      if(followOpt) followOpt.disabled=!!longTerm;
-      if(longTerm&&endSel.value==='follow_expire') endSel.value='custom';
-    }
-    if(popupStartTimeField) popupStartTimeField.classList.toggle('hidden',popupStartMode?.value!=='custom');
-    if(popupEndTimeField) popupEndTimeField.classList.toggle('hidden',popupEndMode?.value!=='custom');
-  }else{
-    if(popupDelayField) popupDelayField.classList.toggle('hidden',popupLoopStartMode?.value!=='delay');
+  const longTerm=publishMode?.value!=='recurring'&&validity==='permanent';
+  const endSel=document.getElementById('popupEndMode')||popupEndMode;
+  const endTimeField=document.getElementById('popupEndTimeField');
+  if(endSel){
+    const followOpt=[...endSel.options].find(o=>o.value==='follow_expire');
+    if(followOpt) followOpt.disabled=!!longTerm;
+    if(longTerm&&endSel.value==='follow_expire') endSel.value='custom';
   }
+  if(endTimeField) endTimeField.classList.toggle('hidden',(endSel?.value||'follow_expire')!=='custom');
 }
 function recurrenceSummary(){
   if(publishMode.value!=='recurring')return '';
@@ -1569,14 +1559,10 @@ function validateNotice(){
   if(enablePopupDisplay){
     const missing=findMissingLang(copy,['popup']);
     if(missing){setLang(missing.code);return '已选择弹窗展示，请完善 '+missing.name+' 的弹窗展示内容';}
-    if(mode==='recurring'){
-      if(popupLoopStartMode?.value==='delay'&&(!popupDelayValue?.value||Number(popupDelayValue.value)<=0))return '请填写弹窗延迟时间';
-      if(!popupDurationValue?.value||Number(popupDurationValue.value)<=0)return '请填写弹窗持续时长';
-    }else{
-      if(popupStartMode?.value==='custom'&&!popupStartTime?.value)return '请填写弹窗开始时间';
-      if(popupEndMode?.value==='custom'&&!popupEndTime?.value)return '请填写弹窗结束时间';
-      if(validity==='permanent'&&popupEndMode?.value==='follow_expire')return '长期有效公告不能选择跟随公告到期';
-    }
+    const endMode=document.getElementById('popupEndMode')?.value||popupEndMode?.value;
+    const endTime=document.getElementById('popupEndTime')?.value||popupEndTime?.value;
+    if(endMode==='custom'&&!endTime)return '请填写弹窗结束时间';
+    if(validity==='permanent'&&endMode==='follow_expire')return '长期有效公告不能选择跟随公告到期';
   }
   return '';
 }
