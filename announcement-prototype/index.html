@@ -1072,7 +1072,6 @@ function openEdit(button){
 function setLang(v){
   saveCopy();
   lang=v||DEFAULT_LANG;
-  if(previewLang) previewLang.value=lang;
   loadInputs();
   document.querySelectorAll('#editorLangTabs .tab').forEach(x=>x.classList.toggle('active',x.dataset.lang===lang));
   renderPreview()
@@ -1092,13 +1091,13 @@ function renderLangSwitchers(){
     editorTabs.innerHTML=buildLangTabsHtml(lang||DEFAULT_LANG,'data-lang');
     editorTabs.querySelectorAll('.tab').forEach(t=>t.onclick=()=>setLang(t.dataset.lang));
   }
-  if(previewLang) previewLang.innerHTML=buildLangOptionsHtml(lang||DEFAULT_LANG);
   const templateTabs=document.getElementById('templateLangTabs');
   if(templateTabs){
     templateTabs.innerHTML=buildLangTabsHtml(templateLang||DEFAULT_LANG,'data-template-lang','template-tab');
     templateTabs.querySelectorAll('.tab').forEach(t=>t.onclick=()=>setTemplateLanguage(t.dataset.templateLang));
   }
-  if(templatePreviewLang) templatePreviewLang.innerHTML=buildLangOptionsHtml(templateLang||DEFAULT_LANG);
+  const templatePreviewLangEl=document.getElementById('templatePreviewLang');
+  if(templatePreviewLangEl) templatePreviewLangEl.innerHTML=buildLangOptionsHtml(templateLang||DEFAULT_LANG);
 }
 function insertToken(t,target='body'){
   const el=target==='popup'?popupInput:bodyInput;
@@ -2094,7 +2093,8 @@ function setTemplateLanguage(nextLang){
   templateBodyInput.value=templateDraftCopy[templateLang].body||'';
   if(templatePopupInput) templatePopupInput.value=templateDraftCopy[templateLang].popup||'';
   if(templateEnablePopup) templateEnablePopup.checked=!!templateEnablePopupDisplay;
-  if(templatePreviewLang) templatePreviewLang.value=templateLang;
+  const templatePreviewLangEl=document.getElementById('templatePreviewLang');
+  if(templatePreviewLangEl) templatePreviewLangEl.value=templateLang;
   document.querySelectorAll('#templateLangTabs .tab').forEach(tab=>tab.classList.toggle('active',tab.dataset.templateLang===templateLang));
   toggleTemplatePopupContent(false);
   renderTemplatePreview();
@@ -2286,7 +2286,6 @@ function applyTemplate(t){
   loadInputs();
   renderNoticeParams();
   document.querySelectorAll('#editorLangTabs .tab').forEach(x=>x.classList.toggle('active',x.dataset.lang===lang));
-  if(previewLang) previewLang.value=lang;
   renderPreview();
 }
 
@@ -2360,11 +2359,11 @@ function renderSampleNotices(){
 }
 
 try{
+  renderSampleNotices();
   renderLangSwitchers();
   initTargetCheckPanels();
   noticeParams=ensureFixedParams(defaultParams);
   fillTemplateSelect();
-  renderSampleNotices();
   loadInputs();
   renderNoticeParams();
   onPublishConfigChange();
@@ -2372,6 +2371,7 @@ try{
   showPage('list');
 }catch(err){
   console.error('页面初始化失败',err);
+  try{ renderSampleNotices(); showPage('list'); }catch(_e){}
 }
 
 </script>
