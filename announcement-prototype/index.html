@@ -32,6 +32,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none;box-shadow:var
 .head{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:#fff}
 .title{font-weight:600;font-size:16px;color:var(--text)}
 .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.title-tz-hint{margin-left:10px;font-size:12px;font-weight:500;color:var(--muted);vertical-align:middle}
 .body{padding:16px 18px}
 
 .btn{height:34px;padding:0 14px;border:1px solid var(--pri);background:var(--pri);border-radius:7px;cursor:pointer;color:#fff;font-size:13px;font-weight:600;box-shadow:0 4px 10px rgba(47,107,255,.24);transition:transform .12s ease,background .12s ease}
@@ -228,6 +229,35 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .popup-inline-panel{margin-top:0}
 .popup-inline-panel.hidden{display:none !important}
 .popup-inline-title{font-size:14px;font-weight:600;color:#1f2937;margin-bottom:12px}
+.popup-validity{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.popup-validity.hidden{display:none !important}
+.popup-hint{font-size:12px;color:#64748b;line-height:1.4}
+.popup-window-inline{display:none !important;align-items:center;gap:8px;flex-wrap:wrap}
+#popupLimitedBlock .popup-window-inline,
+#popupWindowField[data-active="none"] #popupWindowNone,
+#popupWindowField[data-active="daily"] #popupWindowDaily,
+#popupWindowField[data-active="weekly"] #popupWindowWeekly,
+#popupWindowField[data-active="monthly"] #popupWindowMonthly{display:flex !important}
+.popup-window-inline .control{width:auto;min-width:0;flex:0 0 auto}
+.popup-window-inline .control.time-sm{width:120px}
+.popup-window-inline .control.day-sm{width:88px}
+.popup-window-inline .control.wd-sm{width:96px}
+.popup-window-inline .control.dt-md{flex:1 1 160px;min-width:140px}
+.popup-window-inline .mid{color:#94a3b8;font-size:13px}
+.popup-freq-locked{height:38px;display:flex;align-items:center;padding:0 12px;border:1px solid var(--field-line);border-radius:var(--field-radius);background:#f8fafc;color:#334155;font-size:13px}
+.popup-freq-locked.hidden{display:none !important}
+#popupRepeatRule.hidden{display:none !important}
+#popupPermanentBlock.hidden,#popupLimitedBlock.hidden{display:none !important}
+#popupCycleWindowRow{
+  display:grid !important;
+  grid-template-columns:minmax(140px,.85fr) minmax(260px,1.5fr);
+  gap:12px;
+  align-items:start;
+}
+#popupCycleWindowRow > .field{min-width:0}
+@media(max-width:720px){
+  #popupCycleWindowRow{grid-template-columns:1fr !important}
+}
 .content-mode-tabs{display:flex;gap:8px;margin-bottom:14px}
 .content-mode-tabs.hidden{display:none !important}
 .content-mode-tab{height:32px;padding:0 14px;border:1px solid var(--field-line);background:#fff;border-radius:7px;color:#64748b;font-size:13px;cursor:pointer}
@@ -238,10 +268,13 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .popup-preview{margin-top:12px;padding:12px;border:1px solid #dbe4ff;border-radius:10px;background:#f5f8ff}
 .popup-preview .label{margin-bottom:6px;color:var(--pri)}
 .popup-preview p{margin:0;white-space:pre-line;line-height:1.7;color:#334155;font-size:13px}
-.preview-mode{display:flex;gap:8px;margin-top:12px}
+.preview-mode{display:flex;gap:8px;margin-top:8px}
 .preview-mode-btn{flex:1;height:32px;border:1px solid var(--field-line);background:#fff;border-radius:7px;color:#64748b;font-size:13px;cursor:pointer}
 .preview-mode-btn.active{border-color:var(--pri);background:#eff4ff;color:var(--pri);font-weight:600}
 .preview-mode-btn:disabled{opacity:.45;cursor:not-allowed}
+.preview-tz-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.preview-tz-row .label{margin:0;white-space:nowrap;flex:0 0 auto;font-size:12px;color:var(--muted);font-weight:500}
+.preview-tz-row .control{flex:1;min-width:0;height:34px}
 .preview-body-view{min-height:420px}
 .article-view{background:#fff;border-radius:12px;padding:18px 16px;min-height:420px;box-shadow:0 2px 10px rgba(15,23,42,.06)}
 .article-view .article-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;font-size:12px;color:#94a3b8}
@@ -261,6 +294,9 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .popup-card-demo .popup-text{margin:0;white-space:pre-line;line-height:1.7;color:#4b5563;font-size:13px}
 .popup-card-demo .popup-actions{display:flex;justify-content:flex-end;margin-top:16px}
 .popup-card-demo .popup-actions .btn{height:30px;padding:0 14px;font-size:12px}
+.popup-detail-btn{width:36px;height:36px;padding:0;border:none;border-radius:50%;background:var(--pri);color:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(47,107,255,.35)}
+.popup-detail-btn:hover{background:var(--pri-hover)}
+.popup-detail-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .footer-bar{margin-top:16px;padding:14px 18px;border:1px solid var(--line);border-radius:10px;background:#fff;display:flex;justify-content:center;gap:10px;box-shadow:0 6px 18px rgba(15,23,42,.04)}
 .footer-bar.end{justify-content:flex-end}
 
@@ -301,9 +337,8 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
       <div class="filter-item mode-filter">
         <select class="control" id="publishModeFilter">
           <option>发布方式</option>
-          <option>立即发布</option>
-          <option>预约发布</option>
-          <option>循环发布</option>
+          <option>即时发布</option>
+          <option>定时发布</option>
         </select>
       </div>
       <div class="filter-item status-filter">
@@ -322,6 +357,13 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
           <option>无循环</option>
           <option>循环中</option>
           <option>已终止</option>
+        </select>
+      </div>
+      <div class="filter-item status-filter">
+        <select class="control" id="popupFilter">
+          <option>有无弹窗</option>
+          <option>有弹窗</option>
+          <option>无弹窗</option>
         </select>
       </div>
       <div class="filter-item cycle-filter">
@@ -353,7 +395,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
   </div>
   <div class="table-wrap">
     <table class="data-table">
-      <thead><tr><th>公告ID</th><th>公告标题</th><th>所属项目</th><th>发布方式</th><th>发布时间</th><th>到期时间</th><th>状态</th><th>循环状态</th><th>创建人</th><th>创建时间</th><th>操作</th></tr></thead>
+      <thead><tr><th>公告ID</th><th>公告标题</th><th>所属项目</th><th>发布方式</th><th>发布时间</th><th>到期时间</th><th>状态</th><th>循环状态</th><th>弹窗</th><th>弹窗循环</th><th>创建人</th><th>创建时间</th><th>操作</th></tr></thead>
       <tbody id="noticeRows"></tbody>
     </table>
   </div>
@@ -414,71 +456,37 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
               </div>
             </div>
 
-            <!-- 第二行：发布方式 / 有效期 / 动态字段 -->
+            <!-- 第二行：发布方式 / 有效期 / 时间 / 循环（同排动态显隐） -->
             <div class="grid4 config-row" id="publishConfigRow">
               <div class="field">
                 <label class="label"><span class="req">*</span>发布方式</label>
                 <select id="publishMode" class="control" onchange="onPublishConfigChange()">
-                  <option value="immediate" selected>立即发布</option>
-                  <option value="scheduled">预约发布</option>
-                  <option value="recurring">循环发布</option>
+                  <option value="immediate" selected>即时发布</option>
+                  <option value="scheduled">定时发布</option>
                 </select>
               </div>
               <div class="field">
                 <label class="label"><span class="req">*</span>公告有效期</label>
-                <select id="validityType" class="control" onchange="onPublishConfigChange()"></select>
+                <select id="validityType" class="control" onchange="onPublishConfigChange()">
+                  <option value="limited" selected>有期限</option>
+                  <option value="permanent">长期有效</option>
+                </select>
               </div>
               <div class="field hidden" id="scheduleStartField">
-                <label class="label"><span class="req">*</span>预约发布时间</label>
-                <input id="eventStartTime" class="control" type="datetime-local" value="2026-07-20T09:00" onfocus="this.dataset.previous=this.value" onchange="onCoreTimeChange(this)">
+                <label class="label" id="startTimeLabel"><span class="req">*</span>发布时间</label>
+                <input id="eventStartTime" class="control" type="datetime-local" onfocus="this.dataset.previous=this.value" onchange="onCoreTimeChange(this)">
               </div>
               <div class="field" id="expireTimeField">
-                <label class="label"><span class="req">*</span>到期时间</label>
-                <input id="eventEndTime" class="control" type="datetime-local" value="2026-07-20T10:00" onfocus="this.dataset.previous=this.value" onchange="onCoreTimeChange(this)">
+                <label class="label"><span class="req">*</span>过期时间</label>
+                <input id="eventEndTime" class="control" type="datetime-local" onfocus="this.dataset.previous=this.value" onchange="onCoreTimeChange(this)">
               </div>
-              <div class="field hidden" id="recurrenceTypeField">
-                <label class="label"><span class="req">*</span>循环规则</label>
-                <select id="recurrenceType" class="control" onchange="onPublishConfigChange()">
-                  <option value="daily" selected>每日</option>
-                  <option value="weekly">每周</option>
-                  <option value="monthly">每月</option>
-                </select>
-              </div>
-              <div class="field hidden" id="weeklyDaysField">
-                <label class="label"><span class="req">*</span>执行星期</label>
-                <select id="weeklyExecDay" class="control" onchange="onPublishConfigChange()">
-                  <option value="1" selected>周一</option>
-                  <option value="2">周二</option>
-                  <option value="3">周三</option>
-                  <option value="4">周四</option>
-                  <option value="5">周五</option>
-                  <option value="6">周六</option>
-                  <option value="0">周日</option>
-                </select>
-              </div>
-              <div class="field hidden" id="monthlyDayField">
-                <label class="label"><span class="req">*</span>执行日期</label>
-                <select id="monthlyExecDay" class="control" onchange="onPublishConfigChange()"></select>
+              <div class="field hidden" id="repeatRuleField">
+                <label class="label"><span class="req">*</span>循环方式</label>
+                <select id="repeatRule" class="control" onchange="onPublishConfigChange()"></select>
               </div>
             </div>
-
-            <!-- 第三行：循环配置 -->
-            <div class="grid4 config-subrow hidden" id="recurrenceRow1">
-              <div class="field">
-                <label class="label"><span class="req">*</span>循环开始日期</label>
-                <input id="loopStartDate" class="control" type="date" value="2026-07-20" onchange="onPublishConfigChange()">
-              </div>
-              <div class="field">
-                <label class="label"><span class="req">*</span>每次发布时间</label>
-                <input id="recurrenceStartTime" class="control" type="time" step="60" value="09:00" onchange="onPublishConfigChange()">
-              </div>
-              <div class="field hidden" id="displayDurationField">
-                <label class="label"><span class="req">*</span>每次展示时长</label>
-                <div class="duration-wrap">
-                  <input id="displayDurationValue" class="control num" type="number" min="1" value="1" onchange="onPublishConfigChange()">
-                  <span class="duration-unit-text">天</span>
-                </div>
-              </div>
+            <div class="field" style="margin-top:4px">
+              <label class="check-row"><input id="enablePopupCheck" type="checkbox" onchange="onPopupReminderChange()">弹窗提醒</label>
             </div>
           </div>
         </div>
@@ -489,31 +497,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
           <div><div class="title">公告内容</div></div>
         </div>
         <div class="body" style="padding-bottom:12px">
-          <div class="form-stack">
-            <div class="grid2">
-              <div class="field"><label class="label">公告模板</label><select id="editorTplSelect" class="control" onchange="applyTemplateFromEditor(this.value)"><option value="">不使用模板</option></select></div>
-              <div class="field">
-                <label class="label"><span class="req">*</span>展示形式</label>
-                <select id="displayFormat" class="control" onchange="onDisplayFormatChange()">
-                  <option value="body_only" selected>仅公告正文</option>
-                  <option value="body_popup">公告正文 + 弹窗</option>
-                </select>
-              </div>
-            </div>
-            <div id="popupSettingsRow" class="grid2 hidden">
-              <div class="field">
-                <label class="label"><span class="req">*</span>弹窗结束方式</label>
-                <select id="popupEndMode" class="control" onchange="onPopupConfigChange()">
-                  <option value="follow_expire" selected>跟随公告到期</option>
-                  <option value="custom">指定时间</option>
-                </select>
-              </div>
-              <div class="field hidden" id="popupEndTimeField">
-                <label class="label"><span class="req">*</span>弹窗结束时间</label>
-                <input id="popupEndTime" class="control" type="datetime-local" value="2026-07-20T10:00">
-              </div>
-            </div>
-          </div>
+          <div class="field"><label class="label">公告模板</label><select id="editorTplSelect" class="control" onchange="applyTemplateFromEditor(this.value)"><option value="">不使用模板</option></select></div>
         </div>
         <div class="lang-toolbar">
           <div class="tabs" id="editorLangTabs"></div>
@@ -525,10 +509,6 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
         <div class="body">
           <div class="field"><label class="label"><span class="req">*</span>公告标题</label><input id="titleInput" class="control" placeholder="请填写公告标题（正文与弹窗共用）"></div>
           <div style="height:14px"></div>
-          <div class="content-mode-tabs hidden" id="contentModeTabs">
-            <button type="button" class="content-mode-tab active" id="contentModeBodyTab" onclick="setContentEditMode('body')">公告正文</button>
-            <button type="button" class="content-mode-tab" id="contentModePopupTab" onclick="setContentEditMode('popup')">弹窗内容</button>
-          </div>
           <div id="bodyContentPanel">
             <div class="field">
               <label class="label"><span class="req">*</span>公告正文</label>
@@ -536,7 +516,66 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
               <textarea id="bodyInput" class="control" placeholder="请输入公告正文"></textarea>
             </div>
           </div>
-          <div id="popupConfigPanel" class="popup-inline-panel hidden">
+          <div id="popupSettingsRow" class="popup-validity hidden" style="margin-top:16px">
+              <!-- 公告有期限：仅可选期限内起止，不可循环 -->
+              <div id="popupLimitedBlock" class="hidden">
+                <div class="field">
+                  <label class="label"><span class="req">*</span>弹窗有效期</label>
+                  <div class="popup-window-inline">
+                    <input id="popupRangeStart" class="control dt-md" type="datetime-local">
+                    <span class="mid">~</span>
+                    <input id="popupRangeEnd" class="control dt-md" type="datetime-local">
+                  </div>
+                  <div class="popup-hint" style="margin-top:6px">须在公告有效期内；有期限公告不支持弹窗循环</div>
+                </div>
+              </div>
+              <!-- 公告长期有效：可配置弹窗循环窗口 -->
+              <div id="popupPermanentBlock" class="hidden">
+                <div class="grid2" id="popupCycleWindowRow">
+                  <div class="field" id="popupRepeatField">
+                    <label class="label"><span class="req">*</span>弹窗循环</label>
+                    <select id="popupRepeatRule" class="control" onchange="onPopupRepeatChange()">
+                      <option value="none">不循环</option>
+                      <option value="daily">每日</option>
+                      <option value="weekly">每周</option>
+                      <option value="monthly">每月</option>
+                    </select>
+                    <div class="popup-freq-locked hidden" id="popupRepeatLockedText">与公告一致</div>
+                  </div>
+                  <div class="field" id="popupWindowField" data-active="none">
+                    <label class="label"><span class="req">*</span>弹窗展示窗口</label>
+                    <div id="popupWindowNone" class="popup-window-inline">
+                      <input id="popupOnceStart" class="control dt-md" type="datetime-local">
+                      <span class="mid">~</span>
+                      <input id="popupOnceEnd" class="control dt-md" type="datetime-local">
+                    </div>
+                    <div id="popupWindowDaily" class="popup-window-inline">
+                      <span class="mid">每日</span>
+                      <input id="popupDailyStart" class="control time-sm" type="time" value="09:00">
+                      <span class="mid">~</span>
+                      <input id="popupDailyEnd" class="control time-sm" type="time" value="18:00">
+                    </div>
+                    <div id="popupWindowWeekly" class="popup-window-inline">
+                      <select id="popupWeeklyStartDay" class="control wd-sm"></select>
+                      <input id="popupWeeklyStartTime" class="control time-sm" type="time" value="09:00">
+                      <span class="mid">~</span>
+                      <select id="popupWeeklyEndDay" class="control wd-sm"></select>
+                      <input id="popupWeeklyEndTime" class="control time-sm" type="time" value="18:00">
+                    </div>
+                    <div id="popupWindowMonthly" class="popup-window-inline">
+                      <select id="popupMonthlyStartDay" class="control day-sm"></select>
+                      <span class="mid">日</span>
+                      <input id="popupMonthlyStartTime" class="control time-sm" type="time" value="09:00">
+                      <span class="mid">~</span>
+                      <select id="popupMonthlyEndDay" class="control day-sm"></select>
+                      <span class="mid">日</span>
+                      <input id="popupMonthlyEndTime" class="control time-sm" type="time" value="18:00">
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div id="popupConfigPanel" class="popup-inline-panel hidden" style="margin-top:16px">
             <div class="field">
               <label class="label"><span class="req">*</span>弹窗展示内容</label>
               <div class="tokens" id="popupTokenBar" style="margin:0 0 10px"></div>
@@ -551,9 +590,13 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
     <aside class="card preview">
       <div class="head"><div><div class="title">用户端预览</div></div></div>
       <div class="body" style="padding-bottom:0">
+        <div class="preview-tz-row">
+          <span class="label">预览时区</span>
+          <select id="previewTzSelect" class="control" onchange="onPreviewTzChange(this)"></select>
+        </div>
         <div class="preview-mode" id="previewModeBar">
           <button type="button" class="preview-mode-btn active" id="previewModeBodyBtn" onclick="setPreviewMode('body')">公告正文预览</button>
-          <button type="button" class="preview-mode-btn" id="previewModePopupBtn" onclick="setPreviewMode('popup')" disabled title="请先选择「公告正文 + 弹窗」">弹窗预览</button>
+          <button type="button" class="preview-mode-btn" id="previewModePopupBtn" onclick="setPreviewMode('popup')" disabled title="请先勾选「弹窗提醒」">弹窗预览</button>
         </div>
       </div>
       <div class="phone">
@@ -570,7 +613,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
             <div class="popup-card-demo">
               <div class="popup-title" id="previewPopupTitle">弹窗预览</div>
               <p class="popup-text" id="previewPopup"></p>
-              <div class="popup-actions"><button type="button" class="btn primary compact">我知道了</button></div>
+              <div class="popup-actions"><button type="button" class="popup-detail-btn" title="查看公告详情" aria-label="查看公告详情"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button></div>
             </div>
           </div>
         </div>
@@ -589,7 +632,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
   </div>
   <div class="table-wrap">
     <table class="data-table">
-      <thead><tr><th>模板名称</th><th>模板说明</th><th>创建人</th><th>创建时间</th><th>状态</th><th>操作</th></tr></thead>
+      <thead><tr><th>模板名称</th><th>模板说明</th><th>弹窗</th><th>创建人</th><th>创建时间</th><th>状态</th><th>操作</th></tr></thead>
       <tbody id="templateRows"></tbody>
     </table>
   </div>
@@ -613,20 +656,11 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
           </div>
         </div>
         <div class="body">
-          <div class="field">
-            <label class="label"><span class="req">*</span>展示形式</label>
-            <select id="templateDisplayFormat" class="control" onchange="onTemplateDisplayFormatChange()">
-              <option value="body_only" selected>仅公告正文</option>
-              <option value="body_popup">公告正文 + 弹窗</option>
-            </select>
+          <div class="field" style="margin-bottom:14px">
+            <label class="check-row"><input id="templateEnablePopupCheck" type="checkbox" onchange="onTemplatePopupReminderChange()">弹窗提醒</label>
           </div>
-          <div style="height:14px"></div>
           <div class="field"><label class="label"><span class="req">*</span>公告标题</label><input id="templateTitleInput" class="control" placeholder="请填写公告标题（正文与弹窗共用）"></div>
           <div style="height:14px"></div>
-          <div class="content-mode-tabs hidden" id="templateContentModeTabs">
-            <button type="button" class="content-mode-tab active" id="templateContentModeBodyTab" onclick="setTemplateContentEditMode('body')">公告正文</button>
-            <button type="button" class="content-mode-tab" id="templateContentModePopupTab" onclick="setTemplateContentEditMode('popup')">弹窗内容</button>
-          </div>
           <div id="templateBodyContentPanel">
             <div class="field">
               <label class="label"><span class="req">*</span>公告正文</label>
@@ -634,7 +668,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
               <textarea id="templateBodyInput" class="control" placeholder="请输入公告正文"></textarea>
             </div>
           </div>
-          <div id="templatePopupContentPanel" class="popup-inline-panel hidden">
+          <div id="templatePopupContentPanel" class="popup-inline-panel hidden" style="margin-top:16px">
             <div class="field">
               <label class="label"><span class="req">*</span>弹窗展示内容</label>
               <div class="tokens" id="templatePopupTokenBar" style="margin:0 0 10px"></div>
@@ -648,9 +682,13 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
     <aside class="card preview">
       <div class="head"><div><div class="title">用户端预览</div></div></div>
       <div class="body" style="padding-bottom:0">
+        <div class="preview-tz-row">
+          <span class="label">预览时区</span>
+          <select id="templatePreviewTzSelect" class="control" onchange="onPreviewTzChange(this)"></select>
+        </div>
         <div class="preview-mode" id="templatePreviewModeBar">
           <button type="button" class="preview-mode-btn active" id="templatePreviewModeBodyBtn" onclick="setTemplatePreviewMode('body')">公告正文预览</button>
-          <button type="button" class="preview-mode-btn" id="templatePreviewModePopupBtn" onclick="setTemplatePreviewMode('popup')" disabled title="请先选择「公告正文 + 弹窗」">弹窗预览</button>
+          <button type="button" class="preview-mode-btn" id="templatePreviewModePopupBtn" onclick="setTemplatePreviewMode('popup')" disabled title="请先勾选「弹窗提醒」">弹窗预览</button>
         </div>
       </div>
       <div class="phone">
@@ -667,7 +705,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
             <div class="popup-card-demo">
               <div class="popup-title" id="templatePreviewPopupTitle">弹窗预览</div>
               <p class="popup-text" id="templatePreviewPopup"></p>
-              <div class="popup-actions"><button type="button" class="btn primary compact">我知道了</button></div>
+              <div class="popup-actions"><button type="button" class="popup-detail-btn" title="查看公告详情" aria-label="查看公告详情"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button></div>
             </div>
           </div>
         </div>
@@ -735,13 +773,18 @@ function buildLangOptionsHtml(activeCode){
 }
 function primaryCopyTitle(c){
   if(!c)return '';
-  return (c.zhHant?.title||c.en?.title||LANGS.map(l=>c[l.code]?.title).find(t=>t&&t.trim())||'').trim();
+  // 优先英文标题（保存必填语言）
+  return (c.en?.title||c.zhHant?.title||LANGS.map(l=>c[l.code]?.title).find(t=>t&&t.trim())||'').trim();
 }
 function findMissingLang(copyObj,fields){
-  return LANGS.find(({code})=>{
-    const c=copyObj[code]||{};
-    return fields.some(f=>!(c[f]||'').trim());
-  })||null;
+  // 仅校验英文；其他语言选填
+  const code=DEFAULT_LANG;
+  const c=copyObj?.[code]||{};
+  if(fields.some(f=>!(c[f]||'').trim())){
+    const name=langNames[code]||'英文';
+    return {code,name};
+  }
+  return null;
 }
 
 function sampleMaintCopy(){
@@ -791,6 +834,70 @@ let lang=DEFAULT_LANG,editing=false,editingPublished=false,editingNoticeId=null,
 const BASE_TZ='Africa/Nairobi'; // 固定 GMT+3
 const BASE_TZ_LABEL='GMT+3';
 let baseTz=BASE_TZ;
+/** 用户端预览时区（与录入基准时区解耦，用于换算展示） */
+const PREVIEW_TZ_OPTIONS=[
+  {value:'Africa/Nairobi',label:'GMT+3 东非 / Nairobi'},
+  {value:'Asia/Jakarta',label:'GMT+7 印尼西部 / Jakarta'},
+  {value:'Asia/Bangkok',label:'GMT+7 泰国 / Bangkok'},
+  {value:'Asia/Ho_Chi_Minh',label:'GMT+7 越南 / Ho Chi Minh'},
+  {value:'Asia/Singapore',label:'GMT+8 新加坡 / Singapore'},
+  {value:'Asia/Shanghai',label:'GMT+8 中国 / Shanghai'},
+  {value:'Asia/Manila',label:'GMT+8 菲律宾 / Manila'},
+  {value:'Asia/Kolkata',label:'GMT+5:30 印度 / Kolkata'},
+  {value:'Europe/London',label:'GMT+0/+1 英国 / London'},
+  {value:'America/Sao_Paulo',label:'GMT-3 巴西 / São Paulo'},
+  {value:'America/Mexico_City',label:'GMT-6 墨西哥 / Mexico City'}
+];
+function detectLocalTz(){
+  try{return Intl.DateTimeFormat().resolvedOptions().timeZone||BASE_TZ;}
+  catch(_e){return BASE_TZ;}
+}
+function formatGmtOffsetLabel(tz){
+  try{
+    const parts=new Intl.DateTimeFormat('en-US',{timeZone:tz,timeZoneName:'shortOffset'}).formatToParts(new Date());
+    const name=parts.find(p=>p.type==='timeZoneName')?.value||'';
+    return name.replace(/^UTC/,'GMT')||'GMT';
+  }catch(_e){return 'GMT';}
+}
+function ensurePreviewTzOption(tz){
+  if(!tz||PREVIEW_TZ_OPTIONS.some(o=>o.value===tz)) return;
+  const city=(tz.split('/').pop()||tz).replace(/_/g,' ');
+  PREVIEW_TZ_OPTIONS.unshift({value:tz,label:`${formatGmtOffsetLabel(tz)} 当前时区 / ${city}`});
+}
+const LOCAL_TZ=detectLocalTz();
+ensurePreviewTzOption(LOCAL_TZ);
+let previewTz=LOCAL_TZ;
+function previewTzLabel(tz){
+  const opt=PREVIEW_TZ_OPTIONS.find(o=>o.value===tz);
+  if(opt){
+    const m=String(opt.label).match(/^(GMT[^\s]+)/);
+    if(m) return m[1];
+  }
+  return formatGmtOffsetLabel(tz||previewTz)||BASE_TZ_LABEL;
+}
+function buildPreviewTzOptionsHtml(selected){
+  const cur=selected||previewTz;
+  return PREVIEW_TZ_OPTIONS.map(o=>{
+    const isLocal=o.value===LOCAL_TZ;
+    const label=isLocal&&!String(o.label).includes('当前')?`${o.label}（当前）`:o.label;
+    return `<option value="${o.value}"${o.value===cur?' selected':''}>${label}</option>`;
+  }).join('');
+}
+function initPreviewTzSelects(){
+  ['previewTzSelect','templatePreviewTzSelect'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=buildPreviewTzOptionsHtml(previewTz);
+  });
+}
+function onPreviewTzChange(el){
+  previewTz=el?.value||LOCAL_TZ||BASE_TZ;
+  ['previewTzSelect','templatePreviewTzSelect'].forEach(id=>{
+    const s=document.getElementById(id);
+    if(s&&s!==el) s.value=previewTz;
+  });
+  renderPreview();
+  renderTemplatePreview();
+}
 let paramManagerOpen=false;
 let paramSource='notice'; // notice | template
 let paramEditIndex=null; // null=未编辑，-1=新增中，>=0=编辑第 i 条
@@ -798,13 +905,13 @@ let editingTemplateId=null;
 let templateLang=null;
 let templateEnablePopupDisplay=false;
 let templatePreviewMode='body';
-let templateContentEditMode='body';
 let templateDraftParams=[];
 let templateDraftCopy=emptyCopy();
 
-// 固定参数：非时间类，系统默认提供，不可新增/编辑/删除
+// 固定参数：系统默认提供，不可新增/编辑/删除
 const FIXED_PARAMS=[
-  {name:'name',desc:'姓名',type:'fixed',value:'名字'}
+  {name:'name',desc:'姓名',type:'fixed',value:'名字'},
+  {name:'timezone',desc:'时区',type:'fixed',value:'GMT+3'}
 ];
 const FIXED_PARAM_NAMES=new Set(FIXED_PARAMS.map(p=>p.name));
 
@@ -815,7 +922,11 @@ function stripFixedParams(list){
   return (list||[]).filter(p=>!isFixedParam(p)).map(normalizeParam);
 }
 function ensureFixedParams(list){
-  return deepCopy(FIXED_PARAMS).concat(stripFixedParams(list));
+  const fixed=deepCopy(FIXED_PARAMS).map(p=>{
+    if(p.name==='timezone') p.value=BASE_TZ_LABEL;
+    return p;
+  });
+  return fixed.concat(stripFixedParams(list));
 }
 function paramToken(name){
   return '${'+name+'}';
@@ -878,16 +989,16 @@ let templates=[
 ];
 let templateSeq=11;
 
-// 公告列表：仅展示实际公告记录（循环每期一条独立记录）
-// 公告ID：A + 4位流水号；循环记录为 基础ID-期次（如 A0004-1），期次按成功生成次数递增且不回收
+// 公告列表：一条公告一条记录；循环为公告属性，不按期次拆分行
+// 公告ID：统一为 A + 4位流水号（如 A0006），不使用 -1/-2 期次后缀
 // 公告状态：待发布 | 展示中 | 已下架 | 已归档 | 已取消
 // 循环状态：无循环 | 循环中 | 已终止（仅人工终止；默认无限循环）
 let baseIdSeq=21;
 const cycleRules={
-  'A0006':{summary:'每周一 10:00',detail:'每周一 10:00 GMT+3 发布，展示 3 天',duration:'3天',terminated:false,nextPeriod:4,creator:'Jenny',createdAt:'2026-07-05 15:30'},
-  'A0007':{summary:'每周一 10:00',detail:'每周一 10:00 GMT+3 发布，持续到下一次发布',duration:'持续到下一次发布',terminated:true,nextPeriod:2,creator:'Jenny',createdAt:'2026-07-15 18:40'},
-  'A0008':{summary:'每日 09:00',detail:'每日 09:00 GMT+3 发布，展示 1 天',duration:'1天',terminated:false,nextPeriod:10,creator:'Jenny',createdAt:'2026-07-13 09:05'},
-  'A0016':{summary:'每月 1 日 09:00',detail:'每月 1 日 09:00 GMT+3 发布，展示 2 天',duration:'2天',terminated:true,nextPeriod:3,creator:'Admin',createdAt:'2026-06-20 11:00'}
+  'A0006':{summary:'每周一',detail:'每周一 10:00 GMT+3 定时发布，长期有效',duration:'长期有效',repeatType:'weekly',terminated:false,creator:'Jenny',createdAt:'2026-07-05 15:30'},
+  'A0007':{summary:'每周一',detail:'每周一 10:00 GMT+3 定时发布，长期有效',duration:'长期有效',repeatType:'weekly',terminated:true,creator:'Jenny',createdAt:'2026-07-15 18:40'},
+  'A0008':{summary:'每天',detail:'每天 09:00 GMT+3 定时发布，长期有效',duration:'长期有效',repeatType:'daily',terminated:false,creator:'Jenny',createdAt:'2026-07-13 09:05'},
+  'A0016':{summary:'每月1日',detail:'每月 1 日 09:00 GMT+3 定时发布，长期有效',duration:'长期有效',repeatType:'monthly_day',terminated:true,creator:'Admin',createdAt:'2026-06-20 11:00'}
 };
 function formatBaseId(seq){
   return 'A'+String(seq).padStart(4,'0');
@@ -895,43 +1006,28 @@ function formatBaseId(seq){
 function nextBaseId(){
   return formatBaseId(++baseIdSeq);
 }
-function makeNoticeId(baseId,period){
-  return period>0?`${baseId}-${period}`:baseId;
-}
-/** 为循环规则分配下一期次（递增、不回收、不复用） */
-function allocateCyclePeriod(baseId){
-  const rule=cycleRules[baseId];
-  if(!rule) return 1;
-  const period=rule.nextPeriod||1;
-  rule.nextPeriod=period+1;
-  return period;
-}
 let noticeRecords=[
-  {noticeId:'A0001',baseId:'A0001',name:'夏日嘉年华活动',project:'TW',publishMode:'预约发布',publishTime:'2026-08-01 10:00',expireTime:'2026-08-07 22:00',cycleId:'',cycleSummary:'',period:0,status:'待发布',creator:'Jenny',createdAt:'2026-07-10 16:08'},
-  {noticeId:'A0002',baseId:'A0002',name:'提现限额升级说明',project:'Dana',publishMode:'预约发布',publishTime:'2026-07-22 12:00',expireTime:'2026-08-01 12:00',cycleId:'',cycleSummary:'',period:0,status:'待发布',creator:'Ken',createdAt:'2026-07-15 11:00'},
-  {noticeId:'A0003',baseId:'A0003',name:'合伙人佣金规则更新',project:'TW',publishMode:'预约发布',publishTime:'2026-07-28 09:00',expireTime:'2026-09-30 23:59',cycleId:'',cycleSummary:'',period:0,status:'待发布',creator:'Mina',createdAt:'2026-07-17 13:48'},
-  {noticeId:'A0004',baseId:'A0004',name:'欧洲区假期安排',project:'TW',publishMode:'预约发布',publishTime:'2026-08-10 00:00',expireTime:'2026-08-18 23:59',cycleId:'',cycleSummary:'',period:0,status:'待发布',creator:'Leo',createdAt:'2026-07-16 15:22'},
-  {noticeId:'A0005',baseId:'A0005',name:'双十一活动预告',project:'Dana',publishMode:'预约发布',publishTime:'2026-11-01 00:00',expireTime:'2026-11-12 23:59',cycleId:'',cycleSummary:'',period:0,status:'待发布',creator:'Admin',createdAt:'2026-07-16 09:12'},
-  {noticeId:'A0006-3',baseId:'A0006',name:'每周福利提醒',project:'TW',publishMode:'循环发布',publishTime:'2026-07-21 10:00',expireTime:'2026-07-24 10:00',cycleId:'A0006',cycleSummary:'每周一 10:00',period:3,status:'展示中',creator:'Jenny',createdAt:'2026-07-05 15:30'},
-  {noticeId:'A0007-1',baseId:'A0007',name:'新手礼包领取提醒',project:'TW',publishMode:'循环发布',publishTime:'2026-07-21 10:00',expireTime:'2026-07-28 10:00',cycleId:'A0007',cycleSummary:'每周一 10:00',period:1,status:'展示中',creator:'Jenny',createdAt:'2026-07-15 18:40'},
-  {noticeId:'A0008-9',baseId:'A0008',name:'每日签到奖励开启',project:'Dana',publishMode:'循环发布',publishTime:'2026-07-21 09:00',expireTime:'2026-07-22 09:00',cycleId:'A0008',cycleSummary:'每日 09:00',period:9,status:'展示中',creator:'Jenny',createdAt:'2026-07-13 09:05'},
-  {noticeId:'A0009',baseId:'A0009',name:'新版本强制更新',project:'Dana',publishMode:'立即发布',publishTime:'2026-07-08 11:25',expireTime:'2026-07-25 23:59',cycleId:'',cycleSummary:'',period:0,status:'展示中',creator:'Ken',createdAt:'2026-07-08 11:25'},
-  {noticeId:'A0010',baseId:'A0010',name:'KYC 资料补全通知',project:'TW',publishMode:'预约发布',publishTime:'2026-07-15 09:00',expireTime:'2026-07-31 23:59',cycleId:'',cycleSummary:'',period:0,status:'展示中',creator:'Leo',createdAt:'2026-07-12 10:10'},
-  {noticeId:'A0011',baseId:'A0011',name:'客服服务时段调整',project:'TW',publishMode:'立即发布',publishTime:'2026-07-14 17:35',expireTime:'长期有效',cycleId:'',cycleSummary:'',period:0,status:'展示中',creator:'Mina',createdAt:'2026-07-14 17:35'},
-  {noticeId:'A0006-2',baseId:'A0006',name:'每周福利提醒',project:'TW',publishMode:'循环发布',publishTime:'2026-07-14 10:00',expireTime:'2026-07-17 10:00',cycleId:'A0006',cycleSummary:'每周一 10:00',period:2,status:'已归档',creator:'Jenny',createdAt:'2026-07-05 15:30'},
-  {noticeId:'A0008-8',baseId:'A0008',name:'每日签到奖励开启',project:'Dana',publishMode:'循环发布',publishTime:'2026-07-20 09:00',expireTime:'2026-07-21 09:00',cycleId:'A0008',cycleSummary:'每日 09:00',period:8,status:'已归档',creator:'Jenny',createdAt:'2026-07-13 09:05'},
-  {noticeId:'A0006-1',baseId:'A0006',name:'每周福利提醒',project:'TW',publishMode:'循环发布',publishTime:'2026-07-07 10:00',expireTime:'2026-07-10 10:00',cycleId:'A0006',cycleSummary:'每周一 10:00',period:1,status:'已归档',creator:'Jenny',createdAt:'2026-07-05 15:30'},
-  {noticeId:'A0012',baseId:'A0012',name:'异常登录安全提醒',project:'Dana',publishMode:'立即发布',publishTime:'2026-07-11 14:20',expireTime:'2026-07-16 18:00',cycleId:'',cycleSummary:'',period:0,status:'已下架',creator:'Admin',createdAt:'2026-07-11 14:20'},
-  {noticeId:'A0013',baseId:'A0013',name:'支付通道临时维护',project:'Dana',publishMode:'预约发布',publishTime:'2026-07-18 01:00',expireTime:'2026-07-18 03:00',cycleId:'',cycleSummary:'',period:0,status:'已归档',creator:'Mina',createdAt:'2026-07-09 09:42'},
-  {noticeId:'A0014',baseId:'A0014',name:'系统维护通知',project:'Dana',publishMode:'预约发布',publishTime:'2026-07-20 09:00',expireTime:'2026-07-20 10:00',cycleId:'',cycleSummary:'',period:0,status:'已取消',creator:'Admin',createdAt:'2026-07-01 10:00'},
-  {noticeId:'A0015',baseId:'A0015',name:'旧春节活动复盘',project:'Dana',publishMode:'立即发布',publishTime:'2026-02-01 10:00',expireTime:'2026-02-20 23:59',cycleId:'',cycleSummary:'',period:0,status:'已归档',creator:'Ken',createdAt:'2026-02-01 10:00'},
-  {noticeId:'A0016-2',baseId:'A0016',name:'月度对账提醒',project:'Dana',publishMode:'循环发布',publishTime:'2026-07-01 09:00',expireTime:'2026-07-03 09:00',cycleId:'A0016',cycleSummary:'每月 1 日 09:00',period:2,status:'已归档',creator:'Admin',createdAt:'2026-06-20 11:00'},
-  {noticeId:'A0016-1',baseId:'A0016',name:'月度对账提醒',project:'Dana',publishMode:'循环发布',publishTime:'2026-06-01 09:00',expireTime:'2026-06-03 09:00',cycleId:'A0016',cycleSummary:'每月 1 日 09:00',period:1,status:'已归档',creator:'Admin',createdAt:'2026-06-20 11:00'},
-  {noticeId:'A0017',baseId:'A0017',name:'周末活动预热',project:'TW',publishMode:'预约发布',publishTime:'2026-07-25 18:00',expireTime:'2026-07-27 23:59',cycleId:'',cycleSummary:'',period:0,status:'待发布',creator:'Jenny',createdAt:'2026-07-18 09:20'},
-  {noticeId:'A0018',baseId:'A0018',name:'积分商城上新',project:'Dana',publishMode:'立即发布',publishTime:'2026-07-10 12:00',expireTime:'2026-07-20 23:59',cycleId:'',cycleSummary:'',period:0,status:'已归档',creator:'Ken',createdAt:'2026-07-10 12:00'},
-  {noticeId:'A0019',baseId:'A0019',name:'防诈骗安全提醒',project:'TW',publishMode:'立即发布',publishTime:'2026-07-12 08:30',expireTime:'长期有效',cycleId:'',cycleSummary:'',period:0,status:'展示中',creator:'Admin',createdAt:'2026-07-12 08:30'},
-  {noticeId:'A0020',baseId:'A0020',name:'银行卡绑定优惠',project:'Dana',publishMode:'预约发布',publishTime:'2026-07-30 10:00',expireTime:'2026-08-15 23:59',cycleId:'',cycleSummary:'',period:0,status:'待发布',creator:'Mina',createdAt:'2026-07-18 14:05'},
-  {noticeId:'A0021',baseId:'A0021',name:'旧版 App 停服说明',project:'TW',publishMode:'立即发布',publishTime:'2026-05-01 00:00',expireTime:'2026-05-31 23:59',cycleId:'',cycleSummary:'',period:0,status:'已归档',creator:'Leo',createdAt:'2026-04-28 16:40'}
+  {noticeId:'A0001',baseId:'A0001',name:'夏日嘉年华活动',project:'TW',publishMode:'定时发布',publishTime:'2026-08-01 10:00',expireTime:'2026-08-07 22:00',cycleId:'',cycleSummary:'',enablePopup:true,popupCycleSummary:'不循环',status:'待发布',creator:'Jenny',createdAt:'2026-07-10 16:08'},
+  {noticeId:'A0002',baseId:'A0002',name:'提现限额升级说明',project:'Dana',publishMode:'定时发布',publishTime:'2026-07-22 12:00',expireTime:'2026-08-01 12:00',cycleId:'',cycleSummary:'',enablePopup:false,popupCycleSummary:'',status:'待发布',creator:'Ken',createdAt:'2026-07-15 11:00'},
+  {noticeId:'A0003',baseId:'A0003',name:'合伙人佣金规则更新',project:'TW',publishMode:'定时发布',publishTime:'2026-07-28 09:00',expireTime:'2026-09-30 23:59',cycleId:'',cycleSummary:'',enablePopup:false,popupCycleSummary:'',status:'待发布',creator:'Mina',createdAt:'2026-07-17 13:48'},
+  {noticeId:'A0004',baseId:'A0004',name:'欧洲区假期安排',project:'TW',publishMode:'定时发布',publishTime:'2026-08-10 00:00',expireTime:'2026-08-18 23:59',cycleId:'',cycleSummary:'',enablePopup:false,popupCycleSummary:'',status:'待发布',creator:'Leo',createdAt:'2026-07-16 15:22'},
+  {noticeId:'A0005',baseId:'A0005',name:'双十一活动预告',project:'Dana',publishMode:'定时发布',publishTime:'2026-11-01 00:00',expireTime:'2026-11-12 23:59',cycleId:'',cycleSummary:'',enablePopup:true,popupCycleSummary:'不循环',status:'待发布',creator:'Admin',createdAt:'2026-07-16 09:12'},
+  {noticeId:'A0006',baseId:'A0006',name:'每周福利提醒',project:'TW',publishMode:'定时发布',publishTime:'2026-07-21 10:00',expireTime:'长期有效',cycleId:'A0006',cycleSummary:'每周一 10:00',enablePopup:true,popupCycleSummary:'每周',status:'展示中',creator:'Jenny',createdAt:'2026-07-05 15:30'},
+  {noticeId:'A0007',baseId:'A0007',name:'新手礼包领取提醒',project:'TW',publishMode:'定时发布',publishTime:'2026-07-21 10:00',expireTime:'长期有效',cycleId:'A0007',cycleSummary:'每周一 10:00',enablePopup:true,popupCycleSummary:'每周',status:'展示中',creator:'Jenny',createdAt:'2026-07-15 18:40'},
+  {noticeId:'A0008',baseId:'A0008',name:'每日签到奖励开启',project:'Dana',publishMode:'定时发布',publishTime:'2026-07-21 09:00',expireTime:'长期有效',cycleId:'A0008',cycleSummary:'每日 09:00',enablePopup:true,popupCycleSummary:'每日',status:'展示中',creator:'Jenny',createdAt:'2026-07-13 09:05'},
+  {noticeId:'A0009',baseId:'A0009',name:'新版本强制更新',project:'Dana',publishMode:'即时发布',publishTime:'2026-07-08 11:25',expireTime:'2026-07-25 23:59',cycleId:'',cycleSummary:'',enablePopup:true,popupCycleSummary:'不循环',status:'展示中',creator:'Ken',createdAt:'2026-07-08 11:25'},
+  {noticeId:'A0010',baseId:'A0010',name:'KYC 资料补全通知',project:'TW',publishMode:'定时发布',publishTime:'2026-07-15 09:00',expireTime:'2026-07-31 23:59',cycleId:'',cycleSummary:'',enablePopup:true,popupCycleSummary:'不循环',status:'展示中',creator:'Leo',createdAt:'2026-07-12 10:10'},
+  {noticeId:'A0011',baseId:'A0011',name:'客服服务时段调整',project:'TW',publishMode:'即时发布',publishTime:'2026-07-14 17:35',expireTime:'长期有效',cycleId:'',cycleSummary:'',enablePopup:false,popupCycleSummary:'',status:'展示中',creator:'Mina',createdAt:'2026-07-14 17:35'},
+  {noticeId:'A0012',baseId:'A0012',name:'异常登录安全提醒',project:'Dana',publishMode:'即时发布',publishTime:'2026-07-11 14:20',expireTime:'2026-07-16 18:00',cycleId:'',cycleSummary:'',enablePopup:true,popupCycleSummary:'不循环',status:'已下架',creator:'Admin',createdAt:'2026-07-11 14:20'},
+  {noticeId:'A0013',baseId:'A0013',name:'支付通道临时维护',project:'Dana',publishMode:'定时发布',publishTime:'2026-07-18 01:00',expireTime:'2026-07-18 03:00',cycleId:'',cycleSummary:'',enablePopup:false,popupCycleSummary:'',status:'已归档',creator:'Mina',createdAt:'2026-07-09 09:42'},
+  {noticeId:'A0014',baseId:'A0014',name:'系统维护通知',project:'Dana',publishMode:'定时发布',publishTime:'2026-07-20 09:00',expireTime:'2026-07-20 10:00',cycleId:'',cycleSummary:'',enablePopup:false,popupCycleSummary:'',status:'已取消',creator:'Admin',createdAt:'2026-07-01 10:00'},
+  {noticeId:'A0015',baseId:'A0015',name:'旧春节活动复盘',project:'Dana',publishMode:'即时发布',publishTime:'2026-02-01 10:00',expireTime:'2026-02-20 23:59',cycleId:'',cycleSummary:'',enablePopup:false,popupCycleSummary:'',status:'已归档',creator:'Ken',createdAt:'2026-02-01 10:00'},
+  {noticeId:'A0016',baseId:'A0016',name:'月度对账提醒',project:'Dana',publishMode:'定时发布',publishTime:'2026-07-01 09:00',expireTime:'长期有效',cycleId:'A0016',cycleSummary:'每月 1 日 09:00',enablePopup:true,popupCycleSummary:'每月',status:'已归档',creator:'Admin',createdAt:'2026-06-20 11:00'},
+  {noticeId:'A0017',baseId:'A0017',name:'周末活动预热',project:'TW',publishMode:'定时发布',publishTime:'2026-07-25 18:00',expireTime:'2026-07-27 23:59',cycleId:'',cycleSummary:'',enablePopup:true,popupCycleSummary:'不循环',status:'待发布',creator:'Jenny',createdAt:'2026-07-18 09:20'},
+  {noticeId:'A0018',baseId:'A0018',name:'积分商城上新',project:'Dana',publishMode:'即时发布',publishTime:'2026-07-10 12:00',expireTime:'2026-07-20 23:59',cycleId:'',cycleSummary:'',enablePopup:false,popupCycleSummary:'',status:'已归档',creator:'Ken',createdAt:'2026-07-10 12:00'},
+  {noticeId:'A0019',baseId:'A0019',name:'防诈骗安全提醒',project:'TW',publishMode:'即时发布',publishTime:'2026-07-12 08:30',expireTime:'长期有效',cycleId:'',cycleSummary:'',enablePopup:true,popupCycleSummary:'不循环',status:'展示中',creator:'Admin',createdAt:'2026-07-12 08:30'},
+  {noticeId:'A0020',baseId:'A0020',name:'银行卡绑定优惠',project:'Dana',publishMode:'定时发布',publishTime:'2026-07-30 10:00',expireTime:'2026-08-15 23:59',cycleId:'',cycleSummary:'',enablePopup:true,popupCycleSummary:'不循环',status:'待发布',creator:'Mina',createdAt:'2026-07-18 14:05'},
+  {noticeId:'A0021',baseId:'A0021',name:'旧版 App 停服说明',project:'TW',publishMode:'即时发布',publishTime:'2026-05-01 00:00',expireTime:'2026-05-31 23:59',cycleId:'',cycleSummary:'',enablePopup:false,popupCycleSummary:'',status:'已归档',creator:'Leo',createdAt:'2026-04-28 16:40'}
 ];
 const NOTICE_PAGE_SIZE=20;
 let noticePage=1;
@@ -1068,29 +1164,33 @@ function loadInputs(){
 function resetEditor(){
   copy=emptyCopy();
   enablePopupDisplay=false;
+  const nowInput=fmtInput(new Date(),baseTz);
+  const endDefault=addMinutesToInput(nowInput,60);
   noticeParams=ensureFixedParams([
-    {name:'start_time',desc:'开始时间',type:'time',precision:'datetime',value:'2026-07-20T09:00'},
-    {name:'end_time',desc:'结束时间',type:'time',precision:'datetime',value:'2026-07-20T10:00'}
+    {name:'start_time',desc:'开始时间',type:'time',precision:'datetime',value:nowInput},
+    {name:'end_time',desc:'结束时间',type:'time',precision:'datetime',value:endDefault}
   ]);
   baseTz=BASE_TZ;
-  if(eventStartTime) eventStartTime.value='2026-07-20T09:00';
-  if(eventEndTime) eventEndTime.value='2026-07-20T10:00';
+  if(eventStartTime) eventStartTime.value=nowInput;
+  if(eventEndTime) eventEndTime.value=endDefault;
   if(publishMode) publishMode.value='immediate';
-  if(recurrenceType) recurrenceType.value='daily';
-  if(recurrenceStartTime) recurrenceStartTime.value='09:00';
-  if(loopStartDate) loopStartDate.value=fmtInput(new Date(),baseTz).slice(0,10);
-  if(displayDurationValue) displayDurationValue.value='1';
-  if(weeklyExecDay) weeklyExecDay.value='1';
-  if(monthlyExecDay) monthlyExecDay.value='1';
-  if(popupEndMode) popupEndMode.value='follow_expire';
-  if(popupEndTime) popupEndTime.value='2026-07-20T10:00';
+  if(validityType) validityType.value='limited';
+  if(repeatRule) repeatRule.value='none';
+  if(popupRepeatRule) popupRepeatRule.value='none';
+  const nowPlus=addMinutesToInput(nowInput,60);
+  if(popupRangeStart) popupRangeStart.value=nowInput;
+  if(popupRangeEnd) popupRangeEnd.value=nowPlus;
+  if(popupOnceStart) popupOnceStart.value=nowInput;
+  if(popupOnceEnd) popupOnceEnd.value=nowPlus;
+  if(popupDailyStart) popupDailyStart.value='09:00';
+  if(popupDailyEnd) popupDailyEnd.value='18:00';
   fillTemplateSelect();
   if(editorTplSelect) editorTplSelect.value='';
-  if(displayFormat) displayFormat.value='body_only';
+  if(enablePopupCheck) enablePopupCheck.checked=false;
   previewMode='body';
   contentEditMode='body';
   enablePopupDisplay=false;
-  syncDisplayFormatUI(false);
+  syncPopupReminderUI(false);
   initTargetCheckPanels();
   onPublishConfigChange();
 }
@@ -1127,7 +1227,7 @@ function openEdit(button){
   editingNoticeId=n.noticeId;
   editingPublished=n.status==='展示中';
   if(n.project) targetProject.value=n.project;
-  publishMode.value=n.publishMode.includes('循环')?'recurring':(n.publishMode.includes('立即')?'immediate':'scheduled');
+  publishMode.value=(n.publishMode.includes('即时')||n.publishMode.includes('立即'))?'immediate':'scheduled';
   copy=ensureCopy(templates[0].copy);
   LANGS.forEach(({code})=>{
     if(!copy[code]) copy[code]={title:'',body:'',popup:''};
@@ -1149,9 +1249,17 @@ function openEdit(button){
   if(startVal&&eventStartTime) eventStartTime.value=startVal;
   if(endVal&&eventEndTime) eventEndTime.value=endVal;
   if(n.expireTime==='长期有效'&&validityType){
-    const opt=[...validityType.options].find(o=>o.value==='permanent');
-    if(opt){validityType.value='permanent';onPublishConfigChange();}
+    validityType.value='permanent';
+  }else if(validityType){
+    validityType.value='limited';
   }
+  onPublishConfigChange();
+  const rule=n.cycleId?cycleRules[n.cycleId]:null;
+  if(repeatRule&&rule?.repeatType){
+    refreshRepeatOptions(false);
+    if([...repeatRule.options].some(o=>o.value===rule.repeatType)) repeatRule.value=rule.repeatType;
+  }
+  restorePopupFieldsFromNotice(n);
   showPage('editor');
   setLang(DEFAULT_LANG);
   showToast(editingPublished?'编辑后保存将实时生效':'进入编辑，保存后更新公告');
@@ -1168,7 +1276,7 @@ function saveCopy(){
   copy[lang].title=titleInput.value;
   copy[lang].body=bodyInput.value;
   if(popupInput) copy[lang].popup=popupInput.value;
-  enablePopupDisplay=(displayFormat?.value==='body_popup');
+  enablePopupDisplay=!!(enablePopupCheck?.checked);
 }
 document.querySelectorAll('#editorLangTabs .tab').forEach(t=>t.onclick=()=>setLang(t.dataset.lang));
 ['titleInput','bodyInput','popupInput'].forEach(id=>{const el=document.getElementById(id);if(el)el.oninput=()=>{saveCopy();renderPreview()}});
@@ -1196,65 +1304,54 @@ function insertToken(t,target='body'){
   el.setSelectionRange(pos,pos);
   saveCopy();renderPreview();
 }
-function onDisplayFormatChange(fromUser=true){
-  enablePopupDisplay=(displayFormat?.value==='body_popup');
-  if(!enablePopupDisplay) contentEditMode='body';
-  else if(fromUser) contentEditMode='body';
-  syncDisplayFormatUI(fromUser);
-}
-function setContentEditMode(mode){
-  if(mode==='popup'&&!enablePopupDisplay){
-    showToast('请先选择「公告正文 + 弹窗」');
-    return;
-  }
-  contentEditMode=mode==='popup'?'popup':'body';
-  syncContentEditModeUI();
-  if(contentEditMode==='popup'){
-    previewMode='popup';
-    syncPreviewModeUI();
-  }else if(previewMode==='popup'){
-    previewMode='body';
-    syncPreviewModeUI();
-  }
-  renderPreview();
-}
-function syncContentEditModeUI(){
-  const tabs=document.getElementById('contentModeTabs');
-  const bodyPanel=document.getElementById('bodyContentPanel');
-  const popupPanel=document.getElementById('popupConfigPanel');
-  const popupSettings=document.getElementById('popupSettingsRow');
-  const bodyTab=document.getElementById('contentModeBodyTab');
-  const popupTab=document.getElementById('contentModePopupTab');
-  if(popupSettings) popupSettings.classList.toggle('hidden',!enablePopupDisplay);
-  if(tabs) tabs.classList.toggle('hidden',!enablePopupDisplay);
-  if(!enablePopupDisplay) contentEditMode='body';
-  if(bodyTab) bodyTab.classList.toggle('active',contentEditMode==='body');
-  if(popupTab){
-    popupTab.disabled=!enablePopupDisplay;
-    popupTab.classList.toggle('active',contentEditMode==='popup');
-  }
-  // 标题始终共用；弹窗结束设置固定在展示形式下；此处仅切换正文/弹窗文案
-  if(bodyPanel) bodyPanel.classList.toggle('hidden',enablePopupDisplay&&contentEditMode==='popup');
-  if(popupPanel) popupPanel.classList.toggle('hidden',!(enablePopupDisplay&&contentEditMode==='popup'));
-}
-function syncDisplayFormatUI(fromUser=true){
-  if(displayFormat) displayFormat.value=enablePopupDisplay?'body_popup':'body_only';
+function onPopupReminderChange(fromUser=true){
+  enablePopupDisplay=!!(enablePopupCheck?.checked);
   if(!enablePopupDisplay){
     contentEditMode='body';
     if(previewMode==='popup') previewMode='body';
   }
-  syncContentEditModeUI();
-  onPopupConfigChange();
+  syncPopupReminderUI(fromUser);
+  fillTemplateSelect();
+  if(fromUser){
+    const sel=document.getElementById('editorTplSelect');
+    if(sel?.value){
+      const t=templates.find(x=>String(x.id)===String(sel.value));
+      if(t&&!!t.enablePopup!==!!enablePopupDisplay){
+        sel.value='';
+        showToast(enablePopupDisplay?'已勾选弹窗提醒，请改选含弹窗的模板':'已取消弹窗提醒，请改选不含弹窗的模板');
+      }
+    }
+  }
+}
+function onDisplayFormatChange(fromUser=true){
+  // 兼容旧调用
+  onPopupReminderChange(fromUser);
+}
+function setContentEditMode(mode){
+  // 平铺编辑，不再切换 Tab
+  contentEditMode='body';
+  syncPopupReminderUI(false);
+}
+function syncContentEditModeUI(){
+  syncPopupReminderUI(false);
+}
+function syncPopupReminderUI(fromUser=true){
+  if(enablePopupCheck) enablePopupCheck.checked=!!enablePopupDisplay;
+  const popupPanel=document.getElementById('popupConfigPanel');
+  if(popupPanel) popupPanel.classList.toggle('hidden',!enablePopupDisplay);
+  syncPopupValidityUI();
   syncPreviewModeUI();
   if(fromUser){saveCopy();renderPreview()}
 }
+function syncDisplayFormatUI(fromUser=true){
+  syncPopupReminderUI(fromUser);
+}
 function togglePopupContent(fromUser=true){
-  // 兼容旧调用：统一走展示形式
-  onDisplayFormatChange(fromUser);
+  onPopupReminderChange(fromUser);
 }
 function setPreviewMode(mode){
   if(mode==='popup'&&!enablePopupDisplay){
-    showToast('请先选择「公告正文 + 弹窗」');
+    showToast('请先勾选「弹窗提醒」');
     return;
   }
   previewMode=mode==='popup'?'popup':'body';
@@ -1267,21 +1364,56 @@ function syncPreviewModeUI(){
   if(!enablePopupDisplay&&previewMode==='popup') previewMode='body';
   if(popupBtn){
     popupBtn.disabled=!enablePopupDisplay;
-    popupBtn.title=enablePopupDisplay?'切换到弹窗预览':'请先选择「公告正文 + 弹窗」';
+    popupBtn.title=enablePopupDisplay?'切换到弹窗预览':'请先勾选「弹窗提醒」';
   }
   if(bodyBtn) bodyBtn.classList.toggle('active',previewMode==='body');
   if(popupBtn) popupBtn.classList.toggle('active',previewMode==='popup');
   if(previewBodyView) previewBodyView.classList.toggle('hidden',previewMode==='popup');
   if(previewPopupView) previewPopupView.classList.toggle('hidden',previewMode!=='popup');
 }
-function parse(v,tz){let [d,tm]=v.split('T'),[y,m,day]=d.split('-').map(Number),[h,min]=tm.split(':').map(Number),p=new Date(Date.UTC(y,m-1,day,h,min));let parts=new Intl.DateTimeFormat('en-US',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).formatToParts(p),o={};parts.forEach(x=>o[x.type]=x.value);let a=Date.UTC(+o.year,+o.month-1,+o.day,+o.hour,+o.minute,+o.second),want=Date.UTC(y,m-1,day,h,min);return new Date(p.getTime()+want-a)}
-/** 预览/表单等统一：yyyy-mm-dd HH:mm */
-function fmt(d,tz){
-  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(d);
-  const o={};parts.forEach(x=>o[x.type]=x.value);
-  return `${o.year}-${o.month}-${o.day} ${o.hour}:${o.minute}`;
+/** 将录入值规范为可解析的 datetime 串（基准时区语义） */
+function normalizeDateTimeInput(v){
+  if(v==null||v==='') return '';
+  let s=String(v).trim().replace(' ','T');
+  if(/^\d{2}:\d{2}(:\d{2})?$/.test(s)){
+    const anchor=(typeof eventStartTime!=='undefined'&&eventStartTime?.value
+      ?eventStartTime.value
+      :fmtInput(new Date(),baseTz)
+    ).split('T')[0];
+    return `${anchor}T${s.slice(0,5)}`;
+  }
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return `${s}T00:00`;
+  if(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(s)) return s.slice(0,16);
+  return s;
 }
-function fmtInput(d,tz){let parts=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(d),o={};parts.forEach(x=>o[x.type]=x.value);return `${o.year}-${o.month}-${o.day}T${o.hour}:${o.minute}`}
+/** 把「基准时区下的墙钟时间」解析为绝对时刻 */
+function parse(v,tz){
+  const raw=normalizeDateTimeInput(v);
+  if(!raw||!raw.includes('T')) return new Date(NaN);
+  const zone=tz||baseTz;
+  let [d,tm]=raw.split('T');
+  let [y,m,day]=d.split('-').map(Number);
+  let [h,min]=tm.split(':').map(Number);
+  let p=new Date(Date.UTC(y,m-1,day,h,min));
+  let parts=new Intl.DateTimeFormat('en-US',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).formatToParts(p);
+  let o={};parts.forEach(x=>o[x.type]=x.value);
+  let hour=o.hour==='24'?'00':o.hour;
+  let a=Date.UTC(+o.year,+o.month-1,+o.day,+hour,+o.minute,+o.second);
+  let want=Date.UTC(y,m-1,day,h,min);
+  return new Date(p.getTime()+want-a);
+}
+/** 预览/表单等统一：yyyy-mm-dd HH:mm（按目标时区） */
+function fmt(d,tz){
+  if(!(d instanceof Date)||Number.isNaN(d.getTime())) return '--';
+  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:tz||baseTz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(d);
+  const o={};parts.forEach(x=>o[x.type]=x.value);
+  const hour=o.hour==='24'?'00':o.hour;
+  return `${o.year}-${o.month}-${o.day} ${hour}:${o.minute}`;
+}
+function fmtInput(d,tz){
+  const s=fmt(d,tz);
+  return s==='--'? '':s.replace(' ','T');
+}
 /** 仅列表展示：dd-mm-yyyy[ HH:mm] */
 function formatListDisplayTime(v){
   if(!v||v==='—'||v==='长期有效'||v==='下次发布前') return v||'—';
@@ -1293,9 +1425,10 @@ function formatListDisplayTime(v){
 function resolveParams(text,tz){
   syncCoreTimesFromConfig();
   syncImmediatePublishTime();
-  let out=text;
+  const displayTz=tz||previewTz||baseTz;
+  let out=text||'';
   noticeParams.forEach(p=>{
-    out=out.replaceAll(paramToken(p.name),formatParamDisplay(p,tz));
+    out=out.replaceAll(paramToken(p.name),formatParamDisplay(p,displayTz));
   });
   return out;
 }
@@ -1311,7 +1444,9 @@ function normalizeParam(p){
   if(!p)return p;
   if(isFixedParam(p)){
     const fixed=FIXED_PARAMS.find(f=>f.name===p.name)||p;
-    return {...fixed,type:'fixed'};
+    const out={...fixed,type:'fixed'};
+    if(out.name==='timezone') out.value=BASE_TZ_LABEL;
+    return out;
   }
   const out={...p};
   if(out.type==='date_range'){
@@ -1334,42 +1469,45 @@ function formatParamValueText(v,precision){
 function formatParamDisplay(p,tz=baseTz){
   if(!p)return '--';
   const np=normalizeParam(p);
-  if(np.type==='fixed') return np.value||'--';
+  const displayTz=tz||previewTz||baseTz;
+  if(np.type==='fixed'){
+    if(np.name==='timezone') return previewTzLabel(displayTz)||np.value||'--';
+    return np.value||'--';
+  }
   const precision=np.precision;
+  const toPreview=(val,mode)=>{
+    if(!val) return '--';
+    const abs=parse(val,baseTz);
+    if(Number.isNaN(abs.getTime())) return formatParamValueText(val,mode).replace('—','--');
+    const full=fmt(abs,displayTz);
+    if(mode==='date') return full.slice(0,10);
+    if(mode==='time') return full.slice(11,16);
+    return full;
+  };
   if(np.type==='time_range'){
-    if(precision==='datetime'){
-      const s=np.start?fmt(parse(np.start,baseTz),tz):'--';
-      const e=np.end?fmt(parse(np.end,baseTz),tz):'--';
-      return `${s} ~ ${e}`;
-    }
-    return `${formatParamValueText(np.start,precision).replace('—','--')} ~ ${formatParamValueText(np.end,precision).replace('—','--')}`;
+    return `${toPreview(np.start,precision)} ~ ${toPreview(np.end,precision)}`;
   }
-  if(precision==='date'){
-    const v=formatParamValueText(np.value,'date').replace('—','--');
-    return v;
-  }
-  if(precision==='datetime') return np.value?fmt(parse(np.value,baseTz),tz):'--';
-  return formatParamValueText(np.value,precision).replace('—','--');
+  return toPreview(np.value,precision);
 }
 function formatParamTableValue(p){
   if(!p)return '—';
   const np=normalizeParam(p);
-  if(np.type==='fixed') return '系统自动填充';
+  if(np.type==='fixed'){
+    if(np.name==='timezone') return np.value||BASE_TZ_LABEL;
+    return '系统自动填充';
+  }
   if(np.type==='time_range'){
     return `${formatParamValueText(np.start,np.precision)} ~ ${formatParamValueText(np.end,np.precision)}`;
   }
   return formatParamValueText(np.value,np.precision);
 }
 function syncImmediatePublishTime(){
-  if(publishMode.value!=='immediate')return;
+  // 即时发布：发布时间跟随当前时刻（界面不展示）
+  if(publishMode?.value!=='immediate')return;
   if(eventStartTime) eventStartTime.value=fmtInput(new Date(),baseTz);
 }
 function isLongTermValidity(){
-  const v=validityType?.value||'';
-  return v==='permanent'||v==='until_next';
-}
-function isFixedDurationValidity(){
-  return (validityType?.value||'')==='fixed_duration';
+  return (validityType?.value||'')==='permanent';
 }
 function durationToMinutes(value,unit){
   const n=Math.max(1,Number(value)||1);
@@ -1382,10 +1520,38 @@ function addMinutesToInput(startInput,minutes){
   return fmtInput(new Date(start.getTime()+minutes*60000),baseTz);
 }
 function calcStatus(){
-  syncCoreTimesFromConfig();
   const mode=publishMode?.value||'immediate';
-  // 循环：未来期次不提前生成；保存时若已到点则生成当前期「展示中」
-  if(mode==='recurring') return '展示中';
+  if(mode==='immediate') syncImmediatePublishTime();
+  syncCoreTimesFromConfig();
+  if(!eventStartTime?.value) return mode==='immediate'?'展示中':'待发布';
+  if(isLongTermValidity()){
+    const now=new Date(),start=parse(eventStartTime.value,baseTz);
+    return now<start?'待发布':'展示中';
+  }
+  if(!eventEndTime?.value) return mode==='immediate'?'展示中':'待发布';
+  const now=new Date(),start=parse(eventStartTime.value,baseTz),end=parse(eventEndTime.value,baseTz);
+  if(now<start)return '待发布';
+  if(now<end)return '展示中';
+  return '已归档';
+}
+function isLongTermValidity(){
+  return (validityType?.value||'')==='permanent';
+}
+function durationToMinutes(value,unit){
+  const n=Math.max(1,Number(value)||1);
+  if(unit==='day') return n*24*60;
+  if(unit==='hour') return n*60;
+  return n;
+}
+function addMinutesToInput(startInput,minutes){
+  const start=parse(startInput,baseTz);
+  return fmtInput(new Date(start.getTime()+minutes*60000),baseTz);
+}
+function calcStatus(){
+  const mode=publishMode?.value||'immediate';
+  const validity=validityType?.value||'limited';
+  if(mode==='immediate'&&validity!=='permanent') syncImmediatePublishTime();
+  syncCoreTimesFromConfig();
   if(!eventStartTime?.value) return mode==='immediate'?'展示中':'待发布';
   if(isLongTermValidity()){
     const now=new Date(),start=parse(eventStartTime.value,baseTz);
@@ -1401,7 +1567,7 @@ function formatClock(v){
   return (v||'--:--').slice(0,5);
 }
 function weekdayLabel(v){
-  return {0:'周日',1:'周一',2:'周二',3:'周三',4:'周四',5:'周五',6:'周六'}[v]||'未选择';
+  return {0:'周日',1:'周一',2:'周二',3:'周三',4:'周四',5:'周五',6:'周六'}[Number(v)]||'未选择';
 }
 function addCalendarDays(dateStr,days){
   const [y,m,d]=dateStr.split('-').map(Number);
@@ -1410,147 +1576,303 @@ function addCalendarDays(dateStr,days){
   const pad=n=>String(n).padStart(2,'0');
   return `${dt.getUTCFullYear()}-${pad(dt.getUTCMonth()+1)}-${pad(dt.getUTCDate())}`;
 }
-function weekdayOf(dateStr,tz){
-  const d=parse(dateStr+'T12:00',tz);
-  const wd=new Intl.DateTimeFormat('en-US',{timeZone:tz,weekday:'short'}).format(d);
-  return {Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[wd];
+function getAnchorDateParts(){
+  const raw=eventStartTime?.value||fmtInput(new Date(),baseTz);
+  const d=parse(raw.includes('T')?raw:`${raw}T12:00`,baseTz);
+  const parts=new Intl.DateTimeFormat('en-US',{timeZone:baseTz,year:'numeric',month:'numeric',day:'numeric',weekday:'short'}).formatToParts(d);
+  const o={};parts.forEach(x=>o[x.type]=x.value);
+  const weekday={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[o.weekday]??1;
+  const day=Number(o.day);
+  const month=Number(o.month);
+  const year=Number(o.year);
+  const nth=Math.ceil(day/7);
+  const nextWeek=new Date(d.getTime()+7*24*60*60*1000);
+  const nextParts=new Intl.DateTimeFormat('en-US',{timeZone:baseTz,month:'numeric'}).formatToParts(nextWeek);
+  const nextMonth=Number(nextParts.find(x=>x.type==='month')?.value||month);
+  const isLast=nextMonth!==month;
+  return {weekday,day,month,year,nth,isLast,raw};
 }
-function monthDayDate(year,month,day){
-  const last=new Date(Date.UTC(year,month,0)).getUTCDate();
-  const safe=day==='last'?last:Math.min(Math.max(1,Number(day)||1),last);
-  const pad=n=>String(n).padStart(2,'0');
-  return `${year}-${pad(month)}-${pad(safe)}`;
+function buildRepeatOptions(){
+  const {weekday,day,nth,isLast}=getAnchorDateParts();
+  const wd=weekdayLabel(weekday); // 周二
+  const nthLabel=isLast?'最后一个':({1:'第一个',2:'第二个',3:'第三个',4:'第四个',5:'第五个'}[nth]||`第${nth}个`);
+  const wdChar=['日','一','二','三','四','五','六'][weekday];
+  return [
+    {value:'none',label:'不重复'},
+    {value:'daily',label:'每天'},
+    {value:'weekly',label:`每周${wdChar}`},
+    {value:'monthly_nth',label:`每月${nthLabel}${wd}`},
+    {value:'monthly_day',label:`每月${day}日`},
+    {value:'weekdays',label:'每个工作日（周一至周五）'}
+  ];
 }
-function initValidityOptions(preserve){
-  const mode=publishMode?.value||'immediate';
-  const sel=validityType;
+function refreshRepeatOptions(preserve){
+  const sel=document.getElementById('repeatRule')||repeatRule;
   if(!sel)return;
-  const prev=preserve?sel.value:'';
-  if(mode==='recurring'){
-    sel.innerHTML='<option value="fixed_duration">固定时长</option><option value="until_next">持续到下一次发布</option><option value="permanent">长期有效</option>';
-    sel.value=(prev==='until_next'||prev==='fixed_duration'||prev==='permanent')?prev:'fixed_duration';
-  }else{
-    sel.innerHTML='<option value="limited">有期限</option><option value="permanent">长期有效</option>';
-    sel.value=(prev==='permanent'||prev==='limited')?prev:'limited';
-  }
-}
-function initMonthlyExecDayOptions(){
-  const sel=monthlyExecDay;
-  if(!sel||sel.options.length) return;
-  let html='';
-  for(let i=1;i<=31;i++) html+=`<option value="${i}">每月${i}日</option>`;
-  html+='<option value="last">每月最后一天</option>';
-  sel.innerHTML=html;
-  sel.value='1';
-}
-function getWeeklyDay(){
-  return weeklyExecDay?.value??'1';
-}
-function getWeeklyDays(){
-  return [Number(getWeeklyDay())];
+  const prev=preserve?sel.value:'none';
+  const opts=buildRepeatOptions();
+  sel.innerHTML=opts.map(o=>`<option value="${o.value}">${o.label}</option>`).join('');
+  sel.value=opts.some(o=>o.value===prev)?prev:'none';
 }
 function syncCoreTimesFromConfig(){
-  const mode=publishMode?.value||'immediate';
   const validity=validityType?.value||'limited';
-  if(mode==='immediate'){
-    syncImmediatePublishTime();
-    if(validity==='permanent'){
-      if(eventEndTime) eventEndTime.value='2099-12-31T23:59';
-    }
-    return;
-  }
-  if(mode==='scheduled'){
-    if(validity==='permanent'&&eventStartTime?.value){
-      if(eventEndTime) eventEndTime.value='2099-12-31T23:59';
-    }
-    return;
-  }
-  // recurring
-  const st=formatClock(recurrenceStartTime?.value||'09:00');
-  const startDate=loopStartDate?.value||fmtInput(new Date(),baseTz).slice(0,10);
-  let startDT=`${startDate}T${st}`;
-  if(eventStartTime) eventStartTime.value=startDT;
   if(validity==='permanent'){
     if(eventEndTime) eventEndTime.value='2099-12-31T23:59';
-    return;
   }
-  if(validity==='until_next'){
-    // 持续到下一次：按循环周期给一个占位结束时间，便于状态计算
-    const type=recurrenceType?.value||'daily';
-    let endDate=startDate;
-    if(type==='weekly') endDate=addCalendarDays(startDate,7);
-    else if(type==='monthly') endDate=addCalendarDays(startDate,30);
-    else endDate=addCalendarDays(startDate,1);
-    if(eventEndTime) eventEndTime.value=`${endDate}T${st}`;
-    return;
-  }
-  const mins=durationToMinutes(displayDurationValue?.value,'day');
-  if(eventEndTime) eventEndTime.value=addMinutesToInput(startDT,mins);
 }
 function onPublishConfigChange(){
-  initMonthlyExecDayOptions();
-  initValidityOptions(true);
   const mode=publishMode?.value||'immediate';
   const validity=validityType?.value||'limited';
-  const isRecurring=mode==='recurring';
-  const isImmediate=mode==='immediate';
+  const isPermanent=validity==='permanent';
   const isScheduled=mode==='scheduled';
-  const type=recurrenceType?.value||'daily';
 
-  if(scheduleStartField) scheduleStartField.classList.toggle('hidden',!(isScheduled));
-  if(expireTimeField){
-    const showExpire=(isImmediate||isScheduled)&&validity==='limited';
-    expireTimeField.classList.toggle('hidden',!showExpire);
+  // 即时发布：不展示发布时间；定时发布：展示发布时间
+  if(scheduleStartField) scheduleStartField.classList.toggle('hidden',!isScheduled);
+  // 有期限：展示过期时间；长期有效：不展示过期时间
+  if(expireTimeField) expireTimeField.classList.toggle('hidden',isPermanent);
+  // 长期有效：同排展示循环方式；有期限：隐藏并固定不重复
+  if(repeatRuleField) repeatRuleField.classList.toggle('hidden',!isPermanent);
+  if(!isPermanent&&repeatRule) repeatRule.value='none';
+
+  const startLabel=document.getElementById('startTimeLabel');
+  if(startLabel) startLabel.innerHTML='<span class="req">*</span>发布时间';
+
+  if(!eventStartTime?.value){
+    if(eventStartTime) eventStartTime.value=fmtInput(new Date(),baseTz);
   }
-  if(recurrenceTypeField) recurrenceTypeField.classList.toggle('hidden',!isRecurring);
-  if(weeklyDaysField) weeklyDaysField.classList.toggle('hidden',!(isRecurring&&type==='weekly'));
-  if(monthlyDayField) monthlyDayField.classList.toggle('hidden',!(isRecurring&&type==='monthly'));
+  // 即时发布：发布时间始终同步为当前（后台用，界面不展示）
+  if(mode==='immediate') syncImmediatePublishTime();
+  if(!isPermanent&&eventStartTime?.value&&eventEndTime&&!eventEndTime.value){
+    eventEndTime.value=addMinutesToInput(eventStartTime.value,60);
+  }
 
-  const showRecRow1=isRecurring;
-  if(recurrenceRow1) recurrenceRow1.classList.toggle('hidden',!showRecRow1);
-  if(displayDurationField) displayDurationField.classList.toggle('hidden',!(isRecurring&&validity==='fixed_duration'));
-
+  refreshRepeatOptions(true);
+  if(!isPermanent&&repeatRule) repeatRule.value='none';
   syncCoreTimesFromConfig();
   onPopupConfigChange();
   renderNoticeParams();
 }
 function onPopupConfigChange(){
-  const validity=validityType?.value||'';
-  const longTerm=validity==='permanent';
-  const endSel=document.getElementById('popupEndMode')||popupEndMode;
-  const endTimeField=document.getElementById('popupEndTimeField');
-  if(endSel){
-    const followOpt=[...endSel.options].find(o=>o.value==='follow_expire');
-    if(followOpt){
-      followOpt.disabled=!!longTerm;
-      followOpt.title=longTerm?'长期有效公告没有自动到期时间，弹窗不能跟随公告结束':'';
-    }
-    // 长期有效：强制指定时间，不可跟随公告到期
-    if(longTerm) endSel.value='custom';
+  syncPopupValidityUI();
+}
+function getNoticeRepeatFamily(){
+  if((validityType?.value||'limited')!=='permanent') return 'none';
+  const rule=repeatRule?.value||'none';
+  if(rule==='none') return 'none';
+  if(rule==='daily'||rule==='weekdays') return 'daily';
+  if(rule==='weekly') return 'weekly';
+  if(rule==='monthly_day'||rule==='monthly_nth') return 'monthly';
+  return 'none';
+}
+function popupRepeatFamilyLabel(family){
+  return {none:'不循环',daily:'每日',weekly:'每周',monthly:'每月'}[family]||'不循环';
+}
+function ensureWeekdaySelects(){
+  const opts=['日','一','二','三','四','五','六'].map((c,i)=>`<option value="${i}">周${c}</option>`).join('');
+  ['popupWeeklyStartDay','popupWeeklyEndDay'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(!el.options.length) el.innerHTML=opts;
+  });
+}
+function ensureMonthDaySelects(){
+  let opts='';
+  for(let i=1;i<=31;i++) opts+=`<option value="${i}">${i}</option>`;
+  ['popupMonthlyStartDay','popupMonthlyEndDay'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const prev=el.value||el.dataset.pref||'';
+    if(!el.options.length) el.innerHTML=opts;
+    if(prev) el.value=prev;
+  });
+}
+function syncPopupValidityUI(){
+  const row=document.getElementById('popupSettingsRow');
+  if(!row)return;
+  const show=!!enablePopupDisplay;
+  row.classList.toggle('hidden',!show);
+  if(!show) return;
+
+  const noticeLimited=(validityType?.value||'limited')==='limited';
+  const limitedBlock=document.getElementById('popupLimitedBlock');
+  const permanentBlock=document.getElementById('popupPermanentBlock');
+  if(limitedBlock) limitedBlock.classList.toggle('hidden',!noticeLimited);
+  if(permanentBlock) permanentBlock.classList.toggle('hidden',noticeLimited);
+
+  if(noticeLimited){
+    const ns=eventStartTime?.value||'';
+    const ne=eventEndTime?.value||'';
+    if(popupRangeStart&&!popupRangeStart.value&&ns) popupRangeStart.value=ns;
+    if(popupRangeEnd&&!popupRangeEnd.value&&ne) popupRangeEnd.value=ne;
+    return;
   }
-  const showEndTime=longTerm||(endSel?.value||'')==='custom';
-  if(endTimeField) endTimeField.classList.toggle('hidden',!showEndTime);
+
+  ensureWeekdaySelects();
+  ensureMonthDaySelects();
+  const family=getNoticeRepeatFamily();
+  const locked=family!=='none';
+  const repeatSel=document.getElementById('popupRepeatRule');
+  const lockedText=document.getElementById('popupRepeatLockedText');
+  if(repeatSel) repeatSel.classList.toggle('hidden',locked);
+  if(lockedText) lockedText.classList.toggle('hidden',!locked);
+  if(locked){
+    if(repeatSel) repeatSel.value=family;
+    if(lockedText) lockedText.textContent=`与公告一致：${popupRepeatFamilyLabel(family)}`;
+  }else if(repeatSel&&!repeatSel.value){
+    repeatSel.value='none';
+  }
+  syncPopupWindowFields();
+}
+function onPopupRepeatChange(){
+  syncPopupWindowFields();
+}
+function getEffectivePopupRepeat(){
+  const family=getNoticeRepeatFamily();
+  if(family!=='none') return family;
+  const sel=document.getElementById('popupRepeatRule');
+  return sel?.value||'none';
+}
+function syncPopupWindowFields(){
+  ensureWeekdaySelects();
+  ensureMonthDaySelects();
+  const mode=getEffectivePopupRepeat();
+  const field=document.getElementById('popupWindowField');
+  if(field) field.dataset.active=mode;
+
+  const parts=getAnchorDateParts();
+  const startWd=document.getElementById('popupWeeklyStartDay');
+  const endWd=document.getElementById('popupWeeklyEndDay');
+  if(startWd&&!startWd.dataset.inited){startWd.value=String(parts.weekday);startWd.dataset.inited='1';}
+  if(endWd&&!endWd.dataset.inited){endWd.value=String(parts.weekday);endWd.dataset.inited='1';}
+  const mdStart=document.getElementById('popupMonthlyStartDay');
+  const mdEnd=document.getElementById('popupMonthlyEndDay');
+  if(mdStart&&!mdStart.dataset.inited){mdStart.value=String(parts.day);mdStart.dataset.inited='1';}
+  if(mdEnd&&!mdEnd.dataset.inited){mdEnd.value=String(Math.min(31,parts.day+6));mdEnd.dataset.inited='1';}
+  const onceStart=document.getElementById('popupOnceStart');
+  const onceEnd=document.getElementById('popupOnceEnd');
+  if(onceStart&&!onceStart.value&&eventStartTime?.value) onceStart.value=eventStartTime.value;
+  if(onceEnd&&!onceEnd.value&&eventStartTime?.value) onceEnd.value=addMinutesToInput(eventStartTime.value,60);
+}
+function validatePopupValidity(){
+  const noticeLimited=(validityType?.value||'limited')==='limited';
+  if(noticeLimited){
+    const ps=document.getElementById('popupRangeStart')?.value;
+    const pe=document.getElementById('popupRangeEnd')?.value;
+    if(!ps||!pe) return '请填写弹窗有效期起止时间';
+    const pStart=parse(ps,baseTz),pEnd=parse(pe,baseTz);
+    if(pEnd<=pStart) return '弹窗结束时间必须晚于开始时间';
+    const ns=eventStartTime?.value,ne=eventEndTime?.value;
+    if(ns&&ne){
+      const nStart=parse(ns,baseTz),nEnd=parse(ne,baseTz);
+      if(pStart<nStart||pEnd>nEnd) return '弹窗有效期须在公告有效期内';
+    }
+    return '';
+  }
+  const mode=getEffectivePopupRepeat();
+  if(mode==='none'){
+    const ps=document.getElementById('popupOnceStart')?.value;
+    const pe=document.getElementById('popupOnceEnd')?.value;
+    if(!ps||!pe) return '请填写弹窗展示窗口起止时间';
+    if(parse(pe,baseTz)<=parse(ps,baseTz)) return '弹窗结束时间必须晚于开始时间';
+    return '';
+  }
+  if(mode==='daily'){
+    const a=document.getElementById('popupDailyStart')?.value;
+    const b=document.getElementById('popupDailyEnd')?.value;
+    if(!a||!b) return '请填写每日弹窗时段';
+    if(a===b) return '每日弹窗结束时间不能与开始时间相同';
+    return '';
+  }
+  if(mode==='weekly'){
+    const sd=document.getElementById('popupWeeklyStartDay')?.value;
+    const st=document.getElementById('popupWeeklyStartTime')?.value;
+    const ed=document.getElementById('popupWeeklyEndDay')?.value;
+    const et=document.getElementById('popupWeeklyEndTime')?.value;
+    if(sd===''||ed===''||!st||!et) return '请完整填写每周弹窗窗口';
+    if(sd===ed&&st===et) return '每周弹窗起止不能完全相同';
+    return '';
+  }
+  if(mode==='monthly'){
+    const sd=Number(document.getElementById('popupMonthlyStartDay')?.value);
+    const st=document.getElementById('popupMonthlyStartTime')?.value;
+    const ed=Number(document.getElementById('popupMonthlyEndDay')?.value);
+    const et=document.getElementById('popupMonthlyEndTime')?.value;
+    if(!sd||!ed||!st||!et) return '请完整填写每月弹窗窗口';
+    if(sd<1||sd>31||ed<1||ed>31) return '每月日期须在 1–31 之间';
+    if(sd===ed&&st===et) return '每月弹窗起止不能完全相同';
+    return '';
+  }
+  return '';
 }
 function recurrenceSummary(){
-  if(publishMode.value!=='recurring')return '';
-  const st=formatClock(recurrenceStartTime?.value);
-  const type=recurrenceType.value;
+  const rule=repeatRule?.value||'none';
+  if(rule==='none')return '';
+  const label=repeatRule?.selectedOptions?.[0]?.textContent||'循环';
+  const st=formatClock((eventStartTime?.value||'').split('T')[1]||'');
   const validity=validityType?.value;
-  const dur=validity==='fixed_duration'
-    ?`${displayDurationValue?.value||1}天`
-    :(validity==='permanent'?'长期有效':'持续到下一次');
-  if(type==='daily') return `每日 ${st} · ${dur}`;
-  if(type==='weekly'){
-    const days=weekdayLabel(getWeeklyDay());
-    return `每周 ${days||'未选'} ${st} · ${dur}`;
+  const dur=validity==='permanent'?'长期有效':(fmtListTime(eventEndTime?.value)||'');
+  return `${label} ${st}${dur?' · '+dur:''}`;
+}
+function repeatSummaryShort(){
+  const rule=repeatRule?.value||'none';
+  if(rule==='none')return '';
+  return repeatRule?.selectedOptions?.[0]?.textContent||'循环';
+}
+/** 从编辑器汇总弹窗循环规则文案（列表展示用） */
+function buildPopupCycleSummary(){
+  if(!enablePopupDisplay) return '';
+  const noticeLimited=(validityType?.value||'limited')==='limited';
+  if(noticeLimited) return '不循环';
+  const mode=getEffectivePopupRepeat();
+  if(mode==='none') return '不循环';
+  if(mode==='daily'){
+    const a=document.getElementById('popupDailyStart')?.value||'';
+    const b=document.getElementById('popupDailyEnd')?.value||'';
+    return a&&b?`每日 ${a}–${b}`:'每日';
   }
-  const day=monthlyExecDay?.value==='last'?'最后一天':`${monthlyExecDay?.value||''}日`;
-  return `每月${day} ${st} · ${dur}`;
+  if(mode==='weekly'){
+    const wd=['日','一','二','三','四','五','六'];
+    const sd=document.getElementById('popupWeeklyStartDay')?.value;
+    const ed=document.getElementById('popupWeeklyEndDay')?.value;
+    const st=document.getElementById('popupWeeklyStartTime')?.value||'';
+    const et=document.getElementById('popupWeeklyEndTime')?.value||'';
+    if(sd===''||ed===''||sd==null||ed==null) return '每周';
+    return `每周${wd[Number(sd)]} ${st}–周${wd[Number(ed)]} ${et}`;
+  }
+  if(mode==='monthly'){
+    const sd=document.getElementById('popupMonthlyStartDay')?.value;
+    const ed=document.getElementById('popupMonthlyEndDay')?.value;
+    const st=document.getElementById('popupMonthlyStartTime')?.value||'';
+    const et=document.getElementById('popupMonthlyEndTime')?.value||'';
+    if(!sd||!ed) return '每月';
+    return `每月${sd}日 ${st}–${ed}日 ${et}`;
+  }
+  return '不循环';
+}
+function applyPopupFieldsToNotice(n){
+  if(!n)return;
+  n.enablePopup=!!enablePopupDisplay;
+  n.popupCycleSummary=n.enablePopup?buildPopupCycleSummary():'';
+}
+function restorePopupFieldsFromNotice(n){
+  enablePopupDisplay=!!n?.enablePopup;
+  if(enablePopupCheck) enablePopupCheck.checked=enablePopupDisplay;
+  onPopupReminderChange(false);
+  onPublishConfigChange();
+  const summary=n?.popupCycleSummary||'';
+  const family=summary.startsWith('每日')?'daily'
+    :summary.startsWith('每周')?'weekly'
+    :summary.startsWith('每月')?'monthly'
+    :'none';
+  if(getNoticeRepeatFamily()==='none'&&popupRepeatRule){
+    popupRepeatRule.value=family;
+  }
+  syncPopupValidityUI();
 }
 function renderPreview(){
   if(!previewTitle)return;
   saveCopy();
-  const tz=baseTz;
+  const tz=previewTz||LOCAL_TZ||baseTz;
   syncCoreTimesFromConfig();
   syncPreviewModeUI();
   const titleText=(resolveParams(copy[lang].title||'',tz)||'').trim();
@@ -1574,12 +1896,15 @@ function renderPreview(){
   }
 }
 function onCoreTimeChange(el){
-  if(editingPublished&&!confirm('正在修改已发布公告的发布或到期时间。确认继续并重新计算公告状态吗？')){
+  if(editingPublished&&!confirm('正在修改已发布公告的发布或过期时间。确认继续并重新计算公告状态吗？')){
     el.value=el.dataset.previous||el.value;
     renderPreview();return;
   }
+  if(el===eventStartTime||el?.id==='eventStartTime') refreshRepeatOptions(true);
   syncCoreTimesFromConfig();
+  syncPopupValidityUI();
   renderNoticeParams();
+  renderPreview();
 }
 function validateNotice(){
   if(!targetProject.value)return '请选择投放项目';
@@ -1588,44 +1913,23 @@ function validateNotice(){
   if(!getCheckedValues('targetRegionPanel').length)return '请选择地区';
   const mode=publishMode.value;
   const validity=validityType?.value||'';
-  if(mode==='recurring'){
-    if(!loopStartDate?.value)return '请选择循环开始日期';
-    if(!recurrenceStartTime?.value)return '请填写每次发布时间';
-    if(recurrenceType.value==='weekly'&&(weeklyExecDay?.value===''||weeklyExecDay?.value==null))return '请选择执行星期';
-    if(recurrenceType.value==='monthly'&&!monthlyExecDay?.value)return '请选择执行日期';
-    if(validity==='fixed_duration'){
-      if(!displayDurationValue?.value||Number(displayDurationValue.value)<=0)return '请填写每次展示时长';
-    }
-  }else if(mode==='immediate'){
-    if(validity==='limited'){
-      if(!eventEndTime.value)return '请填写到期时间';
-      syncImmediatePublishTime();
-      const start=parse(eventStartTime.value,baseTz),end=parse(eventEndTime.value,baseTz);
-      if(end<=start)return '到期时间必须晚于当前发布时间';
-    }
-  }else{
-    if(!eventStartTime.value)return '请填写预约发布时间';
-    if(validity==='limited'){
-      if(!eventEndTime.value)return '请填写到期时间';
-      const start=parse(eventStartTime.value,baseTz),end=parse(eventEndTime.value,baseTz);
-      if(end<=start)return '到期时间必须晚于预约发布时间';
-    }
+  if(mode==='immediate') syncImmediatePublishTime();
+  else if(!eventStartTime?.value) return '请填写发布时间';
+  if(validity==='limited'){
+    if(!eventEndTime?.value)return '请填写过期时间';
+    const start=parse(eventStartTime.value,baseTz),end=parse(eventEndTime.value,baseTz);
+    if(end<=start)return '过期时间必须晚于发布时间';
   }
+  if(validity==='permanent'&&!(repeatRule?.value)) return '请选择循环方式';
   const missingTitle=findMissingLang(copy,['title']);
   if(missingTitle){setLang(missingTitle.code);return '请完善 '+missingTitle.name+' 的公告标题';}
   const missingBody=findMissingLang(copy,['body']);
   if(missingBody){setLang(missingBody.code);return '请完善 '+missingBody.name+' 的公告正文';}
   if(enablePopupDisplay){
     const missing=findMissingLang(copy,['popup']);
-    if(missing){setLang(missing.code);return '已选择弹窗展示，请完善 '+missing.name+' 的弹窗展示内容';}
-    const endMode=document.getElementById('popupEndMode')?.value||popupEndMode?.value;
-    const endTime=document.getElementById('popupEndTime')?.value||popupEndTime?.value;
-    if(validity==='permanent'){
-      if(endMode!=='custom') return '长期有效公告须选择「指定时间」作为弹窗结束方式';
-      if(!endTime) return '请填写弹窗结束时间';
-    }else if(endMode==='custom'&&!endTime){
-      return '请填写弹窗结束时间';
-    }
+    if(missing){setLang(missing.code);return '已勾选弹窗提醒，请完善 '+missing.name+' 的弹窗展示内容';}
+    const popupErr=validatePopupValidity();
+    if(popupErr) return popupErr;
   }
   return '';
 }
@@ -1634,13 +1938,15 @@ function fmtListTime(v){
   return v.replace('T',' ');
 }
 function buildNoticeFromEditor(title){
+  if(publishMode.value==='immediate') syncImmediatePublishTime();
   syncCoreTimesFromConfig();
-  const mode=publishMode.value==='recurring'?'循环发布':(publishMode.value==='immediate'?'立即发布':'预约发布');
+  const mode=publishMode.value==='immediate'?'即时发布':'定时发布';
   const validity=validityType?.value||'';
+  const repeat=validity==='permanent'?(repeatRule?.value||'none'):'none';
   const status=calcStatus();
   const publishTime=fmtListTime(eventStartTime?.value)||currentCreatedAt();
-  const expireTime=validity==='permanent'||validity==='until_next'
-    ?(validity==='until_next'?'下次发布前':'长期有效')
+  const expireTime=validity==='permanent'
+    ?'长期有效'
     :(fmtListTime(eventEndTime?.value)||'—');
   const baseId=nextBaseId();
   const record={
@@ -1653,28 +1959,26 @@ function buildNoticeFromEditor(title){
     expireTime,
     cycleId:'',
     cycleSummary:'',
-    period:0,
+    enablePopup:!!enablePopupDisplay,
+    popupCycleSummary:enablePopupDisplay?buildPopupCycleSummary():'',
     status,
     creator:'Admin',
     createdAt:currentCreatedAt()
   };
-  if(mode==='循环发布'){
-    const summary=(recurrenceSummary()||'循环规则').replace(/\s*·\s*.*$/,'');
+  if(repeat!=='none'){
+    const summary=repeatSummaryShort()||'循环';
+    const detail=recurrenceSummary()+' '+BASE_TZ_LABEL;
     cycleRules[baseId]={
       summary,
-      detail:recurrenceSummary()+' '+BASE_TZ_LABEL,
-      duration:validity==='permanent'?'长期有效':(validity==='until_next'?'持续到下一次发布':`${displayDurationValue?.value||1}天`),
+      detail,
+      duration:validity==='permanent'?'长期有效':'有期限',
+      repeatType:repeat,
       terminated:false,
-      nextPeriod:1,
       creator:'Admin',
       createdAt:record.createdAt
     };
-    const period=allocateCyclePeriod(baseId);
     record.cycleId=baseId;
     record.cycleSummary=summary;
-    record.period=period;
-    record.noticeId=makeNoticeId(baseId,period);
-    record.status='展示中';
   }
   return record;
 }
@@ -1692,9 +1996,40 @@ function saveNotice(){
       exist.name=title;
       exist.project=targetProject.value;
       exist.publishTime=fmtListTime(eventStartTime?.value)||exist.publishTime;
-      exist.expireTime=validity==='permanent'||validity==='until_next'
-        ?(validity==='permanent'?'长期有效':'下次发布前')
+      exist.expireTime=validity==='permanent'
+        ?'长期有效'
         :(fmtListTime(eventEndTime?.value)||exist.expireTime);
+      exist.publishMode=publishMode.value==='immediate'?'即时发布':'定时发布';
+      applyPopupFieldsToNotice(exist);
+      const repeat=validity==='permanent'?(repeatRule?.value||'none'):'none';
+      const cycleKey=exist.baseId||exist.noticeId;
+      if(repeat==='none'){
+        if(exist.cycleId&&cycleRules[exist.cycleId]) delete cycleRules[exist.cycleId];
+        exist.cycleId='';
+        exist.cycleSummary='';
+      }else{
+        const summary=repeatSummaryShort()||'循环';
+        const detail=recurrenceSummary()+' '+BASE_TZ_LABEL;
+        if(exist.cycleId&&cycleRules[exist.cycleId]){
+          cycleRules[exist.cycleId].summary=summary;
+          cycleRules[exist.cycleId].detail=detail;
+          cycleRules[exist.cycleId].repeatType=repeat;
+          cycleRules[exist.cycleId].duration=validity==='permanent'?'长期有效':'有期限';
+          cycleRules[exist.cycleId].terminated=false;
+        }else{
+          cycleRules[cycleKey]={
+            summary,
+            detail,
+            duration:validity==='permanent'?'长期有效':'有期限',
+            repeatType:repeat,
+            terminated:false,
+            creator:exist.creator||'Admin',
+            createdAt:exist.createdAt||currentCreatedAt()
+          };
+          exist.cycleId=cycleKey;
+        }
+        exist.cycleSummary=summary;
+      }
       if(exist.status==='待发布'||exist.status==='展示中'){
         const nextStatus=calcStatus();
         if(nextStatus==='待发布'||nextStatus==='展示中'||nextStatus==='已归档') exist.status=nextStatus;
@@ -1716,8 +2051,8 @@ function saveNotice(){
   editingPublished=false;
   showPage('list');
   renderNoticeList(false);
-  showToast(publishMode.value==='recurring'
-    ?'循环规则已保存，已生成当前期公告记录'
+  showToast((repeatRule?.value||'none')!=='none'
+    ?'循环公告已保存（公告ID不变，可随时修改循环方式）'
     :'公告已保存，所有时间将以统一时间戳存储');
 }
 
@@ -1743,6 +2078,7 @@ function matchNoticeFilters(n){
   const mode=document.getElementById('publishModeFilter')?.value||'发布方式';
   const status=document.getElementById('statusFilter')?.value||'公告状态';
   const cycleStatus=document.getElementById('cycleStatusFilter')?.value||'循环状态';
+  const popup=document.getElementById('popupFilter')?.value||'有无弹窗';
   const idKeyword=(document.getElementById('cycleIdFilter')?.value||'').trim().toLowerCase();
   const publishFrom=document.getElementById('publishFrom')?.value||'';
   const publishTo=document.getElementById('publishTo')?.value||'';
@@ -1755,6 +2091,8 @@ function matchNoticeFilters(n){
   if(mode!=='发布方式'&&n.publishMode!==mode) return false;
   if(status!=='公告状态'&&n.status!==status) return false;
   if(cycleStatus!=='循环状态'&&getCycleStatus(n)!==cycleStatus) return false;
+  if(popup==='有弹窗'&&!n.enablePopup) return false;
+  if(popup==='无弹窗'&&!!n.enablePopup) return false;
   if(idKeyword){
     const nid=(n.noticeId||'').toLowerCase();
     const bid=(n.baseId||n.cycleId||'').toLowerCase();
@@ -1819,7 +2157,7 @@ function renderNoticeList(showResultToast,resetPage){
   const pageList=list.slice(start,start+NOTICE_PAGE_SIZE);
   rows.innerHTML=pageList.length
     ?pageList.map(n=>`<tr data-id="${n.noticeId}" data-status="${n.status}" data-base-id="${n.baseId||''}" data-cycle-id="${n.cycleId||''}">${buildNoticeRow(n)}</tr>`).join('')
-    :`<tr><td colspan="11" style="text-align:center;color:#94a3b8;padding:28px 12px">暂无公告数据</td></tr>`;
+    :`<tr><td colspan="13" style="text-align:center;color:#94a3b8;padding:28px 12px">暂无公告数据</td></tr>`;
   renderNoticePager(list.length,noticePage,pageCount);
   if(showResultToast) showToast(list.length?`查询完成，共 ${list.length} 条结果`:'未查询到匹配公告');
 }
@@ -1831,6 +2169,7 @@ function resetNoticeFilters(){
   const mode=document.getElementById('publishModeFilter'); if(mode) mode.value='发布方式';
   const status=document.getElementById('statusFilter'); if(status) status.value='公告状态';
   const cycleStatus=document.getElementById('cycleStatusFilter'); if(cycleStatus) cycleStatus.value='循环状态';
+  const popup=document.getElementById('popupFilter'); if(popup) popup.value='有无弹窗';
   renderNoticeList(false,true);
   showToast('已重置筛选条件');
 }
@@ -1949,10 +2288,8 @@ function viewNotice(button){
   if(!n)return;
   if(modalPanel) modalPanel.style.width='min(640px,100%)';
   const cycleBlock=n.cycleId?`
-    <div><span>基础ID</span><strong>${n.baseId||n.cycleId}</strong></div>
     <div><span>循环状态</span><strong>${getCycleStatus(n)}</strong></div>
-    <div><span>循环规则</span><strong>${n.cycleSummary||'—'}</strong></div>
-    <div><span>期次</span><strong>第${n.period}期</strong></div>`:`
+    <div><span>循环规则</span><strong>${n.cycleSummary||'—'}</strong></div>`:`
     <div><span>循环状态</span><strong>无循环</strong></div>`;
   const body=`<div class="detail-grid">
     <div><span>公告ID</span><strong>${n.noticeId}</strong></div>
@@ -1962,6 +2299,8 @@ function viewNotice(button){
     <div><span>状态</span><strong>${n.status}</strong></div>
     <div><span>发布时间</span><strong>${n.publishTime} ${BASE_TZ_LABEL}</strong></div>
     <div><span>到期时间</span><strong>${n.expireTime==='长期有效'||n.expireTime==='下次发布前'?n.expireTime:`${n.expireTime} ${BASE_TZ_LABEL}`}</strong></div>
+    <div><span>弹窗</span><strong>${n.enablePopup?'有弹窗':'无弹窗'}</strong></div>
+    <div><span>弹窗循环</span><strong>${n.enablePopup?(n.popupCycleSummary||'不循环'):'—'}</strong></div>
     <div><span>创建人</span><strong>${n.creator}</strong></div>
     <div><span>创建时间</span><strong>${n.createdAt}</strong></div>
     ${cycleBlock}
@@ -2007,8 +2346,9 @@ function copyNotice(button,asNew){
   lang=DEFAULT_LANG;
   loadInputs();
   renderNoticeParams();
-  publishMode.value=n.publishMode.includes('循环')?'recurring':(n.publishMode.includes('立即')?'immediate':'scheduled');
+  publishMode.value=(n.publishMode.includes('即时')||n.publishMode.includes('立即'))?'immediate':'scheduled';
   onPublishConfigChange();
+  restorePopupFieldsFromNotice(n);
   showPage('editor');
   setLang(DEFAULT_LANG);
   showToast(asNew?'已复制为新建草稿，请修改后保存':'已复制公告内容，请修改后保存');
@@ -2021,7 +2361,7 @@ function cancelScheduledNotice(button){
   openModal(
     '取消公告',
     '',
-    `<div class="confirm-text">确认取消该公告吗？取消后公告将不会按预约时间发布，且不可恢复。</div>`,
+    `<div class="confirm-text">确认取消该公告吗？取消后公告将不会按定时时间发布，且不可恢复。</div>`,
     '确认取消',
     ()=>{
       n.status='已取消';
@@ -2036,20 +2376,20 @@ function cancelScheduledNotice(button){
 function unshelfNotice(button){
   const n=getNoticeFromButton(button);
   if(!n||n.status!=='展示中')return;
-  const isCycle=n.publishMode==='循环发布';
+  const isCycle=!!n.cycleId&&getCycleStatus(n)==='循环中';
   if(modalPanel) modalPanel.style.width='min(460px,100%)';
   openModal(
     '下架公告',
     '',
     `<div class="confirm-text">${isCycle
-      ?'确认下架当前公告吗？下架仅影响本期公告，不影响后续循环发布。'
+      ?'确认下架当前公告吗？下架后公告立即从 APP 移除；循环规则仍保留，可继续编辑循环方式（公告ID不变）。'
       :'确认下架当前公告吗？下架后公告将立即从 APP 移除，且不支持恢复上架。'}</div>`,
     '确认下架',
     ()=>{
       n.status='已下架';
       closeModal();
       renderNoticeList(false);
-      showToast(isCycle?'本期公告已下架，后续循环不受影响':'公告已下架');
+      showToast(isCycle?'公告已下架，循环规则仍可编辑':'公告已下架');
     },
     '返回'
   );
@@ -2060,20 +2400,16 @@ function viewCycleRule(button){
   if(!n?.cycleId)return;
   const rule=cycleRules[n.cycleId]||{};
   if(modalPanel) modalPanel.style.width='min(560px,100%)';
-  const periods=noticeRecords.filter(x=>x.cycleId===n.cycleId).length;
-  const nextPeriod=rule.nextPeriod||(periods+1);
   const body=`<div class="detail-grid">
-    <div><span>基础ID</span><strong>${n.baseId||n.cycleId}</strong></div>
+    <div><span>公告ID</span><strong>${n.noticeId}</strong></div>
     <div><span>循环状态</span><strong>${rule.terminated?'已终止':'循环中'}</strong></div>
     <div><span>循环规则</span><strong>${rule.summary||n.cycleSummary||'—'}</strong></div>
-    <div><span>展示时长</span><strong>${rule.duration||'—'}</strong></div>
+    <div><span>有效期</span><strong>${rule.duration||'—'}</strong></div>
     <div><span>规则详情</span><strong>${rule.detail||'—'}</strong></div>
-    <div><span>已生成期数</span><strong>${periods} 期</strong></div>
-    <div><span>下一期次</span><strong>${rule.terminated?'—':`${n.baseId||n.cycleId}-${nextPeriod}`}</strong></div>
     <div><span>创建人</span><strong>${rule.creator||n.creator}</strong></div>
     <div><span>创建时间</span><strong>${rule.createdAt||n.createdAt}</strong></div>
   </div>
-  <div class="alert" style="margin-top:12px">公告ID规则：基础ID为 A+4位流水号；每成功生成一期追加期次（如 ${(n.baseId||n.cycleId)}-1），期次递增且不回收。</div>`;
+  <div class="alert" style="margin-top:12px">公告ID统一为 A+4位流水号；循环为公告属性，修改循环方式不更换公告ID、不按期次拆分记录。</div>`;
   openModal('查看循环规则',n.name,body);
 }
 
@@ -2085,11 +2421,11 @@ function editFutureCycle(button){
   if(rule.terminated){showToast('该循环已终止，无法修改');return;}
   if(modalPanel) modalPanel.style.width='min(520px,100%)';
   const body=`
-    <div class="confirm-text" style="margin-bottom:12px">修改后续循环只影响<strong>尚未生成</strong>的公告，已生成历史与当前展示中的记录不会变更。</div>
+    <div class="confirm-text" style="margin-bottom:12px">修改循环规则后，本公告（ID 不变）将按新规则继续调度。</div>
     <div class="field"><label class="label">循环规则摘要</label><input id="futureCycleSummary" class="control" value="${rule.summary||''}"></div>
-    <div class="field" style="margin-top:12px"><label class="label">展示时长</label><input id="futureCycleDuration" class="control" value="${rule.duration||''}"></div>
+    <div class="field" style="margin-top:12px"><label class="label">有效期</label><input id="futureCycleDuration" class="control" value="${rule.duration||''}"></div>
     <div class="field" style="margin-top:12px"><label class="label">规则详情</label><textarea id="futureCycleDetail" class="control" style="height:90px">${rule.detail||''}</textarea></div>`;
-  openModal('修改后续循环',n.baseId||n.cycleId,body,'保存修改',()=>{
+  openModal('修改循环规则',n.noticeId,body,'保存修改',()=>{
     const summary=document.getElementById('futureCycleSummary')?.value.trim();
     const duration=document.getElementById('futureCycleDuration')?.value.trim();
     const detail=document.getElementById('futureCycleDetail')?.value.trim();
@@ -2097,28 +2433,29 @@ function editFutureCycle(button){
     rule.summary=summary;
     rule.duration=duration||rule.duration;
     rule.detail=detail||rule.detail;
+    n.cycleSummary=summary;
     closeModal();
     renderNoticeList(false);
-    showToast('后续循环规则已更新（不影响已生成记录）');
+    showToast('循环规则已更新（公告ID不变）');
   },'取消');
 }
 
 function terminateCycle(button){
   const n=getNoticeFromButton(button);
-  if(!n?.cycleId||n.publishMode!=='循环发布')return;
+  if(!n?.cycleId)return;
   const rule=cycleRules[n.cycleId];
   if(rule?.terminated){showToast('该循环已终止');return;}
   if(modalPanel) modalPanel.style.width='min(460px,100%)';
   openModal(
     '终止循环',
     '',
-    `<div class="confirm-text">确认终止循环“${n.cycleSummary||n.baseId||n.cycleId}”吗？终止后<strong>不再生成后续公告</strong>，当前记录的公告状态不变、不会自动下架，已生成的历史记录将保留。</div>`,
+    `<div class="confirm-text">确认终止循环“${n.cycleSummary||n.noticeId}”吗？终止后<strong>不再按循环规则调度</strong>，当前公告状态不变、不会自动下架，公告ID保持不变。</div>`,
     '确认终止',
     ()=>{
       if(rule) rule.terminated=true;
       closeModal();
       renderNoticeList(false);
-      showToast('已终止后续循环；当前公告状态未变更');
+      showToast('已终止循环；当前公告状态未变更');
     },
     '返回'
   );
@@ -2166,6 +2503,7 @@ function buildParamRowsHtml(){
       ?`<span style="color:var(--muted);font-size:12px">不可修改</span>`
       :`<div class="icon-actions">
         <button class="btn compact" onclick="editNoticeParam(${i})">编辑</button>
+        <button class="btn compact" onclick="copyNoticeParam(${i})">复制</button>
         <button class="btn compact" onclick="deleteNoticeParam(${i})">删除</button>
       </div>`;
     return `<tr>
@@ -2292,11 +2630,15 @@ function openParamManager(source){
   const body=`
     <div class="log-table-wrap">
       <table class="log-table">
-        <thead><tr><th style="width:140px">参数名称</th><th style="width:110px">参数说明</th><th style="width:150px">参数类型</th><th>参数值</th><th style="width:160px">操作</th></tr></thead>
+        <thead><tr><th style="width:140px">参数名称</th><th style="width:110px">参数说明</th><th style="width:150px">参数类型</th><th>参数值</th><th style="width:210px">操作</th></tr></thead>
         <tbody>${buildParamRowsHtml()}</tbody>
       </table>
     </div>`;
   openModal(paramSource==='template'?'模板参数管理':'参数管理','',body);
+  if(modalTitle){
+    const title=paramSource==='template'?'模板参数管理':'参数管理';
+    modalTitle.innerHTML=`${title}<span class="title-tz-hint">当前基准时区：${BASE_TZ_LABEL}</span>`;
+  }
   document.getElementById('modalFoot')?.classList.add('hidden');
 }
 
@@ -2337,6 +2679,26 @@ function addNoticeParam(){
   setTimeout(()=>document.getElementById('npType')?.focus(),30);
 }
 
+function copyNoticeParam(i){
+  if(paramEditIndex!==null){showToast('请先完成当前参数编辑');return;}
+  const list=getActiveParams();
+  const src=list[i];
+  if(!src||isFixedParam(src)){showToast('固定参数不可复制');return;}
+  const np=normalizeParam(src);
+  let baseName=np.name+'_copy';
+  let n=1;
+  while(list.some(p=>p.name===baseName)||FIXED_PARAM_NAMES.has(baseName)){
+    baseName=np.name+'_copy'+(n++);
+  }
+  const cloned=deepCopy(np);
+  cloned.name=baseName;
+  cloned.desc=(np.desc||np.name)+' 副本';
+  list.push(cloned);
+  openParamManager(paramSource);
+  refreshActiveParamUI();
+  showToast('已复制参数类型：'+paramTypeLabel(cloned.type,cloned.precision));
+}
+
 function editNoticeParam(i){
   if(paramEditIndex!==null){showToast('请先完成当前参数编辑');return;}
   const p=getActiveParams()[i];
@@ -2349,7 +2711,7 @@ function editNoticeParam(i){
 function saveInlineParam(i){
   const p=readInlineParamForm();
   if(!p)return;
-  if(FIXED_PARAM_NAMES.has(p.name)){showToast('name 为固定参数，不可占用');return;}
+  if(FIXED_PARAM_NAMES.has(p.name)){showToast('「'+p.name+'」为固定参数，不可占用');return;}
   const list=getActiveParams();
   if(i===-1){
     if(list.some(x=>x.name===p.name)){showToast('参数名称已存在');return;}
@@ -2386,16 +2748,18 @@ function renderTemplates(){
   const rows=document.getElementById('templateRows');
   rows.innerHTML=templates.length?templates.map(t=>{
     const enabled=t.enabled!==false;
+    const hasPopup=!!t.enablePopup;
     return `<tr class="${enabled?'':'is-disabled'}">
     <td>${t.name}</td>
     <td>${t.desc||'—'}</td>
+    <td><span class="pill ${hasPopup?'ok':'draft'}">${hasPopup?'有弹窗':'无弹窗'}</span></td>
     <td>${t.creator||'Admin'}</td>
     <td>${formatListDisplayTime(t.updated)}</td>
     <td><span class="pill ${enabled?'ok':'draft'}">${enabled?'启用':'停用'}</span></td>
     <td>${buildTemplateActionButtons(t.id,enabled)}</td>
   </tr>`;
   }).join('')
-  :'<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:20px">暂无模板</td></tr>';
+  :'<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:20px">暂无模板</td></tr>';
 }
 
 function buildTemplateActionButtons(id,enabled){
@@ -2440,7 +2804,7 @@ function saveTemplateLanguage(){
   templateDraftCopy[templateLang].title=templateTitleInput.value;
   templateDraftCopy[templateLang].body=templateBodyInput.value;
   if(templatePopupInput) templateDraftCopy[templateLang].popup=templatePopupInput.value;
-  templateEnablePopupDisplay=(templateDisplayFormat?.value==='body_popup');
+  templateEnablePopupDisplay=!!(templateEnablePopupCheck?.checked);
 }
 
 function setTemplateLanguage(nextLang){
@@ -2450,11 +2814,11 @@ function setTemplateLanguage(nextLang){
   templateTitleInput.value=templateDraftCopy[templateLang].title||'';
   templateBodyInput.value=templateDraftCopy[templateLang].body||'';
   if(templatePopupInput) templatePopupInput.value=templateDraftCopy[templateLang].popup||'';
-  if(templateDisplayFormat) templateDisplayFormat.value=templateEnablePopupDisplay?'body_popup':'body_only';
+  if(templateEnablePopupCheck) templateEnablePopupCheck.checked=!!templateEnablePopupDisplay;
   const templatePreviewLangEl=document.getElementById('templatePreviewLang');
   if(templatePreviewLangEl) templatePreviewLangEl.value=templateLang;
   document.querySelectorAll('#templateLangTabs .tab').forEach(tab=>tab.classList.toggle('active',tab.dataset.templateLang===templateLang));
-  syncTemplateDisplayFormatUI(false);
+  syncTemplatePopupReminderUI(false);
   renderTemplatePreview();
 }
 
@@ -2464,61 +2828,35 @@ function setTemplateLanguage(nextLang){
 });
 
 function resolveTemplateParams(text,tz){
+  const displayTz=tz||previewTz||baseTz;
   let out=text||'';
   templateDraftParams.forEach(p=>{
-    out=out.replaceAll(paramToken(p.name),formatParamDisplay(p,tz));
+    out=out.replaceAll(paramToken(p.name),formatParamDisplay(p,displayTz));
   });
   return out;
 }
 
-function onTemplateDisplayFormatChange(fromUser=true){
-  templateEnablePopupDisplay=(templateDisplayFormat?.value==='body_popup');
-  syncTemplateDisplayFormatUI(fromUser);
+function onTemplatePopupReminderChange(fromUser=true){
+  templateEnablePopupDisplay=!!(templateEnablePopupCheck?.checked);
+  syncTemplatePopupReminderUI(fromUser);
 }
-function setTemplateContentEditMode(mode){
-  templateEnablePopupDisplay=(templateDisplayFormat?.value==='body_popup');
-  if(mode==='popup'&&!templateEnablePopupDisplay){
-    showToast('请先选择「公告正文 + 弹窗」');
-    return;
-  }
-  templateContentEditMode=mode==='popup'?'popup':'body';
-  syncTemplateContentEditModeUI();
-  if(templateEnablePopupDisplay){saveTemplateLanguage();renderTemplatePreview()}
-}
-function syncTemplateContentEditModeUI(){
-  const tabs=document.getElementById('templateContentModeTabs');
+function syncTemplatePopupReminderUI(fromUser=true){
+  if(templateEnablePopupCheck) templateEnablePopupCheck.checked=!!templateEnablePopupDisplay;
   const bodyPanel=document.getElementById('templateBodyContentPanel');
   const popupPanel=document.getElementById('templatePopupContentPanel');
-  const bodyTab=document.getElementById('templateContentModeBodyTab');
-  const popupTab=document.getElementById('templateContentModePopupTab');
-  if(tabs) tabs.classList.toggle('hidden',!templateEnablePopupDisplay);
-  if(!templateEnablePopupDisplay) templateContentEditMode='body';
-  if(bodyTab) bodyTab.classList.toggle('active',templateContentEditMode==='body');
-  if(popupTab){
-    popupTab.disabled=!templateEnablePopupDisplay;
-    popupTab.classList.toggle('active',templateContentEditMode==='popup');
-  }
-  if(bodyPanel) bodyPanel.classList.toggle('hidden',templateEnablePopupDisplay&&templateContentEditMode==='popup');
-  if(popupPanel) popupPanel.classList.toggle('hidden',!(templateEnablePopupDisplay&&templateContentEditMode==='popup'));
-}
-function syncTemplateDisplayFormatUI(fromUser=true){
-  if(templateDisplayFormat) templateDisplayFormat.value=templateEnablePopupDisplay?'body_popup':'body_only';
-  if(!templateEnablePopupDisplay){
-    templateContentEditMode='body';
-    if(templatePreviewMode==='popup') templatePreviewMode='body';
-  }
-  syncTemplateContentEditModeUI();
+  if(bodyPanel) bodyPanel.classList.remove('hidden');
+  if(popupPanel) popupPanel.classList.toggle('hidden',!templateEnablePopupDisplay);
+  if(!templateEnablePopupDisplay&&templatePreviewMode==='popup') templatePreviewMode='body';
   syncTemplatePreviewModeUI();
   if(fromUser){saveTemplateLanguage();renderTemplatePreview()}
 }
 function toggleTemplatePopupContent(fromUser=true){
-  // 兼容旧调用：统一走展示形式
-  onTemplateDisplayFormatChange(fromUser);
+  onTemplatePopupReminderChange(fromUser);
 }
 
 function setTemplatePreviewMode(mode){
   if(mode==='popup'&&!templateEnablePopupDisplay){
-    showToast('请先选择「公告正文 + 弹窗」');
+    showToast('请先勾选「弹窗提醒」');
     return;
   }
   templatePreviewMode=mode==='popup'?'popup':'body';
@@ -2532,7 +2870,7 @@ function syncTemplatePreviewModeUI(){
   if(!templateEnablePopupDisplay&&templatePreviewMode==='popup') templatePreviewMode='body';
   if(popupBtn){
     popupBtn.disabled=!templateEnablePopupDisplay;
-    popupBtn.title=templateEnablePopupDisplay?'切换到弹窗预览':'请先选择「公告正文 + 弹窗」';
+    popupBtn.title=templateEnablePopupDisplay?'切换到弹窗预览':'请先勾选「弹窗提醒」';
   }
   if(bodyBtn) bodyBtn.classList.toggle('active',templatePreviewMode==='body');
   if(popupBtn) popupBtn.classList.toggle('active',templatePreviewMode==='popup');
@@ -2544,7 +2882,7 @@ function renderTemplatePreview(){
   if(!templatePreviewTitle)return;
   saveTemplateLanguage();
   syncTemplatePreviewModeUI();
-  const tz=baseTz;
+  const tz=previewTz||LOCAL_TZ||baseTz;
   const langKey=templateLang||DEFAULT_LANG;
   const c=templateDraftCopy[langKey]||{};
   const titleText=(resolveTemplateParams(c.title||'',tz)||'').trim();
@@ -2576,8 +2914,7 @@ function openTemplateEditor(id){
   templateDraftParams=ensureFixedParams(t?t.params||[]:[]);
   templateEnablePopupDisplay=!!(t&&t.enablePopup);
   templatePreviewMode='body';
-  templateContentEditMode='body';
-  if(templateDisplayFormat) templateDisplayFormat.value=templateEnablePopupDisplay?'body_popup':'body_only';
+  if(templateEnablePopupCheck) templateEnablePopupCheck.checked=!!templateEnablePopupDisplay;
   templateLang=null;
   paramSource='template';
   paramEditIndex=null;
@@ -2585,7 +2922,7 @@ function openTemplateEditor(id){
   if(modalMask) modalMask.classList.add('hidden');
   showPage('templateEditor');
   setTemplateLanguage(DEFAULT_LANG);
-  syncTemplateDisplayFormatUI(false);
+  syncTemplatePopupReminderUI(false);
   renderTemplateTokenBars();
 }
 
@@ -2622,7 +2959,7 @@ function saveTemplate(){
   if(missingBody){showToast('请完善 '+missingBody.name+' 的正文');setTemplateLanguage(missingBody.code);return}
   if(templateEnablePopupDisplay){
     const missingPopup=findMissingLang(templateDraftCopy,['popup']);
-    if(missingPopup){showToast('已选择弹窗展示，请完善 '+missingPopup.name+' 的弹窗展示内容');setTemplateLanguage(missingPopup.code);return}
+    if(missingPopup){showToast('已勾选弹窗提醒，请完善 '+missingPopup.name+' 的弹窗展示内容');setTemplateLanguage(missingPopup.code);return}
   }
   const name=primaryCopyTitle(templateDraftCopy);
   if(!name){showToast('请填写模板标题');return}
@@ -2668,7 +3005,8 @@ function fillTemplateSelect(){
   const sel=document.getElementById('editorTplSelect');
   if(!sel)return;
   const cur=sel.value;
-  const enabledTemplates=templates.filter(t=>t.enabled!==false);
+  const wantPopup=!!enablePopupDisplay;
+  const enabledTemplates=templates.filter(t=>t.enabled!==false&&!!t.enablePopup===wantPopup);
   sel.innerHTML='<option value="">不使用模板</option>'+enabledTemplates.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
   if(cur && enabledTemplates.some(t=>String(t.id)===String(cur))) sel.value=cur;
   else sel.value='';
@@ -2678,10 +3016,14 @@ function applyTemplate(t){
   copy=ensureCopy(t.copy);
   noticeParams=ensureFixedParams(t.params||[]);
   enablePopupDisplay=!!t.enablePopup;
-  if(displayFormat) displayFormat.value=enablePopupDisplay?'body_popup':'body_only';
+  if(enablePopupCheck) enablePopupCheck.checked=enablePopupDisplay;
   previewMode='body';
   paramSource='notice';
   loadInputs();
+  syncPopupReminderUI(false);
+  fillTemplateSelect();
+  const sel=document.getElementById('editorTplSelect');
+  if(sel) sel.value=String(t.id);
   renderNoticeParams();
   document.querySelectorAll('#editorLangTabs .tab').forEach(x=>x.classList.toggle('active',x.dataset.lang===lang));
   renderPreview();
@@ -2699,8 +3041,13 @@ function applyTemplateFromEditor(id){
     fillTemplateSelect();
     return;
   }
+  if(!!t.enablePopup!==!!enablePopupDisplay){
+    showToast(enablePopupDisplay?'当前已勾选弹窗提醒，只能选择含弹窗的模板':'未勾选弹窗提醒，只能选择不含弹窗的模板');
+    fillTemplateSelect();
+    return;
+  }
   applyTemplate(t);
-  showToast('已沿用模板「'+t.name+'」的文案、参数与弹窗设置');
+  showToast('已沿用模板「'+t.name+'」的文案与参数');
 }
 
 function createFromTemplate(id){
@@ -2713,8 +3060,9 @@ function createFromTemplate(id){
   editing=false;editingPublished=false;
   editorTitle.textContent='新增公告（引用模板）';
   resetEditor();
+  enablePopupDisplay=!!t.enablePopup;
+  if(enablePopupCheck) enablePopupCheck.checked=enablePopupDisplay;
   fillTemplateSelect();
-  document.getElementById('editorTplSelect').value=String(id);
   applyTemplate(t);
   showPage('editor');
   setLang(DEFAULT_LANG);
@@ -2731,7 +3079,7 @@ function statusClassName(status){
 }
 
 function getCycleStatus(n){
-  if(n.publishMode!=='循环发布'||!n.cycleId) return '无循环';
+  if(!n.cycleId) return '无循环';
   return cycleRules[n.cycleId]?.terminated?'已终止':'循环中';
 }
 
@@ -2785,7 +3133,10 @@ function currentCreatedAt(){
 function buildNoticeRow(n){
   const expire=formatListDisplayTime(n.expireTime||'—');
   const cycleStatus=getCycleStatus(n);
-  return `<td><span class="mono">${n.noticeId}</span></td><td>${n.name}</td><td>${n.project}</td><td>${n.publishMode}</td><td>${formatListDisplayTime(n.publishTime)}</td><td>${expire}</td><td><span class="pill ${statusClassName(n.status)}">${n.status}</span></td><td><span class="pill ${cycleStatusClassName(cycleStatus)}">${cycleStatus}</span></td><td>${n.creator}</td><td>${formatListDisplayTime(n.createdAt)}</td><td>${buildActionButtons(n)}</td>`;
+  const hasPopup=!!n.enablePopup;
+  const popupPill=`<span class="pill ${hasPopup?'ok':'draft'}">${hasPopup?'有弹窗':'无弹窗'}</span>`;
+  const popupCycle=hasPopup?(n.popupCycleSummary||'不循环'):'—';
+  return `<td><span class="mono">${n.noticeId}</span></td><td>${n.name}</td><td>${n.project}</td><td>${n.publishMode}</td><td>${formatListDisplayTime(n.publishTime)}</td><td>${expire}</td><td><span class="pill ${statusClassName(n.status)}">${n.status}</span></td><td><span class="pill ${cycleStatusClassName(cycleStatus)}">${cycleStatus}</span></td><td>${popupPill}</td><td>${popupCycle}</td><td>${n.creator}</td><td>${formatListDisplayTime(n.createdAt)}</td><td>${buildActionButtons(n)}</td>`;
 }
 
 function renderSampleNotices(){
@@ -2793,6 +3144,7 @@ function renderSampleNotices(){
 }
 
 try{
+  initPreviewTzSelects();
   renderSampleNotices();
   renderLangSwitchers();
   initTargetCheckPanels();
