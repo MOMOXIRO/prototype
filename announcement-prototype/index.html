@@ -779,7 +779,7 @@ function sampleSimpleCopy(titleZh,bodyZh,titleEn,bodyEn,popupZh='',popupEn=''){
 }
 
 let copy=sampleMaintCopy();
-let lang=DEFAULT_LANG,editing=false,editingPublished=false,enablePopupDisplay=false,previewMode='body',contentEditMode='body';
+let lang=DEFAULT_LANG,editing=false,editingPublished=false,editingNoticeId=null,enablePopupDisplay=false,previewMode='body',contentEditMode='body';
 
 const BASE_TZ='Africa/Nairobi'; // 固定 GMT+3
 const BASE_TZ_LABEL='GMT+3';
@@ -1088,7 +1088,7 @@ function resetEditor(){
 }
 function openCreate(){
   try{
-    editing=false;editingPublished=false;
+    editing=false;editingPublished=false;editingNoticeId=null;
     paramManagerOpen=false;
     paramEditIndex=null;
     paramSource='notice';
@@ -1109,19 +1109,40 @@ function openCreate(){
 function openEdit(button){
   const n=getNoticeFromButton(button);
   if(!n)return;
-  if(n.status!=='待发布'&&!(n.status==='展示中'&&n.publishMode!=='循环发布')){
-    showToast('当前状态不支持编辑');
-    return;
-  }
-  editing=true;
-  editingPublished=n.status==='展示中';
   editorTitle.textContent='编辑公告';
   resetEditor();
+  editing=true;
+  editingNoticeId=n.noticeId;
+  editingPublished=n.status==='展示中';
   if(n.project) targetProject.value=n.project;
   publishMode.value=n.publishMode.includes('循环')?'recurring':(n.publishMode.includes('立即')?'immediate':'scheduled');
   copy=ensureCopy(templates[0].copy);
-  if(copy.zhHant) copy.zhHant.title=n.name;
-  noticeParams=ensureFixedParams(defaultParams);lang=DEFAULT_LANG;loadInputs();renderNoticeParams();onPublishConfigChange();showPage('editor');setLang(DEFAULT_LANG)
+  LANGS.forEach(({code})=>{
+    if(!copy[code]) copy[code]={title:'',body:'',popup:''};
+    copy[code].title=n.name;
+  });
+  noticeParams=ensureFixedParams(defaultParams);
+  lang=DEFAULT_LANG;
+  loadInputs();
+  renderNoticeParams();
+  onPublishConfigChange();
+  const toInput=v=>{
+    if(!v||v==='长期有效'||v==='下次发布前') return '';
+    const m=String(v).trim().match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2}))?/);
+    if(!m) return '';
+    return m[4]?`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}`:`${m[1]}-${m[2]}-${m[3]}T00:00`;
+  };
+  const startVal=toInput(n.publishTime);
+  const endVal=toInput(n.expireTime);
+  if(startVal&&eventStartTime) eventStartTime.value=startVal;
+  if(endVal&&eventEndTime) eventEndTime.value=endVal;
+  if(n.expireTime==='长期有效'&&validityType){
+    const opt=[...validityType.options].find(o=>o.value==='permanent');
+    if(opt){validityType.value='permanent';onPublishConfigChange();}
+  }
+  showPage('editor');
+  setLang(DEFAULT_LANG);
+  showToast(editingPublished?'编辑后保存将实时生效':'进入编辑，保存后更新公告');
 }
 function setLang(v){
   saveCopy();
@@ -1394,8 +1415,8 @@ function initValidityOptions(preserve){
   if(!sel)return;
   const prev=preserve?sel.value:'';
   if(mode==='recurring'){
-    sel.innerHTML='<option value="fixed_duration">固定时长</option><option value="until_next">持续到下一次发布</option>';
-    sel.value=(prev==='until_next'||prev==='fixed_duration')?prev:'fixed_duration';
+    sel.innerHTML='<option value="fixed_duration">固定时长</option><option value="until_next">持续到下一次发布</option><option value="permanent">长期有效</option>';
+    sel.value=(prev==='until_next'||prev==='fixed_duration'||prev==='permanent')?prev:'fixed_duration';
   }else{
     sel.innerHTML='<option value="limited">有期限</option><option value="permanent">长期有效</option>';
     sel.value=(prev==='permanent'||prev==='limited')?prev:'limited';
@@ -1437,6 +1458,10 @@ function syncCoreTimesFromConfig(){
   const startDate=loopStartDate?.value||fmtInput(new Date(),baseTz).slice(0,10);
   let startDT=`${startDate}T${st}`;
   if(eventStartTime) eventStartTime.value=startDT;
+  if(validity==='permanent'){
+    if(eventEndTime) eventEndTime.value='2099-12-31T23:59';
+    return;
+  }
   if(validity==='until_next'){
     // 持续到下一次：按循环周期给一个占位结束时间，便于状态计算
     const type=recurrenceType?.value||'daily';
@@ -1479,7 +1504,7 @@ function onPublishConfigChange(){
 }
 function onPopupConfigChange(){
   const validity=validityType?.value||'';
-  const longTerm=publishMode?.value!=='recurring'&&validity==='permanent';
+  const longTerm=validity==='permanent';
   const endSel=document.getElementById('popupEndMode')||popupEndMode;
   const endTimeField=document.getElementById('popupEndTimeField');
   if(endSel){
@@ -1496,7 +1521,7 @@ function recurrenceSummary(){
   const validity=validityType?.value;
   const dur=validity==='fixed_duration'
     ?`${displayDurationValue?.value||1}天`
-    :'持续到下一次';
+    :(validity==='permanent'?'长期有效':'持续到下一次');
   if(type==='daily') return `每日 ${st} · ${dur}`;
   if(type==='weekly'){
     const days=weekdayLabel(getWeeklyDay());
@@ -1617,7 +1642,7 @@ function buildNoticeFromEditor(title){
     cycleRules[baseId]={
       summary,
       detail:recurrenceSummary()+' '+BASE_TZ_LABEL,
-      duration:validity==='until_next'?'持续到下一次发布':`${displayDurationValue?.value||1}天`,
+      duration:validity==='permanent'?'长期有效':(validity==='until_next'?'持续到下一次发布':`${displayDurationValue?.value||1}天`),
       terminated:false,
       nextPeriod:1,
       creator:'Admin',
@@ -1638,9 +1663,36 @@ function saveNotice(){
   let title=primaryCopyTitle(copy);if(!title){alert('请填写公告标题');return}
   const usesTime=Object.values(copy).some(c=>/\$\{[a-zA-Z0-9_]+\}/.test(c.body));
   if(!usesTime&&!confirm('多语言正文中未引用任何参数，确认继续保存吗？'))return;
+  if(editing&&editingNoticeId){
+    const exist=getNoticeById(editingNoticeId);
+    if(exist){
+      syncCoreTimesFromConfig();
+      const validity=validityType?.value||'';
+      exist.name=title;
+      exist.project=targetProject.value;
+      exist.publishTime=fmtListTime(eventStartTime?.value)||exist.publishTime;
+      exist.expireTime=validity==='permanent'||validity==='until_next'
+        ?(validity==='permanent'?'长期有效':'下次发布前')
+        :(fmtListTime(eventEndTime?.value)||exist.expireTime);
+      if(exist.status==='待发布'||exist.status==='展示中'){
+        const nextStatus=calcStatus();
+        if(nextStatus==='待发布'||nextStatus==='展示中'||nextStatus==='已归档') exist.status=nextStatus;
+      }
+      editingNoticeId=null;
+      editing=false;
+      editingPublished=false;
+      showPage('list');
+      renderNoticeList(false);
+      showToast('公告已更新，修改已实时生效');
+      return;
+    }
+  }
   if(!editing){
     noticeRecords.push(buildNoticeFromEditor(title));
   }
+  editingNoticeId=null;
+  editing=false;
+  editingPublished=false;
   showPage('list');
   renderNoticeList(false);
   showToast(publishMode.value==='recurring'
@@ -2629,7 +2681,7 @@ function cycleStatusClassName(cycleStatus){
 }
 
 const ACTION_ICONS={
-  view:`<svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  edit:`<svg viewBox="0 0 24 24"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3Z"/><path d="m14 8 3 3"/></svg>`,
   copy:`<svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>`,
   cancel:`<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M9 12h6"/></svg>`,
   unshelf:`<svg viewBox="0 0 24 24"><path d="M21 8v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8"/><path d="M23 8H1l2.4-4.8A2 2 0 0 1 5.2 2h13.6a2 2 0 0 1 1.8 1.2L23 8Z"/><path d="M10 12h4"/></svg>`,
@@ -2646,8 +2698,8 @@ function buildActionButtons(n){
   const isCycle=n.publishMode==='循环发布'&&!!n.cycleId;
   const cycleStatus=getCycleStatus(n);
   const btns=[];
-  // 顺序参考设计：查看 → 复制 → 危险操作 → 日志
-  btns.push(iconActionBtn('查看',`viewNotice(this)`,ACTION_ICONS.view));
+  // 编辑（实时生效）→ 复制 → 危险操作 → 日志
+  btns.push(iconActionBtn('编辑',`openEdit(this)`,ACTION_ICONS.edit));
   btns.push(iconActionBtn('复制',`copyNotice(this)`,ACTION_ICONS.copy));
   if(status==='待发布'){
     btns.push(iconActionBtn('取消',`cancelScheduledNotice(this)`,ACTION_ICONS.cancel,true));
