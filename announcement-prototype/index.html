@@ -613,21 +613,32 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
           </div>
         </div>
         <div class="body">
-          <div class="field"><label class="label"><span class="req">*</span>公告标题</label><input id="templateTitleInput" class="control" placeholder="请填写公告标题"></div>
-          <div style="height:16px"></div>
           <div class="field">
-            <label class="label"><span class="req">*</span>公告正文</label>
-            <div class="tokens" id="templateTokenBar" style="margin:0 0 10px"></div>
-            <textarea id="templateBodyInput" class="control" placeholder="请输入公告正文"></textarea>
-            <div class="body-actions">
-              <label class="check-row"><input id="templateEnablePopup" type="checkbox" onchange="toggleTemplatePopupContent()">弹窗展示形式</label>
+            <label class="label"><span class="req">*</span>展示形式</label>
+            <select id="templateDisplayFormat" class="control" onchange="onTemplateDisplayFormatChange()">
+              <option value="body_only" selected>仅公告正文</option>
+              <option value="body_popup">公告正文 + 弹窗</option>
+            </select>
+          </div>
+          <div style="height:14px"></div>
+          <div class="field"><label class="label"><span class="req">*</span>公告标题</label><input id="templateTitleInput" class="control" placeholder="请填写公告标题（正文与弹窗共用）"></div>
+          <div style="height:14px"></div>
+          <div class="content-mode-tabs hidden" id="templateContentModeTabs">
+            <button type="button" class="content-mode-tab active" id="templateContentModeBodyTab" onclick="setTemplateContentEditMode('body')">公告正文</button>
+            <button type="button" class="content-mode-tab" id="templateContentModePopupTab" onclick="setTemplateContentEditMode('popup')">弹窗内容</button>
+          </div>
+          <div id="templateBodyContentPanel">
+            <div class="field">
+              <label class="label"><span class="req">*</span>公告正文</label>
+              <div class="tokens" id="templateTokenBar" style="margin:0 0 10px"></div>
+              <textarea id="templateBodyInput" class="control" placeholder="请输入公告正文"></textarea>
             </div>
-            <div id="templatePopupContentPanel" class="popup-panel hidden">
-              <div class="field">
-                <label class="label"><span class="req">*</span>弹窗展示内容</label>
-                <div class="tokens" id="templatePopupTokenBar" style="margin:0 0 10px"></div>
-                <textarea id="templatePopupInput" class="control" placeholder="请输入弹窗展示内容，可插入参数"></textarea>
-              </div>
+          </div>
+          <div id="templatePopupContentPanel" class="popup-inline-panel hidden">
+            <div class="field">
+              <label class="label"><span class="req">*</span>弹窗展示内容</label>
+              <div class="tokens" id="templatePopupTokenBar" style="margin:0 0 10px"></div>
+              <textarea id="templatePopupInput" class="control" placeholder="请输入弹窗展示内容，可插入参数"></textarea>
             </div>
           </div>
         </div>
@@ -637,13 +648,9 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
     <aside class="card preview">
       <div class="head"><div><div class="title">用户端预览</div></div></div>
       <div class="body" style="padding-bottom:0">
-        <div class="grid2">
-          <select id="templatePreviewLang" class="control" onchange="setTemplateLanguage(this.value)"></select>
-          <div class="control" style="display:flex;align-items:center;color:var(--muted);background:#f8fafc;cursor:default">当前基准时区为：GMT+3</div>
-        </div>
         <div class="preview-mode" id="templatePreviewModeBar">
           <button type="button" class="preview-mode-btn active" id="templatePreviewModeBodyBtn" onclick="setTemplatePreviewMode('body')">公告正文预览</button>
-          <button type="button" class="preview-mode-btn" id="templatePreviewModePopupBtn" onclick="setTemplatePreviewMode('popup')" disabled title="请先勾选弹窗展示形式">弹窗预览</button>
+          <button type="button" class="preview-mode-btn" id="templatePreviewModePopupBtn" onclick="setTemplatePreviewMode('popup')" disabled title="请先选择「公告正文 + 弹窗」">弹窗预览</button>
         </div>
       </div>
       <div class="phone">
@@ -791,6 +798,7 @@ let editingTemplateId=null;
 let templateLang=null;
 let templateEnablePopupDisplay=false;
 let templatePreviewMode='body';
+let templateContentEditMode='body';
 let templateDraftParams=[];
 let templateDraftCopy=emptyCopy();
 
@@ -2432,7 +2440,7 @@ function saveTemplateLanguage(){
   templateDraftCopy[templateLang].title=templateTitleInput.value;
   templateDraftCopy[templateLang].body=templateBodyInput.value;
   if(templatePopupInput) templateDraftCopy[templateLang].popup=templatePopupInput.value;
-  if(templateEnablePopup) templateEnablePopupDisplay=!!templateEnablePopup.checked;
+  templateEnablePopupDisplay=(templateDisplayFormat?.value==='body_popup');
 }
 
 function setTemplateLanguage(nextLang){
@@ -2442,11 +2450,11 @@ function setTemplateLanguage(nextLang){
   templateTitleInput.value=templateDraftCopy[templateLang].title||'';
   templateBodyInput.value=templateDraftCopy[templateLang].body||'';
   if(templatePopupInput) templatePopupInput.value=templateDraftCopy[templateLang].popup||'';
-  if(templateEnablePopup) templateEnablePopup.checked=!!templateEnablePopupDisplay;
+  if(templateDisplayFormat) templateDisplayFormat.value=templateEnablePopupDisplay?'body_popup':'body_only';
   const templatePreviewLangEl=document.getElementById('templatePreviewLang');
   if(templatePreviewLangEl) templatePreviewLangEl.value=templateLang;
   document.querySelectorAll('#templateLangTabs .tab').forEach(tab=>tab.classList.toggle('active',tab.dataset.templateLang===templateLang));
-  toggleTemplatePopupContent(false);
+  syncTemplateDisplayFormatUI(false);
   renderTemplatePreview();
 }
 
@@ -2463,17 +2471,54 @@ function resolveTemplateParams(text,tz){
   return out;
 }
 
-function toggleTemplatePopupContent(fromUser=true){
-  if(templateEnablePopup) templateEnablePopupDisplay=!!templateEnablePopup.checked;
-  if(templatePopupContentPanel) templatePopupContentPanel.classList.toggle('hidden',!templateEnablePopupDisplay);
-  if(!templateEnablePopupDisplay&&templatePreviewMode==='popup') templatePreviewMode='body';
+function onTemplateDisplayFormatChange(fromUser=true){
+  templateEnablePopupDisplay=(templateDisplayFormat?.value==='body_popup');
+  syncTemplateDisplayFormatUI(fromUser);
+}
+function setTemplateContentEditMode(mode){
+  templateEnablePopupDisplay=(templateDisplayFormat?.value==='body_popup');
+  if(mode==='popup'&&!templateEnablePopupDisplay){
+    showToast('请先选择「公告正文 + 弹窗」');
+    return;
+  }
+  templateContentEditMode=mode==='popup'?'popup':'body';
+  syncTemplateContentEditModeUI();
+  if(templateEnablePopupDisplay){saveTemplateLanguage();renderTemplatePreview()}
+}
+function syncTemplateContentEditModeUI(){
+  const tabs=document.getElementById('templateContentModeTabs');
+  const bodyPanel=document.getElementById('templateBodyContentPanel');
+  const popupPanel=document.getElementById('templatePopupContentPanel');
+  const bodyTab=document.getElementById('templateContentModeBodyTab');
+  const popupTab=document.getElementById('templateContentModePopupTab');
+  if(tabs) tabs.classList.toggle('hidden',!templateEnablePopupDisplay);
+  if(!templateEnablePopupDisplay) templateContentEditMode='body';
+  if(bodyTab) bodyTab.classList.toggle('active',templateContentEditMode==='body');
+  if(popupTab){
+    popupTab.disabled=!templateEnablePopupDisplay;
+    popupTab.classList.toggle('active',templateContentEditMode==='popup');
+  }
+  if(bodyPanel) bodyPanel.classList.toggle('hidden',templateEnablePopupDisplay&&templateContentEditMode==='popup');
+  if(popupPanel) popupPanel.classList.toggle('hidden',!(templateEnablePopupDisplay&&templateContentEditMode==='popup'));
+}
+function syncTemplateDisplayFormatUI(fromUser=true){
+  if(templateDisplayFormat) templateDisplayFormat.value=templateEnablePopupDisplay?'body_popup':'body_only';
+  if(!templateEnablePopupDisplay){
+    templateContentEditMode='body';
+    if(templatePreviewMode==='popup') templatePreviewMode='body';
+  }
+  syncTemplateContentEditModeUI();
   syncTemplatePreviewModeUI();
   if(fromUser){saveTemplateLanguage();renderTemplatePreview()}
+}
+function toggleTemplatePopupContent(fromUser=true){
+  // 兼容旧调用：统一走展示形式
+  onTemplateDisplayFormatChange(fromUser);
 }
 
 function setTemplatePreviewMode(mode){
   if(mode==='popup'&&!templateEnablePopupDisplay){
-    showToast('请先勾选弹窗展示形式');
+    showToast('请先选择「公告正文 + 弹窗」');
     return;
   }
   templatePreviewMode=mode==='popup'?'popup':'body';
@@ -2487,7 +2532,7 @@ function syncTemplatePreviewModeUI(){
   if(!templateEnablePopupDisplay&&templatePreviewMode==='popup') templatePreviewMode='body';
   if(popupBtn){
     popupBtn.disabled=!templateEnablePopupDisplay;
-    popupBtn.title=templateEnablePopupDisplay?'切换到弹窗预览':'请先勾选弹窗展示形式';
+    popupBtn.title=templateEnablePopupDisplay?'切换到弹窗预览':'请先选择「公告正文 + 弹窗」';
   }
   if(bodyBtn) bodyBtn.classList.toggle('active',templatePreviewMode==='body');
   if(popupBtn) popupBtn.classList.toggle('active',templatePreviewMode==='popup');
@@ -2531,6 +2576,8 @@ function openTemplateEditor(id){
   templateDraftParams=ensureFixedParams(t?t.params||[]:[]);
   templateEnablePopupDisplay=!!(t&&t.enablePopup);
   templatePreviewMode='body';
+  templateContentEditMode='body';
+  if(templateDisplayFormat) templateDisplayFormat.value=templateEnablePopupDisplay?'body_popup':'body_only';
   templateLang=null;
   paramSource='template';
   paramEditIndex=null;
@@ -2538,6 +2585,7 @@ function openTemplateEditor(id){
   if(modalMask) modalMask.classList.add('hidden');
   showPage('templateEditor');
   setTemplateLanguage(DEFAULT_LANG);
+  syncTemplateDisplayFormatUI(false);
   renderTemplateTokenBars();
 }
 
@@ -2574,7 +2622,7 @@ function saveTemplate(){
   if(missingBody){showToast('请完善 '+missingBody.name+' 的正文');setTemplateLanguage(missingBody.code);return}
   if(templateEnablePopupDisplay){
     const missingPopup=findMissingLang(templateDraftCopy,['popup']);
-    if(missingPopup){showToast('已开启弹窗展示，请完善 '+missingPopup.name+' 的弹窗展示内容');setTemplateLanguage(missingPopup.code);return}
+    if(missingPopup){showToast('已选择弹窗展示，请完善 '+missingPopup.name+' 的弹窗展示内容');setTemplateLanguage(missingPopup.code);return}
   }
   const name=primaryCopyTitle(templateDraftCopy);
   if(!name){showToast('请填写模板标题');return}
