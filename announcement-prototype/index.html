@@ -18,8 +18,9 @@ button,input,select,textarea{font:inherit}
 input:focus,select:focus,textarea:focus,button:focus{outline:none;box-shadow:var(--focus)}
 
 .page{padding:16px 24px 32px}
-.page-header{margin-bottom:16px}
+.page-header{margin-bottom:16px;display:flex;align-items:baseline;gap:10px}
 .page-header h1{margin:0;font-size:24px;font-weight:700;color:var(--text);line-height:1.2}
+.page-header-tz{font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.02em;line-height:1.4}
 
 .shell{background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow-panel);overflow:hidden;min-height:720px}
 .meta-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:1px solid var(--line);background:#fbfcff;font-size:11px;color:var(--muted)}
@@ -52,7 +53,12 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none;box-shadow:var
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-.grid3 > .hidden{display:none !important}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:start}
+.grid3 > .hidden,.grid4 > .hidden{display:none !important}
+.duration-wrap{display:flex;gap:8px;align-items:center;width:100%}
+.duration-wrap .control.num{flex:1 1 0;min-width:0}
+.duration-wrap .control.unit{flex:0 0 90px;width:90px;padding:0 8px}
+.duration-unit-text{flex:0 0 auto;color:#475569;font-size:13px;font-weight:500;min-width:1.5em}
 .field{display:flex;flex-direction:column;gap:6px;min-width:0}
 .label{font-size:13px;font-weight:500;color:#334155}
 .label .req{color:#ef4444;margin-right:2px;font-weight:700}
@@ -149,16 +155,18 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .check-panel-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .check-panel-head input,
 .check-panel-item input{width:14px;height:14px;accent-color:var(--pri);cursor:pointer;flex:0 0 auto}
-.target-check-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start;position:relative;z-index:2}
+.target-check-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:start;position:relative;z-index:2}
 .target-check-row .field{min-width:0;position:relative}
 .target-check-row .label{margin-bottom:0}
 .form-stack{display:flex;flex-direction:column;gap:16px}
 .form-stack .field .control,
-.form-stack .field .range-wrap{width:100%;box-sizing:border-box}
-.recurrence-time-range .range-wrap{height:34px;border-radius:7px}
-.recurrence-time-range .range-wrap input{flex:1 1 0;min-width:0;width:0;font-size:14px}
-.recurrence-day-row.hidden{display:none !important}
-.recurrence-day-row .field-spacer{visibility:hidden;pointer-events:none}
+.form-stack .field .range-wrap,
+.form-stack .field .duration-wrap{width:100%;box-sizing:border-box}
+.config-row.hidden,.config-subrow.hidden{display:none !important}
+.weekday-chips{display:flex;flex-wrap:wrap;gap:6px;min-height:34px;align-items:center}
+.weekday-chips label{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 8px;border:1px solid var(--field-line);border-radius:6px;font-size:12px;color:#334155;cursor:pointer;user-select:none;background:#fff}
+.weekday-chips label.is-on{border-color:var(--pri);background:var(--soft);color:var(--pri);font-weight:600}
+.weekday-chips input{display:none}
 
 .modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000}
 .modal-panel{width:min(760px,100%);max-height:86vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow-pop);margin:auto;flex-shrink:0}
@@ -188,6 +196,9 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .check-row{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#334155;cursor:pointer;user-select:none}
 .check-row input{width:16px;height:16px;accent-color:var(--pri);cursor:pointer}
 .popup-panel{margin-top:14px;padding-top:14px;border-top:1px dashed #e2e8f0}
+.popup-inline-panel{margin-top:18px;padding-top:16px;border-top:1px dashed #e2e8f0}
+.popup-inline-panel.hidden{display:none !important}
+.popup-inline-title{font-size:14px;font-weight:600;color:#1f2937;margin-bottom:12px}
 .popup-preview{margin-top:12px;padding:12px;border:1px solid #dbe4ff;border-radius:10px;background:#f5f8ff}
 .popup-preview .label{margin-bottom:6px;color:var(--pri)}
 .popup-preview p{margin:0;white-space:pre-line;line-height:1.7;color:#334155;font-size:13px}
@@ -218,14 +229,15 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .footer-bar.end{justify-content:flex-end}
 
 .modal-mask.hidden{display:none !important}
-@media(max-width:1000px){.layout{grid-template-columns:1fr}.preview{position:static}.target-check-row{grid-template-columns:1fr}}
-@media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr}.page{padding:12px}.filter-actions{margin-left:0;width:100%}.name-filter,.project-filter,.status-filter,.date-filter{width:100%}.recurrence-inline .control{min-width:100%;flex:1 1 100%}.lang-sync-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.check-panel-body{grid-template-columns:repeat(2,minmax(0,1fr))}.target-check-row{grid-template-columns:1fr}}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}.preview{position:static}.target-check-row,.grid4{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){.grid2,.grid3,.grid4,.target-check-row{grid-template-columns:1fr}.page{padding:12px}.filter-actions{margin-left:0;width:100%}.name-filter,.project-filter,.status-filter,.date-filter{width:100%}.recurrence-inline .control{min-width:100%;flex:1 1 100%}.lang-sync-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.check-panel-body{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
 <div class="page">
   <header class="page-header">
     <h1>公告管理</h1>
+    <span class="page-header-tz">当前基准时区为：GMT+3</span>
   </header>
 
   <section class="shell">
@@ -234,7 +246,6 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
         <span>工作台</span>
         <span class="meta-tag" id="metaTag">公告列表</span>
       </div>
-      <span>GMT+08:00</span>
     </div>
     <div class="shell-body">
 
@@ -298,122 +309,119 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
         <div class="head"><div><div class="title" id="editorTitle">新增公告</div></div></div>
         <div class="body">
           <div class="form-stack">
-          <div class="grid2">
-            <div class="field"><label class="label"><span class="req">*</span>投放项目</label><select id="targetProject" class="control"><option value="Dana">Dana</option><option value="TW">TW</option></select></div>
-            <div class="field"><label class="label"><span class="req">*</span>基准时区</label><select id="baseTimezone" class="control" onchange="requestBaseTzChange(this)">
-              <option value="Asia/Jakarta">UTC+7 印度尼西亚 / Asia/Jakarta</option>
-              <option value="Asia/Singapore">UTC+8 新加坡 / Asia/Singapore</option>
-              <option value="Africa/Lagos">UTC+1 尼日利亚 / Africa/Lagos</option>
-              <option value="Europe/London">UTC+0 英国 / Europe/London</option>
-            </select></div>
-          </div>
-          <div class="target-check-row">
-          <div class="field">
-            <label class="label"><span class="req">*</span>投放 APP</label>
-            <div class="check-panel" id="targetAppPanel">
-              <div class="check-panel-head" onclick="toggleCheckPanelExpand('targetAppPanel')">
-                <label class="check-panel-all-wrap" onclick="event.stopPropagation()">
-                  <input class="check-panel-all" type="checkbox" checked onchange="toggleCheckPanelAll('targetAppPanel',this.checked)">全选
-                </label>
-                <span class="check-panel-summary" id="targetAppPanelSummary"></span>
-                <button type="button" class="check-panel-toggle" tabindex="-1">展开</button>
+            <!-- 第一行：投放对象 -->
+            <div class="target-check-row" id="targetRow">
+              <div class="field">
+                <label class="label"><span class="req">*</span>投放项目</label>
+                <select id="targetProject" class="control"><option value="Dana">Dana</option><option value="TW">TW</option></select>
               </div>
-              <div class="check-panel-body" id="targetAppOptions"></div>
-            </div>
-          </div>
-          <div class="field">
-            <label class="label"><span class="req">*</span>APP版本</label>
-            <div class="check-panel" id="targetAppVersionPanel">
-              <div class="check-panel-head" onclick="toggleCheckPanelExpand('targetAppVersionPanel')">
-                <label class="check-panel-all-wrap" onclick="event.stopPropagation()">
-                  <input class="check-panel-all" type="checkbox" checked onchange="toggleCheckPanelAll('targetAppVersionPanel',this.checked)">全选
-                </label>
-                <span class="check-panel-summary" id="targetAppVersionPanelSummary"></span>
-                <button type="button" class="check-panel-toggle" tabindex="-1">展开</button>
+              <div class="field">
+                <label class="label"><span class="req">*</span>投放 APP</label>
+                <div class="check-panel" id="targetAppPanel">
+                  <div class="check-panel-head" onclick="toggleCheckPanelExpand('targetAppPanel')">
+                    <label class="check-panel-all-wrap" onclick="event.stopPropagation()">
+                      <input class="check-panel-all" type="checkbox" checked onchange="toggleCheckPanelAll('targetAppPanel',this.checked)">全选
+                    </label>
+                    <span class="check-panel-summary" id="targetAppPanelSummary"></span>
+                    <button type="button" class="check-panel-toggle" tabindex="-1">展开</button>
+                  </div>
+                  <div class="check-panel-body" id="targetAppOptions"></div>
+                </div>
               </div>
-              <div class="check-panel-body" id="targetAppVersionOptions"></div>
-            </div>
-          </div>
-          <div class="field">
-            <label class="label"><span class="req">*</span>地区选择</label>
-            <div class="check-panel" id="targetRegionPanel">
-              <div class="check-panel-head" onclick="toggleCheckPanelExpand('targetRegionPanel')">
-                <label class="check-panel-all-wrap" onclick="event.stopPropagation()">
-                  <input class="check-panel-all" type="checkbox" checked onchange="toggleCheckPanelAll('targetRegionPanel',this.checked)">ALL
-                </label>
-                <span class="check-panel-summary" id="targetRegionPanelSummary"></span>
-                <button type="button" class="check-panel-toggle" tabindex="-1">展开</button>
+              <div class="field">
+                <label class="label"><span class="req">*</span>APP版本</label>
+                <div class="check-panel" id="targetAppVersionPanel">
+                  <div class="check-panel-head" onclick="toggleCheckPanelExpand('targetAppVersionPanel')">
+                    <label class="check-panel-all-wrap" onclick="event.stopPropagation()">
+                      <input class="check-panel-all" type="checkbox" checked onchange="toggleCheckPanelAll('targetAppVersionPanel',this.checked)">全选
+                    </label>
+                    <span class="check-panel-summary" id="targetAppVersionPanelSummary"></span>
+                    <button type="button" class="check-panel-toggle" tabindex="-1">展开</button>
+                  </div>
+                  <div class="check-panel-body" id="targetAppVersionOptions"></div>
+                </div>
               </div>
-              <div class="check-panel-body" id="targetRegionOptions"></div>
-            </div>
-          </div>
-          </div>
-          <div class="grid3" id="publishConfigRow">
-            <div class="field"><label class="label"><span class="req">*</span>发布方式</label><select id="publishMode" class="control" onchange="togglePublishMode()"><option value="immediate" selected>立即发布</option><option value="scheduled">预约发布</option><option value="recurring">循环发布</option></select></div>
-            <div class="field" id="startTimeField"><label class="label" id="startTimeLabel"><span class="req">*</span>发布时间</label><input id="eventStartTime" class="control" type="datetime-local" value="2026-07-20T09:00" onfocus="this.dataset.previous=this.value" onchange="onCoreTimeChange(this)"></div>
-            <div class="field hidden" id="recurrenceTypeField"><label class="label"><span class="req">*</span>循环规则</label><select id="recurrenceType" class="control" onchange="toggleRecurrenceType()"><option value="daily" selected>每日</option><option value="weekly">每周</option><option value="monthly">每月</option></select></div>
-            <div class="field" id="endTimeField"><label class="label" id="endTimeLabel"><span class="req">*</span>到期时间</label><input id="eventEndTime" class="control" type="datetime-local" value="2026-07-20T10:00" onfocus="this.dataset.previous=this.value" onchange="onCoreTimeChange(this)"></div>
-            <div class="field recurrence-time-range hidden" id="recurrenceTimeRangeField">
-              <label class="label"><span class="req">*</span>时间区间</label>
-              <div class="range-wrap">
-                <input id="recurrenceStartTime" type="time" step="1" value="09:00:00" title="每次开始时间" onchange="onRecurrenceTimeChange()">
-                <span class="range-mid">~</span>
-                <input id="recurrenceEndTime" type="time" step="1" value="18:00:00" title="每次结束时间" onchange="onRecurrenceTimeChange()">
+              <div class="field">
+                <label class="label"><span class="req">*</span>地区选择</label>
+                <div class="check-panel" id="targetRegionPanel">
+                  <div class="check-panel-head" onclick="toggleCheckPanelExpand('targetRegionPanel')">
+                    <label class="check-panel-all-wrap" onclick="event.stopPropagation()">
+                      <input class="check-panel-all" type="checkbox" checked onchange="toggleCheckPanelAll('targetRegionPanel',this.checked)">ALL
+                    </label>
+                    <span class="check-panel-summary" id="targetRegionPanelSummary"></span>
+                    <button type="button" class="check-panel-toggle" tabindex="-1">展开</button>
+                  </div>
+                  <div class="check-panel-body" id="targetRegionOptions"></div>
+                </div>
               </div>
             </div>
-          </div>
-          <div id="recurrenceDayRow" class="grid3 recurrence-day-row hidden">
-            <div class="field">
-              <label class="label"><span class="req">*</span>每次开始</label>
-              <select id="weeklyStartDay" class="control weekly-day hidden" onchange="onRecurrenceTimeChange()">
-                <option value="">开始周几</option>
-                <option value="1" selected>周一</option>
-                <option value="2">周二</option>
-                <option value="3">周三</option>
-                <option value="4">周四</option>
-                <option value="5">周五</option>
-                <option value="6">周六</option>
-                <option value="0">周日</option>
-              </select>
-              <select id="monthlyStartDay" class="control monthly-day hidden" onchange="onRecurrenceTimeChange()">
-                <option value="">开始几号</option>
-                <option value="1" selected>1号</option><option value="2">2号</option><option value="3">3号</option><option value="4">4号</option><option value="5">5号</option>
-                <option value="6">6号</option><option value="7">7号</option><option value="8">8号</option><option value="9">9号</option><option value="10">10号</option>
-                <option value="11">11号</option><option value="12">12号</option><option value="13">13号</option><option value="14">14号</option><option value="15">15号</option>
-                <option value="16">16号</option><option value="17">17号</option><option value="18">18号</option><option value="19">19号</option><option value="20">20号</option>
-                <option value="21">21号</option><option value="22">22号</option><option value="23">23号</option><option value="24">24号</option><option value="25">25号</option>
-                <option value="26">26号</option><option value="27">27号</option><option value="28">28号</option><option value="29">29号</option><option value="30">30号</option>
-                <option value="31">31号</option>
-              </select>
+
+            <!-- 第二行：发布方式 / 有效期 / 动态字段 -->
+            <div class="grid4 config-row" id="publishConfigRow">
+              <div class="field">
+                <label class="label"><span class="req">*</span>发布方式</label>
+                <select id="publishMode" class="control" onchange="onPublishConfigChange()">
+                  <option value="immediate" selected>立即发布</option>
+                  <option value="scheduled">预约发布</option>
+                  <option value="recurring">循环发布</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="label"><span class="req">*</span>公告有效期</label>
+                <select id="validityType" class="control" onchange="onPublishConfigChange()"></select>
+              </div>
+              <div class="field hidden" id="scheduleStartField">
+                <label class="label"><span class="req">*</span>预约发布时间</label>
+                <input id="eventStartTime" class="control" type="datetime-local" value="2026-07-20T09:00" onfocus="this.dataset.previous=this.value" onchange="onCoreTimeChange(this)">
+              </div>
+              <div class="field" id="expireTimeField">
+                <label class="label"><span class="req">*</span>到期时间</label>
+                <input id="eventEndTime" class="control" type="datetime-local" value="2026-07-20T10:00" onfocus="this.dataset.previous=this.value" onchange="onCoreTimeChange(this)">
+              </div>
+              <div class="field hidden" id="recurrenceTypeField">
+                <label class="label"><span class="req">*</span>循环规则</label>
+                <select id="recurrenceType" class="control" onchange="onPublishConfigChange()">
+                  <option value="daily" selected>每日</option>
+                  <option value="weekly">每周</option>
+                  <option value="monthly">每月</option>
+                </select>
+              </div>
+              <div class="field hidden" id="weeklyDaysField">
+                <label class="label"><span class="req">*</span>执行星期</label>
+                <select id="weeklyExecDay" class="control" onchange="onPublishConfigChange()">
+                  <option value="1" selected>周一</option>
+                  <option value="2">周二</option>
+                  <option value="3">周三</option>
+                  <option value="4">周四</option>
+                  <option value="5">周五</option>
+                  <option value="6">周六</option>
+                  <option value="0">周日</option>
+                </select>
+              </div>
+              <div class="field hidden" id="monthlyDayField">
+                <label class="label"><span class="req">*</span>执行日期</label>
+                <select id="monthlyExecDay" class="control" onchange="onPublishConfigChange()"></select>
+              </div>
             </div>
-            <div class="field">
-              <label class="label"><span class="req">*</span>每次结束</label>
-              <select id="weeklyEndDay" class="control weekly-day hidden" onchange="onRecurrenceTimeChange()">
-                <option value="">结束周几</option>
-                <option value="1">周一</option>
-                <option value="2">周二</option>
-                <option value="3" selected>周三</option>
-                <option value="4">周四</option>
-                <option value="5">周五</option>
-                <option value="6">周六</option>
-                <option value="0">周日</option>
-              </select>
-              <select id="monthlyEndDay" class="control monthly-day hidden" onchange="onRecurrenceTimeChange()">
-                <option value="">结束几号</option>
-                <option value="1">1号</option><option value="2">2号</option><option value="3">3号</option><option value="4">4号</option><option value="5">5号</option>
-                <option value="6">6号</option><option value="7">7号</option><option value="8">8号</option><option value="9">9号</option><option value="10">10号</option>
-                <option value="11">11号</option><option value="12">12号</option><option value="13">13号</option><option value="14">14号</option><option value="15">15号</option>
-                <option value="16">16号</option><option value="17">17号</option><option value="18">18号</option><option value="19">19号</option><option value="20">20号</option>
-                <option value="21">21号</option><option value="22">22号</option><option value="23">23号</option><option value="24">24号</option><option value="25">25号</option>
-                <option value="26">26号</option><option value="27">27号</option><option value="28">28号</option><option value="29">29号</option><option value="30" selected>30号</option>
-                <option value="31">31号</option>
-              </select>
+
+            <!-- 第三行：循环配置 -->
+            <div class="grid4 config-subrow hidden" id="recurrenceRow1">
+              <div class="field">
+                <label class="label"><span class="req">*</span>循环开始日期</label>
+                <input id="loopStartDate" class="control" type="date" value="2026-07-20" onchange="onPublishConfigChange()">
+              </div>
+              <div class="field">
+                <label class="label"><span class="req">*</span>每次发布时间</label>
+                <input id="recurrenceStartTime" class="control" type="time" step="60" value="09:00" onchange="onPublishConfigChange()">
+              </div>
+              <div class="field hidden" id="displayDurationField">
+                <label class="label"><span class="req">*</span>每次展示时长</label>
+                <div class="duration-wrap">
+                  <input id="displayDurationValue" class="control num" type="number" min="1" value="1" onchange="onPublishConfigChange()">
+                  <span class="duration-unit-text">天</span>
+                </div>
+              </div>
             </div>
-            <div class="field field-spacer" aria-hidden="true">
-              <label class="label">&nbsp;</label>
-              <div class="control" style="visibility:hidden"></div>
-            </div>
-          </div>
           </div>
         </div>
       </div>
@@ -423,7 +431,16 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
           <div><div class="title">公告内容</div></div>
         </div>
         <div class="body" style="padding-bottom:12px">
-          <div class="field"><label class="label">公告模板</label><select id="editorTplSelect" class="control" onchange="applyTemplateFromEditor(this.value)"><option value="">不使用模板</option></select></div>
+          <div class="form-stack">
+            <div class="field"><label class="label">公告模板</label><select id="editorTplSelect" class="control" onchange="applyTemplateFromEditor(this.value)"><option value="">不使用模板</option></select></div>
+            <div class="field">
+              <label class="label"><span class="req">*</span>展示形式</label>
+              <select id="displayFormat" class="control" onchange="onDisplayFormatChange()">
+                <option value="body_only" selected>仅公告正文</option>
+                <option value="body_popup">公告正文 + 弹窗</option>
+              </select>
+            </div>
+          </div>
         </div>
         <div class="lang-toolbar">
           <div class="tabs" id="editorLangTabs"></div>
@@ -439,10 +456,77 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
             <label class="label"><span class="req">*</span>公告正文</label>
             <div class="tokens" id="tokenBar" style="margin:0 0 10px"></div>
             <textarea id="bodyInput" class="control" placeholder="请输入公告正文"></textarea>
-            <div class="body-actions">
-              <label class="check-row"><input id="enablePopup" type="checkbox" onchange="togglePopupContent()">弹窗展示形式</label>
-            </div>
-            <div id="popupContentPanel" class="popup-panel hidden">
+          </div>
+          <div id="popupConfigPanel" class="popup-inline-panel hidden">
+            <div class="popup-inline-title">弹窗配置</div>
+            <div class="form-stack">
+              <div class="grid3" id="popupNormalRow">
+                <div class="field">
+                  <label class="label"><span class="req">*</span>弹窗开始方式</label>
+                  <select id="popupStartMode" class="control" onchange="onPopupConfigChange()">
+                    <option value="follow_start" selected>跟随公告开始</option>
+                    <option value="custom">指定时间</option>
+                  </select>
+                </div>
+                <div class="field hidden" id="popupStartTimeField">
+                  <label class="label"><span class="req">*</span>弹窗开始时间</label>
+                  <input id="popupStartTime" class="control" type="datetime-local" value="2026-07-20T09:00">
+                </div>
+                <div class="field">
+                  <label class="label"><span class="req">*</span>弹窗结束方式</label>
+                  <select id="popupEndMode" class="control" onchange="onPopupConfigChange()">
+                    <option value="follow_expire" selected>跟随公告到期</option>
+                    <option value="custom">指定时间</option>
+                  </select>
+                </div>
+                <div class="field hidden" id="popupEndTimeField">
+                  <label class="label"><span class="req">*</span>弹窗结束时间</label>
+                  <input id="popupEndTime" class="control" type="datetime-local" value="2026-07-20T10:00">
+                </div>
+                <div class="field">
+                  <label class="label"><span class="req">*</span>弹窗频率</label>
+                  <select id="popupFreqNormal" class="control">
+                    <option value="once">仅展示一次</option>
+                    <option value="each_login" selected>每次登录展示一次</option>
+                    <option value="daily">每天展示一次</option>
+                  </select>
+                </div>
+              </div>
+              <div class="grid3 hidden" id="popupRecurringRow">
+                <div class="field">
+                  <label class="label"><span class="req">*</span>弹窗开始规则</label>
+                  <select id="popupLoopStartMode" class="control" onchange="onPopupConfigChange()">
+                    <option value="follow_publish" selected>跟随每次发布</option>
+                    <option value="delay">发布后延迟</option>
+                  </select>
+                </div>
+                <div class="field hidden" id="popupDelayField">
+                  <label class="label"><span class="req">*</span>延迟</label>
+                  <div class="duration-wrap">
+                    <input id="popupDelayValue" class="control num" type="number" min="1" value="5">
+                    <select id="popupDelayUnit" class="control unit">
+                      <option value="minute" selected>分钟</option>
+                      <option value="hour">小时</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label"><span class="req">*</span>弹窗持续时长</label>
+                  <div class="duration-wrap">
+                    <input id="popupDurationValue" class="control num" type="number" min="1" value="1">
+                    <span class="duration-unit-text">天</span>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label"><span class="req">*</span>弹窗频率</label>
+                  <select id="popupFreqLoop" class="control">
+                    <option value="once">仅展示一次</option>
+                    <option value="each_login">每次登录展示一次</option>
+                    <option value="daily">每天展示一次</option>
+                    <option value="each_instance" selected>每次循环实例展示一次</option>
+                  </select>
+                </div>
+              </div>
               <div class="field">
                 <label class="label"><span class="req">*</span>弹窗展示内容</label>
                 <div class="tokens" id="popupTokenBar" style="margin:0 0 10px"></div>
@@ -460,16 +544,11 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
       <div class="body" style="padding-bottom:0">
         <div class="grid2">
           <select id="previewLang" class="control" onchange="setLang(this.value)"></select>
-          <select id="previewTz" class="control" onchange="renderPreview()">
-            <option value="Asia/Jakarta">Asia/Jakarta GMT+7</option>
-            <option value="Asia/Singapore">Asia/Singapore GMT+8</option>
-            <option value="Africa/Lagos">Africa/Lagos GMT+1</option>
-            <option value="Europe/London">Europe/London</option>
-          </select>
+          <div class="control" style="display:flex;align-items:center;color:var(--muted);background:#f8fafc;cursor:default">当前基准时区为：GMT+3</div>
         </div>
         <div class="preview-mode" id="previewModeBar">
           <button type="button" class="preview-mode-btn active" id="previewModeBodyBtn" onclick="setPreviewMode('body')">公告正文预览</button>
-          <button type="button" class="preview-mode-btn" id="previewModePopupBtn" onclick="setPreviewMode('popup')" disabled title="请先勾选弹窗展示形式">弹窗预览</button>
+          <button type="button" class="preview-mode-btn" id="previewModePopupBtn" onclick="setPreviewMode('popup')" disabled title="请先选择「公告正文 + 弹窗」">弹窗预览</button>
         </div>
       </div>
       <div class="phone">
@@ -555,12 +634,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
       <div class="body" style="padding-bottom:0">
         <div class="grid2">
           <select id="templatePreviewLang" class="control" onchange="setTemplateLanguage(this.value)"></select>
-          <select id="templatePreviewTz" class="control" onchange="renderTemplatePreview()">
-            <option value="Asia/Jakarta">Asia/Jakarta GMT+7</option>
-            <option value="Asia/Singapore">Asia/Singapore GMT+8</option>
-            <option value="Africa/Lagos">Africa/Lagos GMT+1</option>
-            <option value="Europe/London">Europe/London</option>
-          </select>
+          <div class="control" style="display:flex;align-items:center;color:var(--muted);background:#f8fafc;cursor:default">当前基准时区为：GMT+3</div>
         </div>
         <div class="preview-mode" id="templatePreviewModeBar">
           <button type="button" class="preview-mode-btn active" id="templatePreviewModeBodyBtn" onclick="setTemplatePreviewMode('body')">公告正文预览</button>
@@ -660,15 +734,15 @@ function findMissingLang(copyObj,fields){
 
 function sampleMaintCopy(){
   return ensureCopy({
-    en:{title:'System Maintenance Notice',body:'Dear ${name}, system maintenance will begin at ${start_time} and is expected to end at ${end_time}. Full service resumes at ${resume_time}. If needed, contact us via ${email} or ${mobile}.',popup:''},
-    zhHant:{title:'系統維護通知',body:'尊敬的 ${name}，系統維護將於 ${start_time} 開始，預計於 ${end_time} 結束，服務將於 ${resume_time} 全面恢復。如需協助可透過 ${email} 或 ${mobile} 聯繫我們。',popup:''},
-    id:{title:'Pemberitahuan Pemeliharaan Sistem',body:'Yth. ${name}, pemeliharaan sistem akan dimulai pada ${start_time} dan diperkirakan selesai pada ${end_time}. Layanan pulih sepenuhnya pada ${resume_time}. Hubungi kami via ${email} atau ${mobile} jika diperlukan.',popup:''},
-    vi:{title:'Thông báo bảo trì hệ thống',body:'Kính gửi ${name}, bảo trì hệ thống sẽ bắt đầu lúc ${start_time} và dự kiến kết thúc lúc ${end_time}. Dịch vụ khôi phục hoàn toàn lúc ${resume_time}. Liên hệ ${email} hoặc ${mobile} nếu cần hỗ trợ.',popup:''},
-    enIN:{title:'System Maintenance Notice',body:'Dear ${name}, system maintenance will begin at ${start_time} and is expected to end at ${end_time}. Full service resumes at ${resume_time}. Contact us via ${email} or ${mobile} if needed.',popup:''},
-    fil:{title:'Abiso sa Pagpapanatili ng Sistema',body:'Dear ${name}, magsisimula ang maintenance sa ${start_time} at inaasahang matatapos sa ${end_time}. Ganap na babalik ang serbisyo sa ${resume_time}. Makipag-ugnayan sa ${email} o ${mobile} kung kailangan.',popup:''},
-    es:{title:'Aviso de mantenimiento del sistema',body:'Estimado/a ${name}, el mantenimiento comenzará a las ${start_time} y se espera que termine a las ${end_time}. El servicio se restablecerá por completo a las ${resume_time}. Contáctenos en ${email} o ${mobile} si lo necesita.',popup:''},
-    pt:{title:'Aviso de manutenção do sistema',body:'Prezado(a) ${name}, a manutenção começará em ${start_time} e deve terminar em ${end_time}. O serviço será totalmente restaurado em ${resume_time}. Contate-nos por ${email} ou ${mobile} se necessário.',popup:''},
-    th:{title:'ประกาศบำรุงรักษาระบบ',body:'เรียน ${name} ระบบจะเริ่มบำรุงรักษาเวลา ${start_time} และคาดว่าจะสิ้นสุดเวลา ${end_time} บริการจะกลับมาใช้งานได้เต็มที่เวลา ${resume_time} ติดต่อ ${email} หรือ ${mobile} หากต้องการความช่วยเหลือ',popup:''}
+    en:{title:'System Maintenance Notice',body:'Dear ${name}, system maintenance will begin at ${start_time} and is expected to end at ${end_time}. Full service resumes at ${resume_time}.',popup:''},
+    zhHant:{title:'系統維護通知',body:'尊敬的 ${name}，系統維護將於 ${start_time} 開始，預計於 ${end_time} 結束，服務將於 ${resume_time} 全面恢復。',popup:''},
+    id:{title:'Pemberitahuan Pemeliharaan Sistem',body:'Yth. ${name}, pemeliharaan sistem akan dimulai pada ${start_time} dan diperkirakan selesai pada ${end_time}. Layanan pulih sepenuhnya pada ${resume_time}.',popup:''},
+    vi:{title:'Thông báo bảo trì hệ thống',body:'Kính gửi ${name}, bảo trì hệ thống sẽ bắt đầu lúc ${start_time} và dự kiến kết thúc lúc ${end_time}. Dịch vụ khôi phục hoàn toàn lúc ${resume_time}.',popup:''},
+    enIN:{title:'System Maintenance Notice',body:'Dear ${name}, system maintenance will begin at ${start_time} and is expected to end at ${end_time}. Full service resumes at ${resume_time}.',popup:''},
+    fil:{title:'Abiso sa Pagpapanatili ng Sistema',body:'Dear ${name}, magsisimula ang maintenance sa ${start_time} at inaasahang matatapos sa ${end_time}. Ganap na babalik ang serbisyo sa ${resume_time}.',popup:''},
+    es:{title:'Aviso de mantenimiento del sistema',body:'Estimado/a ${name}, el mantenimiento comenzará a las ${start_time} y se espera que termine a las ${end_time}. El servicio se restablecerá por completo a las ${resume_time}.',popup:''},
+    pt:{title:'Aviso de manutenção do sistema',body:'Prezado(a) ${name}, a manutenção começará em ${start_time} e deve terminar em ${end_time}. O serviço será totalmente restaurado em ${resume_time}.',popup:''},
+    th:{title:'ประกาศบำรุงรักษาระบบ',body:'เรียน ${name} ระบบจะเริ่มบำรุงรักษาเวลา ${start_time} และคาดว่าจะสิ้นสุดเวลา ${end_time} บริการจะกลับมาใช้งานได้เต็มที่เวลา ${resume_time}',popup:''}
   });
 }
 function sampleEventCopy(){
@@ -702,15 +776,9 @@ function sampleSimpleCopy(titleZh,bodyZh,titleEn,bodyEn,popupZh='',popupEn=''){
 let copy=sampleMaintCopy();
 let lang=DEFAULT_LANG,editing=false,editingPublished=false,enablePopupDisplay=false,previewMode='body';
 
-const tzOptions=[
-  ['Asia/Jakarta','UTC+7 印度尼西亚 / Asia/Jakarta'],
-  ['Asia/Singapore','UTC+8 新加坡 / Asia/Singapore'],
-  ['Africa/Lagos','UTC+1 尼日利亚 / Africa/Lagos'],
-  ['Europe/London','UTC+0 英国 / Europe/London']
-];
-function tzLabel(tz){const o=tzOptions.find(x=>x[0]===tz);return o?o[1]:tz}
-let baseTz='Asia/Jakarta';
-let pendingBaseTz='';
+const BASE_TZ='Africa/Nairobi'; // 固定 GMT+3
+const BASE_TZ_LABEL='GMT+3';
+let baseTz=BASE_TZ;
 let paramManagerOpen=false;
 let paramSource='notice'; // notice | template
 let paramEditIndex=null; // null=未编辑，-1=新增中，>=0=编辑第 i 条
@@ -723,9 +791,7 @@ let templateDraftCopy=emptyCopy();
 
 // 固定参数：非时间类，系统默认提供，不可新增/编辑/删除
 const FIXED_PARAMS=[
-  {name:'email',desc:'邮箱',type:'fixed',value:'邮箱'},
-  {name:'name',desc:'姓名',type:'fixed',value:'名字'},
-  {name:'mobile',desc:'手机号',type:'fixed',value:'手机号'}
+  {name:'name',desc:'姓名',type:'fixed',value:'名字'}
 ];
 const FIXED_PARAM_NAMES=new Set(FIXED_PARAMS.map(p=>p.name));
 
@@ -782,16 +848,16 @@ let templates=[
      {name:'reward_time',desc:'奖励时间',type:'time',precision:'datetime',value:'2026-08-21T10:00'}
    ]},
   {id:6,name:'账户安全模板',desc:'异常登录/安全提醒',creator:'Admin',updated:'2026-07-11 14:15',enabled:true,enablePopup:true,
-   copy:sampleSimpleCopy('賬戶安全提醒','親愛的 ${name}，檢測到與手機號 ${mobile} / 郵箱 ${email} 相關的異常登錄，請於 ${start_time} 前完成安全驗證。','Account Security Alert','Dear ${name}, unusual login related to mobile ${mobile} / email ${email} was detected. Please complete verification before ${start_time}.','請立即驗證','Verify now'),
+   copy:sampleSimpleCopy('賬戶安全提醒','親愛的 ${name}，檢測到異常登錄行為，請於 ${start_time} 前完成安全驗證。','Account Security Alert','Dear ${name}, unusual login detected. Please complete verification before ${start_time}.','請立即驗證','Verify now'),
    params:[{name:'start_time',desc:'验证截止',type:'time',precision:'datetime',value:'2026-07-16T18:00'}]},
   {id:7,name:'KYC 截止模板',desc:'KYC 资料补全提醒',creator:'Leo',updated:'2026-07-12 10:05',enabled:false,enablePopup:false,
-   copy:sampleSimpleCopy('KYC 資料補全提醒','尊敬的 ${name}，請於 ${end_time} 前完成 KYC，以免影響提現。如有問題請聯繫 ${email}。','KYC Completion Reminder','Dear ${name}, please complete KYC before ${end_time} to avoid withdrawal limits. Contact ${email} if needed.'),
+   copy:sampleSimpleCopy('KYC 資料補全提醒','尊敬的 ${name}，請於 ${end_time} 前完成 KYC，以免影響提現。','KYC Completion Reminder','Dear ${name}, please complete KYC before ${end_time} to avoid withdrawal limits.'),
    params:[{name:'end_time',desc:'截止时间',type:'time',precision:'date',value:'2026-07-31'}]},
   {id:8,name:'每日签到模板',desc:'循环签到活动提醒',creator:'Jenny',updated:'2026-07-13 09:00',enabled:true,enablePopup:true,
    copy:sampleSimpleCopy('每日簽到提醒','${name}，每日 ${activity_window} 開放簽到，別錯過獎勵！','Daily Check-in Reminder','Hi ${name}, check-in is open daily during ${activity_window}. Don’t miss rewards!','去簽到','Check in'),
    params:[{name:'activity_window',desc:'签到时段',type:'time_range',precision:'time',start:'09:00',end:'23:59'}]},
   {id:9,name:'客服升级模板',desc:'客服服务时段调整通知',creator:'Mina',updated:'2026-07-14 17:30',enabled:true,enablePopup:false,
-   copy:sampleSimpleCopy('客服服務時段調整','${name}，客服在線時間調整為 ${activity_window}，亦可透過 ${mobile} 聯繫我們，感謝理解。','Customer Support Hours Update','Hi ${name}, support hours are updated to ${activity_window}. You can also reach us via ${mobile}. Thanks for your understanding.'),
+   copy:sampleSimpleCopy('客服服務時段調整','${name}，客服在線時間調整為 ${activity_window}，感謝理解。','Customer Support Hours Update','Hi ${name}, support hours are updated to ${activity_window}. Thanks for your understanding.'),
    params:[{name:'activity_window',desc:'服务时段',type:'time_range',precision:'time',start:'08:00',end:'22:00'}]},
   {id:10,name:'旧活动归档模板',desc:'历史活动复用模板（已停用）',creator:'Ken',updated:'2026-06-20 12:00',enabled:false,enablePopup:false,
    copy:sampleSimpleCopy('歷史活動通知','本模板已停用，僅供參考。','Legacy Campaign Notice','This template is disabled and kept for reference only.'),
@@ -801,21 +867,21 @@ let templateSeq=11;
 
 // 公告列表模拟数据
 const sampleNotices=[
-  {name:'系统维护通知',project:'Dana',publishMode:'预约发布',publishTime:'2026-07-20 09:00 Asia/Jakarta',expireTime:'2026-07-20 10:00 Asia/Jakarta',creator:'Admin',createdAt:'2026-07-01 10:00',status:'待开始',shelved:true},
-  {name:'每周福利提醒',project:'TW',publishMode:'循环发布',publishTime:'周一 09:00 Asia/Singapore',expireTime:'周三 18:00 Asia/Singapore',creator:'Jenny',createdAt:'2026-07-05 15:30',status:'进行中',shelved:true},
-  {name:'新版本强制更新',project:'Dana',publishMode:'立即发布',publishTime:'立即 Asia/Jakarta',expireTime:'2026-07-25 23:59 Asia/Jakarta',creator:'Ken',createdAt:'2026-07-08 11:25',status:'进行中',shelved:true},
-  {name:'支付通道临时维护',project:'Dana',publishMode:'预约发布',publishTime:'2026-07-18 01:00 Asia/Jakarta',expireTime:'2026-07-18 03:00 Asia/Jakarta',creator:'Mina',createdAt:'2026-07-09 09:42',status:'已结束',shelved:true},
-  {name:'夏日嘉年华活动',project:'TW',publishMode:'预约发布',publishTime:'2026-08-01 10:00 Asia/Singapore',expireTime:'2026-08-07 22:00 Asia/Singapore',creator:'Jenny',createdAt:'2026-07-10 16:08',status:'待开始',shelved:true},
-  {name:'异常登录安全提醒',project:'Dana',publishMode:'立即发布',publishTime:'立即 Asia/Jakarta',expireTime:'2026-07-16 18:00 Asia/Jakarta',creator:'Admin',createdAt:'2026-07-11 14:20',status:'已结束',shelved:false},
-  {name:'KYC 资料补全通知',project:'TW',publishMode:'预约发布',publishTime:'2026-07-15 09:00 Asia/Singapore',expireTime:'2026-07-31 23:59 Asia/Singapore',creator:'Leo',createdAt:'2026-07-12 10:10',status:'进行中',shelved:true},
-  {name:'每日签到奖励开启',project:'Dana',publishMode:'循环发布',publishTime:'每日 09:00 Asia/Jakarta',expireTime:'每日 23:59 Asia/Jakarta',creator:'Jenny',createdAt:'2026-07-13 09:05',status:'进行中',shelved:true},
-  {name:'客服服务时段调整',project:'TW',publishMode:'立即发布',publishTime:'立即 Asia/Singapore',expireTime:'2026-08-31 23:59 Asia/Singapore',creator:'Mina',createdAt:'2026-07-14 17:35',status:'进行中',shelved:false},
-  {name:'提现限额升级说明',project:'Dana',publishMode:'预约发布',publishTime:'2026-07-22 12:00 Asia/Jakarta',expireTime:'2026-08-01 12:00 Asia/Jakarta',creator:'Ken',createdAt:'2026-07-15 11:00',status:'待开始',shelved:true},
-  {name:'新手礼包领取提醒',project:'TW',publishMode:'循环发布',publishTime:'周一 10:00 Africa/Lagos',expireTime:'周日 22:00 Africa/Lagos',creator:'Jenny',createdAt:'2026-07-15 18:40',status:'进行中',shelved:true},
-  {name:'双十一活动预告',project:'Dana',publishMode:'预约发布',publishTime:'2026-11-01 00:00 Asia/Jakarta',expireTime:'2026-11-12 23:59 Asia/Jakarta',creator:'Admin',createdAt:'2026-07-16 09:12',status:'待开始',shelved:true},
-  {name:'欧洲区假期安排',project:'TW',publishMode:'预约发布',publishTime:'2026-08-10 00:00 Europe/London',expireTime:'2026-08-18 23:59 Europe/London',creator:'Leo',createdAt:'2026-07-16 15:22',status:'待开始',shelved:true},
-  {name:'旧春节活动复盘',project:'Dana',publishMode:'立即发布',publishTime:'立即 Asia/Jakarta',expireTime:'2026-02-20 23:59 Asia/Jakarta',creator:'Ken',createdAt:'2026-02-01 10:00',status:'已结束',shelved:true},
-  {name:'合伙人佣金规则更新',project:'TW',publishMode:'预约发布',publishTime:'2026-07-28 09:00 Asia/Singapore',expireTime:'2026-09-30 23:59 Asia/Singapore',creator:'Mina',createdAt:'2026-07-17 13:48',status:'待开始',shelved:true}
+  {name:'系统维护通知',project:'Dana',publishMode:'预约发布',publishTime:'2026-07-20 09:00 GMT+3',expireTime:'2026-07-20 10:00 GMT+3',creator:'Admin',createdAt:'2026-07-01 10:00',status:'待开始',shelved:true},
+  {name:'每周福利提醒',project:'TW',publishMode:'循环发布',publishTime:'周一 09:00 GMT+3',expireTime:'周三 18:00 GMT+3',creator:'Jenny',createdAt:'2026-07-05 15:30',status:'进行中',shelved:true},
+  {name:'新版本强制更新',project:'Dana',publishMode:'立即发布',publishTime:'立即 GMT+3',expireTime:'2026-07-25 23:59 GMT+3',creator:'Ken',createdAt:'2026-07-08 11:25',status:'进行中',shelved:true},
+  {name:'支付通道临时维护',project:'Dana',publishMode:'预约发布',publishTime:'2026-07-18 01:00 GMT+3',expireTime:'2026-07-18 03:00 GMT+3',creator:'Mina',createdAt:'2026-07-09 09:42',status:'已结束',shelved:true},
+  {name:'夏日嘉年华活动',project:'TW',publishMode:'预约发布',publishTime:'2026-08-01 10:00 GMT+3',expireTime:'2026-08-07 22:00 GMT+3',creator:'Jenny',createdAt:'2026-07-10 16:08',status:'待开始',shelved:true},
+  {name:'异常登录安全提醒',project:'Dana',publishMode:'立即发布',publishTime:'立即 GMT+3',expireTime:'2026-07-16 18:00 GMT+3',creator:'Admin',createdAt:'2026-07-11 14:20',status:'已结束',shelved:false},
+  {name:'KYC 资料补全通知',project:'TW',publishMode:'预约发布',publishTime:'2026-07-15 09:00 GMT+3',expireTime:'2026-07-31 23:59 GMT+3',creator:'Leo',createdAt:'2026-07-12 10:10',status:'进行中',shelved:true},
+  {name:'每日签到奖励开启',project:'Dana',publishMode:'循环发布',publishTime:'每日 09:00 GMT+3',expireTime:'每日 23:59 GMT+3',creator:'Jenny',createdAt:'2026-07-13 09:05',status:'进行中',shelved:true},
+  {name:'客服服务时段调整',project:'TW',publishMode:'立即发布',publishTime:'立即 GMT+3',expireTime:'2026-08-31 23:59 GMT+3',creator:'Mina',createdAt:'2026-07-14 17:35',status:'进行中',shelved:false},
+  {name:'提现限额升级说明',project:'Dana',publishMode:'预约发布',publishTime:'2026-07-22 12:00 GMT+3',expireTime:'2026-08-01 12:00 GMT+3',creator:'Ken',createdAt:'2026-07-15 11:00',status:'待开始',shelved:true},
+  {name:'新手礼包领取提醒',project:'TW',publishMode:'循环发布',publishTime:'周一 10:00 GMT+3',expireTime:'周日 22:00 GMT+3',creator:'Jenny',createdAt:'2026-07-15 18:40',status:'进行中',shelved:true},
+  {name:'双十一活动预告',project:'Dana',publishMode:'预约发布',publishTime:'2026-11-01 00:00 GMT+3',expireTime:'2026-11-12 23:59 GMT+3',creator:'Admin',createdAt:'2026-07-16 09:12',status:'待开始',shelved:true},
+  {name:'欧洲区假期安排',project:'TW',publishMode:'预约发布',publishTime:'2026-08-10 00:00 GMT+3',expireTime:'2026-08-18 23:59 GMT+3',creator:'Leo',createdAt:'2026-07-16 15:22',status:'待开始',shelved:true},
+  {name:'旧春节活动复盘',project:'Dana',publishMode:'立即发布',publishTime:'立即 GMT+3',expireTime:'2026-02-20 23:59 GMT+3',creator:'Ken',createdAt:'2026-02-01 10:00',status:'已结束',shelved:true},
+  {name:'合伙人佣金规则更新',project:'TW',publishMode:'预约发布',publishTime:'2026-07-28 09:00 GMT+3',expireTime:'2026-09-30 23:59 GMT+3',creator:'Mina',createdAt:'2026-07-17 13:48',status:'待开始',shelved:true}
 ];
 
 function deepCopy(o){return JSON.parse(JSON.stringify(o))}
@@ -944,8 +1010,7 @@ function loadInputs(){
   titleInput.value=copy[lang].title||'';
   bodyInput.value=copy[lang].body||'';
   if(popupInput) popupInput.value=copy[lang].popup||'';
-  if(enablePopup) enablePopup.checked=!!enablePopupDisplay;
-  togglePopupContent(false);
+  syncDisplayFormatUI(false);
 }
 function resetEditor(){
   copy=emptyCopy();
@@ -953,20 +1018,27 @@ function resetEditor(){
   noticeParams=ensureFixedParams([
     {name:'start_time',desc:'开始时间',type:'time',precision:'datetime',value:'2026-07-20T09:00'},
     {name:'end_time',desc:'结束时间',type:'time',precision:'datetime',value:'2026-07-20T10:00'}
-  ]);baseTz='Asia/Jakarta';baseTimezone.value=baseTz;
-  eventStartTime.value='2026-07-20T09:00';eventEndTime.value='2026-07-20T10:00';
-  publishMode.value='immediate';recurrenceType.value='daily';
-  if(recurrenceStartTime) recurrenceStartTime.value='09:00:00';
-  if(recurrenceEndTime) recurrenceEndTime.value='18:00:00';
-  if(weeklyStartDay) weeklyStartDay.value='1';
-  if(weeklyEndDay) weeklyEndDay.value='3';
-  if(monthlyStartDay) monthlyStartDay.value='1';
-  if(monthlyEndDay) monthlyEndDay.value='30';
-  fillTemplateSelect();editorTplSelect.value='';
-  if(enablePopup) enablePopup.checked=false;
+  ]);
+  baseTz=BASE_TZ;
+  if(eventStartTime) eventStartTime.value='2026-07-20T09:00';
+  if(eventEndTime) eventEndTime.value='2026-07-20T10:00';
+  if(publishMode) publishMode.value='immediate';
+  if(recurrenceType) recurrenceType.value='daily';
+  if(recurrenceStartTime) recurrenceStartTime.value='09:00';
+  if(loopStartDate) loopStartDate.value=fmtInput(new Date(),baseTz).slice(0,10);
+  if(displayDurationValue) displayDurationValue.value='1';
+  if(weeklyExecDay) weeklyExecDay.value='1';
+  if(monthlyExecDay) monthlyExecDay.value='1';
+  if(popupStartMode) popupStartMode.value='follow_start';
+  if(popupEndMode) popupEndMode.value='follow_expire';
+  if(popupLoopStartMode) popupLoopStartMode.value='follow_publish';
+  fillTemplateSelect();
+  if(editorTplSelect) editorTplSelect.value='';
+  if(displayFormat) displayFormat.value='body_only';
   previewMode='body';
-  togglePopupContent(false);
+  syncDisplayFormatUI(false);
   initTargetCheckPanels();
+  onPublishConfigChange();
 }
 function openCreate(){
   try{
@@ -980,7 +1052,7 @@ function openCreate(){
     lang=DEFAULT_LANG;
     loadInputs();
     renderNoticeParams();
-    togglePublishMode();
+    onPublishConfigChange();
     showPage('editor');
     setLang(DEFAULT_LANG);
   }catch(err){
@@ -999,7 +1071,7 @@ function openEdit(button){
   if(row?.children[2]?.textContent.includes('循环'))publishMode.value='recurring';
   else if(row?.children[2]?.textContent.includes('立即'))publishMode.value='immediate';
   else publishMode.value='scheduled';
-  copy=ensureCopy(templates[0].copy);noticeParams=ensureFixedParams(defaultParams);lang=DEFAULT_LANG;loadInputs();renderNoticeParams();togglePublishMode();showPage('editor');setLang(DEFAULT_LANG)
+  copy=ensureCopy(templates[0].copy);noticeParams=ensureFixedParams(defaultParams);lang=DEFAULT_LANG;loadInputs();renderNoticeParams();onPublishConfigChange();showPage('editor');setLang(DEFAULT_LANG)
 }
 function setLang(v){
   saveCopy();
@@ -1014,7 +1086,7 @@ function saveCopy(){
   copy[lang].title=titleInput.value;
   copy[lang].body=bodyInput.value;
   if(popupInput) copy[lang].popup=popupInput.value;
-  if(enablePopup) enablePopupDisplay=!!enablePopup.checked;
+  enablePopupDisplay=(displayFormat?.value==='body_popup');
 }
 document.querySelectorAll('#editorLangTabs .tab').forEach(t=>t.onclick=()=>setLang(t.dataset.lang));
 ['titleInput','bodyInput','popupInput'].forEach(id=>{const el=document.getElementById(id);if(el)el.oninput=()=>{saveCopy();renderPreview()}});
@@ -1042,16 +1114,26 @@ function insertToken(t,target='body'){
   el.setSelectionRange(pos,pos);
   saveCopy();renderPreview();
 }
-function togglePopupContent(fromUser=true){
-  if(enablePopup) enablePopupDisplay=!!enablePopup.checked;
-  if(popupContentPanel) popupContentPanel.classList.toggle('hidden',!enablePopupDisplay);
+function onDisplayFormatChange(fromUser=true){
+  enablePopupDisplay=(displayFormat?.value==='body_popup');
+  syncDisplayFormatUI(fromUser);
+}
+function syncDisplayFormatUI(fromUser=true){
+  if(displayFormat) displayFormat.value=enablePopupDisplay?'body_popup':'body_only';
+  const panel=document.getElementById('popupConfigPanel');
+  if(panel) panel.classList.toggle('hidden',!enablePopupDisplay);
   if(!enablePopupDisplay&&previewMode==='popup') previewMode='body';
+  onPopupConfigChange();
   syncPreviewModeUI();
   if(fromUser){saveCopy();renderPreview()}
 }
+function togglePopupContent(fromUser=true){
+  // 兼容旧调用：统一走展示形式
+  onDisplayFormatChange(fromUser);
+}
 function setPreviewMode(mode){
   if(mode==='popup'&&!enablePopupDisplay){
-    showToast('请先勾选弹窗展示形式');
+    showToast('请先选择「公告正文 + 弹窗」');
     return;
   }
   previewMode=mode==='popup'?'popup':'body';
@@ -1064,7 +1146,7 @@ function syncPreviewModeUI(){
   if(!enablePopupDisplay&&previewMode==='popup') previewMode='body';
   if(popupBtn){
     popupBtn.disabled=!enablePopupDisplay;
-    popupBtn.title=enablePopupDisplay?'切换到弹窗预览':'请先勾选弹窗展示形式';
+    popupBtn.title=enablePopupDisplay?'切换到弹窗预览':'请先选择「公告正文 + 弹窗」';
   }
   if(bodyBtn) bodyBtn.classList.toggle('active',previewMode==='body');
   if(popupBtn) popupBtn.classList.toggle('active',previewMode==='popup');
@@ -1075,7 +1157,7 @@ function parse(v,tz){let [d,tm]=v.split('T'),[y,m,day]=d.split('-').map(Number),
 function fmt(d,tz,language=lang){const locale=langLocales[language]||'en-GB';return new Intl.DateTimeFormat(locale,{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(d).replace(/\//g,'-')}
 function fmtInput(d,tz){let parts=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(d),o={};parts.forEach(x=>o[x.type]=x.value);return `${o.year}-${o.month}-${o.day}T${o.hour}:${o.minute}`}
 function resolveParams(text,tz){
-  syncRecurringCoreTimes();
+  syncCoreTimesFromConfig();
   syncImmediatePublishTime();
   let out=text;
   noticeParams.forEach(p=>{
@@ -1142,12 +1224,33 @@ function formatParamTableValue(p){
 }
 function syncImmediatePublishTime(){
   if(publishMode.value!=='immediate')return;
-  eventStartTime.value=fmtInput(new Date(),baseTz);
+  if(eventStartTime) eventStartTime.value=fmtInput(new Date(),baseTz);
+}
+function isLongTermValidity(){
+  const v=validityType?.value||'';
+  return v==='permanent'||v==='until_next';
+}
+function isFixedDurationValidity(){
+  return (validityType?.value||'')==='fixed_duration';
+}
+function durationToMinutes(value,unit){
+  const n=Math.max(1,Number(value)||1);
+  if(unit==='day') return n*24*60;
+  if(unit==='hour') return n*60;
+  return n;
+}
+function addMinutesToInput(startInput,minutes){
+  const start=parse(startInput,baseTz);
+  return fmtInput(new Date(start.getTime()+minutes*60000),baseTz);
 }
 function calcStatus(){
-  syncRecurringCoreTimes();
-  syncImmediatePublishTime();
-  if(!eventStartTime.value||!eventEndTime.value)return '待开始';
+  syncCoreTimesFromConfig();
+  if(!eventStartTime?.value) return '待开始';
+  if(isLongTermValidity()&&publishMode.value!=='recurring'){
+    const now=new Date(),start=parse(eventStartTime.value,baseTz);
+    return now<start?'待开始':'进行中';
+  }
+  if(!eventEndTime?.value) return '待开始';
   const now=new Date(),start=parse(eventStartTime.value,baseTz),end=parse(eventEndTime.value,baseTz);
   if(now<start)return '待开始';
   if(now<end)return '进行中';
@@ -1173,69 +1276,140 @@ function weekdayOf(dateStr,tz){
 }
 function monthDayDate(year,month,day){
   const last=new Date(Date.UTC(year,month,0)).getUTCDate();
-  const safe=Math.min(Math.max(1,day),last);
+  const safe=day==='last'?last:Math.min(Math.max(1,Number(day)||1),last);
   const pad=n=>String(n).padStart(2,'0');
   return `${year}-${pad(month)}-${pad(safe)}`;
 }
-function syncRecurringCoreTimes(){
-  if(publishMode.value!=='recurring')return;
-  const st=formatClock(recurrenceStartTime?.value||'09:00');
-  const et=formatClock(recurrenceEndTime?.value||'18:00');
-  const today=fmtInput(new Date(),baseTz).slice(0,10);
-  const type=recurrenceType.value;
-  if(type==='daily'){
-    eventStartTime.value=`${today}T${st}`;
-    eventEndTime.value=`${(et>st?today:addCalendarDays(today,1))}T${et}`;
-    return;
+function initValidityOptions(preserve){
+  const mode=publishMode?.value||'immediate';
+  const sel=validityType;
+  if(!sel)return;
+  const prev=preserve?sel.value:'';
+  if(mode==='recurring'){
+    sel.innerHTML='<option value="fixed_duration">固定时长</option><option value="until_next">持续到下一次发布</option>';
+    sel.value=(prev==='until_next'||prev==='fixed_duration')?prev:'fixed_duration';
+  }else{
+    sel.innerHTML='<option value="limited">有期限</option><option value="permanent">长期有效</option>';
+    sel.value=(prev==='permanent'||prev==='limited')?prev:'limited';
   }
-  if(type==='weekly'){
-    const startDow=Number(weeklyStartDay.value);
-    const endDow=Number(weeklyEndDay.value);
-    const todayDow=weekdayOf(today,baseTz);
-    const startDate=addCalendarDays(today,startDow-todayDow);
-    let dayGap=endDow-startDow;
-    if(dayGap<0||(dayGap===0&&et<=st)) dayGap+=7;
-    const endDate=addCalendarDays(startDate,dayGap);
-    eventStartTime.value=`${startDate}T${st}`;
-    eventEndTime.value=`${endDate}T${et}`;
-    return;
-  }
-  const [y,m]=today.split('-').map(Number);
-  const startDom=Number(monthlyStartDay.value||1);
-  const endDom=Number(monthlyEndDay.value||1);
-  const startDate=monthDayDate(y,m,startDom);
-  let endDate=monthDayDate(y,m,endDom);
-  if(endDate<startDate||(endDate===startDate&&et<=st)){
-    const nm=m===12?1:m+1;
-    const ny=m===12?y+1:y;
-    endDate=monthDayDate(ny,nm,endDom);
-  }
-  eventStartTime.value=`${startDate}T${st}`;
-  eventEndTime.value=`${endDate}T${et}`;
 }
-function onRecurrenceTimeChange(){
-  syncRecurringCoreTimes();
+function initMonthlyExecDayOptions(){
+  const sel=monthlyExecDay;
+  if(!sel||sel.options.length) return;
+  let html='';
+  for(let i=1;i<=31;i++) html+=`<option value="${i}">每月${i}日</option>`;
+  html+='<option value="last">每月最后一天</option>';
+  sel.innerHTML=html;
+  sel.value='1';
+}
+function getWeeklyDay(){
+  return weeklyExecDay?.value??'1';
+}
+function getWeeklyDays(){
+  return [Number(getWeeklyDay())];
+}
+function syncCoreTimesFromConfig(){
+  const mode=publishMode?.value||'immediate';
+  const validity=validityType?.value||'limited';
+  if(mode==='immediate'){
+    syncImmediatePublishTime();
+    if(validity==='permanent'){
+      if(eventEndTime) eventEndTime.value='2099-12-31T23:59';
+    }
+    return;
+  }
+  if(mode==='scheduled'){
+    if(validity==='permanent'&&eventStartTime?.value){
+      if(eventEndTime) eventEndTime.value='2099-12-31T23:59';
+    }
+    return;
+  }
+  // recurring
+  const st=formatClock(recurrenceStartTime?.value||'09:00');
+  const startDate=loopStartDate?.value||fmtInput(new Date(),baseTz).slice(0,10);
+  let startDT=`${startDate}T${st}`;
+  if(eventStartTime) eventStartTime.value=startDT;
+  if(validity==='until_next'){
+    // 持续到下一次：按循环周期给一个占位结束时间，便于状态计算
+    const type=recurrenceType?.value||'daily';
+    let endDate=startDate;
+    if(type==='weekly') endDate=addCalendarDays(startDate,7);
+    else if(type==='monthly') endDate=addCalendarDays(startDate,30);
+    else endDate=addCalendarDays(startDate,1);
+    if(eventEndTime) eventEndTime.value=`${endDate}T${st}`;
+    return;
+  }
+  const mins=durationToMinutes(displayDurationValue?.value,'day');
+  if(eventEndTime) eventEndTime.value=addMinutesToInput(startDT,mins);
+}
+function onPublishConfigChange(){
+  initMonthlyExecDayOptions();
+  initValidityOptions(true);
+  const mode=publishMode?.value||'immediate';
+  const validity=validityType?.value||'limited';
+  const isRecurring=mode==='recurring';
+  const isImmediate=mode==='immediate';
+  const isScheduled=mode==='scheduled';
+  const type=recurrenceType?.value||'daily';
+
+  if(scheduleStartField) scheduleStartField.classList.toggle('hidden',!(isScheduled));
+  if(expireTimeField){
+    const showExpire=(isImmediate||isScheduled)&&validity==='limited';
+    expireTimeField.classList.toggle('hidden',!showExpire);
+  }
+  if(recurrenceTypeField) recurrenceTypeField.classList.toggle('hidden',!isRecurring);
+  if(weeklyDaysField) weeklyDaysField.classList.toggle('hidden',!(isRecurring&&type==='weekly'));
+  if(monthlyDayField) monthlyDayField.classList.toggle('hidden',!(isRecurring&&type==='monthly'));
+
+  const showRecRow1=isRecurring;
+  if(recurrenceRow1) recurrenceRow1.classList.toggle('hidden',!showRecRow1);
+  if(displayDurationField) displayDurationField.classList.toggle('hidden',!(isRecurring&&validity==='fixed_duration'));
+
+  syncCoreTimesFromConfig();
+  onPopupConfigChange();
   renderNoticeParams();
+}
+function onPopupConfigChange(){
+  const isRecurring=publishMode?.value==='recurring';
+  const validity=validityType?.value||'';
+  const longTerm=!isRecurring&&(validity==='permanent');
+  if(popupNormalRow) popupNormalRow.classList.toggle('hidden',isRecurring);
+  if(popupRecurringRow) popupRecurringRow.classList.toggle('hidden',!isRecurring);
+
+  if(!isRecurring){
+    const endSel=popupEndMode;
+    if(endSel){
+      const followOpt=[...endSel.options].find(o=>o.value==='follow_expire');
+      if(followOpt) followOpt.disabled=!!longTerm;
+      if(longTerm&&endSel.value==='follow_expire') endSel.value='custom';
+    }
+    if(popupStartTimeField) popupStartTimeField.classList.toggle('hidden',popupStartMode?.value!=='custom');
+    if(popupEndTimeField) popupEndTimeField.classList.toggle('hidden',popupEndMode?.value!=='custom');
+  }else{
+    if(popupDelayField) popupDelayField.classList.toggle('hidden',popupLoopStartMode?.value!=='delay');
+  }
 }
 function recurrenceSummary(){
   if(publishMode.value!=='recurring')return '';
   const st=formatClock(recurrenceStartTime?.value);
-  const et=formatClock(recurrenceEndTime?.value);
-  if(recurrenceType.value==='daily'){
-    return et>st?`每日 ${st}~${et}`:`每日 ${st}~次日 ${et}`;
+  const type=recurrenceType.value;
+  const validity=validityType?.value;
+  const dur=validity==='fixed_duration'
+    ?`${displayDurationValue?.value||1}天`
+    :'持续到下一次';
+  if(type==='daily') return `每日 ${st} · ${dur}`;
+  if(type==='weekly'){
+    const days=weekdayLabel(getWeeklyDay());
+    return `每周 ${days||'未选'} ${st} · ${dur}`;
   }
-  if(recurrenceType.value==='weekly'){
-    return `每周 ${weekdayLabel(weeklyStartDay.value)} ${st} ~ ${weekdayLabel(weeklyEndDay.value)} ${et}`;
-  }
-  const s=monthlyStartDay.value?`${monthlyStartDay.value}号`:'未选择';
-  const e=monthlyEndDay.value?`${monthlyEndDay.value}号`:'未选择';
-  return `每月 ${s} ${st} ~ ${e} ${et}`;
+  const day=monthlyExecDay?.value==='last'?'最后一天':`${monthlyExecDay?.value||''}日`;
+  return `每月${day} ${st} · ${dur}`;
 }
 function renderPreview(){
   if(!previewTitle)return;
   saveCopy();
-  const tz=previewTz.value;
-  syncRecurringCoreTimes();
+  const tz=baseTz;
+  syncCoreTimesFromConfig();
   syncPreviewModeUI();
   const titleText=(resolveParams(copy[lang].title||'',tz)||'').trim();
   const bodyText=(resolveParams(copy[lang].body||'',tz)||'').trim();
@@ -1257,91 +1431,43 @@ function renderPreview(){
     previewPopupTitle.classList.toggle('is-placeholder',!titleText);
   }
 }
-function togglePublishMode(){
-  const mode=publishMode.value;
-  const isRecurring=mode==='recurring';
-  const isImmediate=mode==='immediate';
-  startTimeField.classList.toggle('hidden',isRecurring||isImmediate);
-  endTimeField.classList.toggle('hidden',isRecurring);
-  if(recurrenceTypeField) recurrenceTypeField.classList.toggle('hidden',!isRecurring);
-  if(recurrenceTimeRangeField) recurrenceTimeRangeField.classList.toggle('hidden',!isRecurring);
-  if(startTimeLabel) startTimeLabel.innerHTML='<span class="req">*</span>发布时间';
-  if(endTimeLabel) endTimeLabel.innerHTML='<span class="req">*</span>到期时间';
-  if(isImmediate) syncImmediatePublishTime();
-  if(isRecurring) syncRecurringCoreTimes();
-  else if(recurrenceDayRow) recurrenceDayRow.classList.add('hidden');
-  toggleRecurrenceType();renderNoticeParams();
-}
-function toggleRecurrenceType(){
-  const type=recurrenceType?.value||'daily';
-  const isRecurring=publishMode.value==='recurring';
-  const showDays=isRecurring&&(type==='weekly'||type==='monthly');
-  document.querySelectorAll('.weekly-day').forEach(el=>el.classList.toggle('hidden',!(isRecurring&&type==='weekly')));
-  document.querySelectorAll('.monthly-day').forEach(el=>el.classList.toggle('hidden',!(isRecurring&&type==='monthly')));
-  if(recurrenceDayRow) recurrenceDayRow.classList.toggle('hidden',!showDays);
-  if(isRecurring) syncRecurringCoreTimes();
-  renderPreview();
-}
 function onCoreTimeChange(el){
   if(editingPublished&&!confirm('正在修改已发布公告的发布或到期时间。确认继续并重新计算公告状态吗？')){
     el.value=el.dataset.previous||el.value;
     renderPreview();return;
   }
+  syncCoreTimesFromConfig();
   renderNoticeParams();
 }
-function requestBaseTzChange(select){
-  pendingBaseTz=select.value;
-  if(pendingBaseTz===baseTz)return;
-  select.value=baseTz;
-  openModal('切换基准时区','请选择时间处理方式',`<div class="confirm-text">原基准时区：<strong>${tzLabel(baseTz)}</strong><br>新基准时区：<strong>${tzLabel(pendingBaseTz)}</strong></div>
-    <div class="alert" style="margin-top:14px">“仅修改解释方式”会保持输入框数值不变，但代表的绝对时间点会改变；“保持绝对时间点”会换算所有时间输入框的显示值。</div>
-    <div class="actions" style="margin-top:16px"><button class="btn" onclick="applyBaseTzChange('reinterpret')">仅修改时区解释方式</button><button class="btn primary" onclick="applyBaseTzChange('convert')">保持绝对时间点并换算</button></div>`);
-}
-function applyBaseTzChange(mode){
-  const old=baseTz,next=pendingBaseTz;
-  if(mode==='convert'){
-    [eventStartTime,eventEndTime].forEach(el=>{if(el.value)el.value=fmtInput(parse(el.value,old),next)});
-    noticeParams.forEach(p=>{
-      if(p.type==='time'&&p.value)p.value=fmtInput(parse(p.value,old),next);
-      if(p.type==='time_range'){
-        if(p.start)p.start=fmtInput(parse(p.start,old),next);
-        if(p.end)p.end=fmtInput(parse(p.end,old),next);
-      }
-    });
-  }
-  baseTz=next;baseTimezone.value=next;closeModal();renderNoticeParams();showToast('基准时区已更新');
-}
 function validateNotice(){
-  if(!baseTimezone.value)return '请选择基准时区';
   if(!targetProject.value)return '请选择投放项目';
   if(!getCheckedValues('targetAppPanel').length)return '请选择投放 APP';
   if(!getCheckedValues('targetAppVersionPanel').length)return '请选择 APP 版本';
   if(!getCheckedValues('targetRegionPanel').length)return '请选择地区';
-  if(publishMode.value==='recurring'){
-    if(!recurrenceStartTime.value)return '请填写每次开始时间';
-    if(!recurrenceEndTime.value)return '请填写每次结束时间';
-    if(recurrenceType.value==='weekly'){
-      if(weeklyStartDay.value===''||weeklyEndDay.value==='')return '请选择每周开始和结束的周几';
+  const mode=publishMode.value;
+  const validity=validityType?.value||'';
+  if(mode==='recurring'){
+    if(!loopStartDate?.value)return '请选择循环开始日期';
+    if(!recurrenceStartTime?.value)return '请填写每次发布时间';
+    if(recurrenceType.value==='weekly'&&(weeklyExecDay?.value===''||weeklyExecDay?.value==null))return '请选择执行星期';
+    if(recurrenceType.value==='monthly'&&!monthlyExecDay?.value)return '请选择执行日期';
+    if(validity==='fixed_duration'){
+      if(!displayDurationValue?.value||Number(displayDurationValue.value)<=0)return '请填写每次展示时长';
     }
-    if(recurrenceType.value==='monthly'){
-      if(!monthlyStartDay.value||!monthlyEndDay.value)return '请选择每月开始和结束的日期';
+  }else if(mode==='immediate'){
+    if(validity==='limited'){
+      if(!eventEndTime.value)return '请填写到期时间';
+      syncImmediatePublishTime();
+      const start=parse(eventStartTime.value,baseTz),end=parse(eventEndTime.value,baseTz);
+      if(end<=start)return '到期时间必须晚于当前发布时间';
     }
-    if(recurrenceType.value==='daily'&&formatClock(recurrenceEndTime.value)===formatClock(recurrenceStartTime.value)){
-      return '每日循环的结束时间不能与开始时间相同';
-    }
-    syncRecurringCoreTimes();
-    const start=parse(eventStartTime.value,baseTz),end=parse(eventEndTime.value,baseTz);
-    if(!(end>start))return '每次结束时间必须晚于每次开始时间';
-  }else if(publishMode.value==='immediate'){
-    if(!eventEndTime.value)return '请填写到期时间';
-    syncImmediatePublishTime();
-    const start=parse(eventStartTime.value,baseTz),end=parse(eventEndTime.value,baseTz);
-    if(end<=start)return '到期时间必须晚于当前发布时间';
   }else{
-    if(!eventStartTime.value)return '请填写发布时间';
-    if(!eventEndTime.value)return '请填写到期时间';
-    const start=parse(eventStartTime.value,baseTz),end=parse(eventEndTime.value,baseTz);
-    if(end<=start)return '到期时间必须晚于发布时间';
+    if(!eventStartTime.value)return '请填写预约发布时间';
+    if(validity==='limited'){
+      if(!eventEndTime.value)return '请填写到期时间';
+      const start=parse(eventStartTime.value,baseTz),end=parse(eventEndTime.value,baseTz);
+      if(end<=start)return '到期时间必须晚于预约发布时间';
+    }
   }
   const missingTitle=findMissingLang(copy,['title']);
   if(missingTitle){setLang(missingTitle.code);return '请完善 '+missingTitle.name+' 的公告标题';}
@@ -1349,9 +1475,34 @@ function validateNotice(){
   if(missingBody){setLang(missingBody.code);return '请完善 '+missingBody.name+' 的公告正文';}
   if(enablePopupDisplay){
     const missing=findMissingLang(copy,['popup']);
-    if(missing){setLang(missing.code);return '已开启弹窗展示，请完善 '+missing.name+' 的弹窗展示内容';}
+    if(missing){setLang(missing.code);return '已选择弹窗展示，请完善 '+missing.name+' 的弹窗展示内容';}
+    if(mode==='recurring'){
+      if(popupLoopStartMode?.value==='delay'&&(!popupDelayValue?.value||Number(popupDelayValue.value)<=0))return '请填写弹窗延迟时间';
+      if(!popupDurationValue?.value||Number(popupDurationValue.value)<=0)return '请填写弹窗持续时长';
+    }else{
+      if(popupStartMode?.value==='custom'&&!popupStartTime?.value)return '请填写弹窗开始时间';
+      if(popupEndMode?.value==='custom'&&!popupEndTime?.value)return '请填写弹窗结束时间';
+      if(validity==='permanent'&&popupEndMode?.value==='follow_expire')return '长期有效公告不能选择跟随公告到期';
+    }
   }
   return '';
+}
+function buildPublishListTimes(){
+  const mode=publishMode.value;
+  const validity=validityType?.value||'';
+  if(mode==='recurring'){
+    const pt=recurrenceSummary()+' '+BASE_TZ_LABEL;
+    const et=validity==='until_next'?'持续到下一次发布':`${displayDurationValue?.value||1}天`;
+    return {pt,et};
+  }
+  if(mode==='immediate'){
+    const pt='立即 '+BASE_TZ_LABEL;
+    const et=validity==='permanent'?'长期有效':(eventEndTime.value.replace('T',' ')+' '+BASE_TZ_LABEL);
+    return {pt,et};
+  }
+  const pt=eventStartTime.value.replace('T',' ')+' '+BASE_TZ_LABEL;
+  const et=validity==='permanent'?'长期有效':(eventEndTime.value.replace('T',' ')+' '+BASE_TZ_LABEL);
+  return {pt,et};
 }
 function saveNotice(){
   saveCopy();
@@ -1362,12 +1513,8 @@ function saveNotice(){
   if(!editing){
     let tr=document.createElement('tr');
     const pub=publishMode.value==='recurring'?'循环发布':(publishMode.value==='immediate'?'立即发布':'预约发布');
-    const pt=publishMode.value==='recurring'
-      ?(recurrenceType.value==='daily'?formatClock(recurrenceStartTime.value):(recurrenceType.value==='weekly'?weekdayLabel(weeklyStartDay.value)+' ':'')+(recurrenceType.value==='monthly'?(monthlyStartDay.value+'号 '):'')+formatClock(recurrenceStartTime.value))+' '+baseTz
-      :(publishMode.value==='immediate'?'立即 '+baseTz:eventStartTime.value.replace('T',' ')+' '+baseTz);
-    const et=publishMode.value==='recurring'
-      ?(recurrenceType.value==='daily'?formatClock(recurrenceEndTime.value):(recurrenceType.value==='weekly'?weekdayLabel(weeklyEndDay.value)+' ':'')+(recurrenceType.value==='monthly'?(monthlyEndDay.value+'号 '):'')+formatClock(recurrenceEndTime.value))+' '+baseTz
-      :eventEndTime.value.replace('T',' ')+' '+baseTz;
+    const {pt,et}=buildPublishListTimes();
+    syncCoreTimesFromConfig();
     tr.innerHTML=buildNoticeRow(n,targetProject.value,pub,pt,et,'Admin',currentCreatedAt(),calcStatus(),true);
     tr.dataset.shelved='1';
     noticeRows.prepend(tr)
@@ -1593,7 +1740,7 @@ function copyNotice(button){
   loadInputs();
   renderNoticeParams();
   publishMode.value=d.publishMode.includes('循环')?'recurring':(d.publishMode.includes('立即')?'immediate':'scheduled');
-  togglePublishMode();
+  onPublishConfigChange();
   showPage('editor');
   setLang(DEFAULT_LANG);
   showToast('已复制公告内容，请修改后保存');
@@ -1766,7 +1913,7 @@ function toggleInlineParamPrecision(){
 }
 
 function renderNoticeParams(){
-  syncRecurringCoreTimes();
+  syncCoreTimesFromConfig();
   if(paramManagerOpen) openParamManager(paramSource);
   renderTokenBar();
   renderPreview();
@@ -1849,7 +1996,7 @@ function editNoticeParam(i){
 function saveInlineParam(i){
   const p=readInlineParamForm();
   if(!p)return;
-  if(FIXED_PARAM_NAMES.has(p.name)){showToast('email / name / mobile 为固定参数，不可占用');return;}
+  if(FIXED_PARAM_NAMES.has(p.name)){showToast('name 为固定参数，不可占用');return;}
   const list=getActiveParams();
   if(i===-1){
     if(list.some(x=>x.name===p.name)){showToast('参数名称已存在');return;}
@@ -2006,7 +2153,7 @@ function renderTemplatePreview(){
   if(!templatePreviewTitle)return;
   saveTemplateLanguage();
   syncTemplatePreviewModeUI();
-  const tz=templatePreviewTz?.value||baseTz;
+  const tz=baseTz;
   const langKey=templateLang||DEFAULT_LANG;
   const c=templateDraftCopy[langKey]||{};
   const titleText=(resolveTemplateParams(c.title||'',tz)||'').trim();
@@ -2137,6 +2284,7 @@ function applyTemplate(t){
   copy=ensureCopy(t.copy);
   noticeParams=ensureFixedParams(t.params||[]);
   enablePopupDisplay=!!t.enablePopup;
+  if(displayFormat) displayFormat.value=enablePopupDisplay?'body_popup':'body_only';
   previewMode='body';
   paramSource='notice';
   loadInputs();
@@ -2223,7 +2371,7 @@ try{
   renderSampleNotices();
   loadInputs();
   renderNoticeParams();
-  togglePublishMode();
+  onPublishConfigChange();
   setLang(DEFAULT_LANG);
   showPage('list');
 }catch(err){
