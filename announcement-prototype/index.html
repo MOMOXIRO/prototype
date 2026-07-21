@@ -1242,8 +1242,21 @@ function syncPreviewModeUI(){
   if(previewPopupView) previewPopupView.classList.toggle('hidden',previewMode!=='popup');
 }
 function parse(v,tz){let [d,tm]=v.split('T'),[y,m,day]=d.split('-').map(Number),[h,min]=tm.split(':').map(Number),p=new Date(Date.UTC(y,m-1,day,h,min));let parts=new Intl.DateTimeFormat('en-US',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).formatToParts(p),o={};parts.forEach(x=>o[x.type]=x.value);let a=Date.UTC(+o.year,+o.month-1,+o.day,+o.hour,+o.minute,+o.second),want=Date.UTC(y,m-1,day,h,min);return new Date(p.getTime()+want-a)}
-function fmt(d,tz,language=lang){const locale=langLocales[language]||'en-GB';return new Intl.DateTimeFormat(locale,{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(d).replace(/\//g,'-')}
+/** 预览/表单等统一：yyyy-mm-dd HH:mm */
+function fmt(d,tz){
+  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(d);
+  const o={};parts.forEach(x=>o[x.type]=x.value);
+  return `${o.year}-${o.month}-${o.day} ${o.hour}:${o.minute}`;
+}
 function fmtInput(d,tz){let parts=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(d),o={};parts.forEach(x=>o[x.type]=x.value);return `${o.year}-${o.month}-${o.day}T${o.hour}:${o.minute}`}
+/** 仅列表展示：dd-mm-yyyy[ HH:mm] */
+function formatListDisplayTime(v){
+  if(!v||v==='—'||v==='长期有效'||v==='下次发布前') return v||'—';
+  const m=String(v).trim().match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2}))?/);
+  if(!m) return v;
+  const ddmmyyyy=`${m[3]}-${m[2]}-${m[1]}`;
+  return m[4]?`${ddmmyyyy} ${m[4]}:${m[5]}`:ddmmyyyy;
+}
 function resolveParams(text,tz){
   syncCoreTimesFromConfig();
   syncImmediatePublishTime();
@@ -1297,6 +1310,10 @@ function formatParamDisplay(p,tz=baseTz){
       return `${s} ~ ${e}`;
     }
     return `${formatParamValueText(np.start,precision).replace('—','--')} ~ ${formatParamValueText(np.end,precision).replace('—','--')}`;
+  }
+  if(precision==='date'){
+    const v=formatParamValueText(np.value,'date').replace('—','--');
+    return v;
   }
   if(precision==='datetime') return np.value?fmt(parse(np.value,baseTz),tz):'--';
   return formatParamValueText(np.value,precision).replace('—','--');
@@ -2300,7 +2317,7 @@ function renderTemplates(){
     <td>${t.name}</td>
     <td>${t.desc||'—'}</td>
     <td>${t.creator||'Admin'}</td>
-    <td>${t.updated}</td>
+    <td>${formatListDisplayTime(t.updated)}</td>
     <td><span class="pill ${enabled?'ok':'draft'}">${enabled?'启用':'停用'}</span></td>
     <td>${buildTemplateActionButtons(t.id,enabled)}</td>
   </tr>`;
@@ -2653,9 +2670,9 @@ function currentCreatedAt(){
 }
 
 function buildNoticeRow(n){
-  const expire=n.expireTime||'—';
+  const expire=formatListDisplayTime(n.expireTime||'—');
   const cycleStatus=getCycleStatus(n);
-  return `<td><span class="mono">${n.noticeId}</span></td><td>${n.name}</td><td>${n.project}</td><td>${n.publishMode}</td><td>${n.publishTime}</td><td>${expire}</td><td><span class="pill ${statusClassName(n.status)}">${n.status}</span></td><td><span class="pill ${cycleStatusClassName(cycleStatus)}">${cycleStatus}</span></td><td>${n.creator}</td><td>${n.createdAt}</td><td>${buildActionButtons(n)}</td>`;
+  return `<td><span class="mono">${n.noticeId}</span></td><td>${n.name}</td><td>${n.project}</td><td>${n.publishMode}</td><td>${formatListDisplayTime(n.publishTime)}</td><td>${expire}</td><td><span class="pill ${statusClassName(n.status)}">${n.status}</span></td><td><span class="pill ${cycleStatusClassName(cycleStatus)}">${cycleStatus}</span></td><td>${n.creator}</td><td>${formatListDisplayTime(n.createdAt)}</td><td>${buildActionButtons(n)}</td>`;
 }
 
 function renderSampleNotices(){
