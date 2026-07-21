@@ -1109,6 +1109,10 @@ function openCreate(){
 function openEdit(button){
   const n=getNoticeFromButton(button);
   if(!n)return;
+  if(n.status!=='待发布'&&n.status!=='展示中'){
+    showToast('终态公告不支持编辑');
+    return;
+  }
   editorTitle.textContent='编辑公告';
   resetEditor();
   editing=true;
@@ -1509,10 +1513,15 @@ function onPopupConfigChange(){
   const endTimeField=document.getElementById('popupEndTimeField');
   if(endSel){
     const followOpt=[...endSel.options].find(o=>o.value==='follow_expire');
-    if(followOpt) followOpt.disabled=!!longTerm;
-    if(longTerm&&endSel.value==='follow_expire') endSel.value='custom';
+    if(followOpt){
+      followOpt.disabled=!!longTerm;
+      followOpt.title=longTerm?'长期有效公告没有自动到期时间，弹窗不能跟随公告结束':'';
+    }
+    // 长期有效：强制指定时间，不可跟随公告到期
+    if(longTerm) endSel.value='custom';
   }
-  if(endTimeField) endTimeField.classList.toggle('hidden',(endSel?.value||'follow_expire')!=='custom');
+  const showEndTime=longTerm||(endSel?.value||'')==='custom';
+  if(endTimeField) endTimeField.classList.toggle('hidden',!showEndTime);
 }
 function recurrenceSummary(){
   if(publishMode.value!=='recurring')return '';
@@ -1603,8 +1612,12 @@ function validateNotice(){
     if(missing){setLang(missing.code);return '已选择弹窗展示，请完善 '+missing.name+' 的弹窗展示内容';}
     const endMode=document.getElementById('popupEndMode')?.value||popupEndMode?.value;
     const endTime=document.getElementById('popupEndTime')?.value||popupEndTime?.value;
-    if(endMode==='custom'&&!endTime)return '请填写弹窗结束时间';
-    if(validity==='permanent'&&endMode==='follow_expire')return '长期有效公告不能选择跟随公告到期';
+    if(validity==='permanent'){
+      if(endMode!=='custom') return '长期有效公告须选择「指定时间」作为弹窗结束方式';
+      if(!endTime) return '请填写弹窗结束时间';
+    }else if(endMode==='custom'&&!endTime){
+      return '请填写弹窗结束时间';
+    }
   }
   return '';
 }
@@ -2695,21 +2708,21 @@ function iconActionBtn(title,onclick,icon,danger){
 
 function buildActionButtons(n){
   const status=n.status;
-  const isCycle=n.publishMode==='循环发布'&&!!n.cycleId;
   const cycleStatus=getCycleStatus(n);
   const btns=[];
-  // 编辑（实时生效）→ 复制 → 危险操作 → 日志
-  btns.push(iconActionBtn('编辑',`openEdit(this)`,ACTION_ICONS.edit));
+  // 编辑 → 复制 → 取消/下架/终止 → 日志
+  if(status==='待发布'||status==='展示中'){
+    btns.push(iconActionBtn('编辑',`openEdit(this)`,ACTION_ICONS.edit));
+  }
   btns.push(iconActionBtn('复制',`copyNotice(this)`,ACTION_ICONS.copy));
   if(status==='待发布'){
     btns.push(iconActionBtn('取消',`cancelScheduledNotice(this)`,ACTION_ICONS.cancel,true));
-  }else if(status==='展示中'&&isCycle){
+  }
+  if(status==='展示中'){
     btns.push(iconActionBtn('下架',`unshelfNotice(this)`,ACTION_ICONS.unshelf,true));
-    if(cycleStatus==='循环中'){
-      btns.push(iconActionBtn('终止',`terminateCycle(this)`,ACTION_ICONS.terminate,true));
-    }
-  }else if(status==='展示中'){
-    btns.push(iconActionBtn('下架',`unshelfNotice(this)`,ACTION_ICONS.unshelf,true));
+  }
+  if(cycleStatus==='循环中'){
+    btns.push(iconActionBtn('终止',`terminateCycle(this)`,ACTION_ICONS.terminate,true));
   }
   btns.push(iconActionBtn('日志',`viewOperationLog(this)`,ACTION_ICONS.log));
   return `<div class="icon-actions">${btns.join('')}</div>`;
