@@ -1,0 +1,3597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>APP发文 · CRM</title>
+    <style>
+/* APP发文 · 对齐红包管理视觉风格 */
+
+:root {
+  --bg-page: #f5f6f8;
+  --bg-card: #ffffff;
+  --border: #eef0f3;
+  --border-strong: #d9d9d9;
+  --text: #1f1f1f;
+  --text-secondary: #8c8c8c;
+  --text-muted: #bfbfbf;
+  --primary: #1677ff;
+  --primary-hover: #4096ff;
+  --primary-soft: #e6f4ff;
+  --danger: #ff4d4f;
+  --danger-hover: #ff7875;
+  --warning: #faad14;
+  --success: #52c41a;
+  --success-bg: #f6ffed;
+  --success-border: #b7eb8f;
+  --neutral-bg: #f5f5f5;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --shadow-modal: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --font: "Segoe UI", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg-page);
+  line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Page shell — no sidebar */
+.page {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 20px 24px 32px;
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #141414;
+}
+
+.breadcrumb {
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.breadcrumb .sep {
+  margin: 0 6px;
+  color: #d0d0d0;
+}
+
+.user-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  padding-top: 6px;
+}
+
+.user-meta a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.user-meta a:hover {
+  color: var(--primary);
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #f6ffed;
+  border: 1px solid #b7eb8f;
+  color: #389e0d;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.role-switch select {
+  height: 28px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  padding: 0 8px;
+  background: #fff;
+  outline: none;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 28px;
+  border-bottom: 1px solid #ebebeb;
+  margin: 12px 0 16px;
+}
+
+.tab {
+  position: relative;
+  padding: 12px 0;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab.active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--primary);
+}
+
+.tab:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px 20px 16px;
+  margin-bottom: 16px;
+}
+
+/* Filters */
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px 16px;
+}
+
+.filter-item label {
+  display: block;
+  margin-bottom: 8px;
+  color: #595959;
+  font-size: 13px;
+}
+
+.field,
+.field-select,
+.field-textarea {
+  width: 100%;
+  height: 36px;
+  padding: 4px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.field::placeholder {
+  color: #bfbfbf;
+}
+
+.field:focus,
+.field-select:focus,
+.field-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.12);
+}
+
+.field-textarea {
+  height: auto;
+  min-height: 88px;
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.range-fields {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.range-fields .field {
+  flex: 1;
+  min-width: 0;
+}
+
+.range-fields .tilde {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.filter-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 18px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: #fff;
+  transition: all 0.2s;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.btn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  color: #fff;
+}
+
+.btn-outline {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: #fff;
+}
+
+.btn-outline:hover {
+  background: var(--primary-soft);
+}
+
+.btn-danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: var(--danger-hover);
+  border-color: var(--danger-hover);
+  color: #fff;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.toolbar-left,
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hint-text {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Table */
+.table-card {
+  padding: 16px 20px 20px;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+table.data {
+  width: 100%;
+  min-width: 1480px;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.data th,
+table.data td {
+  padding: 12px 8px;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid #f0f0f0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+table.data th {
+  background: #fafafa;
+  font-weight: 600;
+  color: #262626;
+}
+
+table.data th:first-child,
+table.data td:first-child {
+  border-radius: 8px 0 0 0;
+}
+
+table.data th:last-child,
+table.data td:last-child {
+  border-radius: 0 8px 0 0;
+}
+
+table.data col.col-check,
+table.data th.col-check,
+table.data td.col-check {
+  width: 40px;
+}
+
+/* 勾选 项目 地区 SID 昵称 类型 摘要 展示位置 品牌Tag 展示时间 发布时间 可见状态 处置流程 发布状态 上架/下架 操作 */
+
+.btn-link {
+  border: none;
+  background: transparent;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 13px;
+}
+
+.btn-link:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+.btn-link.warn {
+  color: #d48806;
+}
+
+.btn-link.warn:hover {
+  color: #faad14;
+}
+
+table.data th:nth-child(7),
+table.data td:nth-child(7) {
+  width: 12%;
+  text-align: left;
+}
+
+table.data th:nth-child(10),
+table.data td:nth-child(10),
+table.data th:nth-child(11),
+table.data td:nth-child(11) {
+  width: 9%;
+}
+
+table.data a.link {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+table.data a.link:hover {
+  text-decoration: underline;
+}
+
+table.data tbody tr:hover {
+  background: #fafcff;
+}
+
+table.data tbody tr.selected {
+  background: #e6f4ff;
+}
+
+.cell-title {
+  font-weight: 500;
+  text-align: left;
+}
+
+.cell-summary {
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.batch-bar {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  background: #e6f4ff;
+  border: 1px solid #91caff;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.batch-bar.show {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.batch-bar .batch-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.batch-bar .batch-divider {
+  width: 1px;
+  height: 20px;
+  background: #91caff;
+  margin: 0 4px;
+}
+
+.batch-action-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.batch-action-group h4 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.batch-action-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.batch-action-options label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  cursor: pointer;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.batch-action-options label input {
+  margin-top: 3px;
+}
+
+.batch-action-options .opt-desc {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.batch-selected-tip {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  background: #e6f4ff;
+  border: 1px solid #91caff;
+  border-radius: 6px;
+  color: #1677ff;
+  font-size: 13px;
+}
+
+.ops {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.op-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: var(--primary);
+  color: #fff;
+  display: inline-grid;
+  place-items: center;
+  transition: background 0.2s, transform 0.15s;
+  padding: 0;
+}
+
+.op-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.op-btn.warn {
+  background: #faad14;
+}
+
+.op-btn.warn:hover {
+  background: #ffc53d;
+}
+
+.op-btn.danger {
+  background: var(--danger);
+}
+
+.op-btn.danger:hover {
+  background: var(--danger-hover);
+}
+
+.op-btn svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Status pills */
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 20px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.status-published {
+  color: #389e0d;
+  background: var(--success-bg);
+  border-color: var(--success-border);
+}
+
+.status-offline {
+  color: #595959;
+  background: var(--neutral-bg);
+  border-color: #d9d9d9;
+}
+
+.status-deleted {
+  color: #cf1322;
+  background: #fff1f0;
+  border-color: #ffa39e;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0 8px;
+  font-size: 12px;
+  line-height: 22px;
+  border-radius: 4px;
+  background: #f5f5f5;
+  color: #595959;
+}
+
+/* Toggle */
+.switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  display: inline-block;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch .slider {
+  position: absolute;
+  inset: 0;
+  background: #d9d9d9;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.switch .slider::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.switch input:checked + .slider {
+  background: var(--success);
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+.switch input:disabled + .slider {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.page-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--border-strong);
+  background: #fff;
+  border-radius: 6px;
+}
+
+.page-btn.active {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.footer {
+  text-align: center;
+  padding: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* Modal */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.overlay.open {
+  display: flex;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: var(--shadow-modal);
+  width: min(1080px, 100%);
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  animation: modal-in 0.2s ease;
+}
+
+.modal-sm {
+  width: min(460px, 100%);
+}
+
+.modal-md {
+  width: min(720px, 100%);
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.icon-btn:hover {
+  background: #f5f5f5;
+  color: var(--text);
+}
+
+.modal-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  padding: 12px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.form-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.form-split.has-brand {
+  grid-template-columns: 1.35fr 1fr;
+}
+
+.form-section {
+  background: #fafafa;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.form-section h3 {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.brand-panel[hidden],
+.community-panel[hidden],
+#displayPosRow[hidden],
+#listPage[hidden],
+#editorPage[hidden],
+#postPage[hidden] {
+  display: none !important;
+}
+
+/* 发文章 · 页面态 */
+.editor-page {
+  padding-bottom: 88px;
+}
+
+.editor-page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.editor-page-head h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.editor-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.editor-back:hover {
+  color: var(--primary);
+}
+
+.editor-form-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px 24px 8px;
+}
+
+.editor-form-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(320px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.editor-form-layout.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.editor-side-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.editor-side-panels:empty {
+  display: none;
+}
+
+.lang-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.lang-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  flex: 1;
+  min-width: 0;
+}
+
+.lang-tab {
+  position: relative;
+  height: 36px;
+  padding: 0 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.lang-tab:hover {
+  color: var(--primary);
+}
+
+.lang-tab.active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.lang-tab.active::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -1px;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 1px;
+}
+
+.lang-sync {
+  flex-shrink: 0;
+}
+
+.editor-page-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.editor-page-footer .btn {
+  min-width: 96px;
+}
+
+.help-tip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: #d9d9d9;
+  color: #fff;
+  font-size: 11px;
+  cursor: help;
+}
+
+.upload-sm {
+  width: 120px;
+  min-height: 120px;
+}
+
+.upload-banner {
+  min-height: 140px;
+}
+
+.field-readonly {
+  background: #f5f5f5 !important;
+  color: rgba(0, 0, 0, 0.65);
+  cursor: default;
+}
+
+.post-content {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.media-radios {
+  display: flex;
+  gap: 24px;
+}
+
+.media-radios label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.upload-pair {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.upload-post {
+  width: 104px;
+  min-width: 104px;
+  min-height: 104px;
+  border-radius: 2px;
+}
+
+.upload-post .placeholder {
+  font-size: 12px;
+  text-align: center;
+  padding: 0 6px;
+  line-height: 1.3;
+}
+
+.upload-post .plus {
+  font-size: 28px;
+  color: #999;
+  margin-bottom: 4px;
+}
+
+.upload-video .plus {
+  font-size: 22px;
+}
+
+#postDisplayPos[hidden] {
+  display: none !important;
+}
+
+#postBrandPanel[hidden],
+#postCommunityPanel[hidden],
+#postVideoRow[hidden],
+#batchDeleteGroup[hidden] {
+  display: none !important;
+}
+
+.form-row {
+  margin-bottom: 14px;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+.form-row label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.form-row label .req {
+  color: var(--danger);
+}
+
+.form-row .help {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.form-inline {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.upload-box {
+  border: 1px dashed var(--border-strong);
+  border-radius: 8px;
+  background: #fff;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-box:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.upload-box .plus {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.upload-box img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-box.has-image .placeholder {
+  display: none;
+}
+
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid var(--border-strong);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  background: #fff;
+}
+
+.editor-toolbar button {
+  min-width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 4px;
+  color: var(--text-secondary);
+}
+
+.editor-toolbar button:hover {
+  background: #f5f5f5;
+  color: var(--text);
+}
+
+.editor-area {
+  border-radius: 0 0 6px 6px;
+  min-height: 160px;
+}
+
+.check-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.check-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 10px 12px;
+}
+
+.detail-grid .label {
+  color: var(--text-secondary);
+}
+
+.detail-content {
+  margin-top: 16px;
+  padding: 14px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  white-space: pre-wrap;
+  line-height: 1.7;
+}
+
+.confirm-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  margin: 0 auto 12px;
+}
+
+.confirm-icon.warn {
+  background: #fffbe6;
+  color: var(--warning);
+}
+
+.confirm-icon.danger {
+  background: #fff1f0;
+  color: var(--danger);
+}
+
+.confirm-text {
+  text-align: center;
+}
+
+.confirm-text h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.confirm-text p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.perm-note {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #ad6800;
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s;
+  font-size: 13px;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 1100px) {
+  .filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-split,
+  .editor-form-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 16px;
+  }
+
+  .page-head {
+    flex-direction: column;
+  }
+
+  .filter-grid,
+  .form-inline {
+    grid-template-columns: 1fr;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+}
+
+    </style>
+  </head>
+  <body>
+    <div class="page" id="listPage">
+      <header class="page-head">
+        <div>
+          <h1 class="page-title">APP发文</h1>
+          <div class="breadcrumb">
+            <span>工作台</span><span class="sep">/</span><span>APP发文</span>
+          </div>
+        </div>
+        <div class="user-meta">
+          <a href="#">主页</a>
+          <span>网络</span>
+          <span>GMT+08:00</span>
+          <span>Jenny</span>
+          <span class="role-badge" id="roleBadge">超级运营</span>
+          <label title="演示权限控制">
+            <select id="roleSelect">
+              <option value="operator" selected>运营</option>
+              <option value="admin">管理员</option>
+              <option value="viewer">只读</option>
+            </select>
+          </label>
+        </div>
+      </header>
+
+      <nav class="tabs">
+        <button class="tab active" type="button" data-tab="official">官方文章</button>
+        <button class="tab" type="button" data-tab="posts">社区帖子</button>
+        <button class="tab" type="button" data-tab="comments">评论</button>
+      </nav>
+
+      <section class="card">
+        <div class="filter-grid">
+          <div class="filter-item">
+            <label for="filterSid">发布人 SID / 昵称</label>
+            <input id="filterSid" class="field" type="text" placeholder="请输入 SID 或昵称" />
+          </div>
+          <div class="filter-item">
+            <label for="filterRegion">发布地区</label>
+            <select id="filterRegion" class="field-select"></select>
+          </div>
+          <div class="filter-item">
+            <label for="filterProject">项目</label>
+            <select id="filterProject" class="field-select"></select>
+          </div>
+          <div class="filter-item">
+            <label for="filterType">类型</label>
+            <select id="filterType" class="field-select"></select>
+          </div>
+          <div class="filter-item">
+            <label for="filterSummary">标题</label>
+            <input id="filterSummary" class="field" type="text" placeholder="请输入标题关键词" />
+          </div>
+          <div class="filter-item">
+            <label for="filterStatus">发布状态</label>
+            <select id="filterStatus" class="field-select"></select>
+          </div>
+          <div class="filter-item">
+            <label for="filterVisibility">可见状态</label>
+            <select id="filterVisibility" class="field-select"></select>
+          </div>
+          <div class="filter-item">
+            <label for="filterWorkflow">处置流程</label>
+            <select id="filterWorkflow" class="field-select"></select>
+          </div>
+          <div class="filter-item">
+            <label for="filterDisplay">展示位置</label>
+            <select id="filterDisplay" class="field-select"></select>
+          </div>
+          <div class="filter-item">
+            <label>发布时间</label>
+            <div class="range-fields">
+              <input id="filterDateFrom" class="field" type="date" />
+              <span class="tilde">~</span>
+              <input id="filterDateTo" class="field" type="date" />
+            </div>
+          </div>
+          <div class="filter-actions">
+            <button id="btnReset" class="btn btn-outline" type="button">重置</button>
+            <button id="btnSearch" class="btn btn-primary" type="button">查询</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card table-card">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <button id="btnBatch" class="btn btn-danger" type="button">批量处理</button>
+            <button id="btnCreate" class="btn btn-primary" type="button">发文章</button>
+            <button id="btnCreatePost" class="btn btn-primary" type="button">发帖子</button>
+          </div>
+          <div class="toolbar-right">
+            <span class="hint-text" id="permHint">运营：可编辑 / 下架；删除需管理员</span>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+              <tr>
+                <th class="col-check"><input type="checkbox" id="checkAll" title="全选" /></th>
+                <th>项目</th>
+                <th>地区</th>
+                <th>SID</th>
+                <th>昵称</th>
+                <th>类型</th>
+                <th>标题</th>
+                <th>展示位置</th>
+                <th>品牌 Tag</th>
+                <th>展示时间</th>
+                <th>发布时间</th>
+                <th>可见状态</th>
+                <th>处置流程</th>
+                <th>发布状态</th>
+                <th>上架/下架</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="articleTbody"></tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <span id="totalCount">共 0 条</span>
+          <div id="pagination" style="display: contents"></div>
+        </div>
+      </section>
+
+      <footer class="footer">© F.S.E | CRM Team (Fast. Stable. Efficient.)</footer>
+    </div>
+
+    <!-- 发文章 / 编辑文章 · 页面 -->
+    <div class="page editor-page" id="editorPage" hidden>
+      <header class="editor-page-head">
+        <div>
+          <button type="button" class="editor-back" id="btnEditorBack">← 返回列表</button>
+          <h1 id="editorTitle">发文章</h1>
+          <div class="breadcrumb">
+            <span>工作台</span><span class="sep">/</span><span>APP发文</span><span class="sep">/</span><span id="editorCrumb">发文章</span>
+          </div>
+        </div>
+        <div class="user-meta">
+          <span class="role-badge" id="editorRoleBadge">超级运营</span>
+        </div>
+      </header>
+
+      <section class="editor-form-card">
+        <div class="editor-form-layout is-single" id="editorSplit">
+          <div class="form-section" style="background:#fff;border:none;padding:0">
+            <h3>基础信息</h3>
+            <div class="form-inline">
+              <div class="form-row">
+                <label for="editSid"><span class="req">*</span> 发布人 SID</label>
+                <select id="editSid" class="field-select"></select>
+              </div>
+              <div class="form-row">
+                <label for="editRegion"><span class="req">*</span> 发布地区</label>
+                <select id="editRegion" class="field-select"></select>
+              </div>
+            </div>
+            <div class="form-inline">
+              <div class="form-row">
+                <label for="editVisibility">可见状态</label>
+                <select id="editVisibility" class="field-select">
+                  <option value="所有人可见" selected>所有人可见</option>
+                  <option value="仅自己可见">仅自己可见</option>
+                </select>
+              </div>
+              <div class="form-row" id="displayPosRow" hidden>
+                <label>展示位置</label>
+                <div class="check-row">
+                  <label><input id="editDisplayBrand" type="checkbox" /> 品牌</label>
+                  <label><input id="editDisplayCommunity" type="checkbox" checked /> 社区</label>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="editNickname" />
+            <input type="hidden" id="editProject" />
+            <input type="hidden" id="editType" value="文章" />
+
+            <h3 style="margin-top:8px">文章内容</h3>
+            <div class="lang-bar">
+              <div class="lang-tabs" id="editLangTabs" role="tablist"></div>
+              <button type="button" class="btn btn-outline lang-sync" id="btnSyncLang">同步</button>
+            </div>
+            <div class="form-row">
+              <label for="editTitle"><span class="req">*</span> 文章标题</label>
+              <input
+                id="editTitle"
+                class="field"
+                type="text"
+                maxlength="200"
+                placeholder="请输入文章标题"
+              />
+            </div>
+            <div class="form-row">
+              <label for="editContent"><span class="req">*</span> 文章正文</label>
+              <div class="editor-toolbar" aria-hidden="true">
+                <button type="button">B</button>
+                <button type="button"><i>I</i></button>
+                <button type="button"><u>U</u></button>
+                <button type="button">S</button>
+                <button type="button">插入图片</button>
+                <button type="button">插入链接</button>
+                <button type="button">表格</button>
+              </div>
+              <textarea
+                id="editContent"
+                class="field-textarea editor-area"
+                placeholder="请输入文章正文内容..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="editor-side-panels" id="editorSidePanels">
+            <div class="form-section brand-panel" id="brandPanel" hidden>
+              <h3>品牌中心展示设置</h3>
+              <div class="form-row">
+                <label for="editBrandTag"><span class="req">*</span> 品牌 Tag</label>
+                <select id="editBrandTag" class="field-select">
+                  <option value="">品牌tag</option>
+                  <option value="推荐">推荐</option>
+                  <option value="公司动态">公司动态</option>
+                  <option value="品牌活动">品牌活动</option>
+                  <option value="更新公告">更新公告</option>
+                  <option value="用户反馈周度回顾">用户反馈周度回顾</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="editDisplayTime"><span class="req">*</span> 展示时间</label>
+                <input id="editDisplayTime" class="field" type="datetime-local" />
+                <div class="help">APP 品牌中心的展示时间</div>
+              </div>
+              <div class="form-row">
+                <label>是否置顶</label>
+                <div class="check-row">
+                  <label><input id="editBrandPin" type="checkbox" /> 置顶展示</label>
+                </div>
+              </div>
+              <div class="form-row">
+                <label>互动数据</label>
+                <div class="form-inline">
+                  <input id="editLikes" class="field" type="number" min="0" placeholder="请输入点赞量" />
+                  <input id="editViews" class="field" type="number" min="0" placeholder="请输入浏览量" />
+                </div>
+              </div>
+              <div class="form-row">
+                <label><span class="req">*</span> 品牌中心封面
+                  <span class="help-tip" title="品牌中心列表/详情头图，必填">?</span>
+                </label>
+                <div class="upload-box upload-banner" id="editBannerBox">
+                  <img id="editBannerPreview" alt="" />
+                  <div class="placeholder">
+                    <div class="plus">+</div>
+                    <div>点击上传或拖拽 / Ctrl+V 粘贴</div>
+                  </div>
+                </div>
+                <input id="editBannerUrl" type="hidden" />
+              </div>
+            </div>
+
+            <div class="form-section community-panel" id="communityPanel" hidden>
+              <h3>社区展示设置</h3>
+              <div class="form-row">
+                <label>是否置顶</label>
+                <div class="check-row">
+                  <label><input id="editCommunityPin" type="checkbox" /> 置顶展示</label>
+                </div>
+              </div>
+              <div class="form-row">
+                <label><span class="req">*</span> 社区封面
+                  <span class="help-tip" title="社区列表/详情封面图，必填">?</span>
+                </label>
+                <div class="upload-box upload-banner" id="editCommunityCoverBox">
+                  <img id="editCommunityCoverPreview" alt="" />
+                  <div class="placeholder">
+                    <div class="plus">+</div>
+                    <div>点击上传或拖拽 / Ctrl+V 粘贴</div>
+                  </div>
+                </div>
+                <input id="editCommunityCoverUrl" type="hidden" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="editor-page-footer">
+        <button class="btn" type="button" id="btnCancelEditor">取消</button>
+        <button id="btnSaveEditor" class="btn btn-primary" type="button">提交</button>
+      </div>
+    </div>
+
+    <!-- 发帖子 / 编辑帖子 · 页面 -->
+    <div class="page editor-page" id="postPage" hidden>
+      <header class="editor-page-head">
+        <div>
+          <button type="button" class="editor-back" id="btnPostBack">← 返回列表</button>
+          <h1 id="postTitle">发帖子</h1>
+          <div class="breadcrumb">
+            <span>工作台</span><span class="sep">/</span><span>APP发文</span><span class="sep">/</span><span id="postCrumb">发帖子</span>
+          </div>
+        </div>
+        <div class="user-meta">
+          <span class="role-badge" id="postRoleBadge">超级运营</span>
+        </div>
+      </header>
+
+      <section class="editor-form-card">
+        <div class="editor-form-layout is-single" id="postSplit">
+          <div class="form-section" style="background:#fff;border:none;padding:0">
+            <h3>基础信息</h3>
+            <div class="form-inline">
+              <div class="form-row">
+                <label for="postSid"><span class="req">*</span> 发布人 SID</label>
+                <input id="postSid" class="field" type="text" list="postSidList" placeholder="请输入发布人SID" />
+                <datalist id="postSidList"></datalist>
+              </div>
+              <div class="form-row">
+                <label for="postAccount"><span class="req">*</span> 发布人账号</label>
+                <input id="postAccount" class="field" type="text" placeholder="请输入发布人账号" />
+              </div>
+            </div>
+            <div class="form-inline">
+              <div class="form-row">
+                <label for="postProject"><span class="req">*</span> 项目</label>
+                <select id="postProject" class="field-select">
+                  <option value="">项目</option>
+                  <option value="TW">tradewill</option>
+                  <option value="Dana">Dana</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="postNickname">姓名/昵称</label>
+                <input id="postNickname" class="field field-readonly" type="text" readonly placeholder="根据 SID 自动带出" />
+              </div>
+            </div>
+            <div class="form-inline">
+              <div class="form-row">
+                <label for="postRegion"><span class="req">*</span> 发布地区</label>
+                <select id="postRegion" class="field-select"></select>
+              </div>
+              <div class="form-row">
+                <label for="postVisibility">可见状态</label>
+                <select id="postVisibility" class="field-select">
+                  <option value="所有人可见" selected>所有人可见</option>
+                  <option value="仅自己可见">仅自己可见</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row" id="postDisplayPos" hidden>
+              <label>展示位置</label>
+              <div class="check-row">
+                <label><input id="postDisplayBrand" type="checkbox" /> 品牌</label>
+                <label><input id="postDisplayCommunity" type="checkbox" checked /> 社区</label>
+              </div>
+            </div>
+
+            <h3 style="margin-top:8px">帖子内容</h3>
+            <div class="lang-bar">
+              <div class="lang-tabs" id="postLangTabs" role="tablist"></div>
+              <button type="button" class="btn btn-outline lang-sync" id="btnSyncPostLang">同步</button>
+            </div>
+            <div class="form-row">
+              <label for="postContent"><span class="req">*</span> 发布内容</label>
+              <textarea
+                id="postContent"
+                class="field-textarea post-content"
+                rows="6"
+                placeholder='加"#"添加话题'
+              ></textarea>
+            </div>
+            <div class="form-row">
+              <label>媒体类型</label>
+              <div class="media-radios">
+                <label><input type="radio" name="postMediaType" value="image" checked /> 图片帖</label>
+                <label><input type="radio" name="postMediaType" value="video" /> 视频帖</label>
+              </div>
+              <div class="help">图片封面请在右侧品牌/社区展示设置中分别上传</div>
+            </div>
+            <div class="form-row" id="postVideoRow" hidden>
+              <label><span class="req">*</span> 发布视频
+                <span class="help-tip" title="支持上传视频">?</span>
+              </label>
+              <div class="upload-pair">
+                <div class="upload-box upload-post" id="postVideoBox">
+                  <div class="placeholder">
+                    <div class="plus">+</div>
+                    <div>点击上传或拖拽 / Ctrl+V 粘贴</div>
+                  </div>
+                </div>
+                <div class="upload-box upload-post upload-video">
+                  <div class="placeholder">
+                    <div class="plus">▶</div>
+                    <div>点击上传或拖拽 / Ctrl+V 粘贴</div>
+                  </div>
+                </div>
+                <input id="postVideoUrl" type="hidden" />
+              </div>
+            </div>
+            <input type="hidden" id="postType" value="帖子" />
+          </div>
+
+          <div class="editor-side-panels">
+            <div class="form-section brand-panel" id="postBrandPanel" hidden>
+              <h3>品牌中心展示设置</h3>
+              <div class="form-row">
+                <label for="postBrandTag"><span class="req">*</span> 品牌 Tag</label>
+                <select id="postBrandTag" class="field-select">
+                  <option value="">品牌tag</option>
+                  <option value="推荐">推荐</option>
+                  <option value="公司动态">公司动态</option>
+                  <option value="品牌活动">品牌活动</option>
+                  <option value="更新公告">更新公告</option>
+                  <option value="用户反馈周度回顾">用户反馈周度回顾</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="postDisplayTime"><span class="req">*</span> 展示时间</label>
+                <input id="postDisplayTime" class="field" type="datetime-local" />
+                <div class="help">APP 品牌中心的展示时间</div>
+              </div>
+              <div class="form-row">
+                <label>是否置顶</label>
+                <div class="check-row">
+                  <label><input id="postBrandPin" type="checkbox" /> 置顶展示</label>
+                </div>
+              </div>
+              <div class="form-row">
+                <label>互动数据</label>
+                <div class="form-inline">
+                  <input id="postLikes" class="field" type="number" min="0" placeholder="请输入点赞量" />
+                  <input id="postViews" class="field" type="number" min="0" placeholder="请输入浏览量" />
+                </div>
+              </div>
+              <div class="form-row">
+                <label><span class="req">*</span> 品牌中心封面
+                  <span class="help-tip" title="品牌中心列表/详情头图，必填">?</span>
+                </label>
+                <div class="upload-box upload-banner" id="postBannerBox">
+                  <img id="postBannerPreview" alt="" />
+                  <div class="placeholder">
+                    <div class="plus">+</div>
+                    <div>点击上传或拖拽 / Ctrl+V 粘贴</div>
+                  </div>
+                </div>
+                <input id="postBannerUrl" type="hidden" />
+              </div>
+            </div>
+
+            <div class="form-section community-panel" id="postCommunityPanel" hidden>
+              <h3>社区展示设置</h3>
+              <div class="form-row">
+                <label>是否置顶</label>
+                <div class="check-row">
+                  <label><input id="postCommunityPin" type="checkbox" /> 置顶展示</label>
+                </div>
+              </div>
+              <div class="form-row">
+                <label><span class="req">*</span> 社区封面
+                  <span class="help-tip" title="社区列表/详情封面图，必填">?</span>
+                </label>
+                <div class="upload-box upload-banner" id="postCommunityCoverBox">
+                  <img id="postCommunityCoverPreview" alt="" />
+                  <div class="placeholder">
+                    <div class="plus">+</div>
+                    <div>点击上传或拖拽 / Ctrl+V 粘贴</div>
+                  </div>
+                </div>
+                <input id="postCommunityCoverUrl" type="hidden" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="editor-page-footer">
+        <button class="btn" type="button" id="btnCancelPost">取消</button>
+        <button id="btnSavePost" class="btn btn-primary" type="button">提交</button>
+      </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="overlay" id="detailModal" role="dialog" aria-modal="true">
+      <div class="modal modal-md">
+        <div class="modal-header">
+          <h2>文章详情</h2>
+          <button class="icon-btn" type="button" data-close="#detailModal" aria-label="关闭">×</button>
+        </div>
+        <div class="modal-body" id="detailBody"></div>
+        <div class="modal-footer">
+          <button class="btn" type="button" data-close="#detailModal">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="overlay" id="confirmModal" role="dialog" aria-modal="true">
+      <div class="modal modal-sm">
+        <div class="modal-header">
+          <h2>操作确认</h2>
+          <button class="icon-btn" type="button" data-close="#confirmModal" aria-label="关闭">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="confirm-icon warn">!</div>
+          <div class="confirm-text">
+            <h3 id="confirmHeading">确认操作？</h3>
+            <p id="confirmDesc"></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" type="button" data-close="#confirmModal">取消</button>
+          <button id="confirmOk" class="btn btn-primary" type="button">确认</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 批量处理 Modal -->
+    <div class="overlay" id="batchModal" role="dialog" aria-modal="true">
+      <div class="modal modal-sm">
+        <div class="modal-header">
+          <h2>批量处理</h2>
+          <button class="icon-btn" type="button" data-close="#batchModal" aria-label="关闭">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="batch-selected-tip" id="batchModalTip">已选 0 条</div>
+          <div class="batch-action-groups">
+            <div class="batch-action-group">
+              <h4>上下架</h4>
+              <div class="batch-action-options">
+                <label>
+                  <input type="radio" name="batchActionType" value="online" />
+                  <span>
+                    批量上架
+                    <span class="opt-desc">将已选内容重新上架，APP 前端恢复展示</span>
+                  </span>
+                </label>
+                <label>
+                  <input type="radio" name="batchActionType" value="offline" />
+                  <span>
+                    批量下架
+                    <span class="opt-desc">将已选内容下架，APP 前端不再展示</span>
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div class="batch-action-group">
+              <h4>可见状态</h4>
+              <div class="batch-action-options">
+                <label>
+                  <input type="radio" name="batchActionType" value="visible-all" checked />
+                  <span>
+                    设为所有人可见
+                    <span class="opt-desc">批量修改为「所有人可见」</span>
+                  </span>
+                </label>
+                <label>
+                  <input type="radio" name="batchActionType" value="visible-self" />
+                  <span>
+                    设为仅自己可见
+                    <span class="opt-desc">批量修改为「仅自己可见」</span>
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div class="batch-action-group" id="batchDeleteGroup" hidden>
+              <h4>其他</h4>
+              <div class="batch-action-options">
+                <label>
+                  <input type="radio" name="batchActionType" value="delete" />
+                  <span>
+                    批量删除
+                    <span class="opt-desc">逻辑删除，建议优先使用下架</span>
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" type="button" data-close="#batchModal">取消</button>
+          <button id="btnBatchConfirm" class="btn btn-primary" type="button">下一步</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status"></div>
+    <script>
+/**
+ * APP发文 · 前端原型交互
+ * 权限：viewer 查看 | operator 编辑/下架 | admin 编辑/下架/删除
+ */
+
+const CATEGORIES = ["品牌动态", "产品介绍", "活动公告", "社区精选", "使用指南"];
+const PROJECTS = ["Dana", "TW"];
+const TYPES = ["文章", "帖子"];
+const WORKFLOWS = ["审核通过", "敏感词审核中", "人工复核中", "已驳回"];
+const REGIONS = ["+1234 [test1]", "+62 [ID]", "+91 [IN]", "+234 [NG]", "+1 [US]"];
+const VISIBILITIES = ["所有人可见", "仅自己可见"];
+const DISPLAY_POSITIONS = ["社区", "品牌"];
+
+/** 文章多语言（对齐公告配置） */
+const ARTICLE_LANGS = [
+  { key: "en", label: "英文" },
+  { key: "zh-TW", label: "繁体中文" },
+  { key: "id", label: "印尼" },
+  { key: "vi", label: "越南" },
+  { key: "en-IN", label: "印度英文" },
+  { key: "fil", label: "菲律宾" },
+  { key: "es", label: "西班牙语" },
+  { key: "pt", label: "葡萄牙语" },
+  { key: "th", label: "泰国" },
+];
+
+let currentEditLang = ARTICLE_LANGS[0].key;
+let articleI18n = {};
+let currentPostLang = ARTICLE_LANGS[0].key;
+let postI18n = {};
+
+function emptyI18n() {
+  const map = {};
+  ARTICLE_LANGS.forEach((l) => {
+    map[l.key] = { title: "", content: "" };
+  });
+  return map;
+}
+
+function normalizeI18n(source, fallbackTitle = "", fallbackContent = "") {
+  const map = emptyI18n();
+  const src = source && typeof source === "object" ? source : {};
+  ARTICLE_LANGS.forEach((l, idx) => {
+    const item = src[l.key] || {};
+    map[l.key] = {
+      title: item.title || (idx === 0 ? fallbackTitle : ""),
+      content: item.content || (idx === 0 ? fallbackContent : ""),
+    };
+  });
+  return map;
+}
+
+function emptyPostI18n() {
+  const map = {};
+  ARTICLE_LANGS.forEach((l) => {
+    map[l.key] = { content: "" };
+  });
+  return map;
+}
+
+function normalizePostI18n(source, fallbackContent = "") {
+  const map = emptyPostI18n();
+  const src = source && typeof source === "object" ? source : {};
+  ARTICLE_LANGS.forEach((l, idx) => {
+    const item = src[l.key] || {};
+    map[l.key] = {
+      content: item.content || (idx === 0 ? fallbackContent : ""),
+    };
+  });
+  return map;
+}
+
+function primaryI18nText(i18n, field) {
+  for (const lang of ARTICLE_LANGS) {
+    const val = (i18n?.[lang.key]?.[field] || "").trim();
+    if (val) return val;
+  }
+  return "";
+}
+
+/** 发布人 SID：以 2 开头判定为 TW 项目，可选择展示位置（品牌/社区） */
+const SID_ACCOUNTS = [
+  { sid: "10018712268", nickname: "CommunityBot", account: "community.bot@example.com" },
+  { sid: "20008325718", nickname: "VUieuBRp", account: "3702211828@gmail.com" },
+  { sid: "20008326001", nickname: "官方账号·品牌中心", account: "brand@tradewill.com" },
+  { sid: "20008329770", nickname: "Jenny", account: "jenny@tradewill.com" },
+];
+
+function projectFromSid(sid) {
+  return String(sid || "").startsWith("2") ? "TW" : "Dana";
+}
+
+const ROLE_PERMS = {
+  viewer: { view: true, edit: false, offline: false, delete: false, create: false },
+  operator: { view: true, edit: true, offline: true, delete: false, create: true },
+  admin: { view: true, edit: true, offline: true, delete: true, create: true },
+};
+
+let currentRole = "operator";
+let articles = [];
+let filtered = [];
+let page = 1;
+const pageSize = 10;
+let editingId = null;
+let actionTargetId = null;
+let createTypeDefault = "文章";
+const selectedIds = new Set();
+
+function uid() {
+  return "A" + String(Date.now()).slice(-6) + Math.floor(Math.random() * 90 + 10);
+}
+
+function seedArticles() {
+  const samples = [
+    {
+      region: "+1234 [test1]",
+      sid: "20008325718",
+      nickname: "官方账号·Dana",
+      type: "文章",
+      category: "品牌动态",
+      status: "published",
+      visibility: "所有人可见",
+      workflow: "审核通过",
+      publishAt: "2026-07-18 10:30:00",
+      cover: "https://picsum.photos/seed/crm1/320/200",
+      summary: "回顾品牌成长与社区共创历程，讲述从社区走到全球的关键故事与产品理念。",
+      content: "这是官方品牌故事正文内容。我们持续与用户共创，打磨更好的产品体验。",
+      visible: true,
+      display: ["品牌", "社区"],
+      brandTag: "公司动态",
+      displayTime: "2026-07-18 10:00:00",
+      brandPinned: true,
+      likes: 860,
+      views: 32000,
+      banner: "https://picsum.photos/seed/banner1/960/400",
+      communityPinned: false,
+      communityCover: "https://picsum.photos/seed/comm1/640/400",
+    },
+    {
+      region: "+62 [ID]",
+      sid: "20008326001",
+      nickname: "官方账号·品牌中心",
+      type: "文章",
+      category: "活动公告",
+      status: "published",
+      visibility: "所有人可见",
+      workflow: "审核通过",
+      publishAt: "2026-07-15 09:00:00",
+      cover: "https://picsum.photos/seed/crm2/320/200",
+      summary: "夏季活动正式开启，活动时间 7.15 - 8.15，参与打卡任务即可赢取好礼，详情见正文。",
+      content: "活动规则：完成打卡任务即可参与抽奖。官方保留活动最终解释权。",
+      visible: true,
+      display: ["品牌", "社区"],
+      brandTag: "品牌活动",
+      displayTime: "2025-11-14 14:30:00",
+      brandPinned: false,
+      likes: 1280,
+      views: 56000,
+      banner: "https://picsum.photos/seed/banner2/960/400",
+      communityPinned: true,
+      communityCover: "https://picsum.photos/seed/comm2/640/400",
+    },
+    {
+      region: "+91 [IN]",
+      sid: "10018712268",
+      nickname: "CommunityBot",
+      type: "帖子",
+      category: "社区精选",
+      status: "published",
+      visibility: "所有人可见",
+      workflow: "敏感词审核中",
+      publishAt: "2026-07-12 18:05:00",
+      cover: "https://picsum.photos/seed/crm7/320/200",
+      summary: "今日打卡：晒出你的使用瞬间，欢迎在评论区分享体验。",
+      content: "欢迎在评论区分享你的使用体验与照片。",
+      visible: true,
+      display: ["社区"],
+      communityPinned: true,
+      communityCover: "https://picsum.photos/seed/postcomm7/640/400",
+      mediaType: "image",
+    },
+    {
+      region: "+234 [NG]",
+      sid: "20008329770",
+      nickname: "Jenny",
+      type: "文章",
+      category: "使用指南",
+      status: "published",
+      visibility: "仅自己可见",
+      workflow: "人工复核中",
+      publishAt: "2026-07-10 14:20:00",
+      cover: "https://picsum.photos/seed/crm3/320/200",
+      summary: "新品使用指南：三分钟上手，图文教程帮助用户快速完成注册与探索。",
+      content: "第一步：下载 APP；第二步：完成注册；第三步：进入社区开始探索。",
+      visible: true,
+      display: ["品牌"],
+      brandTag: "更新公告",
+      displayTime: "2026-07-10 14:00:00",
+      brandPinned: false,
+      likes: 420,
+      views: 15800,
+      banner: "https://picsum.photos/seed/banner3/960/400",
+    },
+    {
+      region: "+1 [US]",
+      sid: "20008325718",
+      nickname: "官方账号·Dana",
+      type: "帖子",
+      category: "社区精选",
+      status: "offline",
+      visibility: "所有人可见",
+      workflow: "审核通过",
+      publishAt: "2026-06-28 16:45:00",
+      cover: "https://picsum.photos/seed/crm4/320/200",
+      summary: "社区精选：本周热议话题汇总，已下架待更新，聚焦产品体验与功能建议。",
+      content: "本周话题围绕产品体验与功能建议展开……",
+      visible: false,
+      display: ["社区"],
+      communityPinned: false,
+      communityCover: "https://picsum.photos/seed/postcomm4/640/400",
+      mediaType: "image",
+    },
+    {
+      region: "+62 [ID]",
+      sid: "20008326001",
+      nickname: "官方账号·品牌中心",
+      type: "文章",
+      category: "产品介绍",
+      status: "published",
+      visibility: "所有人可见",
+      workflow: "审核通过",
+      publishAt: "2026-06-22 11:10:00",
+      cover: "https://picsum.photos/seed/crm5/320/200",
+      summary: "产品介绍：旗舰机型亮点一览，覆盖续航、影像与日常创作场景能力。",
+      content: "旗舰机型具备更强续航与影像能力，适合日常与创作场景。",
+      visible: true,
+      display: ["品牌", "社区"],
+      brandTag: "推荐",
+      displayTime: "2026-06-22 11:00:00",
+      brandPinned: true,
+      likes: 2100,
+      views: 89000,
+      banner: "https://picsum.photos/seed/banner5/960/400",
+      communityPinned: false,
+      communityCover: "https://picsum.photos/seed/comm5/640/400",
+    },
+    {
+      region: "+1234 [test1]",
+      sid: "10019990001",
+      nickname: "ArchiveBot",
+      type: "文章",
+      category: "活动公告",
+      status: "deleted",
+      visibility: "仅自己可见",
+      workflow: "已驳回",
+      publishAt: "2026-05-01 08:00:00",
+      cover: "https://picsum.photos/seed/crm6/320/200",
+      summary: "旧版活动公告（已删除示例），历史活动记录保留供审计查看。",
+      content: "活动已结束，记录保留供审计查看。",
+      visible: false,
+      display: ["社区"],
+      communityPinned: false,
+      communityCover: "https://picsum.photos/seed/comm6/640/400",
+    },
+  ];
+
+  articles = samples.map((item, i) => {
+    const i18n =
+      item.type === "文章"
+        ? normalizeI18n(item.i18n, item.summary || "", item.content || "")
+        : item.type === "帖子"
+          ? normalizePostI18n(item.i18n, item.content || "")
+          : undefined;
+    return {
+      id: "1008" + (210 + i),
+      ...item,
+      ...(i18n ? { i18n } : {}),
+      project: projectFromSid(item.sid),
+      updatedAt: item.publishAt,
+    };
+  });
+}
+
+function statusLabel(status) {
+  return { published: "已发布", offline: "已下架", deleted: "已删除" }[status] || status;
+}
+
+function statusClass(status) {
+  return { published: "status-published", offline: "status-offline", deleted: "status-deleted" }[
+    status
+  ];
+}
+
+function displayText(display) {
+  return (display || []).join("、") || "—";
+}
+
+function perms() {
+  return ROLE_PERMS[currentRole];
+}
+
+function $(sel) {
+  return document.querySelector(sel);
+}
+
+function $all(sel) {
+  return [...document.querySelectorAll(sel)];
+}
+
+function showToast(msg) {
+  const el = $("#toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.classList.remove("show"), 2200);
+}
+
+function openModal(id) {
+  $(id).classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal(id) {
+  $(id).classList.remove("open");
+  if (!$all(".overlay.open").length) document.body.style.overflow = "";
+}
+
+function fillSelect(el, options, placeholder) {
+  el.innerHTML =
+    `<option value="">${placeholder}</option>` +
+    options.map((o) => `<option value="${o}">${o}</option>`).join("");
+}
+
+function initFilters() {
+  fillSelect($("#filterRegion"), REGIONS, "全部地区");
+  fillSelect($("#filterProject"), PROJECTS, "全部项目");
+  fillSelect($("#filterType"), TYPES, "全部类型");
+  fillSelect($("#filterStatus"), ["已发布", "已下架", "已删除"], "全部状态");
+  fillSelect($("#filterVisibility"), VISIBILITIES, "全部可见状态");
+  fillSelect($("#filterWorkflow"), WORKFLOWS, "全部流程");
+  fillSelect($("#filterDisplay"), DISPLAY_POSITIONS, "全部位置");
+
+  fillSelect($("#editRegion"), REGIONS, "请选择地区");
+  fillSelect($("#postRegion"), REGIONS, "请选择");
+
+  $("#editSid").innerHTML = SID_ACCOUNTS.map((a) => {
+    const project = projectFromSid(a.sid);
+    return `<option value="${a.sid}" data-nickname="${a.nickname}">${a.sid}（${project} · ${a.nickname}）</option>`;
+  }).join("");
+  $("#postSidList").innerHTML = SID_ACCOUNTS.map(
+    (a) => `<option value="${a.sid}">${a.nickname} · ${projectFromSid(a.sid)}</option>`
+  ).join("");
+}
+
+function getSelectedSidAccount() {
+  const sid = $("#editSid").value;
+  const acc = SID_ACCOUNTS.find((a) => a.sid === sid);
+  if (!acc) return null;
+  return { ...acc, project: projectFromSid(acc.sid) };
+}
+
+function isTwSid() {
+  return projectFromSid($("#editSid").value) === "TW";
+}
+
+function syncDisplayPositionUI() {
+  const tw = isTwSid();
+  const posRow = $("#displayPosRow");
+  const brandPanel = $("#brandPanel");
+  const communityPanel = $("#communityPanel");
+  const split = $("#editorSplit");
+  const acc = getSelectedSidAccount();
+
+  if (acc) {
+    $("#editProject").value = acc.project;
+    $("#editNickname").value = acc.nickname;
+  }
+
+  if (tw) {
+    posRow.hidden = false;
+  } else {
+    posRow.hidden = true;
+    $("#editDisplayBrand").checked = false;
+    $("#editDisplayCommunity").checked = true;
+  }
+
+  const showBrand = tw && $("#editDisplayBrand").checked;
+  const showCommunity = $("#editDisplayCommunity").checked || !tw;
+  brandPanel.hidden = !showBrand;
+  communityPanel.hidden = !showCommunity;
+  split.classList.toggle("is-single", !showBrand && !showCommunity);
+  split.classList.toggle("has-brand", showBrand || showCommunity);
+}
+
+function renderLangTabs() {
+  const tabs = $("#editLangTabs");
+  if (!tabs) return;
+  tabs.innerHTML = ARTICLE_LANGS.map(
+    (l) =>
+      `<button type="button" class="lang-tab ${l.key === currentEditLang ? "active" : ""}" data-lang="${l.key}" role="tab">${l.label}</button>`
+  ).join("");
+}
+
+function flushCurrentLangFields() {
+  if (!articleI18n[currentEditLang]) {
+    articleI18n[currentEditLang] = { title: "", content: "" };
+  }
+  articleI18n[currentEditLang].title = ($("#editTitle")?.value || "").trim();
+  articleI18n[currentEditLang].content = $("#editContent")?.value || "";
+}
+
+function applyLangFields(langKey) {
+  currentEditLang = langKey;
+  const data = articleI18n[langKey] || { title: "", content: "" };
+  $("#editTitle").value = data.title || "";
+  $("#editContent").value = data.content || "";
+  renderLangTabs();
+}
+
+function switchEditLang(langKey) {
+  if (!langKey || langKey === currentEditLang) return;
+  flushCurrentLangFields();
+  applyLangFields(langKey);
+}
+
+function syncAllLangsFromCurrent() {
+  flushCurrentLangFields();
+  const src = articleI18n[currentEditLang] || { title: "", content: "" };
+  if (!src.title.trim() && !String(src.content || "").trim()) {
+    showToast("当前语言内容为空，无法同步");
+    return;
+  }
+  ARTICLE_LANGS.forEach((l) => {
+    articleI18n[l.key] = { title: src.title, content: src.content };
+  });
+  showToast("已同步到全部语言");
+}
+
+function showEditorPage() {
+  $("#listPage").hidden = true;
+  $("#postPage").hidden = true;
+  $("#editorPage").hidden = false;
+  window.scrollTo(0, 0);
+}
+
+function hideEditorPage() {
+  $("#editorPage").hidden = true;
+  $("#listPage").hidden = false;
+  editingId = null;
+}
+
+/** 切换到 2 开头的 TW SID 时，默认勾选品牌展示 */
+function onSidChange() {
+  if (isTwSid()) {
+    $("#editDisplayBrand").checked = true;
+    if (!$("#editDisplayCommunity").checked) {
+      $("#editDisplayCommunity").checked = true;
+    }
+  }
+  syncDisplayPositionUI();
+}
+
+function getPostSidAccount() {
+  const sid = ($("#postSid").value || "").trim();
+  if (!sid) return null;
+  const acc = SID_ACCOUNTS.find((a) => a.sid === sid);
+  return {
+    sid,
+    nickname: acc?.nickname || $("#postNickname").value || sid,
+    account: acc?.account || $("#postAccount").value || "",
+    project: $("#postProject").value || projectFromSid(sid),
+  };
+}
+
+function isPostTwSid() {
+  return projectFromSid(($("#postSid").value || "").trim()) === "TW";
+}
+
+function syncPostDisplayUI() {
+  const tw = isPostTwSid();
+  const pos = $("#postDisplayPos");
+  const brandPanel = $("#postBrandPanel");
+  const communityPanel = $("#postCommunityPanel");
+  const split = $("#postSplit");
+
+  if (tw) {
+    pos.hidden = false;
+  } else {
+    pos.hidden = true;
+    $("#postDisplayBrand").checked = false;
+    $("#postDisplayCommunity").checked = true;
+  }
+
+  const showBrand = tw && $("#postDisplayBrand").checked;
+  const showCommunity = $("#postDisplayCommunity").checked || !tw;
+  brandPanel.hidden = !showBrand;
+  communityPanel.hidden = !showCommunity;
+  split.classList.toggle("is-single", !showBrand && !showCommunity);
+  split.classList.toggle("has-brand", showBrand || showCommunity);
+}
+
+function onPostSidChange() {
+  const sid = ($("#postSid").value || "").trim();
+  const known = SID_ACCOUNTS.find((a) => a.sid === sid);
+  if (known) {
+    $("#postAccount").value = known.account || sid;
+    $("#postNickname").value = known.nickname;
+  } else if (!sid) {
+    $("#postNickname").value = "";
+  }
+  // SID 以 2 开头自动选中 tradewill（TW）
+  $("#postProject").value = sid ? projectFromSid(sid) : "";
+
+  if (isPostTwSid()) {
+    $("#postDisplayBrand").checked = true;
+    if (!$("#postDisplayCommunity").checked) {
+      $("#postDisplayCommunity").checked = true;
+    }
+  }
+  syncPostDisplayUI();
+}
+
+function syncPostMediaType() {
+  const type = document.querySelector('input[name="postMediaType"]:checked')?.value || "image";
+  $("#postVideoRow").hidden = type !== "video";
+}
+
+function renderPostLangTabs() {
+  const tabs = $("#postLangTabs");
+  if (!tabs) return;
+  tabs.innerHTML = ARTICLE_LANGS.map(
+    (l) =>
+      `<button type="button" class="lang-tab ${l.key === currentPostLang ? "active" : ""}" data-lang="${l.key}" role="tab">${l.label}</button>`
+  ).join("");
+}
+
+function flushCurrentPostLangFields() {
+  if (!postI18n[currentPostLang]) {
+    postI18n[currentPostLang] = { content: "" };
+  }
+  postI18n[currentPostLang].content = $("#postContent")?.value || "";
+}
+
+function applyPostLangFields(langKey) {
+  currentPostLang = langKey;
+  const data = postI18n[langKey] || { content: "" };
+  $("#postContent").value = data.content || "";
+  renderPostLangTabs();
+}
+
+function switchPostLang(langKey) {
+  if (!langKey || langKey === currentPostLang) return;
+  flushCurrentPostLangFields();
+  applyPostLangFields(langKey);
+}
+
+function syncAllPostLangsFromCurrent() {
+  flushCurrentPostLangFields();
+  const src = postI18n[currentPostLang] || { content: "" };
+  if (!String(src.content || "").trim()) {
+    showToast("当前语言内容为空，无法同步");
+    return;
+  }
+  ARTICLE_LANGS.forEach((l) => {
+    postI18n[l.key] = { content: src.content };
+  });
+  showToast("已同步到全部语言");
+}
+
+function showPostPage() {
+  $("#listPage").hidden = true;
+  $("#editorPage").hidden = true;
+  $("#postPage").hidden = false;
+  window.scrollTo(0, 0);
+}
+
+function hidePostPage() {
+  $("#postPage").hidden = true;
+  $("#listPage").hidden = false;
+  editingId = null;
+}
+
+function toDatetimeLocal(value) {
+  if (!value) return "";
+  // "2025-11-14 14:30:00" -> "2025-11-14T14:30"
+  return String(value).replace(" ", "T").slice(0, 16);
+}
+
+function fromDatetimeLocal(value) {
+  if (!value) return "";
+  return value.replace("T", " ") + (value.length === 16 ? ":00" : "");
+}
+
+function getFilters() {
+  const statusMap = { 已发布: "published", 已下架: "offline", 已删除: "deleted" };
+  return {
+    sid: $("#filterSid").value.trim().toLowerCase(),
+    region: $("#filterRegion").value,
+    project: $("#filterProject").value,
+    type: $("#filterType").value,
+    summary: $("#filterSummary").value.trim().toLowerCase(),
+    status: statusMap[$("#filterStatus").value] || "",
+    visibility: $("#filterVisibility").value,
+    workflow: $("#filterWorkflow").value,
+    display: $("#filterDisplay").value,
+    dateFrom: $("#filterDateFrom").value,
+    dateTo: $("#filterDateTo").value,
+  };
+}
+
+function applyFilters() {
+  const f = getFilters();
+  filtered = articles.filter((a) => {
+    if (a.status === "deleted" && !f.status) return false;
+    if (f.sid) {
+      const hit =
+        String(a.sid).toLowerCase().includes(f.sid) ||
+        String(a.nickname).toLowerCase().includes(f.sid);
+      if (!hit) return false;
+    }
+    if (f.region && a.region !== f.region) return false;
+    if (f.project && a.project !== f.project) return false;
+    if (f.type && a.type !== f.type) return false;
+    if (f.summary && !(a.summary || "").toLowerCase().includes(f.summary)) return false;
+    if (f.status && a.status !== f.status) return false;
+    if (f.visibility && a.visibility !== f.visibility) return false;
+    if (f.workflow && a.workflow !== f.workflow) return false;
+    if (f.display && !(a.display || []).includes(f.display)) return false;
+    if (f.dateFrom && a.publishAt.slice(0, 10) < f.dateFrom) return false;
+    if (f.dateTo && a.publishAt.slice(0, 10) > f.dateTo) return false;
+    return true;
+  });
+  page = 1;
+  selectedIds.clear();
+  renderTable();
+}
+
+function resetFilters() {
+  $("#filterSid").value = "";
+  $("#filterRegion").value = "";
+  $("#filterProject").value = "";
+  $("#filterType").value = "";
+  $("#filterSummary").value = "";
+  $("#filterStatus").value = "";
+  $("#filterVisibility").value = "";
+  $("#filterWorkflow").value = "";
+  $("#filterDisplay").value = "";
+  $("#filterDateFrom").value = "2026-06-01";
+  $("#filterDateTo").value = "2026-07-23";
+  applyFilters();
+}
+
+const ICONS = {
+  edit: `<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`,
+  view: `<svg viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>`,
+  trash: `<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>`,
+};
+
+function renderToolbar() {
+  const p = perms();
+  $("#btnCreate").disabled = !p.create;
+  $("#btnCreatePost").disabled = !p.create;
+  $("#btnBatch").disabled = !p.edit && !p.offline && !p.delete;
+  $("#btnCreate").title = p.create ? "" : "当前角色无发文权限";
+  const badge = $("#roleBadge");
+  if (currentRole === "admin") {
+    badge.textContent = "管理员";
+    $("#permHint").textContent = "管理员：可编辑 / 下架 / 删除";
+  } else if (currentRole === "operator") {
+    badge.textContent = "超级运营";
+    $("#permHint").textContent = "运营：可编辑 / 下架；删除需管理员";
+  } else {
+    badge.textContent = "只读";
+    $("#permHint").textContent = "只读：仅可查看详情";
+  }
+  updateBatchBar();
+}
+
+function updateBatchBar() {
+  let bar = $("#batchBar");
+  if (!bar) {
+    bar = document.createElement("div");
+    bar.id = "batchBar";
+    bar.className = "batch-bar";
+    bar.innerHTML = `
+      <span id="batchCount">已选 0 条</span>
+      <div class="batch-group">
+        <button type="button" class="btn btn-outline" id="btnBatchOnline">批量上架</button>
+        <button type="button" class="btn btn-outline" id="btnBatchOffline">批量下架</button>
+      </div>
+      <span class="batch-divider" aria-hidden="true"></span>
+      <div class="batch-group">
+        <button type="button" class="btn btn-outline" id="btnBatchVisibleAll">所有人可见</button>
+        <button type="button" class="btn btn-outline" id="btnBatchVisibleSelf">仅自己可见</button>
+      </div>
+      <span class="batch-divider" id="batchDeleteDivider" aria-hidden="true"></span>
+      <button type="button" class="btn btn-danger" id="btnBatchDelete">批量删除</button>
+      <button type="button" class="btn" id="btnBatchClear">取消选择</button>
+    `;
+    const toolbar = $(".toolbar");
+    toolbar.insertAdjacentElement("afterend", bar);
+    $("#btnBatchOnline").addEventListener("click", () => batchAction("online"));
+    $("#btnBatchOffline").addEventListener("click", () => batchAction("offline"));
+    $("#btnBatchVisibleAll").addEventListener("click", () => batchAction("visible-all"));
+    $("#btnBatchVisibleSelf").addEventListener("click", () => batchAction("visible-self"));
+    $("#btnBatchDelete").addEventListener("click", () => batchAction("delete"));
+    $("#btnBatchClear").addEventListener("click", () => {
+      selectedIds.clear();
+      renderTable();
+    });
+  }
+  bar.classList.toggle("show", selectedIds.size > 0);
+  $("#batchCount").textContent = `已选 ${selectedIds.size} 条`;
+  const canDelete = perms().delete;
+  $("#btnBatchDelete").style.display = canDelete ? "" : "none";
+  const divider = $("#batchDeleteDivider");
+  if (divider) divider.style.display = canDelete ? "" : "none";
+}
+
+function openBatchModal() {
+  if (!selectedIds.size) return showToast("请先勾选需要处理的数据");
+  const p = perms();
+  if (!p.edit && !p.offline && !p.delete) {
+    return showToast("当前角色无批量处理权限");
+  }
+  $("#batchModalTip").textContent = `已选 ${selectedIds.size} 条，请选择要执行的操作`;
+  $("#batchDeleteGroup").hidden = !p.delete;
+  const checked = document.querySelector('input[name="batchActionType"]:checked');
+  if (checked?.value === "delete" && !p.delete) {
+    const fallback = document.querySelector('input[name="batchActionType"][value="visible-all"]');
+    if (fallback) fallback.checked = true;
+  }
+  if (!document.querySelector('input[name="batchActionType"]:checked')) {
+    const first = document.querySelector('input[name="batchActionType"][value="visible-all"]');
+    if (first) first.checked = true;
+  }
+  openModal("#batchModal");
+}
+
+function renderTable() {
+  renderToolbar();
+  const tbody = $("#articleTbody");
+  const total = filtered.length;
+  const maxPage = Math.max(1, Math.ceil(total / pageSize));
+  if (page > maxPage) page = maxPage;
+  const start = (page - 1) * pageSize;
+  const rows = filtered.slice(start, start + pageSize);
+  const p = perms();
+
+  $("#totalCount").textContent = `共 ${total} 条`;
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="16"><div class="empty">暂无符合条件的数据</div></td></tr>`;
+    $("#checkAll").checked = false;
+    renderPagination(maxPage);
+    return;
+  }
+
+  tbody.innerHTML = rows
+    .map((a) => {
+      const canEdit = p.edit && a.status !== "deleted";
+      const canShelf = p.offline && a.status !== "deleted";
+      const canDelete = p.delete && a.status !== "deleted";
+      const isOn = a.status === "published";
+      const checked = selectedIds.has(a.id) ? "checked" : "";
+      const selectedClass = selectedIds.has(a.id) ? "selected" : "";
+      const pos = displayText(a.display);
+
+      return `<tr class="${selectedClass}" data-id="${a.id}">
+        <td class="col-check"><input type="checkbox" class="row-check" data-id="${a.id}" ${checked} /></td>
+        <td title="${escapeHtml(a.project)}">${escapeHtml(a.project)}</td>
+        <td title="${escapeHtml(a.region)}">${escapeHtml(a.region)}</td>
+        <td title="${escapeHtml(a.sid)}"><a class="link" href="javascript:;" data-action="view" data-id="${a.id}">${escapeHtml(a.sid)}</a></td>
+        <td title="${escapeHtml(a.nickname)}">${escapeHtml(a.nickname)}</td>
+        <td title="${escapeHtml(a.type)}">${escapeHtml(a.type)}</td>
+        <td class="cell-summary" title="${escapeHtml(a.summary || "")}">${escapeHtml(a.summary || "—")}</td>
+        <td title="${escapeHtml(pos)}">${escapeHtml(pos)}</td>
+        <td title="${escapeHtml(a.brandTag || "")}">${escapeHtml(a.brandTag || "—")}</td>
+        <td title="${escapeHtml(a.displayTime || "")}">${escapeHtml(a.displayTime || "—")}</td>
+        <td title="${a.publishAt}">${a.publishAt}</td>
+        <td title="${escapeHtml(a.visibility)}">${escapeHtml(a.visibility)}</td>
+        <td title="${escapeHtml(a.workflow)}">${escapeHtml(a.workflow)}</td>
+        <td><span class="status ${statusClass(a.status)}">${statusLabel(a.status)}</span></td>
+        <td>
+          <label class="switch" title="${isOn ? "已上架，点击下架" : "已下架，点击上架"}">
+            <input type="checkbox" data-action="toggle" data-id="${a.id}" ${isOn ? "checked" : ""} ${canShelf ? "" : "disabled"} />
+            <span class="slider"></span>
+          </label>
+        </td>
+        <td>
+          <div class="ops" style="justify-content:center">
+            ${canEdit ? `<button class="op-btn" data-action="edit" data-id="${a.id}" title="编辑">${ICONS.edit}</button>` : ""}
+            <button class="op-btn" data-action="view" data-id="${a.id}" title="查看详情">${ICONS.view}</button>
+            ${canDelete ? `<button class="op-btn danger" data-action="delete" data-id="${a.id}" title="删除">${ICONS.trash}</button>` : ""}
+          </div>
+        </td>
+      </tr>`;
+    })
+    .join("");
+
+  const pageIds = rows.map((r) => r.id);
+  $("#checkAll").checked = pageIds.length > 0 && pageIds.every((id) => selectedIds.has(id));
+  renderPagination(maxPage);
+  updateBatchBar();
+}
+
+function renderPagination(maxPage) {
+  const el = $("#pagination");
+  let html = `<button class="page-btn" data-page="${page - 1}" ${page <= 1 ? "disabled" : ""}>上一页</button>`;
+  for (let i = 1; i <= maxPage; i++) {
+    if (maxPage > 7 && Math.abs(i - page) > 2 && i !== 1 && i !== maxPage) {
+      if (i === 2 || i === maxPage - 1) html += `<span>…</span>`;
+      continue;
+    }
+    html += `<button class="page-btn ${i === page ? "active" : ""}" data-page="${i}">${i}</button>`;
+  }
+  html += `<button class="page-btn" data-page="${page + 1}" ${page >= maxPage ? "disabled" : ""}>下一页</button>`;
+  html += `<select id="pageSizeSelect" class="field-select" style="width:100px;height:32px">
+    <option value="10" selected>10条/页</option>
+  </select>`;
+  el.innerHTML = html;
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function findArticle(id) {
+  return articles.find((a) => a.id === id);
+}
+
+function openDetail(id) {
+  const a = findArticle(id);
+  if (!a) return;
+  $("#detailBody").innerHTML = `
+    <div class="detail-grid">
+      <div class="label">项目</div><div>${escapeHtml(a.project)}</div>
+      <div class="label">地区</div><div>${escapeHtml(a.region)}</div>
+      <div class="label">SID</div><div>${escapeHtml(a.sid)}</div>
+      <div class="label">昵称</div><div>${escapeHtml(a.nickname)}</div>
+      <div class="label">类型</div><div>${escapeHtml(a.type)}</div>
+      <div class="label">文章标题</div><div>${escapeHtml(a.summary || "—")}</div>
+      <div class="label">展示位置</div><div>${escapeHtml(displayText(a.display))}</div>
+      <div class="label">可见状态</div><div>${escapeHtml(a.visibility)}</div>
+      <div class="label">发布状态</div><div><span class="status ${statusClass(a.status)}">${statusLabel(a.status)}</span></div>
+      <div class="label">处置流程</div><div>${escapeHtml(a.workflow)}</div>
+      <div class="label">发布时间</div><div>${a.publishAt}</div>
+      ${
+        (a.display || []).includes("品牌")
+          ? `
+      <div class="label">品牌 Tag</div><div>${escapeHtml(a.brandTag || "—")}</div>
+      <div class="label">品牌展示时间</div><div>${escapeHtml(a.displayTime || "—")}</div>
+      <div class="label">品牌置顶</div><div>${a.brandPinned ? "是" : "否"}</div>
+      <div class="label">点赞 / 浏览</div><div>${a.likes ?? 0} / ${a.views ?? 0}</div>
+      <div class="label">品牌中心封面</div><div>${a.banner ? `<img src="${a.banner}" alt="" style="width:180px;border-radius:6px;border:1px solid var(--border)" />` : "—"}</div>
+      `
+          : ""
+      }
+      ${
+        (a.display || []).includes("社区")
+          ? `
+      <div class="label">社区置顶</div><div>${a.communityPinned ? "是" : "否"}</div>
+      <div class="label">社区封面</div><div>${a.communityCover ? `<img src="${a.communityCover}" alt="" style="width:180px;border-radius:6px;border:1px solid var(--border)" />` : "—"}</div>
+      `
+          : ""
+      }
+    </div>
+    <div class="detail-content"><strong>正文内容</strong><br/><br/>${escapeHtml(a.content)}</div>
+  `;
+  openModal("#detailModal");
+}
+
+function openEditor(id, typeHint) {
+  if (!perms().edit && !perms().create) {
+    showToast("当前角色无编辑权限");
+    return;
+  }
+  const isEdit = Boolean(id);
+  const type = isEdit
+    ? findArticle(id)?.type || "文章"
+    : typeHint || createTypeDefault;
+
+  if (type === "帖子") {
+    openPostEditor(id);
+    return;
+  }
+
+  editingId = id || null;
+  const pageTitle = isEdit ? "编辑文章" : "发文章";
+  $("#editorTitle").textContent = pageTitle;
+  $("#editorCrumb").textContent = pageTitle;
+  $("#editType").value = "文章";
+  $("#editorRoleBadge").textContent = $("#roleBadge")?.textContent || "";
+
+  const a = isEdit ? findArticle(id) : null;
+  const defaultSid = a?.sid || "20008329770";
+  const sidExists = SID_ACCOUNTS.some((s) => s.sid === defaultSid);
+  $("#editSid").value = sidExists ? defaultSid : SID_ACCOUNTS.find((s) => projectFromSid(s.sid) === "TW")?.sid || SID_ACCOUNTS[0].sid;
+
+  $("#editRegion").value = a?.region || "+234 [NG]";
+  $("#editVisibility").value = a?.visibility || "所有人可见";
+
+  articleI18n = normalizeI18n(a?.i18n, a?.summary || "", a?.content || "");
+  applyLangFields(ARTICLE_LANGS[0].key);
+
+  const defaultSidVal = $("#editSid").value;
+  const display =
+    a?.display ||
+    (projectFromSid(defaultSidVal) === "TW" ? ["品牌", "社区"] : ["社区"]);
+  $("#editDisplayBrand").checked = display.includes("品牌");
+  $("#editDisplayCommunity").checked = display.includes("社区") || !display.includes("品牌");
+
+  $("#editBrandTag").value = a?.brandTag || "";
+  $("#editDisplayTime").value = toDatetimeLocal(a?.displayTime || "2025-11-14 14:30:00");
+  $("#editBrandPin").checked = Boolean(a?.brandPinned);
+  $("#editLikes").value = a?.likes ?? "";
+  $("#editViews").value = a?.views ?? "";
+  $("#editBannerPreview").src = a?.banner || "";
+  $("#editBannerBox").classList.toggle("has-image", Boolean(a?.banner));
+  $("#editBannerUrl").value = a?.banner || "";
+
+  $("#editCommunityPin").checked = Boolean(a?.communityPinned);
+  $("#editCommunityCoverPreview").src = a?.communityCover || "";
+  $("#editCommunityCoverBox").classList.toggle("has-image", Boolean(a?.communityCover));
+  $("#editCommunityCoverUrl").value = a?.communityCover || "";
+
+  syncDisplayPositionUI();
+  showEditorPage();
+}
+
+function openPostEditor(id) {
+  editingId = id || null;
+  const isEdit = Boolean(id);
+  const pageTitle = isEdit ? "编辑帖子" : "发帖子";
+  $("#postTitle").textContent = pageTitle;
+  $("#postCrumb").textContent = pageTitle;
+  $("#postType").value = "帖子";
+  $("#postRoleBadge").textContent = $("#roleBadge")?.textContent || "";
+
+  const a = isEdit ? findArticle(id) : null;
+  // 新建默认示例：与参考图一致的 TW SID
+  const defaultSid = a?.sid || (isEdit ? "" : "20008325718");
+  $("#postSid").value = defaultSid;
+
+  const known = SID_ACCOUNTS.find((s) => s.sid === defaultSid);
+  $("#postAccount").value = a?.account || known?.account || "";
+  $("#postProject").value = a?.project || (defaultSid ? projectFromSid(defaultSid) : "");
+  $("#postNickname").value = a?.nickname || known?.nickname || "";
+  $("#postRegion").value = a?.region || "";
+  $("#postVisibility").value = a?.visibility || "所有人可见";
+
+  postI18n = normalizePostI18n(a?.i18n, a?.content || "");
+  applyPostLangFields(ARTICLE_LANGS[0].key);
+
+  const display =
+    a?.display ||
+    (projectFromSid(defaultSid) === "TW" ? ["品牌", "社区"] : ["社区"]);
+  $("#postDisplayBrand").checked = display.includes("品牌");
+  $("#postDisplayCommunity").checked = display.includes("社区") || !display.includes("品牌");
+
+  const mediaType = a?.mediaType || "image";
+  $all('input[name="postMediaType"]').forEach((r) => {
+    r.checked = r.value === mediaType;
+  });
+  syncPostMediaType();
+
+  $("#postVideoUrl").value = a?.video || "";
+
+  $("#postBrandTag").value = a?.brandTag || "";
+  $("#postDisplayTime").value = toDatetimeLocal(a?.displayTime || "2025-11-14 14:30:00");
+  $("#postBrandPin").checked = Boolean(a?.brandPinned);
+  $("#postLikes").value = a?.likes ?? "";
+  $("#postViews").value = a?.views ?? "";
+  $("#postBannerPreview").src = a?.banner || "";
+  $("#postBannerBox").classList.toggle("has-image", Boolean(a?.banner));
+  $("#postBannerUrl").value = a?.banner || "";
+
+  $("#postCommunityPin").checked = Boolean(a?.communityPinned);
+  $("#postCommunityCoverPreview").src = a?.communityCover || "";
+  $("#postCommunityCoverBox").classList.toggle("has-image", Boolean(a?.communityCover));
+  $("#postCommunityCoverUrl").value = a?.communityCover || "";
+
+  syncPostDisplayUI();
+  showPostPage();
+}
+
+function savePost() {
+  const acc = getPostSidAccount();
+  if (!acc) return showToast("请选择发布人 SID");
+
+  flushCurrentPostLangFields();
+
+  const account = $("#postAccount").value.trim();
+  const project = $("#postProject").value;
+  const region = $("#postRegion").value;
+  const visibility = $("#postVisibility").value || "所有人可见";
+  const mediaType = document.querySelector('input[name="postMediaType"]:checked')?.value || "image";
+  const tw = projectFromSid(acc.sid) === "TW";
+  const i18n = normalizePostI18n(postI18n);
+  const content = primaryI18nText(i18n, "content");
+
+  if (!account) return showToast("请填写发布人账号");
+  if (!project) return showToast("请选择项目");
+  if (!region) return showToast("请选择发布地区");
+  if (!content) return showToast("请至少填写一种语言的发布内容");
+
+  let video = $("#postVideoUrl").value.trim();
+  if (mediaType === "video" && !video) {
+    return showToast("请上传发布视频");
+  }
+
+  let display = [];
+  if (tw) {
+    if ($("#postDisplayBrand").checked) display.push("品牌");
+    if ($("#postDisplayCommunity").checked) display.push("社区");
+    if (!display.length) return showToast("请至少选择一个展示位置");
+  } else {
+    display = ["社区"];
+  }
+
+  const brandOn = display.includes("品牌");
+  const communityOn = display.includes("社区");
+  let brandTag = "";
+  let displayTime = "";
+  let brandPinned = false;
+  let likes = null;
+  let views = null;
+  let banner = "";
+  let communityPinned = false;
+  let communityCover = "";
+
+  if (brandOn) {
+    brandTag = $("#postBrandTag").value;
+    displayTime = fromDatetimeLocal($("#postDisplayTime").value);
+    brandPinned = $("#postBrandPin").checked;
+    likes = $("#postLikes").value === "" ? null : Number($("#postLikes").value);
+    views = $("#postViews").value === "" ? null : Number($("#postViews").value);
+    banner = $("#postBannerUrl").value.trim();
+    if (!brandTag) return showToast("展示位置含品牌时，品牌 Tag 为必填");
+    if (!displayTime) return showToast("展示位置含品牌时，展示时间为必填");
+    if (!banner) return showToast("展示位置含品牌时，品牌中心封面为必填");
+  }
+
+  if (communityOn) {
+    communityPinned = $("#postCommunityPin").checked;
+    communityCover = $("#postCommunityCoverUrl").value.trim();
+    if (!communityCover) return showToast("展示位置含社区时，社区封面为必填");
+  }
+
+  const now = formatNow();
+  const summary = content.length > 40 ? content.slice(0, 40) + "…" : content;
+  const cover =
+    communityCover ||
+    banner ||
+    "https://picsum.photos/seed/post" + Date.now() + "/320/200";
+  const payload = {
+    project,
+    region,
+    type: "帖子",
+    sid: acc.sid,
+    account,
+    nickname: $("#postNickname").value.trim() || acc.nickname,
+    visibility,
+    summary,
+    content,
+    i18n,
+    cover,
+    video: mediaType === "video" ? video : "",
+    mediaType,
+    visible: true,
+    display,
+    brandTag,
+    displayTime,
+    brandPinned,
+    likes,
+    views,
+    banner,
+    communityPinned,
+    communityCover,
+    updatedAt: now,
+  };
+
+  if (editingId) {
+    const a = findArticle(editingId);
+    if (!a || a.status === "deleted") return showToast("记录不存在或已删除");
+    Object.assign(a, payload);
+    if (a.status !== "offline" && a.status !== "deleted") {
+      a.status = "published";
+      a.visible = true;
+    }
+    showToast("帖子已保存");
+  } else {
+    if (!perms().create) return showToast("当前角色无发文权限");
+    articles.unshift({
+      id: uid(),
+      status: "published",
+      workflow: "审核通过",
+      publishAt: now,
+      ...payload,
+      visible: true,
+    });
+    showToast("帖子已发布");
+  }
+
+  hidePostPage();
+  applyFilters();
+}
+
+function saveEditor() {
+  const acc = getSelectedSidAccount();
+  if (!acc) return showToast("请选择发布人 SID");
+
+  flushCurrentLangFields();
+
+  const region = $("#editRegion").value;
+  const type = $("#editType").value || "文章";
+  const visibility = $("#editVisibility").value || "所有人可见";
+  const tw = acc.project === "TW";
+  const i18n = normalizeI18n(articleI18n);
+  const title = primaryI18nText(i18n, "title");
+  const content = primaryI18nText(i18n, "content");
+
+  if (!region) return showToast("请选择地区");
+  if (!title) return showToast("请至少填写一种语言的文章标题");
+  if (!content) return showToast("请至少填写一种语言的文章正文");
+
+  const incomplete = ARTICLE_LANGS.find((l) => {
+    const t = (i18n[l.key].title || "").trim();
+    const c = (i18n[l.key].content || "").trim();
+    return (t && !c) || (!t && c);
+  });
+  if (incomplete) {
+    return showToast(`「${incomplete.label}」标题与正文需同时填写，或使用同步`);
+  }
+
+  let display = [];
+  if (tw) {
+    if ($("#editDisplayBrand").checked) display.push("品牌");
+    if ($("#editDisplayCommunity").checked) display.push("社区");
+    if (!display.length) return showToast("请至少选择一个展示位置");
+  } else {
+    display = ["社区"];
+  }
+
+  const brandOn = display.includes("品牌");
+  const communityOn = display.includes("社区");
+  let brandTag = "";
+  let displayTime = "";
+  let brandPinned = false;
+  let likes = null;
+  let views = null;
+  let banner = "";
+  let communityPinned = false;
+  let communityCover = "";
+
+  if (brandOn) {
+    brandTag = $("#editBrandTag").value;
+    displayTime = fromDatetimeLocal($("#editDisplayTime").value);
+    brandPinned = $("#editBrandPin").checked;
+    likes = $("#editLikes").value === "" ? null : Number($("#editLikes").value);
+    views = $("#editViews").value === "" ? null : Number($("#editViews").value);
+    banner = $("#editBannerUrl").value.trim();
+    if (!brandTag) return showToast("展示位置含品牌时，品牌 Tag 为必填");
+    if (!displayTime) return showToast("展示位置含品牌时，展示时间为必填");
+    if (!banner) return showToast("展示位置含品牌时，品牌中心封面为必填");
+  }
+
+  if (communityOn) {
+    communityPinned = $("#editCommunityPin").checked;
+    communityCover = $("#editCommunityCoverUrl").value.trim();
+    if (!communityCover) return showToast("展示位置含社区时，社区封面为必填");
+  }
+
+  const now = formatNow();
+  const cover = communityCover || banner || "https://picsum.photos/seed/new" + Date.now() + "/320/200";
+  const payload = {
+    project: acc.project,
+    region,
+    type,
+    sid: acc.sid,
+    nickname: acc.nickname,
+    visibility,
+    summary: title,
+    content,
+    i18n,
+    cover,
+    visible: true,
+    display,
+    brandTag,
+    displayTime,
+    brandPinned,
+    likes,
+    views,
+    banner,
+    communityPinned,
+    communityCover,
+    updatedAt: now,
+  };
+
+  if (editingId) {
+    const a = findArticle(editingId);
+    if (!a || a.status === "deleted") return showToast("记录不存在或已删除");
+    Object.assign(a, payload);
+    if (a.status !== "offline" && a.status !== "deleted") {
+      a.status = "published";
+      a.visible = true;
+    }
+    showToast("已保存，APP 前端将同步最新内容");
+  } else {
+    if (!perms().create) return showToast("当前角色无发文权限");
+    articles.unshift({
+      id: uid(),
+      status: "published",
+      workflow: "审核通过",
+      publishAt: now,
+      ...payload,
+      visible: true,
+    });
+    showToast("文章已发布");
+  }
+
+  hideEditorPage();
+  applyFilters();
+}
+
+function formatNow() {
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+
+function confirmOffline(id) {
+  actionTargetId = id;
+  const a = findArticle(id);
+  $("#confirmModal .confirm-icon").className = "confirm-icon warn";
+  $("#confirmModal .confirm-icon").textContent = "!";
+  $("#confirmHeading").textContent = "确认下架？";
+  $("#confirmDesc").innerHTML = `下架后，<strong>${escapeHtml(a.summary || a.id)}</strong> 将不再在 APP 前端展示，后台仍保留记录。`;
+  $("#confirmOk").textContent = "确认下架";
+  $("#confirmOk").className = "btn btn-primary";
+  $("#confirmOk").dataset.mode = "offline";
+  openModal("#confirmModal");
+}
+
+function confirmOnline(id) {
+  actionTargetId = id;
+  const a = findArticle(id);
+  $("#confirmModal .confirm-icon").className = "confirm-icon warn";
+  $("#confirmModal .confirm-icon").textContent = "↑";
+  $("#confirmHeading").textContent = "确认重新上架？";
+  $("#confirmDesc").innerHTML = `上架后，<strong>${escapeHtml(a.summary || a.id)}</strong> 将重新在 APP 前端展示。`;
+  $("#confirmOk").textContent = "确认上架";
+  $("#confirmOk").className = "btn btn-primary";
+  $("#confirmOk").dataset.mode = "online";
+  openModal("#confirmModal");
+}
+
+function confirmDelete(id) {
+  if (!perms().delete) {
+    showToast("仅管理员可删除，建议优先使用下架");
+    return;
+  }
+  actionTargetId = id;
+  const a = findArticle(id);
+  $("#confirmModal .confirm-icon").className = "confirm-icon danger";
+  $("#confirmModal .confirm-icon").textContent = "×";
+  $("#confirmHeading").textContent = "确认删除？";
+  $("#confirmDesc").innerHTML = `删除后从列表移除（逻辑删除）。建议优先下架。<br/><br/>目标：${escapeHtml(a.summary || a.id)}`;
+  $("#confirmOk").textContent = "确认删除";
+  $("#confirmOk").className = "btn btn-danger";
+  $("#confirmOk").dataset.mode = "delete";
+  openModal("#confirmModal");
+}
+
+function batchAction(mode) {
+  if (!selectedIds.size) return showToast("请先勾选数据");
+  if (mode === "delete" && !perms().delete) return showToast("仅管理员可批量删除");
+  if ((mode === "offline" || mode === "online") && !perms().offline) {
+    return showToast("当前角色无上下架权限");
+  }
+  if ((mode === "visible-all" || mode === "visible-self") && !perms().edit) {
+    return showToast("当前角色无修改可见状态权限");
+  }
+
+  closeModal("#batchModal");
+  actionTargetId = null;
+  const map = {
+    "visible-all": {
+      icon: "!",
+      iconClass: "confirm-icon warn",
+      heading: "确认批量修改可见状态？",
+      desc: `将已选 <strong>${selectedIds.size}</strong> 条设为「所有人可见」。`,
+      ok: "确认修改",
+      okClass: "btn btn-primary",
+      mode: "batch-visible-all",
+    },
+    "visible-self": {
+      icon: "!",
+      iconClass: "confirm-icon warn",
+      heading: "确认批量修改可见状态？",
+      desc: `将已选 <strong>${selectedIds.size}</strong> 条设为「仅自己可见」。`,
+      ok: "确认修改",
+      okClass: "btn btn-primary",
+      mode: "batch-visible-self",
+    },
+    online: {
+      icon: "↑",
+      iconClass: "confirm-icon warn",
+      heading: "确认批量上架？",
+      desc: `将对已选 <strong>${selectedIds.size}</strong> 条执行上架，APP 前端恢复展示。`,
+      ok: "确认上架",
+      okClass: "btn btn-primary",
+      mode: "batch-online",
+    },
+    offline: {
+      icon: "!",
+      iconClass: "confirm-icon warn",
+      heading: "确认批量下架？",
+      desc: `将对已选 <strong>${selectedIds.size}</strong> 条执行下架，前端不再展示。`,
+      ok: "确认下架",
+      okClass: "btn btn-primary",
+      mode: "batch-offline",
+    },
+    delete: {
+      icon: "×",
+      iconClass: "confirm-icon danger",
+      heading: "确认批量删除？",
+      desc: `将对已选 <strong>${selectedIds.size}</strong> 条执行删除（逻辑删除）。建议优先下架。`,
+      ok: "确认删除",
+      okClass: "btn btn-danger",
+      mode: "batch-delete",
+    },
+  };
+  const cfg = map[mode];
+  if (!cfg) return;
+  $("#confirmModal .confirm-icon").className = cfg.iconClass;
+  $("#confirmModal .confirm-icon").textContent = cfg.icon;
+  $("#confirmHeading").textContent = cfg.heading;
+  $("#confirmDesc").innerHTML = cfg.desc;
+  $("#confirmOk").textContent = cfg.ok;
+  $("#confirmOk").className = cfg.okClass;
+  $("#confirmOk").dataset.mode = cfg.mode;
+  openModal("#confirmModal");
+}
+
+function runConfirm() {
+  const mode = $("#confirmOk").dataset.mode;
+  const now = formatNow();
+
+  if (
+    mode === "batch-online" ||
+    mode === "batch-offline" ||
+    mode === "batch-delete" ||
+    mode === "batch-visible-all" ||
+    mode === "batch-visible-self"
+  ) {
+    let count = 0;
+    selectedIds.forEach((id) => {
+      const a = findArticle(id);
+      if (!a || a.status === "deleted") return;
+      if (mode === "batch-online") {
+        if (a.status === "offline" || a.status === "published") {
+          a.status = "published";
+          a.visible = true;
+          a.updatedAt = now;
+          count++;
+        }
+      } else if (mode === "batch-offline") {
+        if (a.status === "published" || a.status === "offline") {
+          a.status = "offline";
+          a.visible = false;
+          a.updatedAt = now;
+          count++;
+        }
+      } else if (mode === "batch-visible-all") {
+        a.visibility = "所有人可见";
+        a.updatedAt = now;
+        count++;
+      } else if (mode === "batch-visible-self") {
+        a.visibility = "仅自己可见";
+        a.updatedAt = now;
+        count++;
+      } else if (perms().delete) {
+        a.status = "deleted";
+        a.visible = false;
+        a.updatedAt = now;
+        count++;
+      }
+    });
+    selectedIds.clear();
+    const msg = {
+      "batch-online": `已批量上架 ${count} 条`,
+      "batch-offline": `已批量下架 ${count} 条`,
+      "batch-delete": `已批量删除 ${count} 条`,
+      "batch-visible-all": `已设为所有人可见 ${count} 条`,
+      "batch-visible-self": `已设为仅自己可见 ${count} 条`,
+    }[mode];
+    showToast(msg);
+    closeModal("#confirmModal");
+    applyFilters();
+    return;
+  }
+
+  const a = findArticle(actionTargetId);
+  if (!a) return;
+
+  if (mode === "offline") {
+    a.status = "offline";
+    a.visible = false;
+    a.updatedAt = now;
+    showToast("已下架，APP 前端不再展示");
+  } else if (mode === "online") {
+    a.status = "published";
+    a.visible = true;
+    a.updatedAt = now;
+    showToast("已重新上架，前端将恢复展示");
+  } else if (mode === "delete") {
+    a.status = "deleted";
+    a.visible = false;
+    a.updatedAt = now;
+    showToast("已删除（逻辑删除）");
+  }
+
+  closeModal("#confirmModal");
+  applyFilters();
+}
+
+function bindEvents() {
+  $("#roleSelect").addEventListener("change", (e) => {
+    currentRole = e.target.value;
+    renderTable();
+    showToast("已切换角色权限");
+  });
+
+  $("#btnSearch").addEventListener("click", applyFilters);
+  $("#btnReset").addEventListener("click", resetFilters);
+  $("#btnCreate").addEventListener("click", () => openEditor(null, "文章"));
+  $("#btnCreatePost").addEventListener("click", () => openPostEditor(null));
+  $("#btnEditorBack").addEventListener("click", hideEditorPage);
+  $("#btnCancelEditor").addEventListener("click", hideEditorPage);
+  $("#btnPostBack").addEventListener("click", hidePostPage);
+  $("#btnCancelPost").addEventListener("click", hidePostPage);
+  $("#btnSyncLang").addEventListener("click", syncAllLangsFromCurrent);
+  $("#btnSyncPostLang").addEventListener("click", syncAllPostLangsFromCurrent);
+  $("#editLangTabs").addEventListener("click", (e) => {
+    const tab = e.target.closest("[data-lang]");
+    if (!tab) return;
+    switchEditLang(tab.dataset.lang);
+  });
+  $("#postLangTabs").addEventListener("click", (e) => {
+    const tab = e.target.closest("[data-lang]");
+    if (!tab) return;
+    switchPostLang(tab.dataset.lang);
+  });
+  $("#btnBatch").addEventListener("click", openBatchModal);
+  $("#btnBatchConfirm").addEventListener("click", () => {
+    const type = document.querySelector('input[name="batchActionType"]:checked')?.value;
+    if (!type) return showToast("请选择批量操作类型");
+    batchAction(type);
+  });
+
+  $("#checkAll").addEventListener("change", (e) => {
+    const start = (page - 1) * pageSize;
+    const rows = filtered.slice(start, start + pageSize);
+    rows.forEach((a) => {
+      if (e.target.checked) selectedIds.add(a.id);
+      else selectedIds.delete(a.id);
+    });
+    renderTable();
+  });
+
+  $all(".tabs .tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      if (tab.disabled) return;
+      $all(".tabs .tab").forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      if (tab.dataset.tab === "posts") {
+        $("#filterType").value = "帖子";
+        applyFilters();
+      } else if (tab.dataset.tab === "official") {
+        $("#filterType").value = "文章";
+        applyFilters();
+      } else {
+        showToast("评论管理可对接原评论模块");
+      }
+    });
+  });
+
+  $("#articleTbody").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-action]");
+    if (!btn) return;
+    const { action, id } = btn.dataset;
+    if (action === "view") openDetail(id);
+    if (action === "edit") openEditor(id);
+    if (action === "delete") confirmDelete(id);
+  });
+
+  $("#articleTbody").addEventListener("change", (e) => {
+    const rowCheck = e.target.closest(".row-check");
+    if (rowCheck) {
+      if (rowCheck.checked) selectedIds.add(rowCheck.dataset.id);
+      else selectedIds.delete(rowCheck.dataset.id);
+      renderTable();
+      return;
+    }
+
+    const input = e.target.closest('input[data-action="toggle"]');
+    if (!input) return;
+    const id = input.dataset.id;
+    if (input.checked) confirmOnline(id);
+    else confirmOffline(id);
+    input.checked = !input.checked;
+  });
+
+  $("#pagination").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-page]");
+    if (!btn || btn.disabled) return;
+    page = Number(btn.dataset.page);
+    renderTable();
+  });
+
+  $all("[data-close]").forEach((el) => {
+    el.addEventListener("click", () => closeModal(el.dataset.close));
+  });
+
+  $all(".overlay").forEach((ov) => {
+    ov.addEventListener("click", (e) => {
+      if (e.target === ov) closeModal("#" + ov.id);
+    });
+  });
+
+  $("#btnSaveEditor").addEventListener("click", saveEditor);
+  $("#btnSavePost").addEventListener("click", savePost);
+  $("#confirmOk").addEventListener("click", runConfirm);
+
+  $("#editSid").addEventListener("change", onSidChange);
+  $("#editDisplayBrand").addEventListener("change", syncDisplayPositionUI);
+  $("#editDisplayCommunity").addEventListener("change", () => {
+    if (isTwSid() && !$("#editDisplayBrand").checked && !$("#editDisplayCommunity").checked) {
+      showToast("请至少保留一个展示位置");
+      $("#editDisplayCommunity").checked = true;
+    }
+    syncDisplayPositionUI();
+  });
+
+  $("#postSid").addEventListener("change", onPostSidChange);
+  $("#postSid").addEventListener("input", onPostSidChange);
+  $("#postDisplayBrand").addEventListener("change", syncPostDisplayUI);
+  $("#postDisplayCommunity").addEventListener("change", () => {
+    if (isPostTwSid() && !$("#postDisplayBrand").checked && !$("#postDisplayCommunity").checked) {
+      showToast("请至少保留一个展示位置");
+      $("#postDisplayCommunity").checked = true;
+    }
+    syncPostDisplayUI();
+  });
+  $all('input[name="postMediaType"]').forEach((r) => {
+    r.addEventListener("change", syncPostMediaType);
+  });
+
+  $("#editBannerBox").addEventListener("click", () => {
+    const url = prompt(
+      "粘贴品牌中心封面 URL（演示）",
+      $("#editBannerUrl").value || "https://picsum.photos/seed/banner/960/400"
+    );
+    if (!url) return;
+    $("#editBannerUrl").value = url;
+    $("#editBannerPreview").src = url;
+    $("#editBannerBox").classList.add("has-image");
+  });
+
+  $("#editCommunityCoverBox").addEventListener("click", () => {
+    const url = prompt(
+      "粘贴社区封面 URL（演示）",
+      $("#editCommunityCoverUrl").value || "https://picsum.photos/seed/commcover/640/400"
+    );
+    if (!url) return;
+    $("#editCommunityCoverUrl").value = url;
+    $("#editCommunityCoverPreview").src = url;
+    $("#editCommunityCoverBox").classList.add("has-image");
+  });
+
+  $("#postVideoBox").addEventListener("click", () => {
+    const url = prompt("粘贴视频 URL（演示）", $("#postVideoUrl").value || "https://example.com/demo.mp4");
+    if (!url) return;
+    $("#postVideoUrl").value = url;
+    showToast("已选择视频（演示）");
+  });
+
+  $("#postBannerBox").addEventListener("click", () => {
+    const url = prompt(
+      "粘贴品牌中心封面 URL（演示）",
+      $("#postBannerUrl").value || "https://picsum.photos/seed/postbanner/960/400"
+    );
+    if (!url) return;
+    $("#postBannerUrl").value = url;
+    $("#postBannerPreview").src = url;
+    $("#postBannerBox").classList.add("has-image");
+  });
+
+  $("#postCommunityCoverBox").addEventListener("click", () => {
+    const url = prompt(
+      "粘贴社区封面 URL（演示）",
+      $("#postCommunityCoverUrl").value || "https://picsum.photos/seed/postcomm/640/400"
+    );
+    if (!url) return;
+    $("#postCommunityCoverUrl").value = url;
+    $("#postCommunityCoverPreview").src = url;
+    $("#postCommunityCoverBox").classList.add("has-image");
+  });
+
+  document.addEventListener("paste", (e) => {
+    const articleOpen = !$("#editorPage")?.hidden;
+    const postOpen = !$("#postPage")?.hidden;
+    if (!articleOpen && !postOpen) return;
+    const item = [...(e.clipboardData?.items || [])].find((i) => i.type.startsWith("image/"));
+    if (!item) return;
+    const file = item.getAsFile();
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+
+    if (
+      articleOpen &&
+      $("#communityPanel") &&
+      !$("#communityPanel").hidden &&
+      document.activeElement?.closest?.("#communityPanel")
+    ) {
+      $("#editCommunityCoverUrl").value = url;
+      $("#editCommunityCoverPreview").src = url;
+      $("#editCommunityCoverBox").classList.add("has-image");
+      showToast("已粘贴社区封面（演示）");
+      return;
+    }
+    if (articleOpen && $("#brandPanel") && !$("#brandPanel").hidden) {
+      $("#editBannerUrl").value = url;
+      $("#editBannerPreview").src = url;
+      $("#editBannerBox").classList.add("has-image");
+      showToast("已粘贴品牌中心封面（演示）");
+      return;
+    }
+    if (articleOpen && $("#communityPanel") && !$("#communityPanel").hidden) {
+      $("#editCommunityCoverUrl").value = url;
+      $("#editCommunityCoverPreview").src = url;
+      $("#editCommunityCoverBox").classList.add("has-image");
+      showToast("已粘贴社区封面（演示）");
+      return;
+    }
+    if (
+      postOpen &&
+      $("#postCommunityPanel") &&
+      !$("#postCommunityPanel").hidden &&
+      document.activeElement?.closest?.("#postCommunityPanel")
+    ) {
+      $("#postCommunityCoverUrl").value = url;
+      $("#postCommunityCoverPreview").src = url;
+      $("#postCommunityCoverBox").classList.add("has-image");
+      showToast("已粘贴社区封面（演示）");
+      return;
+    }
+    if (postOpen && $("#postBrandPanel") && !$("#postBrandPanel").hidden) {
+      $("#postBannerUrl").value = url;
+      $("#postBannerPreview").src = url;
+      $("#postBannerBox").classList.add("has-image");
+      showToast("已粘贴品牌中心封面（演示）");
+      return;
+    }
+    if (postOpen && $("#postCommunityPanel") && !$("#postCommunityPanel").hidden) {
+      $("#postCommunityCoverUrl").value = url;
+      $("#postCommunityCoverPreview").src = url;
+      $("#postCommunityCoverBox").classList.add("has-image");
+      showToast("已粘贴社区封面（演示）");
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      if (!$all(".overlay.open").length) {
+        if (!$("#editorPage")?.hidden) {
+          hideEditorPage();
+          return;
+        }
+        if (!$("#postPage")?.hidden) {
+          hidePostPage();
+          return;
+        }
+      }
+      $all(".overlay.open").forEach((ov) => ov.classList.remove("open"));
+      document.body.style.overflow = "";
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  seedArticles();
+  initFilters();
+  $("#filterDateFrom").value = "2026-06-01";
+  $("#filterDateTo").value = "2026-07-23";
+  bindEvents();
+  applyFilters();
+});
+
+    </script>
+  </body>
+</html>
