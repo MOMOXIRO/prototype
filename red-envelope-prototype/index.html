@@ -467,7 +467,8 @@
       columnConfigOpen: "",
       columnConfig: {
         receive: null,
-        usage: null
+        usage: null,
+        issue: null
       },
       selectedRows: new Set(),
       campaignDraft: {
@@ -1111,16 +1112,13 @@
       { key: "couponStatus", label: "红包状态", fixed: false, width: 80, defaultOn: true },
       { key: "receiveType", label: "领取方式", fixed: false, width: 80, defaultOn: false },
       { key: "receiveTime", label: "领取时间", fixed: false, width: 130, defaultOn: true },
-      { key: "redPacketCount", label: "用户持有红包数", fixed: false, width: 110, defaultOn: true },
-      { key: "dailyCustomCount", label: "当日已领自定义红包", fixed: false, width: 130, defaultOn: true },
-      { key: "trigger", label: "触发规则", fixed: false, width: 160, defaultOn: true },
+      { key: "useTime", label: "使用时间", fixed: false, width: 130, defaultOn: true },
+      { key: "applyTime", label: "申请时间", fixed: false, width: 130, defaultOn: true },
       { key: "auditStatus", label: "审核状态", fixed: true, width: 88 },
       { key: "auditMethod", label: "审核方式", fixed: false, width: 80, defaultOn: true },
-      { key: "applyTime", label: "申请时间", fixed: false, width: 130, defaultOn: true },
-      { key: "reviewTime", label: "审核时间", fixed: false, width: 130, defaultOn: true },
       { key: "reviewer", label: "审核人", fixed: false, width: 72, defaultOn: true },
       { key: "auditOpinion", label: "审核意见", fixed: false, width: 140, defaultOn: true },
-      { key: "useTime", label: "使用时间", fixed: false, width: 130, defaultOn: false },
+      { key: "reviewTime", label: "审核时间", fixed: false, width: 130, defaultOn: true },
       { key: "ops", label: "操作", fixed: true, width: 80 }
     ];
 
@@ -1136,7 +1134,6 @@
       { key: "batch", label: "任务批次", fixed: false, width: 90, defaultOn: true },
       { key: "condition", label: "任务配置", fixed: false, width: 110, defaultOn: false },
       { key: "couponType", label: "红包类型", fixed: false, width: 100, defaultOn: true },
-      { key: "order", label: "订单号", fixed: false, width: 110, defaultOn: true },
       { key: "depositOrder", label: "入金订单", fixed: false, width: 140, defaultOn: true },
       { key: "amount", label: "金额", fixed: false, width: 80, defaultOn: true },
       { key: "deduct", label: "实际抵扣", fixed: true, width: 80 },
@@ -1147,8 +1144,30 @@
       { key: "auditStatus", label: "审核状态", fixed: true, width: 88 },
       { key: "auditMethod", label: "审核方式", fixed: false, width: 80, defaultOn: true },
       { key: "reviewer", label: "审核人", fixed: false, width: 72, defaultOn: true },
-      { key: "remark", label: "备注", fixed: false, width: 120, defaultOn: true }
+      { key: "remark", label: "备注", fixed: false, width: 120, defaultOn: true },
+      { key: "ops", label: "操作", fixed: true, width: 80 }
     ];
+
+    const ISSUE_LIST_COLUMNS = [
+      { key: "select", label: "选择", fixed: true, width: 44 },
+      { key: "project", label: "项目", fixed: true, width: 72 },
+      { key: "activityId", label: "活动ID", fixed: true, width: 80 },
+      { key: "couponId", label: "红包ID", fixed: false, width: 72, defaultOn: true },
+      { key: "batch", label: "任务批次", fixed: true, width: 90 },
+      { key: "activityName", label: "活动名称", fixed: false, width: 120, defaultOn: true },
+      { key: "amount", label: "金额", fixed: false, width: 80, defaultOn: true },
+      { key: "auditStatus", label: "审核状态", fixed: true, width: 88 },
+      { key: "applyTime", label: "申请时间", fixed: false, width: 130, defaultOn: true },
+      { key: "reviewTime", label: "审核时间", fixed: false, width: 130, defaultOn: true },
+      { key: "auditOpinion", label: "审核意见", fixed: false, width: 140, defaultOn: true },
+      { key: "ops", label: "操作", fixed: true, width: 80 }
+    ];
+
+    function listColumnsOf(kind) {
+      if (kind === "usage") return USAGE_LIST_COLUMNS;
+      if (kind === "issue") return ISSUE_LIST_COLUMNS;
+      return RECEIVE_LIST_COLUMNS;
+    }
 
     function defaultColumnVisibility(defs) {
       return defs.reduce((acc, col) => {
@@ -1158,7 +1177,7 @@
     }
 
     function getColumnVisibility(kind) {
-      const defs = kind === "usage" ? USAGE_LIST_COLUMNS : RECEIVE_LIST_COLUMNS;
+      const defs = listColumnsOf(kind);
       if (!state.columnConfig[kind]) state.columnConfig[kind] = defaultColumnVisibility(defs);
       defs.forEach(col => {
         if (col.fixed) state.columnConfig[kind][col.key] = true;
@@ -1168,7 +1187,7 @@
     }
 
     function visibleColumns(kind) {
-      const defs = kind === "usage" ? USAGE_LIST_COLUMNS : RECEIVE_LIST_COLUMNS;
+      const defs = listColumnsOf(kind);
       const vis = getColumnVisibility(kind);
       const shown = defs.filter(col => col.fixed || vis[col.key]);
       return shown.length ? shown : defs.filter(col => col.fixed);
@@ -1179,7 +1198,7 @@
     }
 
     function openColumnConfigModal(kind) {
-      const defs = kind === "usage" ? USAGE_LIST_COLUMNS : RECEIVE_LIST_COLUMNS;
+      const defs = listColumnsOf(kind);
       const vis = { ...getColumnVisibility(kind) };
       const selectable = defs.filter(col => col.key !== "select" && col.key !== "ops");
       const toggleable = selectable.filter(col => !col.fixed);
@@ -1362,6 +1381,7 @@
         const amountNum = Number(String(a.faceValue ?? usage?.amount ?? "").replace(/[^0-9.-]/g, ""));
         return {
           rid: a.rid,
+          auditable: true,
           project: auditProject(a) || usage?.project || "--",
           sid,
           vip: usage?.vip || "--",
@@ -1391,8 +1411,10 @@
         const key = `${usage.sid}|${usage.order}|${usage.couponId || ""}`;
         if (matched.has(key)) return;
         const amountNum = Number(String(usage.amount ?? "").replace(/[^0-9.-]/g, ""));
+        const auditStatus = usage.status === "人工审核" ? "待审核" : (usage.status === "自动审核" ? "审核通过" : (usage.status || "待审核"));
         rows.push({
           rid: `USE-${usage.sid}-${usage.order}`,
+          auditable: false,
           project: usage.project || "--",
           sid: usage.sid,
           vip: usage.vip || "--",
@@ -1412,7 +1434,7 @@
           receiveTime: usage.rewardTime || "--",
           useTime: usage.useTime || "--",
           reviewTime: "--",
-          auditStatus: usage.status === "人工审核" ? "待审核" : (usage.status === "自动审核" ? "审核通过" : (usage.status || "待审核")),
+          auditStatus,
           auditMethod: usage.status === "自动审核" ? "自动审核" : (usage.status === "人工审核" ? "人工审核" : "--"),
           reviewer: usage.status === "自动审核" ? "系统" : "--",
           remark: "--"
@@ -1564,38 +1586,81 @@
     function auditReviewBody(rows, batchMode = false, selectedCount = rows.length) {
       const first = rows[0];
       const meta = auditMeta(first || state.auditTab);
+      const cat = first ? auditCategory(first) : "";
+      const hitTrigger = first?.trigger && first.trigger !== "--" ? first.trigger : "";
+      const decisionForm = `<div class="grid grid-cols-[160px_1fr] gap-3">
+            <div><label class="form-label required mb-1">审核结论</label><select id="auditDecision" class="w-full border border-line rounded px-3 py-2"><option value="pass">通过</option><option value="reject">拒绝</option></select></div>
+            <div><label class="form-label mb-1">审核意见</label><textarea id="auditOpinion" class="w-full min-h-[86px] border border-line rounded px-3 py-2" placeholder="填写审核意见，拒绝时建议说明原因"></textarea></div>
+          </div>`;
       if (batchMode) {
+        const isReceiveBatch = state.auditTab === "receive" || cat === "redpacket";
+        const head = isReceiveBatch
+          ? `<tr><th class="text-left px-2 py-1">SID</th><th class="text-left px-2 py-1">任务批次</th><th class="text-left px-2 py-1">用户持有红包数</th><th class="text-left px-2 py-1">当日已领自定义红包</th><th class="text-left px-2 py-1">触发规则</th></tr>`
+          : `<tr><th class="text-left px-2 py-1">审核对象</th><th class="text-left px-2 py-1">任务批次</th><th class="text-left px-2 py-1">金额</th><th class="text-left px-2 py-1">触发规则/申请理由</th></tr>`;
+        const body = rows.map(row => isReceiveBatch
+          ? `<tr class="border-t border-line"><td class="px-2 py-1">${String(row.sid || row.object || "").replace(/^SID/i, "")}</td><td class="px-2 py-1">${row.batch || "--"}</td><td class="px-2 py-1">${row.redPacketCount ?? "--"}</td><td class="px-2 py-1">${row.dailyCustomCount ?? "--"}</td><td class="px-2 py-1">${row.trigger || "--"}</td></tr>`
+          : `<tr class="border-t border-line"><td class="px-2 py-1">${row.object}</td><td class="px-2 py-1">${row.batch || "--"}</td><td class="px-2 py-1">${auditIssueAmount(row)}</td><td class="px-2 py-1">${auditIssueTriggerOrReason(row)}</td></tr>`
+        ).join("");
         return `<div class="space-y-4 text-[13px]">
           <div class="rounded border border-[#bfdbfe] bg-[#eff6ff] px-3 py-2 text-primary font-medium">已选择${selectedCount}条记录，其中待审核${rows.length}条，已审核记录将自动跳过。</div>
           <div class="max-h-[180px] overflow-auto border border-line rounded">
             <table class="w-full text-[12px]">
-              <thead class="bg-[#f8faff]"><tr><th class="text-left px-2 py-1">审核对象</th><th class="text-left px-2 py-1">任务批次</th><th class="text-left px-2 py-1">金额</th><th class="text-left px-2 py-1">触发规则/申请理由</th></tr></thead>
-              <tbody>${rows.map(row => `<tr class="border-t border-line"><td class="px-2 py-1">${row.object}</td><td class="px-2 py-1">${row.batch || "--"}</td><td class="px-2 py-1">${auditIssueAmount(row)}</td><td class="px-2 py-1">${auditIssueTriggerOrReason(row)}</td></tr>`).join("")}</tbody>
+              <thead class="bg-[#f8faff]">${head}</thead>
+              <tbody>${body}</tbody>
             </table>
           </div>
-          <div class="grid grid-cols-[160px_1fr] gap-3">
-            <div><label class="form-label required mb-1">审核结论</label><select id="auditDecision" class="w-full border border-line rounded px-3 py-2"><option value="pass">通过</option><option value="reject">拒绝</option></select></div>
-            <div><label class="form-label mb-1">审核意见</label><textarea id="auditOpinion" class="w-full min-h-[86px] border border-line rounded px-3 py-2" placeholder="填写审核意见，拒绝时建议说明原因"></textarea></div>
-          </div>
+          ${decisionForm}
         </div>`;
       }
-      if (auditCategory(first) === "usage") {
+      if (cat === "usage") {
         return `<div class="space-y-4 text-[13px]">
           <div class="rounded border border-[#bfdbfe] bg-[#eff6ff] px-3 py-2 text-[12px] text-[#1e40af] leading-6">${meta.trigger}</div>
-          <div class="border border-line rounded p-3 grid grid-cols-2 gap-2 text-[12px]"><div><span class="text-[#64748b]">SID：</span>${first?.sid || "--"}</div><div><span class="text-[#64748b]">红包ID：</span>${first?.couponId || "--"}</div><div><span class="text-[#64748b]">红包类型：</span>${first?.couponType || "--"}</div><div><span class="text-[#64748b]">金额：</span>${(() => { const n = Number(String(first?.faceValue ?? "").replace(/[^0-9.-]/g, "")); return Number.isFinite(n) ? n.toFixed(2) : "--"; })()}</div><div><span class="text-[#64748b]">实际抵扣：</span>${first?.deduct || "--"}</div><div><span class="text-[#64748b]">订单号：</span>${first?.order || "--"}</div><div><span class="text-[#64748b]">入金订单：</span>${first?.depositOrder || "--"}</div></div>
-          <div class="grid grid-cols-[160px_1fr] gap-3">
-            <div><label class="form-label required mb-1">审核结论</label><select id="auditDecision" class="w-full border border-line rounded px-3 py-2"><option value="pass">通过</option><option value="reject">拒绝</option></select></div>
-            <div><label class="form-label mb-1">审核意见</label><textarea id="auditOpinion" class="w-full min-h-[86px] border border-line rounded px-3 py-2" placeholder="填写审核意见，拒绝时建议说明原因"></textarea></div>
-          </div>
+          <div class="border border-line rounded p-3 grid grid-cols-2 gap-2 text-[12px]"><div><span class="text-[#64748b]">SID：</span>${first?.sid || "--"}</div><div><span class="text-[#64748b]">红包ID：</span>${first?.couponId || "--"}</div><div><span class="text-[#64748b]">红包类型：</span>${first?.couponType || "--"}</div><div><span class="text-[#64748b]">金额：</span>${(() => { const n = Number(String(first?.faceValue ?? "").replace(/[^0-9.-]/g, "")); return Number.isFinite(n) ? n.toFixed(2) : "--"; })()}</div><div><span class="text-[#64748b]">实际抵扣：</span>${first?.deduct || "--"}</div><div><span class="text-[#64748b]">入金订单：</span>${first?.depositOrder || "--"}</div></div>
+          ${decisionForm}
         </div>`;
       }
+      if (cat === "redpacket") {
+        const sid = String(first?.sid || first?.object || "").replace(/^SID/i, "");
+        return `<div class="space-y-4 text-[13px]">
+          <div class="border border-line rounded p-3 grid grid-cols-2 gap-2 text-[12px]">
+            <div><span class="text-[#64748b]">SID：</span>${sid || "--"}</div>
+            <div><span class="text-[#64748b]">任务批次：</span>${first?.batch || "--"}</div>
+            <div><span class="text-[#64748b]">红包ID：</span>${first?.couponId || "--"}</div>
+            <div><span class="text-[#64748b]">红包名称：</span>${first?.coupon || "--"}</div>
+            <div><span class="text-[#64748b]">用户持有红包数：</span>${first?.redPacketCount ?? "--"}</div>
+            <div><span class="text-[#64748b]">当日已领自定义红包：</span>${first?.dailyCustomCount ?? "--"}</div>
+          </div>
+          <div class="border border-line rounded p-3">
+            <div class="font-semibold mb-2">触发审核理由</div>
+            <div class="text-[#475569] leading-6">${meta.trigger}</div>
+            ${hitTrigger ? `<div class="mt-2 text-[12px] text-primary">本次命中：${hitTrigger}</div>` : ""}
+          </div>
+          ${decisionForm}
+        </div>`;
+      }
+      const reasonBlock = cat === "special"
+        ? `<div class="border border-line rounded p-3"><div class="font-semibold mb-2">申请原因</div><div class="text-[#475569] leading-6">${first?.approvalReason || "--"}</div></div>`
+        : "";
+      const batchMetrics = cat === "batch"
+        ? `<div class="border border-line rounded p-3 grid grid-cols-2 gap-2 text-[12px]">
+            <div><span class="text-[#64748b]">任务批次：</span>${first?.batch || "--"}</div>
+            <div><span class="text-[#64748b]">活动ID：</span>${first?.activity || "--"}</div>
+            <div><span class="text-[#64748b]">单个红包金额：</span>${first?.singleAmount || "--"}</div>
+            <div><span class="text-[#64748b]">当日发放总额：</span>${first?.dailyAmount || "--"}</div>
+            <div><span class="text-[#64748b]">当日发放笔数：</span>${first?.dailyCount ?? "--"}</div>
+            <div><span class="text-[#64748b]">金额：</span>${auditIssueAmount(first)}</div>
+          </div>`
+        : `<div class="border border-line rounded p-3 grid grid-cols-2 gap-2 text-[12px]">
+            <div><span class="text-[#64748b]">活动ID：</span>${first?.activity || "--"}</div>
+            <div><span class="text-[#64748b]">活动名称：</span>${first?.activityName || first?.object || "--"}</div>
+            <div><span class="text-[#64748b]">预计人数：</span>${first?.expectedUsers ?? "--"}</div>
+            <div><span class="text-[#64748b]">预计金额：</span>${first?.expectedAmount || "--"}</div>
+          </div>`;
       return `<div class="space-y-4 text-[13px]">
-        <div class="border border-line rounded p-3"><div class="font-semibold mb-2">触发规则</div><div class="text-[#475569] leading-6">${meta.trigger}</div>${first?.trigger && first.trigger !== "--" ? `<div class="mt-2 text-[12px] text-primary">本次命中：${first.trigger}</div>` : ""}</div>
-        ${auditCategory(first) === "special" ? `<div class="border border-line rounded p-3"><div class="font-semibold mb-2">申请原因</div><div class="text-[#475569] leading-6">${first?.approvalReason || "--"}</div></div>` : ""}
-        <div class="grid grid-cols-[160px_1fr] gap-3">
-          <div><label class="form-label required mb-1">审核结论</label><select id="auditDecision" class="w-full border border-line rounded px-3 py-2"><option value="pass">通过</option><option value="reject">拒绝</option></select></div>
-          <div><label class="form-label mb-1">审核意见</label><textarea id="auditOpinion" class="w-full min-h-[86px] border border-line rounded px-3 py-2" placeholder="填写审核意见，拒绝时建议说明原因"></textarea></div>
-        </div>
+        ${batchMetrics}
+        <div class="border border-line rounded p-3"><div class="font-semibold mb-2">触发审核理由</div><div class="text-[#475569] leading-6">${meta.trigger}</div>${hitTrigger ? `<div class="mt-2 text-[12px] text-primary">本次命中：${hitTrigger}</div>` : ""}</div>
+        ${reasonBlock}
+        ${decisionForm}
       </div>`;
     }
 
@@ -3108,7 +3173,6 @@
           if (f.couponId && !String(r.couponId || "").includes(f.couponId)) return false;
           if (f.status && !String(r.auditStatus || "").includes(f.status)) return false;
           if (f.sid && !String(r.sid || "").includes(f.sid)) return false;
-          if (f.mt4Order && !String(r.order || "").includes(f.mt4Order)) return false;
           if (f.depositOrder && !String(r.depositOrder || "").includes(f.depositOrder)) return false;
           if (f.couponType && r.couponType !== f.couponType) return false;
           if (f.region && r.region !== f.region) return false;
@@ -3117,9 +3181,9 @@
           if (f.reviewEnd && (!(r.reviewTime && r.reviewTime !== "--") || comparableDateTime(r.reviewTime) > `${f.reviewEnd} 23:59`)) return false;
           return true;
         });
-      } else {
+      } else if (isIssue) {
         rows = state.data.audits.filter(r => {
-          if (auditTabOf(r) !== state.auditTab) return false;
+          if (auditTabOf(r) !== "issue") return false;
           if (f.project && auditProject(r) !== f.project) return false;
           if (f.couponId && !String(r.couponId || "").includes(f.couponId)) return false;
           if (f.status && !String(r.status || "").includes(f.status)) return false;
@@ -3129,12 +3193,25 @@
           if (f.reviewStart && (!(r.reviewTime && r.reviewTime !== "--") || comparableDateTime(r.reviewTime) < f.reviewStart)) return false;
           if (f.reviewEnd && (!(r.reviewTime && r.reviewTime !== "--") || comparableDateTime(r.reviewTime) > `${f.reviewEnd} 23:59`)) return false;
           return true;
-        });
+        }).map(r => ({
+          rid: r.rid,
+          auditable: true,
+          project: auditProject(r),
+          activityId: r.activity || "--",
+          couponId: r.couponId || "--",
+          batch: r.batch || "",
+          activityName: r.activityName || r.object || "--",
+          amount: auditIssueAmount(r),
+          auditStatus: r.status,
+          applyTime: r.apply,
+          reviewTime: r.reviewTime,
+          auditOpinion: r.status === "审核拒绝" ? (r.auditOpinion || "人工审核拒绝") : (r.auditOpinion || "")
+        }));
       }
       if (state.forceEmpty) rows = [];
 
       const deductTotal = rows.reduce((sum, r) => sum + parseDeductAmount(r.deduct), 0);
-      const auditableRows = isReceive ? rows.filter(r => r.auditable) : rows;
+      const auditableRows = (isReceive || isIssue) ? rows.filter(r => r.auditable !== false) : rows;
       const allCurrentAuditsSelected = auditableRows.length > 0 && auditableRows.every(r => state.selectedRows.has(r.rid));
       const selectAllHeader = `<input id="selectAllAudits" type="checkbox" class="accent-primary" ${allCurrentAuditsSelected ? "checked" : ""}>`;
 
@@ -3144,7 +3221,6 @@
               <select id="qAuditProject" class="coupon-input"><option value="">项目</option><option value="Dana" ${f.project==="Dana"?"selected":""}>Dana</option><option value="TW" ${f.project==="TW"?"selected":""}>TW</option></select>
               <input id="qAuditSid" class="coupon-input" placeholder="用户SID" value="${f.sid || ""}">
               <input id="qAuditCouponId" class="coupon-input" placeholder="红包ID" value="${f.couponId}">
-              <input id="qAuditMt4Order" class="coupon-input" placeholder="mt4订单号" value="${f.mt4Order || ""}">
               <input id="qAuditDepositOrder" class="coupon-input" placeholder="入金订单" value="${f.depositOrder || ""}">
               <select id="qAuditCouponType" class="coupon-input"><option value="">红包类型</option><option ${f.couponType==="现金红包"?"selected":""}>现金红包</option><option ${f.couponType==="手续费抵扣红包"?"selected":""}>手续费抵扣红包</option><option ${f.couponType==="盈亏抵扣红包"?"selected":""}>盈亏抵扣红包</option><option ${f.couponType==="提现免佣券"?"selected":""}>提现免佣券</option></select>
               <div class="range-wrap grid-range">
@@ -3218,8 +3294,8 @@
         ${filterHtml}
       `;
 
-      if (isUsage || isReceive) {
-        const kind = isUsage ? "usage" : "receive";
+      if (isUsage || isReceive || isIssue) {
+        const kind = isUsage ? "usage" : (isIssue ? "issue" : "receive");
         const cols = visibleColumns(kind);
         const colgroup = `<colgroup>${cols.map(c => `<col style="width:${c.width}px">`).join("")}</colgroup>`;
         const thCell = (col) => {
@@ -3229,7 +3305,7 @@
         const cellValue = (r, col) => {
           const sid = String(r.sid || "").replace(/^SID/i, "");
           if (col.key === "select") {
-            if (!r.auditable) return "";
+            if (r.auditable === false) return "";
             return `<input type="checkbox" class="accent-primary" data-select-audit="${r.rid}" ${state.selectedRows.has(r.rid) ? "checked" : ""}>`;
           }
           if (col.key === "sid") return `<a class="text-primary hover:underline" data-nav="${makeNav("audit","user-coupon-detail","user","sid",sid)}">${sid}</a>`;
@@ -3241,33 +3317,32 @@
           if (col.key === "auditStatus") return badge(r.auditStatus || "--");
           if (col.key === "receiveTime" || col.key === "applyTime" || col.key === "reviewTime" || col.key === "useTime") {
             const val = r[col.key];
-            if (col.key === "reviewTime" && isAuditPending(r.auditStatus)) return "-";
+            if (col.key === "reviewTime" && isAuditPending(r.auditStatus)) return isIssue ? "" : "-";
             return formatDisplayTime(val);
           }
           if (col.key === "auditMethod" || col.key === "reviewer" || col.key === "remark") {
             if (isUsage && isAuditPending(r.auditStatus)) return "-";
             return r[col.key] && r[col.key] !== "--" ? r[col.key] : "-";
           }
-          if (col.key === "auditOpinion") return r.auditOpinion || "";
           if (col.key === "ops") {
-            return canAudit() && r.auditable && isAuditPending(r.auditStatus) ? `<button data-audit-review="${r.rid}" class="${btnClass(true,true)}">审核</button>` : "";
+            return canAudit() && r.auditable !== false && isAuditPending(r.auditStatus) ? `<button data-audit-review="${r.rid}" class="${btnClass(true,true)}">审核</button>` : "";
           }
-          if (col.key === "trigger" || col.key === "condition" || col.key === "campaign" || col.key === "remark" || col.key === "auditOpinion") {
+          if (["trigger", "triggerOrReason", "condition", "campaign", "activityName", "remark", "auditOpinion"].includes(col.key)) {
             const val = r[col.key] ?? "--";
-            return `<span class="cell-wrap" title="${String(val).replace(/"/g, "&quot;")}">${val}</span>`;
+            return `<span class="cell-wrap" title="${String(val).replace(/"/g, "&quot;")}">${val === "--" && col.key === "auditOpinion" ? "" : val}</span>`;
           }
           return r[col.key] ?? "--";
         };
         const rowHtml = (r) => `<tr class="border-b border-line/60 hover:bg-gray-50">${cols.map(col => {
           const cls = col.key === "ops" ? " col-ops" : "";
-          const wrap = ["trigger","condition","campaign","remark","auditOpinion"].includes(col.key) ? " cell-wrap" : "";
+          const wrap = ["trigger", "triggerOrReason", "condition", "campaign", "activityName", "remark", "auditOpinion"].includes(col.key) ? " cell-wrap" : "";
           return `<td class="px-3 py-2${cls}${wrap}">${cellValue(r, col)}</td>`;
         }).join("")}</tr>`;
 
         el.action.innerHTML = `
           <div class="flex items-center justify-between gap-3 flex-wrap">
             <div class="flex items-center gap-3 flex-wrap">
-              ${isReceive && canAudit() ? `<button id="btnOpenBatchAuditModal" class="coupon-tool-btn">批量审核</button>` : ""}
+              ${(isReceive || isIssue) && canAudit() ? `<button id="btnOpenBatchAuditModal" class="coupon-tool-btn">批量审核</button>` : ""}
               ${isReceive ? `<button class="${btnClass(false,true)}">EDM名单</button>` : ""}
               ${isUsage ? `<div class="text-[13px] text-[#334155]">实际抵扣金额($)：<span class="font-semibold text-primary">${deductTotal.toFixed(2)}</span></div>` : ""}
             </div>
@@ -3277,7 +3352,7 @@
             </div>
           </div>
         `;
-        el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无数据</div>` : `
+        el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">${isIssue ? "暂无审核数据" : "暂无数据"}</div>` : `
           <div class="coupon-table-wrap overflow-auto">
             <table class="w-full data-table table-wide text-[12px]" style="min-width:${cols.reduce((s,c)=>s+(c.width||80),0)}px">
               ${colgroup}
@@ -3289,29 +3364,8 @@
         return;
       }
 
-      const auditColgroup = tableColgroup([3, 5, 7, 6, 8, 5, 7, 12, 7, 7, 7, 7, 5]);
-      const tableHeader = `<th class="text-left px-3 py-2">${selectAllHeader}</th><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">活动ID</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">金额</th><th class="text-left px-3 py-2">触发规则/申请理由</th><th class="text-left px-3 py-2">审核状态</th><th class="text-left px-3 py-2">申请时间</th><th class="text-left px-3 py-2">审核时间</th><th class="text-left px-3 py-2">审核意见</th><th class="text-left px-3 py-2">操作</th>`;
-      const rowHtml = (r) => {
-        const checkbox = `<td class="px-3 py-2"><input type="checkbox" class="accent-primary" data-select-audit="${r.rid}" ${state.selectedRows.has(r.rid) ? "checked" : ""}></td>`;
-        const action = `<td class="px-3 py-2">${canAudit() && isAuditPending(r.status) ? `<button data-audit-review="${r.rid}" class="${btnClass(true,true)}">审核</button>` : ""}</td>`;
-        const reviewTimeText = isAuditPending(r.status) ? "" : formatDisplayTime(r.reviewTime);
-        const opinionText = r.status === "审核拒绝" ? (r.auditOpinion || "人工审核拒绝") : "";
-        const amountText = auditIssueAmount(r);
-        const triggerOrReason = auditIssueTriggerOrReason(r);
-        return `<tr class="border-b border-line/60 hover:bg-gray-50">${checkbox}<td class="px-3 py-2">${auditProject(r)}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("campaign","campaign-detail","campaign","id",r.activity)}">${r.activity}</a></td><td class="px-3 py-2">${r.couponId || "--"}</td><td class="px-3 py-2">${r.batch ? `<a class="text-primary hover:underline" data-nav="${makeNav("batch","batch-detail","batch","id",r.batch)}">${r.batch}</a>` : "--"}</td><td class="px-3 py-2">${r.activityName || r.object || "--"}</td><td class="px-3 py-2">${amountText}</td><td class="px-3 py-2 cell-wrap" title="${triggerOrReason}">${triggerOrReason}</td><td class="px-3 py-2">${badge(r.status)}</td><td class="px-3 py-2">${formatDisplayTime(r.apply)}</td><td class="px-3 py-2">${reviewTimeText}</td><td class="px-3 py-2 cell-wrap">${opinionText}</td>${action}</tr>`;
-      };
-      el.action.innerHTML = canAudit()
-        ? `<div class="flex items-center gap-2"><button id="btnOpenBatchAuditModal" class="coupon-tool-btn">批量审核</button></div>`
-        : "";
-      el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无审核数据</div>` : `
-        <div class="coupon-table-wrap overflow-auto">
-          <table class="w-full data-table table-wide text-[12px]">
-            ${auditColgroup}
-            <thead class="coupon-head"><tr class="border-b border-line">${tableHeader}</tr></thead>
-            <tbody>${rows.map(rowHtml).join("")}</tbody>
-          </table>
-        </div>
-      `;
+      el.action.innerHTML = "";
+      el.table.innerHTML = `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无审核数据</div>`;
     }
     function renderModalPage(pageId) {
       if (pageId === "task-create-modal") {
@@ -4623,7 +4677,6 @@
               next.auditMethod = document.getElementById("qAuditMethod")?.value || "";
             }
             if (state.auditTab === "usage") {
-              next.mt4Order = document.getElementById("qAuditMt4Order")?.value.trim() || "";
               next.depositOrder = document.getElementById("qAuditDepositOrder")?.value.trim() || "";
             } else {
               next.object = document.getElementById("qAuditObject")?.value.trim() || "";
@@ -4636,7 +4689,7 @@
         document.getElementById("btnAuditReset").onclick = () => { state.filters.audit = emptyAuditFilters(); render(); notify("warn","已重置筛选条件"); };
         const colConfigBtn = document.getElementById("btnColumnConfig");
         if (colConfigBtn) {
-          colConfigBtn.onclick = () => openColumnConfigModal(colConfigBtn.dataset.colConfig || (state.auditTab === "usage" ? "usage" : "receive"));
+          colConfigBtn.onclick = () => openColumnConfigModal(colConfigBtn.dataset.colConfig || state.auditTab || "receive");
         }
         const selectAllAudits = document.getElementById("selectAllAudits");
         if (selectAllAudits) {
