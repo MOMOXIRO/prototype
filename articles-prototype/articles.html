@@ -1534,11 +1534,12 @@ table.data tbody tr.selected {
                 </select>
               </div>
               <div class="form-row" id="displayPosRow" hidden>
-                <label>展示位置</label>
-                <div class="check-row">
-                  <label><input id="editDisplayBrand" type="checkbox" /> 品牌</label>
-                  <label><input id="editDisplayCommunity" type="checkbox" checked /> 社区</label>
-                </div>
+                <label for="editDisplayPos">展示位置</label>
+                <select id="editDisplayPos" class="field-select">
+                  <option value="社区">社区</option>
+                  <option value="品牌">品牌</option>
+                  <option value="社区、品牌" selected>社区、品牌</option>
+                </select>
               </div>
             </div>
             <input type="hidden" id="editNickname" />
@@ -1719,11 +1720,12 @@ table.data tbody tr.selected {
               </div>
             </div>
             <div class="form-row" id="postDisplayPos" hidden>
-              <label>展示位置</label>
-              <div class="check-row">
-                <label><input id="postDisplayBrand" type="checkbox" /> 品牌</label>
-                <label><input id="postDisplayCommunity" type="checkbox" checked /> 社区</label>
-              </div>
+              <label for="postDisplayPosSelect">展示位置</label>
+              <select id="postDisplayPosSelect" class="field-select">
+                <option value="社区">社区</option>
+                <option value="品牌">品牌</option>
+                <option value="社区、品牌" selected>社区、品牌</option>
+              </select>
             </div>
 
             <h3 style="margin-top:8px">帖子内容</h3>
@@ -1949,7 +1951,22 @@ const TYPES = ["文章", "帖子"];
 const WORKFLOWS = ["审核通过", "敏感词审核中", "人工复核中", "已驳回"];
 const REGIONS = ["+1234 [test1]", "+62 [ID]", "+91 [IN]", "+234 [NG]", "+1 [US]"];
 const VISIBILITIES = ["所有人可见", "仅自己可见"];
-const DISPLAY_POSITIONS = ["社区", "品牌"];
+const DISPLAY_POSITIONS = ["社区", "品牌", "社区、品牌"];
+
+function displayToValue(display) {
+  const list = display || [];
+  const hasBrand = list.includes("品牌");
+  const hasCommunity = list.includes("社区");
+  if (hasBrand && hasCommunity) return "社区、品牌";
+  if (hasBrand) return "品牌";
+  return "社区";
+}
+
+function valueToDisplay(value) {
+  if (value === "社区、品牌") return ["社区", "品牌"];
+  if (value === "品牌") return ["品牌"];
+  return ["社区"];
+}
 
 /** 多地区内容配置：按所选发布地区切换 Tab 填写 */
 let currentEditRegion = "";
@@ -2275,7 +2292,8 @@ function statusClass(status) {
 }
 
 function displayText(display) {
-  return (display || []).join("、") || "—";
+  if (!display || !display.length) return "—";
+  return displayToValue(display);
 }
 
 function perms() {
@@ -2363,12 +2381,13 @@ function syncDisplayPositionUI() {
     posRow.hidden = false;
   } else {
     posRow.hidden = true;
-    $("#editDisplayBrand").checked = false;
-    $("#editDisplayCommunity").checked = true;
+    $("#editDisplayPos").value = "社区";
   }
 
-  const showBrand = tw && $("#editDisplayBrand").checked;
-  const showCommunity = $("#editDisplayCommunity").checked || !tw;
+  const pos = tw ? $("#editDisplayPos").value || "社区" : "社区";
+  const display = valueToDisplay(pos);
+  const showBrand = tw && display.includes("品牌");
+  const showCommunity = !tw || display.includes("社区");
   brandPanel.hidden = !showBrand;
   communityPanel.hidden = !showCommunity;
   split.classList.toggle("is-single", !showBrand && !showCommunity);
@@ -2456,10 +2475,7 @@ function hideEditorPage() {
 /** 切换到 2 开头的 TW SID 时，默认勾选品牌展示 */
 function onSidChange() {
   if (isTwSid()) {
-    $("#editDisplayBrand").checked = true;
-    if (!$("#editDisplayCommunity").checked) {
-      $("#editDisplayCommunity").checked = true;
-    }
+    $("#editDisplayPos").value = $("#editDisplayPos").value || "社区、品牌";
   }
   syncDisplayPositionUI();
 }
@@ -2482,21 +2498,22 @@ function isPostTwSid() {
 
 function syncPostDisplayUI() {
   const tw = isPostTwSid();
-  const pos = $("#postDisplayPos");
+  const posRow = $("#postDisplayPos");
   const brandPanel = $("#postBrandPanel");
   const communityPanel = $("#postCommunityPanel");
   const split = $("#postSplit");
 
   if (tw) {
-    pos.hidden = false;
+    posRow.hidden = false;
   } else {
-    pos.hidden = true;
-    $("#postDisplayBrand").checked = false;
-    $("#postDisplayCommunity").checked = true;
+    posRow.hidden = true;
+    $("#postDisplayPosSelect").value = "社区";
   }
 
-  const showBrand = tw && $("#postDisplayBrand").checked;
-  const showCommunity = $("#postDisplayCommunity").checked || !tw;
+  const pos = tw ? $("#postDisplayPosSelect").value || "社区" : "社区";
+  const display = valueToDisplay(pos);
+  const showBrand = tw && display.includes("品牌");
+  const showCommunity = !tw || display.includes("社区");
   brandPanel.hidden = !showBrand;
   communityPanel.hidden = !showCommunity;
   split.classList.toggle("is-single", !showBrand && !showCommunity);
@@ -2516,10 +2533,7 @@ function onPostSidChange() {
   $("#postProject").value = sid ? projectFromSid(sid) : "";
 
   if (isPostTwSid()) {
-    $("#postDisplayBrand").checked = true;
-    if (!$("#postDisplayCommunity").checked) {
-      $("#postDisplayCommunity").checked = true;
-    }
+    $("#postDisplayPosSelect").value = $("#postDisplayPosSelect").value || "社区、品牌";
   }
   syncPostDisplayUI();
 }
@@ -2642,7 +2656,7 @@ function applyFilters() {
     if (f.status && a.status !== f.status) return false;
     if (f.visibility && a.visibility !== f.visibility) return false;
     if (f.workflow && a.workflow !== f.workflow) return false;
-    if (f.display && !(a.display || []).includes(f.display)) return false;
+    if (f.display && displayToValue(a.display) !== f.display) return false;
     if (f.dateFrom && a.publishAt.slice(0, 10) < f.dateFrom) return false;
     if (f.dateTo && a.publishAt.slice(0, 10) > f.dateTo) return false;
     return true;
@@ -2919,8 +2933,7 @@ function openEditor(id, typeHint) {
   const display =
     a?.display ||
     (projectFromSid(defaultSidVal) === "TW" ? ["品牌", "社区"] : ["社区"]);
-  $("#editDisplayBrand").checked = display.includes("品牌");
-  $("#editDisplayCommunity").checked = display.includes("社区") || !display.includes("品牌");
+  $("#editDisplayPos").value = displayToValue(display);
 
   $("#editBrandTag").value = a?.brandTag || "";
   $("#editDisplayTime").value = toDatetimeLocal(a?.displayTime || "2025-11-14 14:30:00");
@@ -2975,8 +2988,7 @@ function openPostEditor(id) {
   const display =
     a?.display ||
     (projectFromSid(defaultSid) === "TW" ? ["品牌", "社区"] : ["社区"]);
-  $("#postDisplayBrand").checked = display.includes("品牌");
-  $("#postDisplayCommunity").checked = display.includes("社区") || !display.includes("品牌");
+  $("#postDisplayPosSelect").value = displayToValue(display);
 
   $("#postVideoUrl").value = a?.video || "";
   $("#postVideoBox").classList.toggle("has-video", Boolean(a?.video));
@@ -3026,14 +3038,9 @@ function savePost() {
   const video = $("#postVideoUrl").value.trim();
   const mediaType = video ? "video" : "image";
 
-  let display = [];
-  if (tw) {
-    if ($("#postDisplayBrand").checked) display.push("品牌");
-    if ($("#postDisplayCommunity").checked) display.push("社区");
-    if (!display.length) return showToast("请至少选择一个展示位置");
-  } else {
-    display = ["社区"];
-  }
+  const display = tw
+    ? valueToDisplay($("#postDisplayPosSelect").value || "社区")
+    : ["社区"];
 
   const brandOn = display.includes("品牌");
   const communityOn = display.includes("社区");
@@ -3151,14 +3158,9 @@ function saveEditor() {
     return showToast(`请完整填写地区「${incomplete}」的标题与正文`);
   }
 
-  let display = [];
-  if (tw) {
-    if ($("#editDisplayBrand").checked) display.push("品牌");
-    if ($("#editDisplayCommunity").checked) display.push("社区");
-    if (!display.length) return showToast("请至少选择一个展示位置");
-  } else {
-    display = ["社区"];
-  }
+  const display = tw
+    ? valueToDisplay($("#editDisplayPos").value || "社区")
+    : ["社区"];
 
   const brandOn = display.includes("品牌");
   const communityOn = display.includes("社区");
@@ -3552,25 +3554,11 @@ function bindEvents() {
   $("#confirmOk").addEventListener("click", runConfirm);
 
   $("#editSid").addEventListener("change", onSidChange);
-  $("#editDisplayBrand").addEventListener("change", syncDisplayPositionUI);
-  $("#editDisplayCommunity").addEventListener("change", () => {
-    if (isTwSid() && !$("#editDisplayBrand").checked && !$("#editDisplayCommunity").checked) {
-      showToast("请至少保留一个展示位置");
-      $("#editDisplayCommunity").checked = true;
-    }
-    syncDisplayPositionUI();
-  });
+  $("#editDisplayPos").addEventListener("change", syncDisplayPositionUI);
 
   $("#postSid").addEventListener("change", onPostSidChange);
   $("#postSid").addEventListener("input", onPostSidChange);
-  $("#postDisplayBrand").addEventListener("change", syncPostDisplayUI);
-  $("#postDisplayCommunity").addEventListener("change", () => {
-    if (isPostTwSid() && !$("#postDisplayBrand").checked && !$("#postDisplayCommunity").checked) {
-      showToast("请至少保留一个展示位置");
-      $("#postDisplayCommunity").checked = true;
-    }
-    syncPostDisplayUI();
-  });
+  $("#postDisplayPosSelect").addEventListener("change", syncPostDisplayUI);
   $("#editBannerBox").addEventListener("click", () => {
     const url = prompt(
       "粘贴品牌中心封面 URL（演示）",
