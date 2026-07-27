@@ -121,39 +121,32 @@
       overflow-x: auto;
       overflow-y: hidden;
     }
-    .coupon-table-wrap > table.data-table {
-      width: max-content;
+    .coupon-table-wrap > table.data-table,
+    .coupon-table-wrap > table.data-table.table-wide,
+    .coupon-table-wrap > table.data-table.table-fill,
+    table.data-table.table-fill {
+      width: 100%;
       min-width: 100%;
       table-layout: fixed;
       border-collapse: collapse;
     }
-    .coupon-table-wrap > table.data-table.table-wide {
-      min-width: 1680px;
-    }
-    .coupon-table-wrap > table.data-table.table-fill {
-      width: 100%;
-      min-width: 100%;
-      table-layout: fixed;
-    }
-    .coupon-table-wrap > table.data-table.table-fill th.col-ops,
-    .coupon-table-wrap > table.data-table.table-fill td.col-ops {
-      width: auto;
-      min-width: 0;
-    }
-    .coupon-table-wrap > table.data-table.table-fill th.col-compact,
-    .coupon-table-wrap > table.data-table.table-fill td.col-compact {
+    .coupon-table-wrap > table.data-table th.col-compact,
+    .coupon-table-wrap > table.data-table td.col-compact {
       padding-left: 8px;
       padding-right: 8px;
     }
-    .coupon-table-wrap > table.data-table.table-fill th.col-time,
-    .coupon-table-wrap > table.data-table.table-fill td.col-time,
-    .coupon-table-wrap > table.data-table.table-fill th.col-opinion,
-    .coupon-table-wrap > table.data-table.table-fill td.col-opinion {
+    .coupon-table-wrap > table.data-table th.col-time,
+    .coupon-table-wrap > table.data-table td.col-time {
       white-space: nowrap;
-      overflow: visible;
-      text-overflow: clip;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .coupon-table-wrap > table.data-table.table-fill td.col-opinion .cell-wrap {
+    .coupon-table-wrap > table.data-table th.col-opinion,
+    .coupon-table-wrap > table.data-table td.col-opinion {
+      white-space: normal;
+      overflow: hidden;
+    }
+    .coupon-table-wrap > table.data-table td.col-opinion .cell-wrap {
       white-space: normal;
       word-break: break-word;
     }
@@ -170,8 +163,7 @@
     .coupon-table-wrap > table.data-table td.col-ops {
       overflow: visible;
       text-overflow: clip;
-      width: 168px;
-      min-width: 168px;
+      white-space: nowrap;
     }
     .coupon-table-wrap > table.data-table .cell-wrap {
       white-space: normal;
@@ -627,7 +619,7 @@
           { id:"A3", name:"口令红包补发活动", audience:"添加5人", audienceType:"添加", audienceCount:5, mode:"普通活动 / 立即发放", deliverTime:"2026-07-06 11:20", task:"T4", tasks:["T4"], batch:"A3-T4", project:"Dana", coupons:["2002"], status:"已撤销", statuses:["已撤销"], createdAt:"2026-07-06 11:20", revokeReason:"撤销原因：名单包含已注销用户，停止继续发放",
             logs:[{ operator:"Mia", time:"2026-07-06 12:00", content:"撤销活动，未领取令牌已回收" }] },
           { id:"A4", name:"老客特批激活活动", audience:"导入268人", audienceType:"导入", audienceCount:268, importFile:"A4_import.xlsx", mode:"特批活动 / 循环发放", deliverTime:"每周一 10:00", task:"T4", tasks:["T4"], batch:"A4-T4", project:"Dana", coupons:["1001","1001"], status:"执行中", statuses:["执行中"], createdAt:"2026-07-06 11:20", revokeReason:"--",
-            logs:[{ operator:"Jenny", time:"2026-07-06 12:12", content:"创建循环活动第2次发放" }] },
+            logs:[{ operator:"Jenny", time:"2026-07-06 12:12", content:"创建特批循环活动发放配置" }] },
           { id:"A5", name:"高风险特批活动", audience:"导入268人", audienceType:"导入", audienceCount:268, importFile:"A5_import.xlsx", mode:"特批活动 / 立即发放", deliverTime:"待审核通过后立即发放", task:"T2", tasks:["T2"], batch:"A5-T2", project:"TW", coupons:["2001"], status:"审核拒绝", statuses:["审核拒绝"], createdAt:"2026-07-06 11:30", revokeReason:"--",
             logs:[{ operator:"Admin", time:"2026-07-06 11:45", content:"特批活动人工审核拒绝" }] }
         ],
@@ -640,10 +632,8 @@
             logs:[{operator:"Jenny", time:"2026-07-06 12:10", content:"任务批次全部收到终态，状态变更为完成"}] },
           { id:"A3-T4", campaign:"A3", task:"T4", coupon:"2002", issue:"30/120", status:"已撤销", project:"Dana", region:"+880 [BD]", operator:"Admin", createdAt:"2026-07-06 13:20", reason:"撤销原因：名单包含已注销用户",
             logs:[{operator:"Admin", time:"2026-07-06 13:20", content:"撤销任务批次，未兑换令牌已回收"}] },
-          { id:"A4-T4", campaign:"A4", task:"T4", coupon:"1001", issue:"86/200", status:"完成", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-06 12:22", reason:"--",
-            logs:[{operator:"Jenny", time:"2026-07-06 12:22", content:"创建循环活动第1次任务批次"}] },
-          { id:"A4-T4-2", campaign:"A4", task:"T4", coupon:"1001", issue:"42/200", status:"执行中", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-13 10:05", reason:"--",
-            logs:[{operator:"Jenny", time:"2026-07-13 10:05", content:"创建循环活动第2次任务批次"}] },
+          { id:"A4-T4", campaign:"A4", task:"T4", coupon:"1001", issue:"86/200", status:"执行中", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-06 12:22", reason:"--",
+            logs:[{operator:"Jenny", time:"2026-07-06 12:22", content:"创建任务批次"}] },
           { id:"A5-T2", campaign:"A5", task:"T2", coupon:"2001", issue:"0/268", status:"审核拒绝", project:"TW", region:"+91 [IN]", operator:"Admin", createdAt:"2026-07-06 11:45", reason:"特批审核拒绝",
             logs:[{operator:"Admin", time:"2026-07-06 11:45", content:"特批活动审核拒绝，任务批次不下发"}] },
           { id:"A6-T1", campaign:"A6", task:"T1", coupon:"1001", issue:"0/50", status:"待审核", project:"Dana", region:"+62 [ID]", operator:"Mia", createdAt:"2026-06-25 10:20", reason:"--",
@@ -736,7 +726,9 @@
     }
 
     function tableColgroup(widths) {
-      return `<colgroup>${widths.map(w => `<col style="width:${typeof w === "number" ? `${w}%` : w}">`).join("")}</colgroup>`;
+      const nums = widths.map(w => typeof w === "number" ? w : parseFloat(w) || 1);
+      const total = nums.reduce((s, n) => s + n, 0) || 1;
+      return `<colgroup>${nums.map(n => `<col style="width:${((n / total) * 100).toFixed(3)}%">`).join("")}</colgroup>`;
     }
 
     const couponValidityTipText = "使用红包的有效期，叠加剩余任务有效期使用。例如任务剩余2天失效，红包7天有效，则完成任务红包剩余9天可用。";
@@ -1001,10 +993,17 @@
       const matched = state.data.batches.filter(b =>
         b.campaign === row.id || b.id === row.batch || b.id.startsWith(`${row.id}-`)
       );
-      if (matched.length) {
-        return matched.slice().sort((a, b) => String(a.createdAt || "").localeCompare(String(b.createdAt || "")) || String(a.id).localeCompare(String(b.id)));
-      }
-      return row.batch ? [{ id: row.batch, campaign: row.id, task: row.task }] : [];
+      const list = matched.length
+        ? matched.slice().sort((a, b) => String(a.createdAt || "").localeCompare(String(b.createdAt || "")) || String(a.id).localeCompare(String(b.id)))
+        : (row.batch ? [{ id: row.batch, campaign: row.id, task: row.task }] : []);
+      // 同一活动下每个任务仅对应一个批次，不展示重复任务批次
+      const seenTask = new Set();
+      return list.filter(b => {
+        const key = b.task || b.id;
+        if (seenTask.has(key)) return false;
+        seenTask.add(key);
+        return true;
+      });
     }
 
     function campaignBatchLinksHtml(row) {
@@ -1189,36 +1188,37 @@
     ];
 
     const RECEIVE_LIST_COLUMNS = [
-      { key: "select", label: "选择", fixed: true, width: 44 },
-      { key: "project", label: "项目", fixed: true, width: 72 },
-      { key: "sid", label: "SID", fixed: true, width: 110 },
-      { key: "batch", label: "任务批次", fixed: true, width: 90 },
-      { key: "activityId", label: "活动ID", fixed: false, width: 80, defaultOn: true },
-      { key: "couponId", label: "红包ID", fixed: false, width: 72, defaultOn: true },
-      { key: "couponTitle", label: "红包标题", fixed: false, width: 120, defaultOn: true },
-      { key: "auditStatus", label: "审核状态", fixed: true, width: 88 },
-      { key: "applyTime", label: "申请时间", fixed: false, width: 130, defaultOn: true },
-      { key: "reviewer", label: "审核人", fixed: false, width: 72, defaultOn: true },
-      { key: "auditOpinion", label: "审核意见", fixed: false, width: 140, defaultOn: true },
-      { key: "reviewTime", label: "审核时间", fixed: false, width: 130, defaultOn: true },
-      { key: "ops", label: "操作", fixed: true, width: 80 }
+      { key: "select", label: "选择", fixed: true, width: 3.5 },
+      { key: "project", label: "项目", fixed: true, width: 5 },
+      { key: "sid", label: "SID", fixed: true, width: 8 },
+      { key: "batch", label: "任务批次", fixed: true, width: 8 },
+      { key: "activityId", label: "活动ID", fixed: false, width: 6, defaultOn: true },
+      { key: "couponId", label: "红包ID", fixed: false, width: 6, defaultOn: true },
+      { key: "couponTitle", label: "红包标题", fixed: false, width: 10, defaultOn: true },
+      { key: "auditStatus", label: "审核状态", fixed: true, width: 7 },
+      { key: "applyTime", label: "申请时间", fixed: false, width: 10, defaultOn: true },
+      { key: "reviewer", label: "审核人", fixed: false, width: 6, defaultOn: true },
+      { key: "auditOpinion", label: "审核意见", fixed: false, width: 14, defaultOn: true },
+      { key: "reviewTime", label: "审核时间", fixed: false, width: 10, defaultOn: true },
+      { key: "ops", label: "操作", fixed: true, width: 6.5 }
     ];
 
     const USAGE_LIST_COLUMNS = [
-      { key: "project", label: "项目", fixed: true, width: 72 },
-      { key: "sid", label: "SID", fixed: true, width: 110 },
-      { key: "couponId", label: "红包ID", fixed: true, width: 72 },
-      { key: "couponType", label: "红包类型", fixed: false, width: 100, defaultOn: true },
-      { key: "amount", label: "金额", fixed: false, width: 80, defaultOn: true },
-      { key: "deduct", label: "实际抵扣", fixed: true, width: 80 },
-      { key: "depositOrder", label: "入金订单", fixed: false, width: 140, defaultOn: true },
-      { key: "useTime", label: "使用时间", fixed: true, width: 130 },
-      { key: "reviewTime", label: "审核时间", fixed: false, width: 130, defaultOn: true },
-      { key: "auditStatus", label: "审核状态", fixed: true, width: 88 },
-      { key: "auditMethod", label: "审核方式", fixed: false, width: 80, defaultOn: true },
-      { key: "reviewer", label: "审核人", fixed: false, width: 72, defaultOn: true },
-      { key: "remark", label: "备注", fixed: false, width: 120, defaultOn: true },
-      { key: "ops", label: "操作", fixed: true, width: 80 }
+      { key: "select", label: "选择", fixed: true, width: 3.5 },
+      { key: "project", label: "项目", fixed: true, width: 5 },
+      { key: "sid", label: "SID", fixed: true, width: 9 },
+      { key: "couponId", label: "红包ID", fixed: true, width: 6 },
+      { key: "couponType", label: "红包类型", fixed: false, width: 9, defaultOn: true },
+      { key: "amount", label: "金额", fixed: false, width: 6, defaultOn: true },
+      { key: "deduct", label: "实际抵扣", fixed: true, width: 7 },
+      { key: "depositOrder", label: "入金订单", fixed: false, width: 12, defaultOn: true },
+      { key: "useTime", label: "使用时间", fixed: true, width: 10 },
+      { key: "reviewTime", label: "审核时间", fixed: false, width: 10, defaultOn: true },
+      { key: "auditStatus", label: "审核状态", fixed: true, width: 7 },
+      { key: "auditMethod", label: "审核方式", fixed: false, width: 7, defaultOn: true },
+      { key: "reviewer", label: "审核人", fixed: false, width: 6, defaultOn: true },
+      { key: "remark", label: "备注", fixed: false, width: 8, defaultOn: true },
+      { key: "ops", label: "操作", fixed: true, width: 6.5 }
     ];
 
     const ISSUE_LIST_COLUMNS = [
@@ -1443,15 +1443,24 @@
       if (!row) return [];
       const activityId = row.activity || "";
       const fromData = activityId
-        ? state.data.batches
-            .filter(b => b.campaign === activityId || b.id.startsWith(`${activityId}-`))
-            .map(b => b.id)
+        ? state.data.batches.filter(b => b.campaign === activityId || b.id.startsWith(`${activityId}-`))
         : [];
-      const fromRow = Array.isArray(row.batches)
+      const fromRowIds = Array.isArray(row.batches)
         ? row.batches.filter(Boolean)
         : (row.batch && row.batch !== "--" ? [row.batch] : []);
-      const ids = [...new Set([...fromRow, ...fromData].filter(Boolean))];
-      return ids.sort((a, b) => String(a).localeCompare(String(b)));
+      const fromRow = fromRowIds.map(id => state.data.batches.find(b => b.id === id) || { id, task: id });
+      const merged = [];
+      const seenTask = new Set();
+      const seenId = new Set();
+      [...fromRow, ...fromData].forEach(b => {
+        if (!b?.id || seenId.has(b.id)) return;
+        const taskKey = b.task || b.id;
+        if (seenTask.has(taskKey)) return;
+        seenTask.add(taskKey);
+        seenId.add(b.id);
+        merged.push(b.id);
+      });
+      return merged.sort((a, b) => String(a).localeCompare(String(b)));
     }
 
     function auditBatchLinksHtml(batchIds) {
@@ -1576,24 +1585,54 @@
       }
     }
 
+    function auditDecisionRadiosHtml(name = "auditDecision", passValue = "pass", rejectValue = "reject", checked = "pass") {
+      return `<div class="flex items-center gap-5 h-9">
+            <label class="inline-flex items-center gap-2 cursor-pointer text-[13px] text-[#334155]">
+              <input type="radio" name="${name}" value="${passValue}" class="accent-primary" ${checked === passValue ? "checked" : ""}>
+              <span>通过</span>
+            </label>
+            <label class="inline-flex items-center gap-2 cursor-pointer text-[13px] text-[#334155]">
+              <input type="radio" name="${name}" value="${rejectValue}" class="accent-primary" ${checked === rejectValue ? "checked" : ""}>
+              <span>拒绝</span>
+            </label>
+          </div>`;
+    }
+
+    function selectedAuditDecision(name = "auditDecision", fallback = "pass") {
+      return document.querySelector(`input[name="${name}"]:checked`)?.value || fallback;
+    }
+
+    function setAuditDecision(name, value) {
+      const elRadio = document.querySelector(`input[name="${name}"][value="${value}"]`);
+      if (elRadio) elRadio.checked = true;
+    }
+
     function auditReviewBody(rows, batchMode = false, selectedCount = rows.length) {
       const first = rows[0];
       const meta = auditMeta(first || state.auditTab);
       const cat = first ? auditCategory(first) : "";
       const hitTrigger = first?.trigger && first.trigger !== "--" ? first.trigger : "";
       const decisionForm = `<div class="grid grid-cols-[160px_1fr] gap-3">
-            <div><label class="form-label required mb-1">审核结论</label><select id="auditDecision" class="w-full border border-line rounded px-3 py-2"><option value="pass">通过</option><option value="reject">拒绝</option></select></div>
+            <div><label class="form-label required mb-1">审核结论</label>${auditDecisionRadiosHtml("auditDecision")}</div>
             <div><label class="form-label mb-1">审核意见</label><textarea id="auditOpinion" class="w-full min-h-[86px] border border-line rounded px-3 py-2" placeholder="填写审核意见，拒绝时建议说明原因"></textarea></div>
           </div>`;
       if (batchMode) {
         const isReceiveBatch = state.auditTab === "receive" || cat === "redpacket";
+        const isUsageBatch = state.auditTab === "usage" || cat === "usage";
         const head = isReceiveBatch
           ? `<tr><th class="text-left px-2 py-1">SID</th><th class="text-left px-2 py-1">任务批次</th><th class="text-left px-2 py-1">用户持有红包数</th><th class="text-left px-2 py-1">当日已领自定义红包</th><th class="text-left px-2 py-1">触发规则</th></tr>`
-          : `<tr><th class="text-left px-2 py-1">审核对象</th><th class="text-left px-2 py-1">任务批次</th><th class="text-left px-2 py-1">金额</th><th class="text-left px-2 py-1">触发规则/申请理由</th></tr>`;
-        const body = rows.map(row => isReceiveBatch
-          ? `<tr class="border-t border-line"><td class="px-2 py-1">${String(row.sid || row.object || "").replace(/^SID/i, "")}</td><td class="px-2 py-1">${row.batch || "--"}</td><td class="px-2 py-1">${row.redPacketCount ?? "--"}</td><td class="px-2 py-1">${row.dailyCustomCount ?? "--"}</td><td class="px-2 py-1">${row.trigger || "--"}</td></tr>`
-          : `<tr class="border-t border-line"><td class="px-2 py-1">${row.object}</td><td class="px-2 py-1">${row.batch || "--"}</td><td class="px-2 py-1">${auditIssueAmount(row)}</td><td class="px-2 py-1">${auditIssueTriggerOrReason(row)}</td></tr>`
-        ).join("");
+          : isUsageBatch
+            ? `<tr><th class="text-left px-2 py-1">SID</th><th class="text-left px-2 py-1">红包ID</th><th class="text-left px-2 py-1">实际抵扣</th><th class="text-left px-2 py-1">触发规则</th></tr>`
+            : `<tr><th class="text-left px-2 py-1">活动ID</th><th class="text-left px-2 py-1">触发规则/申请理由</th></tr>`;
+        const body = rows.map(row => {
+          if (isReceiveBatch) {
+            return `<tr class="border-t border-line"><td class="px-2 py-1">${String(row.sid || row.object || "").replace(/^SID/i, "")}</td><td class="px-2 py-1">${row.batch || "--"}</td><td class="px-2 py-1">${row.redPacketCount ?? "--"}</td><td class="px-2 py-1">${row.dailyCustomCount ?? "--"}</td><td class="px-2 py-1">${row.trigger || "--"}</td></tr>`;
+          }
+          if (isUsageBatch) {
+            return `<tr class="border-t border-line"><td class="px-2 py-1">${String(row.sid || row.object || "").replace(/^SID/i, "")}</td><td class="px-2 py-1">${row.couponId || "--"}</td><td class="px-2 py-1">${row.deduct || "--"}</td><td class="px-2 py-1">${row.trigger && row.trigger !== "--" ? row.trigger : "--"}</td></tr>`;
+          }
+          return `<tr class="border-t border-line"><td class="px-2 py-1">${row.activity || activityIdFromBatch(row.batch) || "--"}</td><td class="px-2 py-1">${auditIssueTriggerOrReason(row)}</td></tr>`;
+        }).join("");
         return `<div class="space-y-4 text-[13px]">
           <div class="rounded border border-[#bfdbfe] bg-[#eff6ff] px-3 py-2 text-primary font-medium">已选择${selectedCount}条记录，其中待审核${rows.length}条，已审核记录将自动跳过。</div>
           <div class="max-h-[180px] overflow-auto border border-line rounded">
@@ -1668,10 +1707,9 @@
         body: auditReviewBody([row]),
         footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button id="submitAuditReview" class="${btnClass(true,true)}">确认提交</button>`
       });
-      const decisionEl = document.getElementById("auditDecision");
-      if (decisionEl && (presetDecision === "pass" || presetDecision === "reject")) decisionEl.value = presetDecision;
+      if (presetDecision === "pass" || presetDecision === "reject") setAuditDecision("auditDecision", presetDecision);
       document.getElementById("submitAuditReview").onclick = () => {
-        const decision = document.getElementById("auditDecision").value;
+        const decision = selectedAuditDecision("auditDecision");
         const opinion = document.getElementById("auditOpinion").value.trim();
         if (decision === "reject" && !opinion) return notify("error", "审核拒绝需填写审核意见");
         applyAuditDecision(row, decision, opinion);
@@ -1693,7 +1731,7 @@
         footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button id="submitBatchAuditReview" class="${btnClass(true,true)}">确认提交</button>`
       });
       document.getElementById("submitBatchAuditReview").onclick = () => {
-        const decision = document.getElementById("auditDecision").value;
+        const decision = selectedAuditDecision("auditDecision");
         const opinion = document.getElementById("auditOpinion").value.trim();
         if (decision === "reject" && !opinion) return notify("error", "批量拒绝需填写审核意见");
         pendingRows.forEach(row => applyAuditDecision(row, decision, opinion));
@@ -2472,8 +2510,8 @@
       `;
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无任务数据</div>` : `
         <div class="coupon-table-wrap overflow-auto">
-          <table class="w-full data-table text-[12px]">
-            ${tableColgroup([8, 8, 14, 9, 14, 14, 8, 8, 17])}
+          <table class="w-full data-table table-fill text-[12px]">
+            ${tableColgroup([7, 8, 14, 9, 14, 14, 8, 8, 18])}
             <thead class="coupon-head">
               <tr class="border-b border-line">
                 <th class="text-left px-3 py-2">项目</th>
@@ -2572,8 +2610,8 @@
       `;
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无红包数据</div>` : `
         <div class="coupon-table-wrap overflow-auto">
-          <table class="w-full data-table text-[12px]">
-            ${tableColgroup([7, 7, 13, 10, 7, 7, 8, 7, 7, 7, 8, 14])}
+          <table class="w-full data-table table-fill text-[12px]">
+            ${tableColgroup([7, 7, 13, 10, 7, 7, 8, 7, 7, 7, 8, 12])}
             <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">总发放</th><th class="text-left px-3 py-2">总领取</th><th class="text-left px-3 py-2">状态</th><th class="text-left px-3 py-2">启用/禁用</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
             <tbody>
               ${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2" title="${r.project}">${r.project}</td><td class="px-3 py-2 font-medium text-[#2f3a4d]" title="${r.id}">${r.id}</td><td class="px-3 py-2" title="${couponTitle(r)}">${couponTitle(r)}</td><td class="px-3 py-2" title="${r.type}">${r.type}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${couponRatioText(r)}</td><td class="px-3 py-2">${couponValidityValue(couponValidDaysText(r.validDays))}</td><td class="px-3 py-2">${r.totalIssue}</td><td class="px-3 py-2">${r.totalReceive}</td><td class="px-3 py-2"><span class="${r.enabled ? "badge badge-ok" : "badge badge-neutral"}">${r.status}</span></td><td class="px-3 py-2"><button class="coupon-switch ${r.enabled ? "on" : "off"}" data-coupon-toggle="${r.id}"></button></td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="编辑" data-coupon-edit="${r.id}">${iconSvg("edit")}</button><button class="icon-action-btn" title="复制" data-coupon-copy="${r.id}">${iconSvg("copy")}</button><button class="icon-action-btn" title="日志" data-coupon-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`).join("")}
@@ -2626,8 +2664,8 @@
       el.action.innerHTML = `<div class="flex items-center gap-2"><button id="btnCampaignCreate" class="coupon-tool-btn">活动发放</button></div>`;
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无活动记录</div>` : `
         <div class="coupon-table-wrap overflow-auto">
-          <table class="w-full data-table text-[12px]">
-            ${tableColgroup([7, 7, 14, 12, 12, 9, 11, 11, 17])}
+          <table class="w-full data-table table-fill text-[12px]">
+            ${tableColgroup([6, 7, 14, 12, 11, 9, 11, 11, 19])}
             <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">活动ID</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">发放人群</th><th class="text-left px-3 py-2">活动状态</th><th class="text-left px-3 py-2">发放时间</th><th class="text-left px-3 py-2">创建时间</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
             <tbody>
               ${rows.map(r => `
@@ -2731,7 +2769,8 @@
               <span class="self-center text-[12px] text-[#64748b]">已添加 ${(d.taskItems || []).length}/${MAX_CAMPAIGN_TASKS} 个任务（含自定义，最多${MAX_CAMPAIGN_TASKS}个；自定义仅可添加1个）</span>
             </div>
             <div class="border border-line rounded overflow-auto">
-              <table class="w-full data-table text-[12px] min-w-[1180px]">
+              <table class="w-full data-table table-fill text-[12px]">
+                ${tableColgroup([12, 28, 22, 14, 14, 10])}
                 <thead class="bg-[#f8faff] text-[#667085]"><tr class="border-b border-line"><th class="text-left px-3 py-2">任务类型</th><th class="text-left px-3 py-2">任务与条件</th><th class="text-left px-3 py-2">奖励内容</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">任务有效期</th><th class="text-left px-3 py-2">操作</th></tr></thead>
                 <tbody id="campaignTaskTableBody">
                   ${d.taskItems.length ? d.taskItems.map((item, idx) => `
@@ -2828,7 +2867,8 @@
       el.table.innerHTML = `
         <div class="font-semibold text-[14px] mt-4 mb-2">活动配置详情</div>
         <div class="border border-line rounded overflow-auto">
-          <table class="w-full data-table text-[12px] min-w-[1100px]">
+          <table class="w-full data-table table-fill text-[12px]">
+            ${tableColgroup([10, 14, 18, 16, 10, 10, 10, 12])}
             <thead class="bg-[#f8faff] text-[#667085]"><tr class="border-b border-line"><th class="text-left px-3 py-2">任务ID</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">任务配置</th><th class="text-left px-3 py-2">关联红包</th><th class="text-left px-3 py-2">总金额</th><th class="text-left px-3 py-2">发放数量</th><th class="text-left px-3 py-2">领取数量</th><th class="text-left px-3 py-2">任务批次</th></tr></thead>
             <tbody>
               ${detailRows.map(batch => {
@@ -2894,8 +2934,8 @@
       el.action.innerHTML = "";
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无任务批次数据</div>` : `
         <div class="coupon-table-wrap overflow-auto">
-          <table class="w-full data-table table-wide text-[12px]">
-            ${tableColgroup([7, 10, 10, 8, 8, 9, 7, 7, 7, 6, 8, 13])}
+          <table class="w-full data-table table-fill text-[12px]">
+            ${tableColgroup([6, 11, 10, 8, 8, 8, 7, 7, 7, 7, 9, 12])}
             <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">批次状态</th><th class="text-left px-3 py-2">关联红包</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">发放数量</th><th class="text-left px-3 py-2">领取数量</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">任务有效期</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
             <tbody>
               ${rows.map(r => {
@@ -2952,7 +2992,8 @@
       el.action.innerHTML = "";
       el.table.innerHTML = `
         <div class="border border-line rounded overflow-auto mb-4">
-          <table class="w-full data-table text-[12px] min-w-[1180px]">
+          <table class="w-full data-table table-fill text-[12px]">
+            ${tableColgroup([7, 12, 10, 8, 12, 6, 7, 7, 7, 7, 7, 10])}
             <thead class="bg-[#f8faff] text-[#667085]"><tr class="border-b border-line"><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">数量</th><th class="text-left px-3 py-2">总发放</th><th class="text-left px-3 py-2">总领取</th><th class="text-left px-3 py-2">使用数</th><th class="text-left px-3 py-2">待使用</th><th class="text-left px-3 py-2">使用率</th><th class="text-left px-3 py-2">实际抵扣</th></tr></thead>
             <tbody>
               ${couponRows.length ? couponRows.map(c => `<tr class="border-b border-line/60"><td class="px-3 py-2">${c.id}</td><td class="px-3 py-2">${c.name}</td><td class="px-3 py-2">${c.type}</td><td class="px-3 py-2">${c.amount}</td><td class="px-3 py-2">${couponValidityValue(couponValidityWithId(c.id, c.valid))}</td><td class="px-3 py-2">${c.qty}</td><td class="px-3 py-2">${c.total}</td><td class="px-3 py-2">${c.received}</td><td class="px-3 py-2">${c.used}</td><td class="px-3 py-2">${c.waiting}</td><td class="px-3 py-2">${c.usageRate}</td><td class="px-3 py-2">${c.discount}</td></tr>`).join("") : `<tr><td class="px-3 py-8 text-center text-muted" colspan="12">理财任务无关联红包</td></tr>`}
@@ -2961,7 +3002,7 @@
         </div>
         <div class="border border-line rounded p-4 bg-white mb-3">
           <div class="font-semibold text-[14px] mb-3">查询与明细</div>
-        <div class="flex items-center gap-3 text-[12px]">
+        <div class="flex items-center gap-3 text-[12px] flex-wrap">
           <input id="qBatchDetailSid" class="coupon-input query-w-180" placeholder="SID" value="${detailFilter.sid || ""}">
           <select id="qBatchDetailCouponId" class="coupon-input query-w-180" ${couponOptions.length ? "" : "disabled"}>
             ${couponOptions.length
@@ -2974,11 +3015,12 @@
           </select>
           <button id="btnBatchDetailReset" class="${btnClass(false,true)}">重置</button>
           <button id="btnBatchDetailSearch" class="${btnClass(true,true)}">查询</button>
-          <button id="btnBatchDetailExport" class="${btnClass(false,true)}" title="导出超过1w条将被阻断">导出</button>
+          <button id="btnBatchDetailExport" class="${btnClass(false,true)} ml-auto" title="导出超过1w条将被阻断">导出</button>
         </div>
         </div>
         <div class="border border-line rounded overflow-auto">
-          <table class="w-full data-table text-[12px] min-w-[1200px]">
+          <table class="w-full data-table table-fill text-[12px]">
+            ${tableColgroup(detailFilter.status === "发放失败" ? [14, 12, 12, 18, 14, 30] : [16, 14, 14, 20, 16, 20])}
             <thead class="bg-[#f8faff] text-[#667085]"><tr class="border-b border-line">${detailFilter.status === "发放失败" ? `<th class="text-left px-3 py-2">SID</th><th class="text-left px-3 py-2">VIP等级</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">发送时间</th><th class="text-left px-3 py-2">红包状态</th><th class="text-left px-3 py-2">失败原因</th>` : `<th class="text-left px-3 py-2">SID</th><th class="text-left px-3 py-2">VIP等级</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">发送时间</th><th class="text-left px-3 py-2">红包状态</th><th class="text-left px-3 py-2">领取时间</th>`}</tr></thead>
             <tbody>
               ${detailRows.length ? detailRows.map(item => detailFilter.status === "发放失败"
@@ -3048,8 +3090,8 @@
       `;
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无红包消耗数据</div>` : `
         <div class="coupon-table-wrap overflow-auto">
-          <table class="w-full data-table table-wide text-[12px]">
-            ${tableColgroup([8, 6, 8, 7, 6, 5, 6, 8, 8, 6, 6, 6, 6, 6, 7])}
+          <table class="w-full data-table table-fill text-[12px]">
+            ${tableColgroup([8, 6, 8, 8, 6, 6, 6, 8, 8, 6, 6, 6, 6, 6, 6])}
             <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">发放人群</th><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">红包有效期</th><th class="text-left px-3 py-2">发放时间</th><th class="text-left px-3 py-2">发放总量</th><th class="text-left px-3 py-2">成功发放</th><th class="text-left px-3 py-2">激活数量</th><th class="text-left px-3 py-2">使用数量</th><th class="text-left px-3 py-2">抵扣金额</th><th class="text-left px-3 py-2">操作人</th></tr></thead>
             <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.batchId}</td><td class="px-3 py-2">${r.couponId}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2">${r.tagVerse || "--"}</td><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2">${r.region || "--"}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${r.validUntil}</td><td class="px-3 py-2">${r.issueTime}</td><td class="px-3 py-2">${r.totalIssue}</td><td class="px-3 py-2">${r.successIssue}</td><td class="px-3 py-2">${r.activated}</td><td class="px-3 py-2">${r.used}</td><td class="px-3 py-2">${formatDeduct(r.deduct)}</td><td class="px-3 py-2">${r.operator || "--"}</td></tr>`).join("")}</tbody>
           </table>
@@ -3113,10 +3155,10 @@
           </div>
         </div>
       `;
-      el.action.innerHTML = `<div class="flex items-center gap-2"><button class="${btnClass(false,true)}">导出用户红包</button></div>`;
+      el.action.innerHTML = `<div class="flex items-center justify-end gap-2"><button class="${btnClass(false,true)}">导出用户红包</button></div>`;
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无该用户红包记录</div>` : `
         <div class="coupon-table-wrap overflow-auto">
-          <table class="w-full data-table text-[12px]">
+          <table class="w-full data-table table-fill text-[12px]">
             ${tableColgroup([8, 10, 14, 14, 12, 10, 10, 8, 14])}
             <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">任务</th><th class="text-left px-3 py-2">任务进度</th><th class="text-left px-3 py-2">领取时间</th><th class="text-left px-3 py-2">使用时间</th><th class="text-left px-3 py-2">抵扣金额</th><th class="text-left px-3 py-2">入金订单</th></tr></thead>
             <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2" title="${r.coupon}">${r.coupon}</td><td class="px-3 py-2">${r.task}</td><td class="px-3 py-2" title="${r.progress}">${r.progress}</td><td class="px-3 py-2">${formatDisplayTime(r.receiveTime)}</td><td class="px-3 py-2">${formatDisplayTime(r.useTime)}</td><td class="px-3 py-2">${r.deduct}</td><td class="px-3 py-2">${r.order}</td></tr>`).join("")}</tbody>
@@ -3242,12 +3284,13 @@
           </div>
         </div>
       `;
-      el.action.innerHTML = `<div class="flex gap-2"><button class="${btnClass(false,true)}" title="导出数据量需在 1w ，数据量过大会导致系统崩溃">导出</button><button class="${btnClass(false,true)}">EDM名单</button></div>`;
+      el.action.innerHTML = `<div class="flex justify-end gap-2"><button class="${btnClass(false,true)}" title="导出数据量需在 1w ，数据量过大会导致系统崩溃">导出</button><button class="${btnClass(false,true)}">EDM名单</button></div>`;
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无领取记录</div>` : `
         <div class="coupon-table-wrap overflow-auto">
-          <table class="w-full data-table text-[12px]">
+          <table class="w-full data-table table-fill text-[12px]">
+            ${tableColgroup([5, 6, 4, 6, 8, 5, 7, 7, 6, 7, 6, 5, 5, 5, 6, 5, 4, 6])}
             <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">SID</th><th class="text-left px-3 py-2">VIP</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">任务配置</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">红包状态</th><th class="text-left px-3 py-2">领取方式</th><th class="text-left px-3 py-2">领取时间</th><th class="text-left px-3 py-2">审核方式</th><th class="text-left px-3 py-2">审核人</th><th class="text-left px-3 py-2">使用时间</th></tr></thead>
-            <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("receive","user-coupon-detail","user","sid",r.sid)}">${r.sid}</a></td><td class="px-3 py-2">${r.vip}</td><td class="px-3 py-2">${r.region}</td><td class="px-3 py-2">${r.campaign}</td><td class="px-3 py-2">${r.couponId || "--"}</td><td class="px-3 py-2">${couponTitleFromRecord(r)}</td><td class="px-3 py-2">${linkedTaskName(r.task, r.batch)}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("batch","batch-detail","batch","id",r.batch)}">${r.batch}</a></td><td class="px-3 py-2">${r.condition}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${badge(r.status)}</td><td class="px-3 py-2">${r.receiveType}</td><td class="px-3 py-2">${formatDisplayTime(r.receive)}</td><td class="px-3 py-2">${r.auditType}</td><td class="px-3 py-2">${r.reviewer}</td><td class="px-3 py-2">${formatDisplayTime(r.useTime)}</td></tr>`).join("")}</tbody>
+            <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("receive","user-coupon-detail","user","sid",r.sid)}">${r.sid}</a></td><td class="px-3 py-2">${r.vip}</td><td class="px-3 py-2">${r.region}</td><td class="px-3 py-2" title="${r.campaign}">${r.campaign}</td><td class="px-3 py-2">${r.couponId || "--"}</td><td class="px-3 py-2" title="${couponTitleFromRecord(r)}">${couponTitleFromRecord(r)}</td><td class="px-3 py-2">${linkedTaskName(r.task, r.batch)}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("batch","batch-detail","batch","id",r.batch)}">${r.batch}</a></td><td class="px-3 py-2" title="${r.condition}">${r.condition}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${badge(r.status)}</td><td class="px-3 py-2">${r.receiveType}</td><td class="px-3 py-2">${formatDisplayTime(r.receive)}</td><td class="px-3 py-2">${r.auditType}</td><td class="px-3 py-2">${r.reviewer}</td><td class="px-3 py-2">${formatDisplayTime(r.useTime)}</td></tr>`).join("")}</tbody>
           </table>
         </div>
       `;
@@ -3303,12 +3346,13 @@
           </div>
         </div>
       `;
-      el.action.innerHTML = `<div class="flex gap-2"><button class="${btnClass(false,true)}" title="导出数据量需在 1w ，数据量过大会导致系统崩溃">导出</button></div>`;
+      el.action.innerHTML = `<div class="flex justify-end gap-2"><button class="${btnClass(false,true)}" title="导出数据量需在 1w ，数据量过大会导致系统崩溃">导出</button></div>`;
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无使用记录</div>` : `
         <div class="coupon-table-wrap overflow-auto">
-          <table class="w-full data-table text-[12px]">
+          <table class="w-full data-table table-fill text-[12px]">
+            ${tableColgroup([5, 6, 4, 5, 7, 7, 5, 7, 6, 6, 6, 8, 5, 5, 6, 6, 6])}
             <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">SID</th><th class="text-left px-3 py-2">VIP</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">任务配置</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">入金订单</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">实际抵扣</th><th class="text-left px-3 py-2">红包抵扣方式</th><th class="text-left px-3 py-2">领取时间</th><th class="text-left px-3 py-2">使用时间</th></tr></thead>
-            <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("receive","user-coupon-detail","user","sid",r.sid)}">${r.sid}</a></td><td class="px-3 py-2">${r.vip}</td><td class="px-3 py-2">${r.region}</td><td class="px-3 py-2">${r.campaign}</td><td class="px-3 py-2">${linkedTaskName(r.task, r.batch)}</td><td class="px-3 py-2">${r.couponId || "--"}</td><td class="px-3 py-2">${couponTitleFromRecord(r)}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("batch","batch-detail","batch","id",r.batch)}">${r.batch}</a></td><td class="px-3 py-2">${r.condition}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2">${r.depositOrder || r.order || "--"}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${r.deduct}</td><td class="px-3 py-2">${r.deductType}</td><td class="px-3 py-2">${formatDisplayTime(r.rewardTime)}</td><td class="px-3 py-2">${formatDisplayTime(r.useTime)}</td></tr>`).join("")}</tbody>
+            <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("receive","user-coupon-detail","user","sid",r.sid)}">${r.sid}</a></td><td class="px-3 py-2">${r.vip}</td><td class="px-3 py-2">${r.region}</td><td class="px-3 py-2" title="${r.campaign}">${r.campaign}</td><td class="px-3 py-2">${linkedTaskName(r.task, r.batch)}</td><td class="px-3 py-2">${r.couponId || "--"}</td><td class="px-3 py-2" title="${couponTitleFromRecord(r)}">${couponTitleFromRecord(r)}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("batch","batch-detail","batch","id",r.batch)}">${r.batch}</a></td><td class="px-3 py-2" title="${r.condition}">${r.condition}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2" title="${r.depositOrder || r.order || "--"}">${r.depositOrder || r.order || "--"}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${r.deduct}</td><td class="px-3 py-2">${r.deductType}</td><td class="px-3 py-2">${formatDisplayTime(r.rewardTime)}</td><td class="px-3 py-2">${formatDisplayTime(r.useTime)}</td></tr>`).join("")}</tbody>
           </table>
         </div>
       `;
@@ -3386,7 +3430,7 @@
       if (state.forceEmpty) rows = [];
 
       const deductTotal = rows.reduce((sum, r) => sum + parseDeductAmount(r.deduct), 0);
-      const auditableRows = (isReceive || isIssue) ? rows.filter(r => r.auditable !== false) : rows;
+      const auditableRows = rows.filter(r => r.auditable !== false);
       const allCurrentAuditsSelected = auditableRows.length > 0 && auditableRows.every(r => state.selectedRows.has(r.rid));
       const selectAllHeader = `<input id="selectAllAudits" type="checkbox" class="accent-primary" ${allCurrentAuditsSelected ? "checked" : ""}>`;
 
@@ -3469,20 +3513,17 @@
       if (isUsage || isReceive || isIssue) {
         const kind = isUsage ? "usage" : (isIssue ? "issue" : "receive");
         const cols = visibleColumns(kind);
-        const issueWeightTotal = isIssue ? cols.reduce((s, c) => s + (Number(c.width) || 1), 0) : 0;
-        const colgroup = isIssue
-          ? `<colgroup>${cols.map(c => `<col style="width:${(((Number(c.width) || 1) / issueWeightTotal) * 100).toFixed(3)}%">`).join("")}</colgroup>`
-          : `<colgroup>${cols.map(c => `<col style="width:${c.width}px">`).join("")}</colgroup>`;
-        const issueColClass = (col) => {
-          if (!isIssue) return col.key === "ops" ? " col-ops" : "";
+        const weightTotal = cols.reduce((s, c) => s + (Number(c.width) || 1), 0) || 1;
+        const colgroup = `<colgroup>${cols.map(c => `<col style="width:${(((Number(c.width) || 1) / weightTotal) * 100).toFixed(3)}%">`).join("")}</colgroup>`;
+        const fillColClass = (col) => {
           if (col.key === "ops") return " col-ops";
-          if (col.key === "applyTime" || col.key === "reviewTime") return " col-time";
-          if (col.key === "auditOpinion") return " col-opinion";
+          if (col.key === "applyTime" || col.key === "reviewTime" || col.key === "useTime") return " col-time";
+          if (col.key === "auditOpinion" || col.key === "remark" || col.key === "depositOrder" || col.key === "couponTitle") return " col-opinion";
           return " col-compact";
         };
         const thCell = (col) => {
-          if (col.key === "select") return `<th class="text-left px-3 py-2${issueColClass(col)}">${selectAllHeader}</th>`;
-          return `<th class="text-left px-3 py-2${issueColClass(col)}">${col.label}</th>`;
+          if (col.key === "select") return `<th class="text-left px-3 py-2${fillColClass(col)}">${selectAllHeader}</th>`;
+          return `<th class="text-left px-3 py-2${fillColClass(col)}">${col.label}</th>`;
         };
         const cellValue = (r, col) => {
           const sid = String(r.sid || "").replace(/^SID/i, "");
@@ -3514,33 +3555,32 @@
           if (col.key === "ops") {
             return canAudit() && r.auditable !== false && isAuditPending(r.auditStatus) ? `<button data-audit-review="${r.rid}" class="${btnClass(true,true)}">审核</button>` : "";
           }
-          if (["trigger", "triggerOrReason", "condition", "campaign", "activityName", "remark", "auditOpinion"].includes(col.key)) {
+          if (["trigger", "triggerOrReason", "condition", "campaign", "activityName", "remark", "auditOpinion", "depositOrder"].includes(col.key)) {
             const val = r[col.key] ?? "--";
             return `<span class="cell-wrap" title="${String(val).replace(/"/g, "&quot;")}">${val === "--" && col.key === "auditOpinion" ? "" : val}</span>`;
           }
           return r[col.key] ?? "--";
         };
         const rowHtml = (r) => `<tr class="border-b border-line/60 hover:bg-gray-50">${cols.map(col => {
-          const cls = issueColClass(col);
-          const wrap = ["trigger", "triggerOrReason", "condition", "campaign", "activityName", "remark", "auditOpinion"].includes(col.key) ? " cell-wrap" : "";
+          const cls = fillColClass(col);
+          const wrap = ["trigger", "triggerOrReason", "condition", "campaign", "activityName", "remark", "auditOpinion", "depositOrder"].includes(col.key) ? " cell-wrap" : "";
           return `<td class="px-3 py-2${cls}${wrap}">${cellValue(r, col)}</td>`;
         }).join("")}</tr>`;
 
         el.action.innerHTML = `
           <div class="flex items-center justify-between gap-3 flex-wrap">
             <div class="flex items-center gap-3 flex-wrap">
-              ${(isReceive || isIssue) && canAudit() ? `<button id="btnOpenBatchAuditModal" class="coupon-tool-btn">批量审核</button>` : ""}
+              ${canAudit() ? `<button id="btnOpenBatchAuditModal" class="coupon-tool-btn">批量审核</button>` : ""}
               ${isUsage ? `<div class="text-[13px] text-[#334155]">实际抵扣金额($)：<span class="font-semibold text-primary">${deductTotal.toFixed(2)}</span></div>` : ""}
             </div>
             <div class="ml-auto flex items-center gap-2">
               <button class="${btnClass(false,true)}" title="导出数据量需在 1w ，数据量过大会导致系统崩溃">导出</button>
-              ${columnConfigButtonHtml(kind)}
             </div>
           </div>
         `;
         el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">${isIssue ? "暂无审核数据" : "暂无数据"}</div>` : `
           <div class="coupon-table-wrap overflow-auto">
-            <table class="w-full data-table ${isIssue ? "table-fill" : "table-wide"} text-[12px]"${isIssue ? "" : ` style="min-width:${cols.reduce((s,c)=>s+(c.width||80),0)}px"`}>
+            <table class="w-full data-table table-fill text-[12px]">
               ${colgroup}
               <thead class="coupon-head"><tr class="border-b border-line">${cols.map(thCell).join("")}</tr></thead>
               <tbody>${rows.map(rowHtml).join("")}</tbody>
@@ -3851,7 +3891,7 @@
           footer: `<button class="${btnClass(false,true)}" data-close-modal>关闭</button>`
         });
       } else if (pageId === "audit-batch-modal") {
-        openModal({ title: "批量审核弹窗", body: `<div class="space-y-2 text-[12px]"><div class="max-h-[240px] overflow-auto border border-line rounded"><table class="w-full text-[12px]"><thead class="bg-[#f8faff]"><tr><th class="text-left px-2 py-1">审核对象</th><th class="text-left px-2 py-1">金额</th><th class="text-left px-2 py-1">触发规则/申请理由</th></tr></thead><tbody>${state.data.audits.filter(x => state.selectedRows.has(x.rid)).map(x => `<tr class="border-t border-line"><td class="px-2 py-1">${x.object}</td><td class="px-2 py-1">${auditIssueAmount(x)}</td><td class="px-2 py-1">${auditIssueTriggerOrReason(x)}</td></tr>`).join("") || `<tr><td class="px-2 py-3 text-muted" colspan="3">未选择审核记录</td></tr>`}</tbody></table></div><label class="text-xs text-muted block mb-1">审核结果 *</label><select id="batchAuditResult" class="w-full border border-line rounded px-3 py-2"><option>通过</option><option>拒绝</option></select><label class="text-xs text-muted block mb-1">拒绝原因（拒绝时必填）</label><textarea id="batchAuditReason" class="w-full border border-line rounded px-3 py-2" rows="3"></textarea></div>`, footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button id="submitBatchAuditModal" class="${btnClass(true,true)}">确认审核</button>` });
+        openModal({ title: "批量审核弹窗", body: `<div class="space-y-2 text-[12px]"><div class="max-h-[240px] overflow-auto border border-line rounded"><table class="w-full text-[12px]"><thead class="bg-[#f8faff]"><tr><th class="text-left px-2 py-1">审核对象</th><th class="text-left px-2 py-1">金额</th><th class="text-left px-2 py-1">触发规则/申请理由</th></tr></thead><tbody>${state.data.audits.filter(x => state.selectedRows.has(x.rid)).map(x => `<tr class="border-t border-line"><td class="px-2 py-1">${x.object}</td><td class="px-2 py-1">${auditIssueAmount(x)}</td><td class="px-2 py-1">${auditIssueTriggerOrReason(x)}</td></tr>`).join("") || `<tr><td class="px-2 py-3 text-muted" colspan="3">未选择审核记录</td></tr>`}</tbody></table></div><label class="form-label required mb-1">审核结果</label>${auditDecisionRadiosHtml("batchAuditResult", "通过", "拒绝", "通过")}<label class="text-xs text-muted block mb-1 mt-3">拒绝原因（拒绝时必填）</label><textarea id="batchAuditReason" class="w-full border border-line rounded px-3 py-2" rows="3"></textarea></div>`, footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button id="submitBatchAuditModal" class="${btnClass(true,true)}">确认审核</button>` });
       } else if (pageId === "task-lang-modal") {
         ensureTaskLangTemplates();
         const L = state.taskLang;
@@ -3958,7 +3998,7 @@
           "audit-custom": "发放审核",
           "audit-special": "发放审核"
         };
-        openModal({ title: titleMap[pageId], body: `<div class="grid grid-cols-2 gap-3 text-[12px]"><input class="border border-line rounded px-2 py-2 bg-gray-50" value="审核类型：${titleMap[pageId]}" disabled><input class="border border-line rounded px-2 py-2 bg-gray-50" value="项目：Dana" disabled><input class="border border-line rounded px-2 py-2 bg-gray-50" value="涉及人数：120" disabled><input class="border border-line rounded px-2 py-2 bg-gray-50" value="金额：$14,000" disabled><input class="col-span-2 border border-line rounded px-2 py-2 bg-gray-50" value="触发原因：阈值命中" disabled><select id="auditModalResult" class="border border-line rounded px-2 py-2"><option>通过</option><option>拒绝</option></select><input id="auditModalReason" class="border border-line rounded px-2 py-2" placeholder="拒绝原因（拒绝时必填）"></div>`, footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button id="confirmAuditModalAction" class="${btnClass(true,true)}">确认审核</button>` });
+        openModal({ title: titleMap[pageId], body: `<div class="grid grid-cols-2 gap-3 text-[12px]"><input class="border border-line rounded px-2 py-2 bg-gray-50" value="审核类型：${titleMap[pageId]}" disabled><input class="border border-line rounded px-2 py-2 bg-gray-50" value="项目：Dana" disabled><input class="border border-line rounded px-2 py-2 bg-gray-50" value="涉及人数：120" disabled><input class="border border-line rounded px-2 py-2 bg-gray-50" value="金额：$14,000" disabled><input class="col-span-2 border border-line rounded px-2 py-2 bg-gray-50" value="触发原因：阈值命中" disabled><div class="col-span-2"><label class="form-label required mb-1">审核结论</label>${auditDecisionRadiosHtml("auditModalResult", "通过", "拒绝", "通过")}</div><input id="auditModalReason" class="col-span-2 border border-line rounded px-2 py-2" placeholder="拒绝原因（拒绝时必填）"></div>`, footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button id="confirmAuditModalAction" class="${btnClass(true,true)}">确认审核</button>` });
       } else {
         openModal({ title: "页面弹窗", body: `<p>${pageId} 已映射到弹窗视图。</p>`, footer: `<button class="${btnClass(false,true)}" data-close-modal>关闭</button>` });
       }
@@ -5068,7 +5108,7 @@
       };
       const submitBatchAuditModal = document.getElementById("submitBatchAuditModal");
       if (submitBatchAuditModal) submitBatchAuditModal.onclick = () => {
-        const result = document.getElementById("batchAuditResult").value;
+        const result = selectedAuditDecision("batchAuditResult", "通过");
         const reason = document.getElementById("batchAuditReason").value.trim();
         if (result === "拒绝" && !reason) return notify("error","批量拒绝必须填写原因");
         closeModal();
@@ -5076,7 +5116,7 @@
       };
       const confirmAuditModalAction = document.getElementById("confirmAuditModalAction");
       if (confirmAuditModalAction) confirmAuditModalAction.onclick = () => {
-        const result = document.getElementById("auditModalResult").value;
+        const result = selectedAuditDecision("auditModalResult", "通过");
         const reason = document.getElementById("auditModalReason").value.trim();
         if (result === "拒绝" && !reason) return notify("error","拒绝原因必填");
         closeModal();
