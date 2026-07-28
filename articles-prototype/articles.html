@@ -1614,11 +1614,10 @@ table.data tbody tr.selected {
             <div class="form-section community-panel" id="communityPanel" hidden>
               <h3>社区展示设置</h3>
               <div class="form-row">
-                <label>热度推荐
-                  <span class="help-tip" title="根据平台算法在推荐列表中靠前展示">?</span>
-                </label>
+                <label>社区推荐</label>
                 <div class="check-row">
-                  <label><input id="editCommunityPin" type="checkbox" /> 热度推荐</label>
+                  <label><input id="editCommunityPin" type="checkbox" /> 置顶</label>
+                  <label><input id="editCommunityStar" type="checkbox" /> 星标</label>
                 </div>
               </div>
               <div class="form-row">
@@ -1793,11 +1792,10 @@ table.data tbody tr.selected {
             <div class="form-section community-panel" id="postCommunityPanel" hidden>
               <h3>社区展示设置</h3>
               <div class="form-row">
-                <label>热度推荐
-                  <span class="help-tip" title="根据平台算法在推荐列表中靠前展示">?</span>
-                </label>
+                <label>社区推荐</label>
                 <div class="check-row">
-                  <label><input id="postCommunityPin" type="checkbox" /> 热度推荐</label>
+                  <label><input id="postCommunityPin" type="checkbox" /> 置顶</label>
+                  <label><input id="postCommunityStar" type="checkbox" /> 星标</label>
                 </div>
               </div>
               <div class="form-row">
@@ -2115,6 +2113,7 @@ function seedArticles() {
       views: 56000,
       banner: "https://picsum.photos/seed/banner2/960/400",
       communityPinned: true,
+      communityStarred: true,
       communityCover: "https://picsum.photos/seed/comm2/640/400",
     },
     {
@@ -2133,6 +2132,7 @@ function seedArticles() {
       visible: true,
       display: ["社区"],
       communityPinned: true,
+      communityStarred: false,
       communityCover: "https://picsum.photos/seed/postcomm7/640/400",
       mediaType: "image",
     },
@@ -2846,7 +2846,8 @@ function openDetail(id) {
       ${
         (a.display || []).includes("社区")
           ? `
-      <div class="label">热度推荐</div><div>${a.communityPinned ? "是" : "否"}</div>
+      <div class="label">置顶</div><div>${a.communityPinned ? "是" : "否"}</div>
+      <div class="label">星标</div><div>${a.communityStarred ? "是" : "否"}</div>
       <div class="label">社区封面</div><div>${a.communityCover ? `<img src="${a.communityCover}" alt="" style="width:180px;border-radius:6px;border:1px solid var(--border)" />` : "—"}</div>
       `
           : ""
@@ -2916,6 +2917,7 @@ function openEditor(id, typeHint) {
   $("#editBannerUrl").value = a?.banner || "";
 
   $("#editCommunityPin").checked = Boolean(a?.communityPinned);
+  $("#editCommunityStar").checked = Boolean(a?.communityStarred);
   $("#editCommunityCoverPreview").src = a?.communityCover || "";
   $("#editCommunityCoverBox").classList.toggle("has-image", Boolean(a?.communityCover));
   $("#editCommunityCoverUrl").value = a?.communityCover || "";
@@ -2975,6 +2977,7 @@ function openPostEditor(id) {
   $("#postBannerUrl").value = a?.banner || "";
 
   $("#postCommunityPin").checked = Boolean(a?.communityPinned);
+  $("#postCommunityStar").checked = Boolean(a?.communityStarred);
   $("#postCommunityCoverPreview").src = a?.communityCover || "";
   $("#postCommunityCoverBox").classList.toggle("has-image", Boolean(a?.communityCover));
   $("#postCommunityCoverUrl").value = a?.communityCover || "";
@@ -3022,6 +3025,7 @@ function savePost() {
   let views = null;
   let banner = "";
   let communityPinned = false;
+  let communityStarred = false;
   let communityCover = "";
 
   if (brandOn) {
@@ -3038,6 +3042,7 @@ function savePost() {
 
   if (communityOn) {
     communityPinned = $("#postCommunityPin").checked;
+    communityStarred = $("#postCommunityStar").checked;
     communityCover = $("#postCommunityCoverUrl").value.trim();
     if (!communityCover) return showToast("展示位置含社区时，社区封面为必填");
   }
@@ -3072,6 +3077,7 @@ function savePost() {
     views,
     banner,
     communityPinned,
+    communityStarred,
     communityCover,
     updatedAt: now,
   };
@@ -3141,6 +3147,7 @@ function saveEditor() {
   let views = null;
   let banner = "";
   let communityPinned = false;
+  let communityStarred = false;
   let communityCover = "";
 
   if (brandOn) {
@@ -3157,6 +3164,7 @@ function saveEditor() {
 
   if (communityOn) {
     communityPinned = $("#editCommunityPin").checked;
+    communityStarred = $("#editCommunityStar").checked;
     communityCover = $("#editCommunityCoverUrl").value.trim();
     if (!communityCover) return showToast("展示位置含社区时，社区封面为必填");
   }
@@ -3184,6 +3192,7 @@ function saveEditor() {
     views,
     banner,
     communityPinned,
+    communityStarred,
     communityCover,
     updatedAt: now,
   };
