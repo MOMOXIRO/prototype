@@ -582,7 +582,8 @@
         receive: { sid: "", couponId: "", couponTitle: "", taskName: "", campaignName: "", batchId: "", vip: "", couponType: "", couponStatus: "", taskType: "", receiveType: "", auditType: "", project: "", region: "", start: "", end: "" },
         usage: { sid: "", vip: "", depositOrder: "", couponId: "", couponTitle: "", taskName: "", campaignName: "", couponType: "", batchId: "", taskType: "", project: "", region: "", start: "", end: "" },
         audit: { type: "", object: "", activity: "", batch: "", project: "", couponId: "", couponName: "", sid: "", mt4Order: "", depositOrder: "", couponType: "", region: "", auditMethod: "", status: "", reviewer: "", start: "", end: "", reviewStart: "", reviewEnd: "" },
-        consume: { project: "", couponId: "", region: "", operator: "", start: "2026-05-01 00:00:00", end: "2026-05-30 23:59:59" }
+        consume: { project: "", couponId: "", region: "", operator: "", start: "2026-05-01 00:00:00", end: "2026-05-30 23:59:59" },
+        userCoupon: { couponId: "", batchId: "", status: "", start: "", end: "" }
       },
       data: {
         tasks: [
@@ -3304,68 +3305,97 @@
 
     function renderUserCouponDetail() {
       const sid = String(state.selectedSid || "").replace(/^SID/i, "") || "26070001";
-      const receives = state.data.receives.filter(r => String(r.sid) === sid);
-      const audits = state.data.audits.filter(r => auditCategory(r) === "redpacket" && String(r.sid || r.object).replace(/^SID/i, "") === sid);
-      const rows = receives.length ? receives.map(r => {
-        const usage = state.data.usages.find(u => u.sid === r.sid && (u.batch === r.batch || u.coupon === r.coupon || u.task === r.task));
+      if (!state.filters.userCoupon) state.filters.userCoupon = { couponId: "", batchId: "", status: "", start: "", end: "" };
+      const f = state.filters.userCoupon;
+      const statusOptions = ["待激活", "已激活", "已使用"];
+      let rows = state.data.receives.filter(r => {
+        if (String(r.sid) !== sid) return false;
+        if (f.couponId && !String(r.couponId || "").includes(f.couponId)) return false;
+        if (f.batchId && !batchIdMatchesFilter(r.batch, f.batchId) && !String(r.batch || "").includes(f.batchId)) return false;
+        if (f.status && r.status !== f.status) return false;
+        const receiveDay = String(r.receiveDate || comparableDateTime(r.receive) || "").slice(0, 10);
+        if (f.start && receiveDay && receiveDay < f.start) return false;
+        if (f.end && receiveDay && receiveDay > f.end) return false;
+        if ((f.start || f.end) && !receiveDay && r.receive && r.receive !== "--") {
+          const t = comparableDateTime(r.receive);
+          if (f.start && t < f.start) return false;
+          if (f.end && t > `${f.end} 23:59`) return false;
+        }
+        return true;
+      }).map(r => {
+        const usage = state.data.usages.find(u => u.sid === r.sid && (u.batch === r.batch || u.couponId === r.couponId || u.coupon === r.coupon || u.task === r.task));
+        const taskId = taskIdByDisplayName(r.task, r.batch) || extractTaskIdFromText(r.batch) || "--";
         const taskProgress = r.taskType === "无任务"
           ? "无任务，直接领取"
           : r.status === "待激活"
             ? `待完成：${r.condition || "--"}`
             : r.status === "已使用"
               ? "已完成并已使用"
-              : `已完成，待使用`;
+              : "已完成，待使用";
         return {
-          project: r.project || "--",
-          couponType: r.couponType,
-          coupon: couponTitleFromRecord(r),
-          task: `${linkedTaskName(r.task || "--", r.batch)}${r.condition && r.condition !== "--" ? ` / ${r.condition}` : ""}`,
-          progress: taskProgress,
-          receiveTime: r.receive,
-          useTime: usage?.useTime || r.useTime || "--",
+          couponId: r.couponId || "--",
+          batch: r.batch || "--",
+          couponType: r.couponType || "--",
+          couponName: couponTitleFromRecord(r),
+          amount: r.amount || "--",
           deduct: usage?.deduct || "--",
-          order: usage?.depositOrder || usage?.order || r.order || "--",
-          status: r.status
+          receiveType: r.receiveType || "--",
+          status: r.status || "--",
+          taskName: r.task || "--",
+          taskId,
+          progress: taskProgress,
+          receiveTime: r.receive || "--",
+          useTime: usage?.useTime || r.useTime || "--",
+          tradeOrder: usage?.order || usage?.depositOrder || r.order || "--"
         };
-      }) : audits.map(r => ({
-        project: auditProject(r),
-        couponType: "现金红包",
-        coupon: r.coupon,
-        task: `${r.batch || "--"} / 待审核发放`,
-        progress: r.status === "待审核" ? "待审核，审核通过后发放" : r.status,
-        receiveTime: "--",
-        useTime: "--",
-        deduct: "--",
-        order: "--",
-        status: r.status
-      }));
-      const activeCount = rows.filter(r => ["已激活","待激活","待审核"].includes(r.status)).length;
-      const usedCount = rows.filter(r => r.status === "已使用").length;
+      });
+      if (state.forceEmpty) rows = [];
+      const deductTotal = rows.reduce((sum, r) => sum + parseDeductAmount(r.deduct), 0);
       el.query.innerHTML = `
-        <div class="coupon-filter-card p-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <div class="text-[18px] font-semibold text-[#1f2a44]">用户详情 - 红包</div>
-              <div class="text-[12px] text-[#64748b] mt-1">SID：<span class="font-semibold text-[#2f3a4d]">${sid}</span>，销售可在此查看用户红包状态并引导使用。</div>
-            </div>
-            <button id="btnUserCouponBack" class="${btnClass(false,true)}">返回</button>
+        <div class="coupon-filter-card p-3">
+          <div class="mb-3">
+            <div class="text-[18px] font-semibold text-[#1f2a44]">用户详情 - 红包</div>
+            <div class="text-[12px] text-[#64748b] mt-1">SID：<span class="font-semibold text-[#2f3a4d]">${sid}</span>，销售可在此查看用户红包状态并引导使用。</div>
           </div>
-          <div class="grid grid-cols-4 gap-3 mt-4 text-[12px]">
-            <div class="border border-line rounded p-3 bg-white"><div class="text-[#64748b]">红包总数</div><div class="text-[20px] font-semibold mt-1">${rows.length}</div></div>
-            <div class="border border-line rounded p-3 bg-white"><div class="text-[#64748b]">可引导使用</div><div class="text-[20px] font-semibold mt-1 text-primary">${activeCount}</div></div>
-            <div class="border border-line rounded p-3 bg-white"><div class="text-[#64748b]">已使用</div><div class="text-[20px] font-semibold mt-1 text-[#16a34a]">${usedCount}</div></div>
-            <div class="border border-line rounded p-3 bg-white"><div class="text-[#64748b]">最近领取</div><div class="text-[16px] font-semibold mt-1">${formatDisplayTime(rows[0]?.receiveTime || "--")}</div></div>
+          <div class="grid grid-cols-6 gap-3 text-[12px]">
+            <input id="qUserCouponId" class="coupon-input" placeholder="红包ID" value="${f.couponId || ""}">
+            <input id="qUserCouponBatch" class="coupon-input" placeholder="任务批次" value="${f.batchId || ""}">
+            <select id="qUserCouponStatus" class="coupon-input">
+              <option value="">红包状态</option>
+              ${statusOptions.map(s => `<option value="${s}" ${f.status === s ? "selected" : ""}>${s}</option>`).join("")}
+            </select>
+            <div class="range-wrap grid-range col-span-2">
+              <input id="qUserCouponStart" placeholder="领取开始日期" value="${f.start || ""}">
+              <span class="range-mid">~</span>
+              <input id="qUserCouponEnd" placeholder="领取结束日期" value="${f.end || ""}">
+            </div>
+            <div class="search-actions col-span-6">
+              <button id="btnUserCouponReset" class="${btnClass(false,true)}">重置</button>
+              <button id="btnUserCouponSearch" class="${btnClass(true,true)}">查询</button>
+            </div>
           </div>
         </div>
       `;
-      el.action.innerHTML = `<div class="flex items-center justify-end gap-2"><button class="${btnClass(false,true)}">导出用户红包</button></div>`;
-      el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无该用户红包记录</div>` : `
+      el.action.innerHTML = `
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div class="text-[13px] text-[#334155]">实际抵扣金额汇总($)：<span class="font-semibold text-primary">${deductTotal.toFixed(2).replace(/\.00$/, "")}</span></div>
+          <button class="${btnClass(false,true)}" title="导出数据量需在 1w ，数据量过大会导致系统崩溃">导出</button>
+        </div>
+      `;
+      const tableBody = !rows.length
+        ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无该用户红包记录</div>`
+        : `
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
-            ${tableColgroup([8, 10, 14, 14, 12, 10, 10, 8, 14])}
-            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">任务</th><th class="text-left px-3 py-2">任务进度</th><th class="text-left px-3 py-2">领取时间</th><th class="text-left px-3 py-2">使用时间</th><th class="text-left px-3 py-2">抵扣金额</th><th class="text-left px-3 py-2">入金订单</th></tr></thead>
-            <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2" title="${r.coupon}">${r.coupon}</td><td class="px-3 py-2">${r.task}</td><td class="px-3 py-2" title="${r.progress}">${r.progress}</td><td class="px-3 py-2">${formatDisplayTime(r.receiveTime)}</td><td class="px-3 py-2">${formatDisplayTime(r.useTime)}</td><td class="px-3 py-2">${r.deduct}</td><td class="px-3 py-2">${r.order}</td></tr>`).join("")}</tbody>
+            ${tableColgroup([6, 8, 8, 10, 6, 6, 7, 7, 9, 6, 9, 8, 8, 10])}
+            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包名称</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">实际抵扣</th><th class="text-left px-3 py-2">领取方式</th><th class="text-left px-3 py-2">红包状态</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">任务ID</th><th class="text-left px-3 py-2">任务进度</th><th class="text-left px-3 py-2">领取时间</th><th class="text-left px-3 py-2">使用时间</th><th class="text-left px-3 py-2">抵扣交易订单</th></tr></thead>
+            <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.couponId}</td><td class="px-3 py-2">${r.batch !== "--" ? `<a class="text-primary hover:underline" data-nav="${makeNav("batch","batch-detail","batch","id",r.batch)}">${r.batch}</a>` : "--"}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2" title="${r.couponName}">${r.couponName}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${r.deduct}</td><td class="px-3 py-2">${r.receiveType}</td><td class="px-3 py-2">${badge(r.status)}</td><td class="px-3 py-2">${linkedTaskName(r.taskName, r.batch)}</td><td class="px-3 py-2">${r.taskId}</td><td class="px-3 py-2" title="${r.progress}">${r.progress}</td><td class="px-3 py-2">${formatDisplayTime(r.receiveTime)}</td><td class="px-3 py-2">${formatDisplayTime(r.useTime)}</td><td class="px-3 py-2" title="${r.tradeOrder}">${r.tradeOrder}</td></tr>`).join("")}</tbody>
           </table>
+        </div>`;
+      el.table.innerHTML = `
+        ${tableBody}
+        <div class="py-6 flex justify-center">
+          <button id="btnUserCouponBack" class="${btnClass(false,true)}">返回</button>
         </div>
       `;
     }
@@ -5129,6 +5159,28 @@
       const userCouponBack = document.getElementById("btnUserCouponBack");
       if (userCouponBack) {
         userCouponBack.onclick = () => goBack("receive-list", "receive");
+        const userCouponSearch = document.getElementById("btnUserCouponSearch");
+        if (userCouponSearch) {
+          userCouponSearch.onclick = () => {
+            withLoading(() => {
+              state.filters.userCoupon = {
+                couponId: document.getElementById("qUserCouponId")?.value.trim() || "",
+                batchId: document.getElementById("qUserCouponBatch")?.value.trim() || "",
+                status: document.getElementById("qUserCouponStatus")?.value || "",
+                start: document.getElementById("qUserCouponStart")?.value.trim() || "",
+                end: document.getElementById("qUserCouponEnd")?.value.trim() || ""
+              };
+            }, "查询完成");
+          };
+        }
+        const userCouponReset = document.getElementById("btnUserCouponReset");
+        if (userCouponReset) {
+          userCouponReset.onclick = () => {
+            state.filters.userCoupon = { couponId: "", batchId: "", status: "", start: "", end: "" };
+            render();
+            notify("warn", "已重置筛选条件");
+          };
+        }
       }
 
       // Audit filters/actions
