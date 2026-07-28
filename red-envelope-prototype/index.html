@@ -612,28 +612,32 @@
             logs: [{ operator: "Admin", time: "2026-07-01 09:15", content: "新增红包" }] }
         ],
         campaigns: [
-          { id:"A1", name:"6月充值激活活动", audience:"Recharge_Q2", audienceType:"TagVerse", audienceCount:12486, mode:"循环发放", deliverTime:"2026-07-06 14:10", task:"T1", tasks:["T1","T2"], batch:"A1-T1", project:"Dana", coupons:["1001"], status:"执行中", statuses:["执行中"], createdAt:"2026-07-06 11:20", revokeReason:"--",
+          { id:"A1", name:"6月充值激活活动", audience:"Recharge_Q2", audienceType:"TagVerse", audienceCount:12486, mode:"循环发放", deliverTime:"2026-07-06 14:10", task:"T1", tasks:["T1","T2"], batch:"A1-T1-1", project:"Dana", coupons:["1001"], status:"执行中", statuses:["执行中"], createdAt:"2026-07-06 11:20", revokeReason:"--",
             logs:[{ operator:"Jenny", time:"2026-07-06 11:20", content:"新增活动发放配置，选择发放人群和发放红包" }] },
           { id:"A2", name:"Dana理财体验活动", audience:"VIP_v4", audienceType:"TagVerse", audienceCount:8200, mode:"特批活动 / 定时发放", deliverTime:"2026-07-08 10:00", task:"T3", tasks:["T3"], batch:"A2-T3", project:"TW", coupons:[], status:"完成", statuses:["完成"], createdAt:"2026-07-06 11:20", revokeReason:"--",
             logs:[{ operator:"Tom", time:"2026-07-06 11:28", content:"全部发放任务收到终态，活动完成" }] },
           { id:"A3", name:"口令红包补发活动", audience:"添加5人", audienceType:"添加", audienceCount:5, mode:"普通活动 / 立即发放", deliverTime:"2026-07-06 11:20", task:"T4", tasks:["T4"], batch:"A3-T4", project:"Dana", coupons:["2002"], status:"已撤销", statuses:["已撤销"], createdAt:"2026-07-06 11:20", revokeReason:"撤销原因：名单包含已注销用户，停止继续发放",
             logs:[{ operator:"Mia", time:"2026-07-06 12:00", content:"撤销活动，未领取令牌已回收" }] },
-          { id:"A4", name:"老客特批激活活动", audience:"导入268人", audienceType:"导入", audienceCount:268, importFile:"A4_import.xlsx", mode:"特批活动 / 循环发放", deliverTime:"每周一 10:00", task:"T4", tasks:["T4"], batch:"A4-T4", project:"Dana", coupons:["1001","1001"], status:"执行中", statuses:["执行中"], createdAt:"2026-07-06 11:20", revokeReason:"--",
+          { id:"A4", name:"老客特批激活活动", audience:"导入268人", audienceType:"导入", audienceCount:268, importFile:"A4_import.xlsx", mode:"特批活动 / 循环发放", deliverTime:"每周一 10:00", task:"T4", tasks:["T4"], batch:"A4-T4-3", project:"Dana", coupons:["1001","1001"], status:"执行中", statuses:["执行中"], createdAt:"2026-07-06 11:20", revokeReason:"--",
             logs:[{ operator:"Jenny", time:"2026-07-06 12:12", content:"创建特批循环活动发放配置" }] },
           { id:"A5", name:"高风险特批活动", audience:"导入268人", audienceType:"导入", audienceCount:268, importFile:"A5_import.xlsx", mode:"特批活动 / 立即发放", deliverTime:"待审核通过后立即发放", task:"T2", tasks:["T2"], batch:"A5-T2", project:"TW", coupons:["2001"], status:"审核拒绝", statuses:["审核拒绝"], createdAt:"2026-07-06 11:30", revokeReason:"--",
             logs:[{ operator:"Admin", time:"2026-07-06 11:45", content:"特批活动人工审核拒绝" }] }
         ],
         batches: [
-          { id:"A1-T1", campaign:"A1", task:"T1", coupon:"1001,1002", issue:"126/200", status:"执行中", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-06 11:45", reason:"--",
-            logs:[{operator:"Jenny", time:"2026-07-06 11:45", content:"创建任务批次"}] },
-          { id:"A1-T2", campaign:"A1", task:"T2", coupon:"2001", issue:"80/200", status:"执行中", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-06 11:50", reason:"--",
-            logs:[{operator:"Jenny", time:"2026-07-06 11:50", content:"创建活动第二任务批次"}] },
+          { id:"A1-T1-1", campaign:"A1", task:"T1", coupon:"1001,1002", issue:"126/200", status:"执行中", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-06 11:45", reason:"--", loopRound:1,
+            logs:[{operator:"Jenny", time:"2026-07-06 11:45", content:"创建循环任务批次（第1次）"}] },
+          { id:"A1-T2-1", campaign:"A1", task:"T2", coupon:"2001", issue:"80/200", status:"执行中", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-06 11:50", reason:"--", loopRound:1,
+            logs:[{operator:"Jenny", time:"2026-07-06 11:50", content:"创建循环任务批次（第1次）"}] },
           { id:"A2-T3", campaign:"A2", task:"T3", coupon:"--", issue:"45/45", status:"完成", project:"TW", region:"+91 [IN]", operator:"Jenny", createdAt:"2026-07-06 12:10", reason:"--",
             logs:[{operator:"Jenny", time:"2026-07-06 12:10", content:"任务批次全部收到终态，状态变更为完成"}] },
           { id:"A3-T4", campaign:"A3", task:"T4", coupon:"2002", issue:"30/120", status:"已撤销", project:"Dana", region:"+880 [BD]", operator:"Admin", createdAt:"2026-07-06 13:20", reason:"撤销原因：名单包含已注销用户",
             logs:[{operator:"Admin", time:"2026-07-06 13:20", content:"撤销任务批次，未兑换令牌已回收"}] },
-          { id:"A4-T4", campaign:"A4", task:"T4", coupon:"1001", issue:"86/200", status:"执行中", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-06 12:22", reason:"--",
-            logs:[{operator:"Jenny", time:"2026-07-06 12:22", content:"创建任务批次"}] },
+          { id:"A4-T4-1", campaign:"A4", task:"T4", coupon:"1001", issue:"86/200", status:"完成", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-06 12:22", reason:"--", loopRound:1,
+            logs:[{operator:"Jenny", time:"2026-07-06 12:22", content:"创建循环任务批次（第1次）"}] },
+          { id:"A4-T4-2", campaign:"A4", task:"T4", coupon:"1001", issue:"72/200", status:"完成", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-13 10:00", reason:"--", loopRound:2,
+            logs:[{operator:"Jenny", time:"2026-07-13 10:00", content:"创建循环任务批次（第2次）"}] },
+          { id:"A4-T4-3", campaign:"A4", task:"T4", coupon:"1001", issue:"58/200", status:"执行中", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-20 10:00", reason:"--", loopRound:3,
+            logs:[{operator:"Jenny", time:"2026-07-20 10:00", content:"创建循环任务批次（第3次）"}] },
           { id:"A5-T2", campaign:"A5", task:"T2", coupon:"2001", issue:"0/268", status:"审核拒绝", project:"TW", region:"+91 [IN]", operator:"Admin", createdAt:"2026-07-06 11:45", reason:"特批审核拒绝",
             logs:[{operator:"Admin", time:"2026-07-06 11:45", content:"特批活动审核拒绝，任务批次不下发"}] },
           { id:"A6-T1", campaign:"A6", task:"T1", coupon:"1001", issue:"0/50", status:"待审核", project:"Dana", region:"+62 [ID]", operator:"Mia", createdAt:"2026-06-25 10:20", reason:"--",
@@ -646,7 +650,7 @@
             logs:[{operator:"Admin", time:"2026-06-25 11:05", content:"特批活动创建任务批次2"}] }
         ],
         receives: [
-          { sid:"880102", vip:"V3", project:"Dana", region:"+62 [ID]", campaign:"6月充值激活活动", task:"充50送现金", taskType:"充值", couponId:"1001", coupon:"新人户现金红包", couponType:"现金红包", batch:"A1-T1", condition:"充值金额 >= 50", amount:"$15", status:"已激活", receiveType:"用户领取", sent:"25-06-2026 10:23", receive:"25-06-2026 10:23", receiveDate:"2026-06-25", auditType:"自动审核", reviewer:"系统", order:"ORD2142111", useTime:"25-06-2026 10:23", reason:"--", verifyStatus:"已实名" },
+          { sid:"880102", vip:"V3", project:"Dana", region:"+62 [ID]", campaign:"6月充值激活活动", task:"充50送现金", taskType:"充值", couponId:"1001", coupon:"新人户现金红包", couponType:"现金红包", batch:"A1-T1-1", condition:"充值金额 >= 50", amount:"$15", status:"已激活", receiveType:"用户领取", sent:"25-06-2026 10:23", receive:"25-06-2026 10:23", receiveDate:"2026-06-25", auditType:"自动审核", reviewer:"系统", order:"ORD2142111", useTime:"25-06-2026 10:23", reason:"--", verifyStatus:"已实名" },
           { sid:"880103", vip:"V1", project:"TW", region:"+91 [IN]", campaign:"6月理财活动", task:"理财任务", taskType:"理财", couponId:"--", coupon:"--", couponType:"--", batch:"A2-T3", condition:"理财30天", amount:"--", status:"待激活", receiveType:"系统发放", sent:"25-06-2026 10:23", receive:"--", receiveDate:"", auditType:"人工审核", reviewer:"Jenny", order:"--", useTime:"--", reason:"用户已有未结束同类型任务", verifyStatus:"已实名" },
           { sid:"26070001", vip:"V4", project:"Dana", region:"+62 [ID]", campaign:"新人活动", task:"充值50送现金", taskType:"充值", couponId:"1001", coupon:"50元首充红包", couponType:"现金红包", batch:"A2-T4", condition:"充值金额 >= 50", amount:"$20", status:"已激活", receiveType:"系统发放", sent:"25-06-2026 10:23", receive:"25-06-2026 10:23", receiveDate:"2026-06-25", auditType:"人工审核", reviewer:"--", order:"--", useTime:"--", reason:"--", verifyStatus:"已实名" },
           { sid:"26070002", vip:"V2", project:"Dana", region:"+62 [ID]", campaign:"月末冲量活动", task:"实盘2手任务", taskType:"实盘交易", couponId:"2001", coupon:"5元手续费抵扣券", couponType:"手续费抵扣红包", batch:"A8-T5", condition:"实盘手数 >= 2", amount:"$5", status:"已使用", receiveType:"系统发放", sent:"25-06-2026 09:45", receive:"25-06-2026 09:45", receiveDate:"2026-06-25", auditType:"人工审核", reviewer:"Jenny", order:"ORD26070002", useTime:"25-06-2026 12:40", reason:"--", verifyStatus:"已实名" },
@@ -654,16 +658,16 @@
           { sid:"26070004", vip:"V5", project:"Dana", region:"+880 [BD]", campaign:"提现促活活动", task:"无任务奖励", taskType:"无任务", couponId:"1001", coupon:"提现免佣券", couponType:"提现免佣券", batch:"A10-T6", condition:"--", amount:"$3", status:"待激活", receiveType:"运营补发", sent:"25-06-2026 11:10", receive:"--", receiveDate:"", auditType:"自动审核", reviewer:"系统", order:"--", useTime:"--", reason:"--", verifyStatus:"已实名" }
         ],
         usages: [
-          { sid:"880102", vip:"V3", project:"Dana", region:"+62 [ID]", campaign:"6月充值激活活动", task:"充50送现金", taskType:"充值", couponId:"1001", coupon:"新人户现金红包", couponType:"现金红包", batch:"A1-T1", condition:"充值金额 >= 50", depositOrder:"HCZ1020260714494801", order:"HCZ1020260714494801", amount:"$10", deduct:"$8", deductType:"金额封顶", rewardTime:"25-06-2026 10:23", useTime:"25-06-2026 10:23", useDate:"2026-06-25", status:"自动审核", verifyStatus:"已实名" },
+          { sid:"880102", vip:"V3", project:"Dana", region:"+62 [ID]", campaign:"6月充值激活活动", task:"充50送现金", taskType:"充值", couponId:"1001", coupon:"新人户现金红包", couponType:"现金红包", batch:"A1-T1-1", condition:"充值金额 >= 50", depositOrder:"HCZ1020260714494801", order:"HCZ1020260714494801", amount:"$10", deduct:"$8", deductType:"金额封顶", rewardTime:"25-06-2026 10:23", useTime:"25-06-2026 10:23", useDate:"2026-06-25", status:"自动审核", verifyStatus:"已实名" },
           { sid:"880103", vip:"V1", project:"TW", region:"+91 [IN]", campaign:"6月理财活动", task:"理财任务", taskType:"理财", couponId:"--", coupon:"--", couponType:"--", batch:"A2-T3", condition:"理财30天", depositOrder:"HCZ1020260714494805", order:"HCZ1020260714494805", amount:"20", deduct:"15", deductType:"比例封顶", rewardTime:"25-06-2026 10:23", useTime:"25-06-2026 10:23", useDate:"2026-06-25", status:"人工审核", verifyStatus:"已实名" },
           { sid:"26070002", vip:"V2", project:"Dana", region:"+62 [ID]", campaign:"月末冲量活动", task:"实盘2手任务", taskType:"实盘交易", couponId:"2001", coupon:"5元红包", couponType:"手续费抵扣红包", batch:"A8-T5", condition:"实盘手数 >= 2", depositOrder:"HCZ1020260714494702", order:"HCZ1020260714494702", amount:"$5", deduct:"$5", deductType:"金额封顶", rewardTime:"25-06-2026 09:45", useTime:"25-06-2026 12:40", useDate:"2026-06-25", status:"人工审核", verifyStatus:"已实名" }
         ],
         audits: [
-          { rid:"R1", type:"红包发放", sid:"26070001", object:"26070001", activity:"A2", batch:"A2-T4", project:"TW", couponId:"1001", coupon:"50元首充红包", redPacketCount:23, dailyCustomCount:1, users:1, amount:"$20", trigger:"用户红包拥有数量超过20", status:"待审核", apply:"25-06-2026 10:23", reviewer:"--", reviewTime:"--", operator:"Mia" },
-          { rid:"R2", type:"自定义红包", object:"A6-T2", activity:"A6", activityName:"单人补发", batch:"A6-T2", batches:["A6-T1","A6-T2"], project:"Dana", couponId:"2001", coupon:"单人红包", singleAmount:"$120", dailyAmount:"$14,000", dailyCount:120, users:120, amount:"$14,000", trigger:"单个自定义红包金额 > $100", status:"待审核", apply:"25-06-2026 10:30", reviewer:"--", reviewTime:"--", operator:"--" },
-          { rid:"R3", type:"特批活动", object:"A7", activity:"A7", activityName:"补偿活动", activityKind:"特批活动", audience:"导入名单", batchCount:2, expectedUsers:268, expectedAmount:"$80,000", approvalReason:"高价值客户补偿，需要人工审核确认。", batch:"A7-T2", batches:["A7-T1","A7-T2"], project:"Dana", couponId:"1001", coupon:"10元首充红包", users:268, amount:"$80,000", trigger:"特批活动创建后进入人工审核", status:"待审核", apply:"25-06-2026 11:05", reviewer:"--", reviewTime:"--", operator:"--" },
-          { rid:"R4", type:"红包发放", sid:"26070002", object:"26070002", activity:"A8", batch:"A8-T5", project:"Dana", couponId:"2001", coupon:"5元红包", redPacketCount:12, dailyCustomCount:1, users:45, amount:"$5,040", trigger:"单个用户当日已领自定义红包 >= 1张", status:"审核通过", apply:"25-06-2026 09:45", reviewer:"Jenny", reviewTime:"25-06-2026 09:52", operator:"Jenny" },
-          { rid:"R5", type:"红包发放", sid:"26070003", object:"26070003", activity:"A9", batch:"A9-T5", project:"TW", couponId:"1002", coupon:"8元红包", redPacketCount:21, dailyCustomCount:0, users:33, amount:"$2,640", trigger:"用户红包拥有数量超过20", status:"审核拒绝", apply:"25-06-2026 09:20", reviewer:"Tom", reviewTime:"25-06-2026 09:25", auditOpinion:"用户持有红包数量已超过发放限制，暂不允许继续发放。", operator:"Tom" },
+          { rid:"R1", type:"红包发放", sid:"26070001", object:"26070001", activity:"A2", batch:"A2-T4", project:"TW", couponId:"1001", coupon:"50元首充红包", couponType:"现金红包", redPacketCount:23, dailyCustomCount:1, users:1, amount:"$20", trigger:"用户红包拥有数量超过20", status:"待审核", apply:"25-06-2026 10:23", reviewer:"--", reviewTime:"--", operator:"Mia" },
+          { rid:"R2", type:"自定义红包", object:"A6-T2", activity:"A6", activityName:"单人补发", batch:"A6-T2", batches:["A6-T1","A6-T2"], project:"Dana", couponId:"2001", coupon:"单人红包", couponType:"现金红包", singleAmount:"$120", dailyAmount:"$14,000", dailyCount:120, users:120, amount:"$14,000", trigger:"单个自定义红包金额 > $100", status:"待审核", apply:"25-06-2026 10:30", reviewer:"--", reviewTime:"--", operator:"--" },
+          { rid:"R3", type:"特批活动", object:"A7", activity:"A7", activityName:"补偿活动", activityKind:"特批活动", audience:"导入名单", batchCount:2, expectedUsers:268, expectedAmount:"$80,000", approvalReason:"高价值客户补偿，需要人工审核确认。", batch:"A7-T2", batches:["A7-T1","A7-T2"], project:"Dana", couponId:"1001", coupon:"10元首充红包", couponType:"现金红包", users:268, amount:"$80,000", trigger:"特批活动创建后进入人工审核", status:"待审核", apply:"25-06-2026 11:05", reviewer:"--", reviewTime:"--", operator:"--" },
+          { rid:"R4", type:"红包发放", sid:"26070002", object:"26070002", activity:"A8", batch:"A8-T5", project:"Dana", couponId:"2001", coupon:"5元红包", couponType:"手续费抵扣红包", redPacketCount:12, dailyCustomCount:1, users:45, amount:"$5", trigger:"单个用户当日已领自定义红包 >= 1张", status:"审核通过", apply:"25-06-2026 09:45", reviewer:"Jenny", reviewTime:"25-06-2026 09:52", operator:"Jenny" },
+          { rid:"R5", type:"红包发放", sid:"26070003", object:"26070003", activity:"A9", batch:"A9-T5", project:"TW", couponId:"1002", coupon:"8元红包", couponType:"盈亏抵扣红包", redPacketCount:21, dailyCustomCount:0, users:33, amount:"$8", trigger:"用户红包拥有数量超过20", status:"审核拒绝", apply:"25-06-2026 09:20", reviewer:"Tom", reviewTime:"25-06-2026 09:25", auditOpinion:"用户持有红包数量已超过发放限制，暂不允许继续发放。", operator:"Tom" },
           { rid:"U1", type:"使用审核", id:"15057045", sid:"10018709722", object:"10018709722", project:"Dana", region:"+62 [ID]", couponId:"1075", coupon:"现金红包折扣2", couponType:"手续费抵扣红包", depositOrder:"HCZ1020260714494921", faceValue:"10.0000", deduct:"2.25", order:"188295251", useTime:"14-07-2026 15:03", auditMethod:"--", status:"待审核", reviewer:"--", reviewTime:"--", remark:"--", trigger:"当天使用红包数量超过10个" },
           { rid:"U2", type:"使用审核", id:"15057044", sid:"10018709680", object:"10018709680", project:"Dana", region:"+62 [ID]", couponId:"1075", coupon:"现金红包折扣2", couponType:"盈亏抵扣红包", depositOrder:"HCZ1020260714494915", faceValue:"10.0000", deduct:"0.63", order:"188295206", useTime:"14-07-2026 15:02", auditMethod:"--", status:"待审核", reviewer:"--", reviewTime:"--", remark:"--", trigger:"当天使用红包数量超过10个" },
           { rid:"U3", type:"使用审核", id:"15057043", sid:"10018709722", object:"10018709722", project:"Dana", region:"+62 [ID]", couponId:"1075", coupon:"现金红包折扣2", couponType:"手续费抵扣红包", depositOrder:"HCZ1020260714494914", faceValue:"10.0000", deduct:"1.13", order:"188295205", useTime:"14-07-2026 15:02", auditMethod:"--", status:"待审核", reviewer:"--", reviewTime:"--", remark:"--", trigger:"黑名单" },
@@ -675,10 +679,10 @@
         ],
         consumes: [
           { batchId:"A2-T2", couponId:"2001", couponType:"现金红包", tagVerse:"sw21312", project:"TW", app:"—", region:"--", amount:4, validUntil:"23-05-2026 16:03", issueTime:"22-05-2026 16:03", totalIssue:1, successIssue:0, activated:0, used:0, deduct:0, operator:"Jenny", issueDate:"2026-05-22" },
-          { batchId:"A1-T1", couponId:"1001", couponType:"现金红包", tagVerse:"jfsd111", project:"Dana", app:"—", region:"--", amount:30, validUntil:"23-05-2026 16:02", issueTime:"22-05-2026 16:02", totalIssue:1, successIssue:0, activated:0, used:0, deduct:12.5, operator:"Jenny", issueDate:"2026-05-22" },
+          { batchId:"A1-T1-1", couponId:"1001", couponType:"现金红包", tagVerse:"jfsd111", project:"Dana", app:"—", region:"--", amount:30, validUntil:"23-05-2026 16:02", issueTime:"22-05-2026 16:02", totalIssue:1, successIssue:0, activated:0, used:0, deduct:12.5, operator:"Jenny", issueDate:"2026-05-22" },
           { batchId:"A1-T4", couponId:"1002", couponType:"现金红包", tagVerse:"jfsd111", project:"Dana", app:"—", region:"--", amount:10, validUntil:"23-05-2026 16:02", issueTime:"22-05-2026 16:02", totalIssue:1, successIssue:0, activated:0, used:0, deduct:0, operator:"Admin", issueDate:"2026-05-22" },
           { batchId:"A3-T4", couponId:"1003", couponType:"现金红包", tagVerse:"jfsd111", project:"Dana", app:"—", region:"--", amount:20, validUntil:"23-05-2026 16:02", issueTime:"22-05-2026 16:02", totalIssue:1, successIssue:0, activated:0, used:0, deduct:8, operator:"Mia", issueDate:"2026-05-22" },
-          { batchId:"A4-T4", couponId:"1004", couponType:"盈亏抵扣红包", tagVerse:"jfsd111", project:"Dana", app:"—", region:"--", amount:5, validUntil:"23-05-2026 16:02", issueTime:"22-05-2026 16:02", totalIssue:1, successIssue:0, activated:0, used:0, deduct:3.2, operator:"Tom", issueDate:"2026-05-22" },
+          { batchId:"A4-T4-3", couponId:"1004", couponType:"盈亏抵扣红包", tagVerse:"jfsd111", project:"Dana", app:"—", region:"--", amount:5, validUntil:"23-05-2026 16:02", issueTime:"22-05-2026 16:02", totalIssue:1, successIssue:0, activated:0, used:0, deduct:3.2, operator:"Tom", issueDate:"2026-05-22" },
           { batchId:"A6-T2", couponId:"1005", couponType:"现金红包", tagVerse:"jfsd111", project:"Dana", app:"—", region:"--", amount:100, validUntil:"23-05-2026 16:02", issueTime:"22-05-2026 16:02", totalIssue:1, successIssue:0, activated:0, used:0, deduct:0, operator:"Jenny", issueDate:"2026-05-22" },
           { batchId:"A7-T2", couponId:"1006", couponType:"现金红包", tagVerse:"gogogo", project:"Dana", app:"—", region:"--", amount:10, validUntil:"23-05-2026 15:52", issueTime:"22-05-2026 15:52", totalIssue:1, successIssue:0, activated:0, used:0, deduct:6, operator:"Admin", issueDate:"2026-05-22" },
           { batchId:"A8-T5", couponId:"1007", couponType:"现金红包", tagVerse:"gogogo", project:"Dana", app:"—", region:"--", amount:20, validUntil:"23-05-2026 15:52", issueTime:"22-05-2026 15:52", totalIssue:2, successIssue:0, activated:0, used:0, deduct:15.8, operator:"Jenny", issueDate:"2026-05-22" },
@@ -993,17 +997,29 @@
       const matched = state.data.batches.filter(b =>
         b.campaign === row.id || b.id === row.batch || b.id.startsWith(`${row.id}-`)
       );
-      const list = matched.length
-        ? matched.slice().sort((a, b) => String(a.createdAt || "").localeCompare(String(b.createdAt || "")) || String(a.id).localeCompare(String(b.id)))
-        : (row.batch ? [{ id: row.batch, campaign: row.id, task: row.task }] : []);
-      // 同一活动下每个任务仅对应一个批次，不展示重复任务批次
-      const seenTask = new Set();
-      return list.filter(b => {
-        const key = b.task || b.id;
-        if (seenTask.has(key)) return false;
-        seenTask.add(key);
-        return true;
-      });
+      if (matched.length) {
+        return matched.slice().sort((a, b) => String(a.createdAt || "").localeCompare(String(b.createdAt || "")) || String(a.id).localeCompare(String(b.id)));
+      }
+      return row.batch ? [{ id: row.batch, campaign: row.id, task: row.task }] : [];
+    }
+
+    function isLoopCampaign(row = {}) {
+      return String(row.mode || row.deliverType || "").includes("循环");
+    }
+
+    function makeBatchId(campaignId, taskId, loopRound = null) {
+      const base = `${campaignId}-${taskId || "CUSTOM"}`;
+      return loopRound ? `${base}-${loopRound}` : base;
+    }
+
+    function nextLoopRound(campaignId, taskId) {
+      const prefix = `${campaignId}-${taskId || "CUSTOM"}-`;
+      const rounds = state.data.batches
+        .map(b => String(b.id || ""))
+        .filter(id => id.startsWith(prefix))
+        .map(id => Number(id.slice(prefix.length)))
+        .filter(n => Number.isFinite(n) && n > 0);
+      return (rounds.length ? Math.max(...rounds) : 0) + 1;
     }
 
     function campaignBatchLinksHtml(row) {
@@ -1038,7 +1054,7 @@
       row.logs.unshift({ operator, time: nowStamp(), content });
     }
 
-    function nextCampaignId(project = "Dana", loop = false) {
+    function nextCampaignId() {
       const refs = [
         ...state.data.campaigns.map(c => c.id),
         ...state.data.batches.flatMap(b => [b.id, b.campaign]),
@@ -1051,16 +1067,16 @@
         .map(m => Number(m.slice(1)))
         .filter(Number.isFinite);
       const next = (nums.length ? Math.max(...nums) : 0) + 1;
-      const base = `A${next}`;
-      return loop ? `${base}-1` : base;
+      return `A${next}`;
     }
 
     function createCampaignFromDraft(draft) {
       const loop = draft.deliverType === "循环发放";
-      const id = nextCampaignId(draft.project, loop);
+      const id = nextCampaignId();
       const taskIds = draft.taskItems.map(item => extractTaskIdFromText(item.task)).filter(Boolean);
-      const batchTaskId = taskIds[0] || "CUSTOM";
+      const batchTaskIds = taskIds.length ? taskIds : ["CUSTOM"];
       const coupons = draft.taskItems.flatMap(item => String(item.reward).match(/\b\d{4}\b/g) || []);
+      const firstBatchId = makeBatchId(id, batchTaskIds[0], loop ? 1 : null);
       const row = {
         id,
         name: draft.name,
@@ -1072,7 +1088,7 @@
         deliverTime: draft.deliverType === "立即发放" ? nowStamp() : (draft.deliverType === "定时发放" ? draft.deliverAt : `${draft.loopFreq}${draft.loopPoint ? ` ${draft.loopPoint}` : ""} ${draft.loopTime}`),
         task: taskIds[0] || "--",
         tasks: taskIds,
-        batch: `${id}-${batchTaskId}`,
+        batch: firstBatchId,
         project: draft.project,
         coupons,
         approvalReason: draft.activityType === "特批活动" ? draft.approvalReason : "",
@@ -1083,19 +1099,23 @@
       };
       pushCampaignLog(row, "新增活动发放配置，选择发放人群和发放红包");
       state.data.campaigns.unshift(row);
-      state.data.batches.unshift({
-        id: row.batch,
-        campaign: row.id,
-        task: row.task,
-        coupon: campaignCouponText(row),
-        issue: `0/${row.audienceCount || 0}`,
-        status: row.status,
-        project: row.project,
-        region: "--",
-        operator: "Jenny",
-        createdAt: nowStamp(),
-        reason: "--",
-        logs: [{ operator:"Jenny", time:nowStamp(), content:"创建任务批次" }]
+      batchTaskIds.slice().reverse().forEach(taskId => {
+        const batchId = makeBatchId(id, taskId, loop ? 1 : null);
+        state.data.batches.unshift({
+          id: batchId,
+          campaign: row.id,
+          task: taskId === "CUSTOM" ? "--" : taskId,
+          coupon: campaignCouponText(row),
+          issue: `0/${row.audienceCount || 0}`,
+          status: row.status,
+          project: row.project,
+          region: "--",
+          operator: "Jenny",
+          createdAt: nowStamp(),
+          reason: "--",
+          loopRound: loop ? 1 : null,
+          logs: [{ operator:"Jenny", time:nowStamp(), content: loop ? `创建循环任务批次（第1次）` : "创建任务批次" }]
+        });
       });
       return row;
     }
@@ -1188,19 +1208,21 @@
     ];
 
     const RECEIVE_LIST_COLUMNS = [
-      { key: "select", label: "选择", fixed: true, width: 3.5 },
-      { key: "project", label: "项目", fixed: true, width: 5 },
-      { key: "sid", label: "SID", fixed: true, width: 8 },
-      { key: "batch", label: "任务批次", fixed: true, width: 8 },
-      { key: "activityId", label: "活动ID", fixed: false, width: 6, defaultOn: true },
-      { key: "couponId", label: "红包ID", fixed: false, width: 6, defaultOn: true },
-      { key: "couponTitle", label: "红包标题", fixed: false, width: 10, defaultOn: true },
-      { key: "auditStatus", label: "审核状态", fixed: true, width: 7 },
-      { key: "applyTime", label: "申请时间", fixed: false, width: 10, defaultOn: true },
-      { key: "reviewer", label: "审核人", fixed: false, width: 6, defaultOn: true },
-      { key: "auditOpinion", label: "审核意见", fixed: false, width: 14, defaultOn: true },
-      { key: "reviewTime", label: "审核时间", fixed: false, width: 10, defaultOn: true },
-      { key: "ops", label: "操作", fixed: true, width: 6.5 }
+      { key: "select", label: "选择", fixed: true, width: 3 },
+      { key: "project", label: "项目", fixed: true, width: 4.5 },
+      { key: "sid", label: "SID", fixed: true, width: 7 },
+      { key: "batch", label: "任务批次", fixed: true, width: 7 },
+      { key: "activityId", label: "活动ID", fixed: false, width: 5.5, defaultOn: true },
+      { key: "couponId", label: "红包ID", fixed: false, width: 5.5, defaultOn: true },
+      { key: "couponTitle", label: "红包标题", fixed: false, width: 9, defaultOn: true },
+      { key: "couponType", label: "红包类型", fixed: false, width: 8, defaultOn: true },
+      { key: "amount", label: "红包金额", fixed: false, width: 6, defaultOn: true },
+      { key: "auditStatus", label: "审核状态", fixed: true, width: 6.5 },
+      { key: "applyTime", label: "申请时间", fixed: false, width: 9, defaultOn: true },
+      { key: "reviewer", label: "审核人", fixed: false, width: 5.5, defaultOn: true },
+      { key: "auditOpinion", label: "审核意见", fixed: false, width: 12, defaultOn: true },
+      { key: "reviewTime", label: "审核时间", fixed: false, width: 9, defaultOn: true },
+      { key: "ops", label: "操作", fixed: true, width: 5.5 }
     ];
 
     const USAGE_LIST_COLUMNS = [
@@ -1209,7 +1231,7 @@
       { key: "sid", label: "SID", fixed: true, width: 9 },
       { key: "couponId", label: "红包ID", fixed: true, width: 6 },
       { key: "couponType", label: "红包类型", fixed: false, width: 9, defaultOn: true },
-      { key: "amount", label: "金额", fixed: false, width: 6, defaultOn: true },
+      { key: "amount", label: "红包金额", fixed: false, width: 6, defaultOn: true },
       { key: "deduct", label: "实际抵扣", fixed: true, width: 7 },
       { key: "depositOrder", label: "入金订单", fixed: false, width: 12, defaultOn: true },
       { key: "useTime", label: "使用时间", fixed: true, width: 10 },
@@ -1366,6 +1388,9 @@
     function buildReceiveAuditRows() {
       return state.data.audits.filter(a => auditTabOf(a) === "receive").map(a => {
         const sid = String(a.sid || a.object || "").replace(/^SID/i, "");
+        const coupon = state.data.coupons.find(c => String(c.id) === String(a.couponId));
+        const couponType = a.couponType || coupon?.type || "--";
+        const amount = a.amount || (coupon ? (typeof coupon.amount === "number" ? `$${coupon.amount}` : String(coupon.amount)) : "--");
         return {
           rid: a.rid,
           auditable: true,
@@ -1374,7 +1399,9 @@
           batch: a.batch || "--",
           activityId: a.activity || activityIdFromBatch(a.batch),
           couponId: a.couponId || "--",
-          couponTitle: auditCouponTitle(a),
+          couponTitle: auditCouponTitle({ ...a, couponType, amount }),
+          amount,
+          couponType,
           auditStatus: a.status || "--",
           applyTime: a.apply || "--",
           reviewTime: a.reviewTime || "--",
@@ -1450,13 +1477,9 @@
         : (row.batch && row.batch !== "--" ? [row.batch] : []);
       const fromRow = fromRowIds.map(id => state.data.batches.find(b => b.id === id) || { id, task: id });
       const merged = [];
-      const seenTask = new Set();
       const seenId = new Set();
       [...fromRow, ...fromData].forEach(b => {
         if (!b?.id || seenId.has(b.id)) return;
-        const taskKey = b.task || b.id;
-        if (seenTask.has(taskKey)) return;
-        seenTask.add(taskKey);
         seenId.add(b.id);
         merged.push(b.id);
       });
@@ -2309,8 +2332,11 @@
     }
 
     function auditCouponTitle(record) {
-      if (!record || record.coupon === "--") return "--";
-      return generatedCouponName("现金红包", record.singleAmount || record.amount) || record.coupon || "--";
+      if (!record) return "--";
+      const type = record.couponType || "";
+      const amount = record.singleAmount || record.amount;
+      // 标题规则：必须为「金额 + 类型」组合，例如 $20现金红包
+      return generatedCouponName(type, amount) || "--";
     }
 
     function nextCouponId(project) {
@@ -3091,9 +3117,9 @@
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无红包消耗数据</div>` : `
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
-            ${tableColgroup([8, 6, 8, 8, 6, 6, 6, 8, 8, 6, 6, 6, 6, 6, 6])}
-            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">发放人群</th><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">红包有效期</th><th class="text-left px-3 py-2">发放时间</th><th class="text-left px-3 py-2">发放总量</th><th class="text-left px-3 py-2">成功发放</th><th class="text-left px-3 py-2">激活数量</th><th class="text-left px-3 py-2">使用数量</th><th class="text-left px-3 py-2">抵扣金额</th><th class="text-left px-3 py-2">操作人</th></tr></thead>
-            <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.batchId}</td><td class="px-3 py-2">${r.couponId}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2">${r.tagVerse || "--"}</td><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2">${r.region || "--"}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${r.validUntil}</td><td class="px-3 py-2">${r.issueTime}</td><td class="px-3 py-2">${r.totalIssue}</td><td class="px-3 py-2">${r.successIssue}</td><td class="px-3 py-2">${r.activated}</td><td class="px-3 py-2">${r.used}</td><td class="px-3 py-2">${formatDeduct(r.deduct)}</td><td class="px-3 py-2">${r.operator || "--"}</td></tr>`).join("")}</tbody>
+            ${tableColgroup([8, 6, 8, 6, 8, 6, 6, 8, 8, 6, 6, 6, 6, 6, 6])}
+            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">发放人群</th><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">红包有效期</th><th class="text-left px-3 py-2">发放时间</th><th class="text-left px-3 py-2">发放总量</th><th class="text-left px-3 py-2">成功发放</th><th class="text-left px-3 py-2">激活数量</th><th class="text-left px-3 py-2">使用数量</th><th class="text-left px-3 py-2">抵扣金额</th><th class="text-left px-3 py-2">操作人</th></tr></thead>
+            <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.batchId}</td><td class="px-3 py-2">${r.couponId}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${r.tagVerse || "--"}</td><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2">${r.region || "--"}</td><td class="px-3 py-2">${r.validUntil}</td><td class="px-3 py-2">${r.issueTime}</td><td class="px-3 py-2">${r.totalIssue}</td><td class="px-3 py-2">${r.successIssue}</td><td class="px-3 py-2">${r.activated}</td><td class="px-3 py-2">${r.used}</td><td class="px-3 py-2">${formatDeduct(r.deduct)}</td><td class="px-3 py-2">${r.operator || "--"}</td></tr>`).join("")}</tbody>
           </table>
         </div>
       `;
@@ -3288,9 +3314,9 @@
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无领取记录</div>` : `
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
-            ${tableColgroup([5, 6, 4, 6, 8, 5, 7, 7, 6, 7, 6, 5, 5, 5, 6, 5, 4, 6])}
-            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">SID</th><th class="text-left px-3 py-2">VIP</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">任务配置</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">红包状态</th><th class="text-left px-3 py-2">领取方式</th><th class="text-left px-3 py-2">领取时间</th><th class="text-left px-3 py-2">审核方式</th><th class="text-left px-3 py-2">审核人</th><th class="text-left px-3 py-2">使用时间</th></tr></thead>
-            <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("receive","user-coupon-detail","user","sid",r.sid)}">${r.sid}</a></td><td class="px-3 py-2">${r.vip}</td><td class="px-3 py-2">${r.region}</td><td class="px-3 py-2" title="${r.campaign}">${r.campaign}</td><td class="px-3 py-2">${r.couponId || "--"}</td><td class="px-3 py-2" title="${couponTitleFromRecord(r)}">${couponTitleFromRecord(r)}</td><td class="px-3 py-2">${linkedTaskName(r.task, r.batch)}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("batch","batch-detail","batch","id",r.batch)}">${r.batch}</a></td><td class="px-3 py-2" title="${r.condition}">${r.condition}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${badge(r.status)}</td><td class="px-3 py-2">${r.receiveType}</td><td class="px-3 py-2">${formatDisplayTime(r.receive)}</td><td class="px-3 py-2">${r.auditType}</td><td class="px-3 py-2">${r.reviewer}</td><td class="px-3 py-2">${formatDisplayTime(r.useTime)}</td></tr>`).join("")}</tbody>
+            ${tableColgroup([5, 6, 4, 6, 8, 5, 7, 6, 5, 7, 6, 7, 5, 5, 6, 5, 4, 6])}
+            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">SID</th><th class="text-left px-3 py-2">VIP</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">任务配置</th><th class="text-left px-3 py-2">红包状态</th><th class="text-left px-3 py-2">领取方式</th><th class="text-left px-3 py-2">领取时间</th><th class="text-left px-3 py-2">审核方式</th><th class="text-left px-3 py-2">审核人</th><th class="text-left px-3 py-2">使用时间</th></tr></thead>
+            <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("receive","user-coupon-detail","user","sid",r.sid)}">${r.sid}</a></td><td class="px-3 py-2">${r.vip}</td><td class="px-3 py-2">${r.region}</td><td class="px-3 py-2" title="${r.campaign}">${r.campaign}</td><td class="px-3 py-2">${r.couponId || "--"}</td><td class="px-3 py-2" title="${couponTitleFromRecord(r)}">${couponTitleFromRecord(r)}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${linkedTaskName(r.task, r.batch)}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("batch","batch-detail","batch","id",r.batch)}">${r.batch}</a></td><td class="px-3 py-2" title="${r.condition}">${r.condition}</td><td class="px-3 py-2">${badge(r.status)}</td><td class="px-3 py-2">${r.receiveType}</td><td class="px-3 py-2">${formatDisplayTime(r.receive)}</td><td class="px-3 py-2">${r.auditType}</td><td class="px-3 py-2">${r.reviewer}</td><td class="px-3 py-2">${formatDisplayTime(r.useTime)}</td></tr>`).join("")}</tbody>
           </table>
         </div>
       `;
@@ -3373,9 +3399,10 @@
         rows = buildReceiveAuditRows().filter(r => {
           if (f.project && r.project !== f.project) return false;
           if (f.couponId && !String(r.couponId || "").includes(f.couponId)) return false;
+          if (f.couponType && r.couponType !== f.couponType) return false;
           if (f.status && !String(r.auditStatus || "").includes(f.status)) return false;
           if (f.sid && !String(r.sid || "").includes(f.sid)) return false;
-          if (f.object && !`${r.sid} ${r.batch} ${r.activityId}`.includes(f.object)) return false;
+          if (f.object && !String(r.batch || "").includes(f.object)) return false;
           if (f.start && comparableDateTime(r.applyTime) < f.start) return false;
           if (f.end && comparableDateTime(r.applyTime) > `${f.end} 23:59`) return false;
           if (f.reviewStart && (!(r.reviewTime && r.reviewTime !== "--") || comparableDateTime(r.reviewTime) < f.reviewStart)) return false;
@@ -3463,6 +3490,7 @@
               <input id="qAuditSid" class="coupon-input" placeholder="SID" value="${f.sid || ""}">
               <input id="qAuditCouponId" class="coupon-input" placeholder="红包ID" value="${f.couponId}">
               <input id="qAuditObject" class="coupon-input" placeholder="SID / 任务批次 / 活动ID" value="${f.object}">
+              <select id="qAuditCouponType" class="coupon-input"><option value="">红包类型</option><option ${f.couponType==="现金红包"?"selected":""}>现金红包</option><option ${f.couponType==="手续费抵扣红包"?"selected":""}>手续费抵扣红包</option><option ${f.couponType==="盈亏抵扣红包"?"selected":""}>盈亏抵扣红包</option><option ${f.couponType==="提现免佣券"?"selected":""}>提现免佣券</option></select>
               <select id="qAuditStatus" class="coupon-input"><option value="">审核状态</option><option ${f.status==="待审核"?"selected":""}>待审核</option><option ${f.status==="审核通过"?"selected":""}>审核通过</option><option ${f.status==="审核拒绝"?"selected":""}>审核拒绝</option></select>
               <div class="range-wrap grid-range">
                 <input id="qAuditStart" placeholder="申请开始日期" value="${f.start}">
@@ -3484,7 +3512,7 @@
             <div class="grid grid-cols-6 gap-3 text-[12px]">
               <select id="qAuditProject" class="coupon-input"><option value="">项目</option><option value="Dana" ${f.project==="Dana"?"selected":""}>Dana</option><option value="TW" ${f.project==="TW"?"selected":""}>TW</option></select>
               <input id="qAuditCouponId" class="coupon-input" placeholder="红包ID" value="${f.couponId}">
-              <input id="qAuditObject" class="coupon-input" placeholder="任务批次 / 活动ID / 活动名称" value="${f.object}">
+              <input id="qAuditObject" class="coupon-input" placeholder="任务批次" value="${f.object}">
               <select id="qAuditStatus" class="coupon-input"><option value="">审核状态</option><option ${f.status==="待审核"?"selected":""}>待审核</option><option ${f.status==="审核通过"?"selected":""}>审核通过</option><option ${f.status==="审核拒绝"?"selected":""}>审核拒绝</option></select>
               <div class="range-wrap grid-range">
                 <input id="qAuditStart" placeholder="申请开始日期" value="${f.start}">
@@ -3539,8 +3567,12 @@
             return auditBatchLinksHtml(batchIds);
           }
           if (col.key === "activityId" && r.activityId && r.activityId !== "--") return `<a class="text-primary hover:underline" data-nav="${makeNav("campaign","campaign-detail","campaign","id",r.activityId)}">${r.activityId}</a>`;
+          if (col.key === "couponTitle") {
+            // 领取/审核列表：标题 = 金额 + 类型，纯文本，不可跳转
+            const title = generatedCouponName(r.couponType, r.amount) || r.couponTitle || "--";
+            return title;
+          }
           if (col.key === "taskName") return linkedTaskName(r.taskName, r.batch);
-          if (col.key === "couponTitle") return linkedCouponName(r.couponTitle);
           if (col.key === "couponStatus" && r.couponStatus && r.couponStatus !== "--") return badge(r.couponStatus);
           if (col.key === "auditStatus") return badge(r.auditStatus || "--");
           if (col.key === "receiveTime" || col.key === "applyTime" || col.key === "reviewTime" || col.key === "useTime") {
@@ -4936,6 +4968,7 @@
             } else if (state.auditTab === "receive") {
               next.sid = document.getElementById("qAuditSid")?.value.trim() || "";
               next.object = document.getElementById("qAuditObject")?.value.trim() || "";
+              next.couponType = document.getElementById("qAuditCouponType")?.value || "";
               next.start = document.getElementById("qAuditStart")?.value.trim() || "";
               next.end = document.getElementById("qAuditEnd")?.value.trim() || "";
             } else {
