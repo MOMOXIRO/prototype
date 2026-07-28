@@ -1867,7 +1867,6 @@ table.data tbody tr.selected {
           <button class="icon-btn" type="button" data-close="#batchModal" aria-label="关闭">×</button>
         </div>
         <div class="modal-body">
-          <div class="batch-selected-tip" id="batchModalTip">已选 0 条</div>
           <div class="batch-action-groups">
             <div class="batch-action-group" data-batch-group="shelf">
               <h4>上下架</h4>
@@ -2705,7 +2704,6 @@ function openBatchModal() {
   if (!p.edit && !p.offline) {
     return showToast("当前角色无批量处理权限");
   }
-  $("#batchModalTip").textContent = `已选 ${selectedIds.size} 条，可同时选择两类操作，也可取消勾选`;
   resetBatchModalOptions();
   openModal("#batchModal");
 }
