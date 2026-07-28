@@ -1126,10 +1126,6 @@ table.data tbody tr.selected {
 #postBrandPanel[hidden],
 #postCommunityPanel[hidden],
 #postVideoRow[hidden],
-#batchDeleteGroup[hidden] {
-  display: none !important;
-}
-
 .form-row {
   margin-bottom: 14px;
 }
@@ -1381,13 +1377,6 @@ table.data tbody tr.selected {
           <span>GMT+08:00</span>
           <span>Jenny</span>
           <span class="role-badge" id="roleBadge">超级运营</span>
-          <label title="演示权限控制">
-            <select id="roleSelect">
-              <option value="operator" selected>运营</option>
-              <option value="admin">管理员</option>
-              <option value="viewer">只读</option>
-            </select>
-          </label>
         </div>
       </header>
 
@@ -1447,12 +1436,9 @@ table.data tbody tr.selected {
       <section class="card table-card">
         <div class="toolbar">
           <div class="toolbar-left">
-            <button id="btnBatch" class="btn btn-danger" type="button">批量处理</button>
+            <button id="btnBatch" class="btn" type="button">批量处理</button>
             <button id="btnCreate" class="btn btn-primary" type="button">发文章</button>
             <button id="btnCreatePost" class="btn btn-primary" type="button">发帖子</button>
-          </div>
-          <div class="toolbar-right">
-            <span class="hint-text" id="permHint">运营：可编辑 / 下架；删除需管理员</span>
           </div>
         </div>
 
@@ -1534,12 +1520,11 @@ table.data tbody tr.selected {
                 </select>
               </div>
               <div class="form-row" id="displayPosRow" hidden>
-                <label for="editDisplayPos">展示位置</label>
-                <select id="editDisplayPos" class="field-select">
-                  <option value="社区">社区</option>
-                  <option value="品牌">品牌</option>
-                  <option value="社区、品牌" selected>社区、品牌</option>
-                </select>
+                <label>展示位置</label>
+                <div class="check-row">
+                  <label><input id="editDisplayCommunity" type="checkbox" checked /> 社区</label>
+                  <label><input id="editDisplayBrand" type="checkbox" checked /> 品牌</label>
+                </div>
               </div>
             </div>
             <input type="hidden" id="editNickname" />
@@ -1586,7 +1571,7 @@ table.data tbody tr.selected {
               <div class="form-row">
                 <label for="editBrandTag"><span class="req">*</span> 品牌 Tag</label>
                 <select id="editBrandTag" class="field-select">
-                  <option value="">品牌tag</option>
+                  <option value="">品牌 Tag</option>
                   <option value="推荐">推荐</option>
                   <option value="公司动态">公司动态</option>
                   <option value="品牌活动">品牌活动</option>
@@ -1595,9 +1580,10 @@ table.data tbody tr.selected {
                 </select>
               </div>
               <div class="form-row">
-                <label for="editDisplayTime"><span class="req">*</span> 展示时间</label>
+                <label for="editDisplayTime"><span class="req">*</span> 展示时间
+                  <span class="help-tip" title="只修改品牌中心列表的展示时间，不影响发布时间。">?</span>
+                </label>
                 <input id="editDisplayTime" class="field" type="datetime-local" />
-                <div class="help">APP 品牌中心的展示时间</div>
               </div>
               <div class="form-row">
                 <label for="editSort">排序序号</label>
@@ -1628,9 +1614,11 @@ table.data tbody tr.selected {
             <div class="form-section community-panel" id="communityPanel" hidden>
               <h3>社区展示设置</h3>
               <div class="form-row">
-                <label>是否置顶</label>
+                <label>热度推荐
+                  <span class="help-tip" title="根据平台算法在推荐列表中靠前展示">?</span>
+                </label>
                 <div class="check-row">
-                  <label><input id="editCommunityPin" type="checkbox" /> 置顶展示</label>
+                  <label><input id="editCommunityPin" type="checkbox" /> 热度推荐</label>
                 </div>
               </div>
               <div class="form-row">
@@ -1720,12 +1708,11 @@ table.data tbody tr.selected {
               </div>
             </div>
             <div class="form-row" id="postDisplayPos" hidden>
-              <label for="postDisplayPosSelect">展示位置</label>
-              <select id="postDisplayPosSelect" class="field-select">
-                <option value="社区">社区</option>
-                <option value="品牌">品牌</option>
-                <option value="社区、品牌" selected>社区、品牌</option>
-              </select>
+              <label>展示位置</label>
+              <div class="check-row">
+                <label><input id="postDisplayCommunity" type="checkbox" checked /> 社区</label>
+                <label><input id="postDisplayBrand" type="checkbox" checked /> 品牌</label>
+              </div>
             </div>
 
             <h3 style="margin-top:8px">帖子内容</h3>
@@ -1763,7 +1750,7 @@ table.data tbody tr.selected {
               <div class="form-row">
                 <label for="postBrandTag"><span class="req">*</span> 品牌 Tag</label>
                 <select id="postBrandTag" class="field-select">
-                  <option value="">品牌tag</option>
+                  <option value="">品牌 Tag</option>
                   <option value="推荐">推荐</option>
                   <option value="公司动态">公司动态</option>
                   <option value="品牌活动">品牌活动</option>
@@ -1772,9 +1759,10 @@ table.data tbody tr.selected {
                 </select>
               </div>
               <div class="form-row">
-                <label for="postDisplayTime"><span class="req">*</span> 展示时间</label>
+                <label for="postDisplayTime"><span class="req">*</span> 展示时间
+                  <span class="help-tip" title="只修改品牌中心列表的展示时间，不影响发布时间。">?</span>
+                </label>
                 <input id="postDisplayTime" class="field" type="datetime-local" />
-                <div class="help">APP 品牌中心的展示时间</div>
               </div>
               <div class="form-row">
                 <label for="postSort">排序序号</label>
@@ -1805,9 +1793,11 @@ table.data tbody tr.selected {
             <div class="form-section community-panel" id="postCommunityPanel" hidden>
               <h3>社区展示设置</h3>
               <div class="form-row">
-                <label>是否置顶</label>
+                <label>热度推荐
+                  <span class="help-tip" title="根据平台算法在推荐列表中靠前展示">?</span>
+                </label>
                 <div class="check-row">
-                  <label><input id="postCommunityPin" type="checkbox" /> 置顶展示</label>
+                  <label><input id="postCommunityPin" type="checkbox" /> 热度推荐</label>
                 </div>
               </div>
               <div class="form-row">
@@ -1879,18 +1869,18 @@ table.data tbody tr.selected {
         <div class="modal-body">
           <div class="batch-selected-tip" id="batchModalTip">已选 0 条</div>
           <div class="batch-action-groups">
-            <div class="batch-action-group">
+            <div class="batch-action-group" data-batch-group="shelf">
               <h4>上下架</h4>
               <div class="batch-action-options">
                 <label>
-                  <input type="radio" name="batchActionType" value="online" />
+                  <input type="checkbox" name="batchShelf" value="online" />
                   <span>
                     批量上架
                     <span class="opt-desc">将已选内容重新上架，APP 前端恢复展示</span>
                   </span>
                 </label>
                 <label>
-                  <input type="radio" name="batchActionType" value="offline" />
+                  <input type="checkbox" name="batchShelf" value="offline" />
                   <span>
                     批量下架
                     <span class="opt-desc">将已选内容下架，APP 前端不再展示</span>
@@ -1898,33 +1888,21 @@ table.data tbody tr.selected {
                 </label>
               </div>
             </div>
-            <div class="batch-action-group">
+            <div class="batch-action-group" data-batch-group="visibility">
               <h4>可见状态</h4>
               <div class="batch-action-options">
                 <label>
-                  <input type="radio" name="batchActionType" value="visible-all" checked />
+                  <input type="checkbox" name="batchVisibility" value="visible-all" />
                   <span>
                     设为所有人可见
                     <span class="opt-desc">批量修改为「所有人可见」</span>
                   </span>
                 </label>
                 <label>
-                  <input type="radio" name="batchActionType" value="visible-self" />
+                  <input type="checkbox" name="batchVisibility" value="visible-self" />
                   <span>
                     设为仅自己可见
                     <span class="opt-desc">批量修改为「仅自己可见」</span>
-                  </span>
-                </label>
-              </div>
-            </div>
-            <div class="batch-action-group" id="batchDeleteGroup" hidden>
-              <h4>其他</h4>
-              <div class="batch-action-options">
-                <label>
-                  <input type="radio" name="batchActionType" value="delete" />
-                  <span>
-                    批量删除
-                    <span class="opt-desc">逻辑删除，建议优先使用下架</span>
                   </span>
                 </label>
               </div>
@@ -1942,7 +1920,7 @@ table.data tbody tr.selected {
     <script>
 /**
  * APP发文 · 前端原型交互
- * 权限：viewer 查看 | operator 编辑/下架 | admin 编辑/下架/删除
+ * 权限：运营视角（可编辑 / 上架下架，无删除）
  */
 
 const CATEGORIES = ["品牌动态", "产品介绍", "活动公告", "社区精选", "使用指南"];
@@ -1960,12 +1938,6 @@ function displayToValue(display) {
   if (hasBrand && hasCommunity) return "社区、品牌";
   if (hasBrand) return "品牌";
   return "社区";
-}
-
-function valueToDisplay(value) {
-  if (value === "社区、品牌") return ["社区", "品牌"];
-  if (value === "品牌") return ["品牌"];
-  return ["社区"];
 }
 
 /** 多地区内容配置：按所选发布地区切换 Tab 填写 */
@@ -2079,12 +2051,9 @@ function projectFromSid(sid) {
 }
 
 const ROLE_PERMS = {
-  viewer: { view: true, edit: false, offline: false, delete: false, create: false },
-  operator: { view: true, edit: true, offline: true, delete: false, create: true },
-  admin: { view: true, edit: true, offline: true, delete: true, create: true },
+  operator: { view: true, edit: true, offline: true, create: true },
 };
 
-let currentRole = "operator";
 let articles = [];
 let filtered = [];
 let page = 1;
@@ -2093,6 +2062,7 @@ let editingId = null;
 let actionTargetId = null;
 let createTypeDefault = "文章";
 const selectedIds = new Set();
+let pendingBatchActions = [];
 
 function uid() {
   return "A" + String(Date.now()).slice(-6) + Math.floor(Math.random() * 90 + 10);
@@ -2297,7 +2267,7 @@ function displayText(display) {
 }
 
 function perms() {
-  return ROLE_PERMS[currentRole];
+  return ROLE_PERMS.operator;
 }
 
 function $(sel) {
@@ -2364,6 +2334,14 @@ function isTwSid() {
   return projectFromSid($("#editSid").value) === "TW";
 }
 
+function getEditDisplaySelection() {
+  if (!isTwSid()) return ["社区"];
+  const display = [];
+  if ($("#editDisplayCommunity").checked) display.push("社区");
+  if ($("#editDisplayBrand").checked) display.push("品牌");
+  return display;
+}
+
 function syncDisplayPositionUI() {
   const tw = isTwSid();
   const posRow = $("#displayPosRow");
@@ -2381,11 +2359,11 @@ function syncDisplayPositionUI() {
     posRow.hidden = false;
   } else {
     posRow.hidden = true;
-    $("#editDisplayPos").value = "社区";
+    $("#editDisplayBrand").checked = false;
+    $("#editDisplayCommunity").checked = true;
   }
 
-  const pos = tw ? $("#editDisplayPos").value || "社区" : "社区";
-  const display = valueToDisplay(pos);
+  const display = getEditDisplaySelection();
   const showBrand = tw && display.includes("品牌");
   const showCommunity = !tw || display.includes("社区");
   brandPanel.hidden = !showBrand;
@@ -2475,7 +2453,10 @@ function hideEditorPage() {
 /** 切换到 2 开头的 TW SID 时，默认勾选品牌展示 */
 function onSidChange() {
   if (isTwSid()) {
-    $("#editDisplayPos").value = $("#editDisplayPos").value || "社区、品牌";
+    if (!$("#editDisplayBrand").checked && !$("#editDisplayCommunity").checked) {
+      $("#editDisplayBrand").checked = true;
+      $("#editDisplayCommunity").checked = true;
+    }
   }
   syncDisplayPositionUI();
 }
@@ -2496,6 +2477,14 @@ function isPostTwSid() {
   return projectFromSid(($("#postSid").value || "").trim()) === "TW";
 }
 
+function getPostDisplaySelection() {
+  if (!isPostTwSid()) return ["社区"];
+  const display = [];
+  if ($("#postDisplayCommunity").checked) display.push("社区");
+  if ($("#postDisplayBrand").checked) display.push("品牌");
+  return display;
+}
+
 function syncPostDisplayUI() {
   const tw = isPostTwSid();
   const posRow = $("#postDisplayPos");
@@ -2507,11 +2496,11 @@ function syncPostDisplayUI() {
     posRow.hidden = false;
   } else {
     posRow.hidden = true;
-    $("#postDisplayPosSelect").value = "社区";
+    $("#postDisplayBrand").checked = false;
+    $("#postDisplayCommunity").checked = true;
   }
 
-  const pos = tw ? $("#postDisplayPosSelect").value || "社区" : "社区";
-  const display = valueToDisplay(pos);
+  const display = getPostDisplaySelection();
   const showBrand = tw && display.includes("品牌");
   const showCommunity = !tw || display.includes("社区");
   brandPanel.hidden = !showBrand;
@@ -2533,7 +2522,10 @@ function onPostSidChange() {
   $("#postProject").value = sid ? projectFromSid(sid) : "";
 
   if (isPostTwSid()) {
-    $("#postDisplayPosSelect").value = $("#postDisplayPosSelect").value || "社区、品牌";
+    if (!$("#postDisplayBrand").checked && !$("#postDisplayCommunity").checked) {
+      $("#postDisplayBrand").checked = true;
+      $("#postDisplayCommunity").checked = true;
+    }
   }
   syncPostDisplayUI();
 }
@@ -2684,70 +2676,49 @@ function resetFilters() {
 const ICONS = {
   edit: `<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`,
   view: `<svg viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>`,
-  trash: `<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>`,
 };
 
 function renderToolbar() {
   const p = perms();
   $("#btnCreate").disabled = !p.create;
   $("#btnCreatePost").disabled = !p.create;
-  $("#btnBatch").disabled = !p.edit && !p.offline && !p.delete;
+  $("#btnBatch").disabled = !p.edit && !p.offline;
   $("#btnCreate").title = p.create ? "" : "当前角色无发文权限";
-  const badge = $("#roleBadge");
-  if (currentRole === "admin") {
-    badge.textContent = "管理员";
-    $("#permHint").textContent = "管理员：可编辑 / 下架 / 删除";
-  } else if (currentRole === "operator") {
-    badge.textContent = "超级运营";
-    $("#permHint").textContent = "运营：可编辑 / 下架；删除需管理员";
-  } else {
-    badge.textContent = "只读";
-    $("#permHint").textContent = "只读：仅可查看详情";
-  }
-  updateBatchBar();
+  $("#roleBadge").textContent = "超级运营";
 }
 
-function updateBatchBar() {
-  let bar = $("#batchBar");
-  if (!bar) {
-    bar = document.createElement("div");
-    bar.id = "batchBar";
-    bar.className = "batch-bar";
-    bar.innerHTML = `
-      <span id="batchCount">已选 0 条</span>
-      <button type="button" class="btn btn-primary" id="btnBatchOpen">批量处理</button>
-      <button type="button" class="btn" id="btnBatchClear">取消选择</button>
-    `;
-    const toolbar = $(".toolbar");
-    toolbar.insertAdjacentElement("afterend", bar);
-    $("#btnBatchOpen").addEventListener("click", openBatchModal);
-    $("#btnBatchClear").addEventListener("click", () => {
-      selectedIds.clear();
-      renderTable();
-    });
-  }
-  bar.classList.toggle("show", selectedIds.size > 0);
-  $("#batchCount").textContent = `已选 ${selectedIds.size} 条`;
+function resetBatchModalOptions() {
+  $all('#batchModal input[type="checkbox"]').forEach((cb) => {
+    cb.checked = false;
+  });
+}
+
+function getSelectedBatchActions() {
+  const shelf = document.querySelector('input[name="batchShelf"]:checked')?.value || "";
+  const visibility = document.querySelector('input[name="batchVisibility"]:checked')?.value || "";
+  return [shelf, visibility].filter(Boolean);
 }
 
 function openBatchModal() {
   if (!selectedIds.size) return showToast("请先勾选需要处理的数据");
   const p = perms();
-  if (!p.edit && !p.offline && !p.delete) {
+  if (!p.edit && !p.offline) {
     return showToast("当前角色无批量处理权限");
   }
-  $("#batchModalTip").textContent = `已选 ${selectedIds.size} 条，请选择要执行的操作`;
-  $("#batchDeleteGroup").hidden = !p.delete;
-  const checked = document.querySelector('input[name="batchActionType"]:checked');
-  if (checked?.value === "delete" && !p.delete) {
-    const fallback = document.querySelector('input[name="batchActionType"][value="visible-all"]');
-    if (fallback) fallback.checked = true;
-  }
-  if (!document.querySelector('input[name="batchActionType"]:checked')) {
-    const first = document.querySelector('input[name="batchActionType"][value="visible-all"]');
-    if (first) first.checked = true;
-  }
+  $("#batchModalTip").textContent = `已选 ${selectedIds.size} 条，可同时选择两类操作，也可取消勾选`;
+  resetBatchModalOptions();
   openModal("#batchModal");
+}
+
+function bindBatchOptionExclusive(groupName) {
+  $all(`input[name="${groupName}"]`).forEach((cb) => {
+    cb.addEventListener("change", () => {
+      if (!cb.checked) return;
+      $all(`input[name="${groupName}"]`).forEach((other) => {
+        if (other !== cb) other.checked = false;
+      });
+    });
+  });
 }
 
 function renderTable() {
@@ -2764,7 +2735,8 @@ function renderTable() {
 
   if (!rows.length) {
     tbody.innerHTML = `<tr><td colspan="16"><div class="empty">暂无符合条件的数据</div></td></tr>`;
-    $("#checkAll").checked = false;
+    const checkAll = $("#checkAll");
+    if (checkAll) checkAll.checked = false;
     renderPagination(maxPage);
     return;
   }
@@ -2773,7 +2745,6 @@ function renderTable() {
     .map((a) => {
       const canEdit = p.edit && a.status !== "deleted";
       const canShelf = p.offline && a.status !== "deleted";
-      const canDelete = p.delete && a.status !== "deleted";
       const isOn = a.status === "published";
       const checked = selectedIds.has(a.id) ? "checked" : "";
       const selectedClass = selectedIds.has(a.id) ? "selected" : "";
@@ -2804,7 +2775,6 @@ function renderTable() {
           <div class="ops" style="justify-content:center">
             ${canEdit ? `<button class="op-btn" data-action="edit" data-id="${a.id}" title="编辑">${ICONS.edit}</button>` : ""}
             <button class="op-btn" data-action="view" data-id="${a.id}" title="查看详情">${ICONS.view}</button>
-            ${canDelete ? `<button class="op-btn danger" data-action="delete" data-id="${a.id}" title="删除">${ICONS.trash}</button>` : ""}
           </div>
         </td>
       </tr>`;
@@ -2812,9 +2782,11 @@ function renderTable() {
     .join("");
 
   const pageIds = rows.map((r) => r.id);
-  $("#checkAll").checked = pageIds.length > 0 && pageIds.every((id) => selectedIds.has(id));
+  const checkAll = $("#checkAll");
+  if (checkAll) {
+    checkAll.checked = pageIds.length > 0 && pageIds.every((id) => selectedIds.has(id));
+  }
   renderPagination(maxPage);
-  updateBatchBar();
 }
 
 function renderPagination(maxPage) {
@@ -2876,7 +2848,7 @@ function openDetail(id) {
       ${
         (a.display || []).includes("社区")
           ? `
-      <div class="label">社区置顶</div><div>${a.communityPinned ? "是" : "否"}</div>
+      <div class="label">热度推荐</div><div>${a.communityPinned ? "是" : "否"}</div>
       <div class="label">社区封面</div><div>${a.communityCover ? `<img src="${a.communityCover}" alt="" style="width:180px;border-radius:6px;border:1px solid var(--border)" />` : "—"}</div>
       `
           : ""
@@ -2907,7 +2879,7 @@ function openEditor(id, typeHint) {
   $("#editorTitle").textContent = pageTitle;
   $("#editorCrumb").textContent = pageTitle;
   $("#editType").value = "文章";
-  $("#editorRoleBadge").textContent = $("#roleBadge")?.textContent || "";
+  $("#editorRoleBadge").textContent = "超级运营";
 
   const a = isEdit ? findArticle(id) : null;
   const defaultSid = a?.sid || "20008329770";
@@ -2933,7 +2905,8 @@ function openEditor(id, typeHint) {
   const display =
     a?.display ||
     (projectFromSid(defaultSidVal) === "TW" ? ["品牌", "社区"] : ["社区"]);
-  $("#editDisplayPos").value = displayToValue(display);
+  $("#editDisplayBrand").checked = display.includes("品牌");
+  $("#editDisplayCommunity").checked = display.includes("社区") || !display.includes("品牌");
 
   $("#editBrandTag").value = a?.brandTag || "";
   $("#editDisplayTime").value = toDatetimeLocal(a?.displayTime || "2025-11-14 14:30:00");
@@ -2960,7 +2933,7 @@ function openPostEditor(id) {
   $("#postTitle").textContent = pageTitle;
   $("#postCrumb").textContent = pageTitle;
   $("#postType").value = "帖子";
-  $("#postRoleBadge").textContent = $("#roleBadge")?.textContent || "";
+  $("#postRoleBadge").textContent = "超级运营";
 
   const a = isEdit ? findArticle(id) : null;
   // 新建默认示例：与参考图一致的 TW SID
@@ -2988,7 +2961,8 @@ function openPostEditor(id) {
   const display =
     a?.display ||
     (projectFromSid(defaultSid) === "TW" ? ["品牌", "社区"] : ["社区"]);
-  $("#postDisplayPosSelect").value = displayToValue(display);
+  $("#postDisplayBrand").checked = display.includes("品牌");
+  $("#postDisplayCommunity").checked = display.includes("社区") || !display.includes("品牌");
 
   $("#postVideoUrl").value = a?.video || "";
   $("#postVideoBox").classList.toggle("has-video", Boolean(a?.video));
@@ -3038,9 +3012,8 @@ function savePost() {
   const video = $("#postVideoUrl").value.trim();
   const mediaType = video ? "video" : "image";
 
-  const display = tw
-    ? valueToDisplay($("#postDisplayPosSelect").value || "社区")
-    : ["社区"];
+  const display = getPostDisplaySelection();
+  if (tw && !display.length) return showToast("请至少选择一个展示位置");
 
   const brandOn = display.includes("品牌");
   const communityOn = display.includes("社区");
@@ -3158,9 +3131,8 @@ function saveEditor() {
     return showToast(`请完整填写地区「${incomplete}」的标题与正文`);
   }
 
-  const display = tw
-    ? valueToDisplay($("#editDisplayPos").value || "社区")
-    : ["社区"];
+  const display = getEditDisplaySelection();
+  if (tw && !display.length) return showToast("请至少选择一个展示位置");
 
   const brandOn = display.includes("品牌");
   const communityOn = display.includes("社区");
@@ -3276,91 +3248,44 @@ function confirmOnline(id) {
   openModal("#confirmModal");
 }
 
-function confirmDelete(id) {
-  if (!perms().delete) {
-    showToast("仅管理员可删除，建议优先使用下架");
-    return;
-  }
-  actionTargetId = id;
-  const a = findArticle(id);
-  $("#confirmModal .confirm-icon").className = "confirm-icon danger";
-  $("#confirmModal .confirm-icon").textContent = "×";
-  $("#confirmHeading").textContent = "确认删除？";
-  $("#confirmDesc").innerHTML = `删除后从列表移除（逻辑删除）。建议优先下架。<br/><br/>目标：${escapeHtml(a.summary || a.id)}`;
-  $("#confirmOk").textContent = "确认删除";
-  $("#confirmOk").className = "btn btn-danger";
-  $("#confirmOk").dataset.mode = "delete";
-  openModal("#confirmModal");
+function batchActionLabels(actions) {
+  const map = {
+    online: "批量上架",
+    offline: "批量下架",
+    "visible-all": "设为所有人可见",
+    "visible-self": "设为仅自己可见",
+  };
+  return actions.map((a) => map[a] || a);
 }
 
-function batchAction(mode) {
+function submitBatchModal() {
   if (!selectedIds.size) return showToast("请先勾选数据");
-  if (mode === "delete" && !perms().delete) return showToast("仅管理员可批量删除");
-  if ((mode === "offline" || mode === "online") && !perms().offline) {
+  const actions = getSelectedBatchActions();
+  if (!actions.length) return showToast("请至少选择一类操作");
+
+  if ((actions.includes("offline") || actions.includes("online")) && !perms().offline) {
     return showToast("当前角色无上下架权限");
   }
-  if ((mode === "visible-all" || mode === "visible-self") && !perms().edit) {
+  if (
+    (actions.includes("visible-all") || actions.includes("visible-self")) &&
+    !perms().edit
+  ) {
     return showToast("当前角色无修改可见状态权限");
   }
 
+  pendingBatchActions = actions;
   closeModal("#batchModal");
   actionTargetId = null;
-  const map = {
-    "visible-all": {
-      icon: "!",
-      iconClass: "confirm-icon warn",
-      heading: "确认批量修改可见状态？",
-      desc: `将已选 <strong>${selectedIds.size}</strong> 条设为「所有人可见」。`,
-      ok: "确认修改",
-      okClass: "btn btn-primary",
-      mode: "batch-visible-all",
-    },
-    "visible-self": {
-      icon: "!",
-      iconClass: "confirm-icon warn",
-      heading: "确认批量修改可见状态？",
-      desc: `将已选 <strong>${selectedIds.size}</strong> 条设为「仅自己可见」。`,
-      ok: "确认修改",
-      okClass: "btn btn-primary",
-      mode: "batch-visible-self",
-    },
-    online: {
-      icon: "↑",
-      iconClass: "confirm-icon warn",
-      heading: "确认批量上架？",
-      desc: `将对已选 <strong>${selectedIds.size}</strong> 条执行上架，APP 前端恢复展示。`,
-      ok: "确认上架",
-      okClass: "btn btn-primary",
-      mode: "batch-online",
-    },
-    offline: {
-      icon: "!",
-      iconClass: "confirm-icon warn",
-      heading: "确认批量下架？",
-      desc: `将对已选 <strong>${selectedIds.size}</strong> 条执行下架，前端不再展示。`,
-      ok: "确认下架",
-      okClass: "btn btn-primary",
-      mode: "batch-offline",
-    },
-    delete: {
-      icon: "×",
-      iconClass: "confirm-icon danger",
-      heading: "确认批量删除？",
-      desc: `将对已选 <strong>${selectedIds.size}</strong> 条执行删除（逻辑删除）。建议优先下架。`,
-      ok: "确认删除",
-      okClass: "btn btn-danger",
-      mode: "batch-delete",
-    },
-  };
-  const cfg = map[mode];
-  if (!cfg) return;
-  $("#confirmModal .confirm-icon").className = cfg.iconClass;
-  $("#confirmModal .confirm-icon").textContent = cfg.icon;
-  $("#confirmHeading").textContent = cfg.heading;
-  $("#confirmDesc").innerHTML = cfg.desc;
-  $("#confirmOk").textContent = cfg.ok;
-  $("#confirmOk").className = cfg.okClass;
-  $("#confirmOk").dataset.mode = cfg.mode;
+  const labels = batchActionLabels(actions);
+  $("#confirmModal .confirm-icon").className = "confirm-icon warn";
+  $("#confirmModal .confirm-icon").textContent = "!";
+  $("#confirmHeading").textContent = "确认批量处理？";
+  $("#confirmDesc").innerHTML = `将对已选 <strong>${selectedIds.size}</strong> 条执行：<br/>${labels
+    .map((l) => `· ${escapeHtml(l)}`)
+    .join("<br/>")}`;
+  $("#confirmOk").textContent = "确认";
+  $("#confirmOk").className = "btn btn-primary";
+  $("#confirmOk").dataset.mode = "batch-multi";
   openModal("#confirmModal");
 }
 
@@ -3368,55 +3293,39 @@ function runConfirm() {
   const mode = $("#confirmOk").dataset.mode;
   const now = formatNow();
 
-  if (
-    mode === "batch-online" ||
-    mode === "batch-offline" ||
-    mode === "batch-delete" ||
-    mode === "batch-visible-all" ||
-    mode === "batch-visible-self"
-  ) {
+  if (mode === "batch-multi") {
+    const actions = pendingBatchActions.slice();
     let count = 0;
     selectedIds.forEach((id) => {
       const a = findArticle(id);
       if (!a || a.status === "deleted") return;
-      if (mode === "batch-online") {
-        if (a.status === "offline" || a.status === "published") {
-          a.status = "published";
-          a.visible = true;
-          a.updatedAt = now;
-          count++;
-        }
-      } else if (mode === "batch-offline") {
-        if (a.status === "published" || a.status === "offline") {
-          a.status = "offline";
-          a.visible = false;
-          a.updatedAt = now;
-          count++;
-        }
-      } else if (mode === "batch-visible-all") {
-        a.visibility = "所有人可见";
-        a.updatedAt = now;
-        count++;
-      } else if (mode === "batch-visible-self") {
-        a.visibility = "仅自己可见";
-        a.updatedAt = now;
-        count++;
-      } else if (perms().delete) {
-        a.status = "deleted";
+      let changed = false;
+      if (actions.includes("online") && (a.status === "offline" || a.status === "published")) {
+        a.status = "published";
+        a.visible = true;
+        changed = true;
+      }
+      if (actions.includes("offline") && (a.status === "published" || a.status === "offline")) {
+        a.status = "offline";
         a.visible = false;
+        changed = true;
+      }
+      if (actions.includes("visible-all")) {
+        a.visibility = "所有人可见";
+        changed = true;
+      }
+      if (actions.includes("visible-self")) {
+        a.visibility = "仅自己可见";
+        changed = true;
+      }
+      if (changed) {
         a.updatedAt = now;
         count++;
       }
     });
     selectedIds.clear();
-    const msg = {
-      "batch-online": `已批量上架 ${count} 条`,
-      "batch-offline": `已批量下架 ${count} 条`,
-      "batch-delete": `已批量删除 ${count} 条`,
-      "batch-visible-all": `已设为所有人可见 ${count} 条`,
-      "batch-visible-self": `已设为仅自己可见 ${count} 条`,
-    }[mode];
-    showToast(msg);
+    pendingBatchActions = [];
+    showToast(`已批量处理 ${count} 条`);
     closeModal("#confirmModal");
     applyFilters();
     return;
@@ -3435,11 +3344,6 @@ function runConfirm() {
     a.visible = true;
     a.updatedAt = now;
     showToast("已重新上架，前端将恢复展示");
-  } else if (mode === "delete") {
-    a.status = "deleted";
-    a.visible = false;
-    a.updatedAt = now;
-    showToast("已删除（逻辑删除）");
   }
 
   closeModal("#confirmModal");
@@ -3447,16 +3351,23 @@ function runConfirm() {
 }
 
 function bindEvents() {
-  $("#roleSelect").addEventListener("change", (e) => {
-    currentRole = e.target.value;
-    renderTable();
-    showToast("已切换角色权限");
-  });
-
   $("#btnSearch").addEventListener("click", applyFilters);
   $("#btnReset").addEventListener("click", resetFilters);
   $("#btnCreate").addEventListener("click", () => openEditor(null, "文章"));
   $("#btnCreatePost").addEventListener("click", () => openPostEditor(null));
+  $("#btnBatch").addEventListener("click", openBatchModal);
+  $("#btnBatchConfirm").addEventListener("click", submitBatchModal);
+  bindBatchOptionExclusive("batchShelf");
+  bindBatchOptionExclusive("batchVisibility");
+  $("#checkAll").addEventListener("change", (e) => {
+    const start = (page - 1) * pageSize;
+    const rows = filtered.slice(start, start + pageSize);
+    rows.forEach((a) => {
+      if (e.target.checked) selectedIds.add(a.id);
+      else selectedIds.delete(a.id);
+    });
+    renderTable();
+  });
   $("#btnEditorBack").addEventListener("click", hideEditorPage);
   $("#btnCancelEditor").addEventListener("click", hideEditorPage);
   $("#btnPostBack").addEventListener("click", hidePostPage);
@@ -3489,30 +3400,12 @@ function bindEvents() {
     $("#editRegionDropdown").hidden = true;
     $("#postRegionDropdown").hidden = true;
   });
-  $("#btnBatch").addEventListener("click", openBatchModal);
-  $("#btnBatchConfirm").addEventListener("click", () => {
-    const type = document.querySelector('input[name="batchActionType"]:checked')?.value;
-    if (!type) return showToast("请选择批量操作类型");
-    batchAction(type);
-  });
-
-  $("#checkAll").addEventListener("change", (e) => {
-    const start = (page - 1) * pageSize;
-    const rows = filtered.slice(start, start + pageSize);
-    rows.forEach((a) => {
-      if (e.target.checked) selectedIds.add(a.id);
-      else selectedIds.delete(a.id);
-    });
-    renderTable();
-  });
-
   $("#articleTbody").addEventListener("click", (e) => {
     const btn = e.target.closest("[data-action]");
     if (!btn) return;
     const { action, id } = btn.dataset;
     if (action === "view") openDetail(id);
     if (action === "edit") openEditor(id);
-    if (action === "delete") confirmDelete(id);
   });
 
   $("#articleTbody").addEventListener("change", (e) => {
@@ -3554,11 +3447,37 @@ function bindEvents() {
   $("#confirmOk").addEventListener("click", runConfirm);
 
   $("#editSid").addEventListener("change", onSidChange);
-  $("#editDisplayPos").addEventListener("change", syncDisplayPositionUI);
+  $("#editDisplayBrand").addEventListener("change", () => {
+    if (isTwSid() && !$("#editDisplayBrand").checked && !$("#editDisplayCommunity").checked) {
+      showToast("请至少保留一个展示位置");
+      $("#editDisplayBrand").checked = true;
+    }
+    syncDisplayPositionUI();
+  });
+  $("#editDisplayCommunity").addEventListener("change", () => {
+    if (isTwSid() && !$("#editDisplayBrand").checked && !$("#editDisplayCommunity").checked) {
+      showToast("请至少保留一个展示位置");
+      $("#editDisplayCommunity").checked = true;
+    }
+    syncDisplayPositionUI();
+  });
 
   $("#postSid").addEventListener("change", onPostSidChange);
   $("#postSid").addEventListener("input", onPostSidChange);
-  $("#postDisplayPosSelect").addEventListener("change", syncPostDisplayUI);
+  $("#postDisplayBrand").addEventListener("change", () => {
+    if (isPostTwSid() && !$("#postDisplayBrand").checked && !$("#postDisplayCommunity").checked) {
+      showToast("请至少保留一个展示位置");
+      $("#postDisplayBrand").checked = true;
+    }
+    syncPostDisplayUI();
+  });
+  $("#postDisplayCommunity").addEventListener("change", () => {
+    if (isPostTwSid() && !$("#postDisplayBrand").checked && !$("#postDisplayCommunity").checked) {
+      showToast("请至少保留一个展示位置");
+      $("#postDisplayCommunity").checked = true;
+    }
+    syncPostDisplayUI();
+  });
   $("#editBannerBox").addEventListener("click", () => {
     const url = prompt(
       "粘贴品牌中心封面 URL（演示）",
