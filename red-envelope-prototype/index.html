@@ -612,7 +612,7 @@
             logs: [{ operator: "Admin", time: "2026-07-01 09:15", content: "新增红包" }] }
         ],
         campaigns: [
-          { id:"A1", name:"6月充值激活活动", audience:"Recharge_Q2", audienceType:"TagVerse", audienceCount:12486, mode:"循环发放", deliverTime:"2026-07-06 14:10", task:"T1", tasks:["T1","T2"], batch:"A1-T1-1", project:"Dana", coupons:["1001"], status:"执行中", statuses:["执行中"], createdAt:"2026-07-06 11:20", revokeReason:"--",
+          { id:"A1", name:"6月充值激活活动", audience:"Recharge_Q2", audienceType:"TagVerse", audienceCount:12486, mode:"循环发放", deliverTime:"每日 10:00", task:"T1", tasks:["T1","T2"], batch:"A1-T1-2", project:"Dana", coupons:["1001"], status:"执行中", statuses:["执行中"], createdAt:"2026-07-06 11:20", revokeReason:"--",
             logs:[{ operator:"Jenny", time:"2026-07-06 11:20", content:"新增活动发放配置，选择发放人群和发放红包" }] },
           { id:"A2", name:"Dana理财体验活动", audience:"VIP_v4", audienceType:"TagVerse", audienceCount:8200, mode:"特批活动 / 定时发放", deliverTime:"2026-07-08 10:00", task:"T3", tasks:["T3"], batch:"A2-T3", project:"TW", coupons:[], status:"完成", statuses:["完成"], createdAt:"2026-07-06 11:20", revokeReason:"--",
             logs:[{ operator:"Tom", time:"2026-07-06 11:28", content:"全部发放任务收到终态，活动完成" }] },
@@ -621,11 +621,17 @@
           { id:"A4", name:"老客特批激活活动", audience:"导入268人", audienceType:"导入", audienceCount:268, importFile:"A4_import.xlsx", mode:"特批活动 / 循环发放", deliverTime:"每周一 10:00", task:"T4", tasks:["T4"], batch:"A4-T4-3", project:"Dana", coupons:["1001","1001"], status:"执行中", statuses:["执行中"], createdAt:"2026-07-06 11:20", revokeReason:"--",
             logs:[{ operator:"Jenny", time:"2026-07-06 12:12", content:"创建特批循环活动发放配置" }] },
           { id:"A5", name:"高风险特批活动", audience:"导入268人", audienceType:"导入", audienceCount:268, importFile:"A5_import.xlsx", mode:"特批活动 / 立即发放", deliverTime:"待审核通过后立即发放", task:"T2", tasks:["T2"], batch:"A5-T2", project:"TW", coupons:["2001"], status:"审核拒绝", statuses:["审核拒绝"], createdAt:"2026-07-06 11:30", revokeReason:"--",
-            logs:[{ operator:"Admin", time:"2026-07-06 11:45", content:"特批活动人工审核拒绝" }] }
+            logs:[{ operator:"Admin", time:"2026-07-06 11:45", content:"特批活动人工审核拒绝" }] },
+          { id:"A6", name:"单人补发", audience:"添加120人", audienceType:"添加", audienceCount:120, mode:"普通活动 / 立即发放", deliverTime:"2026-06-25 10:30", task:"T1", tasks:["T1","T2"], batch:"A6-T2", project:"Dana", coupons:["1001","2001"], status:"待审核", statuses:["待审核"], createdAt:"2026-06-25 10:20", revokeReason:"--",
+            logs:[{ operator:"Mia", time:"2026-06-25 10:30", content:"创建自定义红包补发活动，进入发放审核" }] },
+          { id:"A7", name:"补偿活动", audience:"导入268人", audienceType:"导入", audienceCount:268, importFile:"A7_import.xlsx", mode:"特批活动 / 立即发放", deliverTime:"待审核通过后立即发放", task:"T1", tasks:["T1","T2"], batch:"A7-T2", project:"Dana", coupons:["1001"], status:"待审核", statuses:["待审核"], createdAt:"2026-06-25 11:00", revokeReason:"--",
+            logs:[{ operator:"Admin", time:"2026-06-25 11:05", content:"创建特批补偿活动，进入发放审核" }] }
         ],
         batches: [
-          { id:"A1-T1-1", campaign:"A1", task:"T1", coupon:"1001,1002", issue:"126/200", status:"执行中", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-06 11:45", reason:"--", loopRound:1,
+          { id:"A1-T1-1", campaign:"A1", task:"T1", coupon:"1001,1002", issue:"126/200", status:"完成", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-06 11:45", reason:"--", loopRound:1,
             logs:[{operator:"Jenny", time:"2026-07-06 11:45", content:"创建循环任务批次（第1次）"}] },
+          { id:"A1-T1-2", campaign:"A1", task:"T1", coupon:"1001,1002", issue:"98/200", status:"执行中", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-13 11:45", reason:"--", loopRound:2,
+            logs:[{operator:"Jenny", time:"2026-07-13 11:45", content:"创建循环任务批次（第2次）"}] },
           { id:"A1-T2-1", campaign:"A1", task:"T2", coupon:"2001", issue:"80/200", status:"执行中", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-06 11:50", reason:"--", loopRound:1,
             logs:[{operator:"Jenny", time:"2026-07-06 11:50", content:"创建循环任务批次（第1次）"}] },
           { id:"A2-T3", campaign:"A2", task:"T3", coupon:"--", issue:"45/45", status:"完成", project:"TW", region:"+91 [IN]", operator:"Jenny", createdAt:"2026-07-06 12:10", reason:"--",
@@ -1022,12 +1028,101 @@
       return (rounds.length ? Math.max(...rounds) : 0) + 1;
     }
 
-    function campaignBatchLinksHtml(row) {
+    // 活动侧展示用：去掉循环次数后缀（A4-T4-1 → A4-T4）
+    function batchConfigId(batchId) {
+      const id = String(batchId || "");
+      return id.replace(/-(\d+)$/, "") || id;
+    }
+
+    function loopPublishTagHtml() {
+      return `<span class="badge badge-neutral">循环发布</span>`;
+    }
+
+    function campaignDeliverTimeText(row = {}) {
+      const text = row.deliverTime || row.deliverAt || "";
+      if (!text || text === "--") return "--";
+      return formatDisplayTime(text);
+    }
+
+    // 任务批次筛选：配置 ID（A1-T1）可匹配其所有循环轮次（A1-T1-1、A1-T1-2）
+    function batchIdMatchesFilter(batchId, query) {
+      const id = String(batchId || "");
+      const q = String(query || "").trim();
+      if (!q) return true;
+      if (id === q) return true;
+      if (batchConfigId(id) === q || batchConfigId(id) === batchConfigId(q)) return true;
+      if (id.startsWith(`${q}-`)) return true;
+      return false;
+    }
+
+    function openBatchListByConfig(configOrBatchId) {
+      const configId = batchConfigId(configOrBatchId);
+      state.filters.batch = {
+        campaignId: configId,
+        activityName: "",
+        project: "",
+        region: "",
+        status: "",
+        start: "",
+        end: ""
+      };
+      state.selectedBatchId = "";
+      switchPage("batch-list", { mainTab: "batch" });
+    }
+
+    // 活动列表/详情：按配置去重（同一任务多轮循环只展示一条）
+    function campaignConfigBatches(row) {
       const batches = campaignBatches(row);
+      const map = new Map();
+      batches.forEach(b => {
+        const configId = batchConfigId(b.id);
+        const [received, total] = String(b.issue || "0/0").split("/").map(n => Number(n) || 0);
+        const prev = map.get(configId);
+        if (!prev) {
+          map.set(configId, {
+            ...b,
+            id: configId,
+            configId,
+            linkId: b.id,
+            receivedSum: received,
+            totalSum: total,
+            issue: `${received}/${total}`
+          });
+          return;
+        }
+        const receivedSum = prev.receivedSum + received;
+        const totalSum = prev.totalSum + total;
+        const newer = String(b.createdAt || "").localeCompare(String(prev.createdAt || "")) >= 0;
+        map.set(configId, {
+          ...prev,
+          task: prev.task || b.task,
+          coupon: prev.coupon || b.coupon,
+          linkId: newer ? b.id : prev.linkId,
+          createdAt: newer ? b.createdAt : prev.createdAt,
+          status: newer ? b.status : prev.status,
+          receivedSum,
+          totalSum,
+          issue: `${receivedSum}/${totalSum}`
+        });
+      });
+      const list = [...map.values()];
+      const taskOrder = campaignTaskIds(row);
+      list.sort((a, b) => {
+        const ia = taskOrder.indexOf(a.task);
+        const ib = taskOrder.indexOf(b.task);
+        if (ia !== -1 || ib !== -1) return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+        return String(a.configId).localeCompare(String(b.configId));
+      });
+      return list;
+    }
+
+    function campaignBatchLinksHtml(row) {
+      const batches = campaignConfigBatches(row);
       if (!batches.length) return "--";
-      return `<div class="flex flex-col gap-1 items-start">${batches.map(b =>
-        `<a class="text-primary hover:underline whitespace-nowrap" data-campaign-batch="${b.id}" title="查看批次详情">${b.id}</a>`
-      ).join("")}</div>`;
+      return `<div class="flex flex-col gap-1 items-start">${batches.map(b => {
+        const configId = b.configId || batchConfigId(b.id);
+        return `<a class="text-primary hover:underline whitespace-nowrap" data-campaign-batch="${configId}" title="查看任务批次列表">${configId}</a>`;
+      }).join("")}</div>`;
     }
 
     function campaignCouponText(row) {
@@ -1147,7 +1242,18 @@
     }
 
     function batchCampaign(row) {
-      return state.data.campaigns.find(c => c.id === row.campaign) || {};
+      const found = state.data.campaigns.find(c => c.id === row.campaign);
+      if (found) return found;
+      const audit = state.data.audits.find(a => a.activity === row.campaign || a.batch === row.id || (Array.isArray(a.batches) && a.batches.includes(row.id)));
+      if (audit) {
+        return {
+          id: audit.activity || row.campaign,
+          name: audit.activityName || audit.object || row.campaign,
+          project: audit.project || row.project,
+          deliverTime: audit.apply || ""
+        };
+      }
+      return { id: row.campaign, name: row.campaign };
     }
 
     function batchTask(row) {
@@ -1245,15 +1351,13 @@
 
     const ISSUE_LIST_COLUMNS = [
       { key: "select", label: "选择", fixed: true, width: 3.5 },
-      { key: "project", label: "项目", fixed: true, width: 5 },
-      { key: "activityId", label: "活动ID", fixed: true, width: 5.5 },
-      { key: "couponId", label: "红包ID", fixed: false, width: 5.5, defaultOn: true },
-      { key: "batch", label: "任务批次", fixed: true, width: 9 },
-      { key: "activityName", label: "活动名称", fixed: false, width: 8.5, defaultOn: true },
-      { key: "auditStatus", label: "审核状态", fixed: true, width: 7 },
-      { key: "applyTime", label: "申请时间", fixed: false, width: 13, defaultOn: true },
-      { key: "reviewTime", label: "审核时间", fixed: false, width: 13, defaultOn: true },
-      { key: "auditOpinion", label: "审核意见", fixed: false, width: 20.5, defaultOn: true },
+      { key: "project", label: "项目", fixed: true, width: 6 },
+      { key: "activityId", label: "活动ID", fixed: true, width: 7 },
+      { key: "activityName", label: "活动名称", fixed: false, width: 14, defaultOn: true },
+      { key: "auditStatus", label: "审核状态", fixed: true, width: 8 },
+      { key: "applyTime", label: "申请时间", fixed: false, width: 15, defaultOn: true },
+      { key: "reviewTime", label: "审核时间", fixed: false, width: 15, defaultOn: true },
+      { key: "auditOpinion", label: "审核意见", fixed: false, width: 22.5, defaultOn: true },
       { key: "ops", label: "操作", fixed: true, width: 9 }
     ];
 
@@ -1567,10 +1671,9 @@
     }
 
     function linkedCouponId(id) {
+      // 审核列表红包ID不跳转，统一纯文本展示
       if (!id || id === "--") return "--";
-      const coupon = state.data.coupons.find(c => String(c.id) === String(id));
-      if (coupon?.name) return `<a class="text-primary hover:underline" data-record-coupon-name="${coupon.name}">${id}</a>`;
-      return `<a class="text-primary hover:underline" data-record-coupon-id="${id}">${id}</a>`;
+      return String(id);
     }
 
     function parseDeductAmount(value) {
@@ -2650,15 +2753,24 @@
     function renderCampaignRecord() {
       const f = state.filters.campaign;
       const statusOptions = ["待审核","执行中","完成","已撤销","审核拒绝"];
-      let rows = state.data.campaigns.filter(r =>
-        (!f.id || [r.id, r.batch, ...campaignTaskIds(r), ...(r.coupons || []), ...campaignBatches(r).map(b => b.id)].some(v => String(v || "").includes(f.id))) &&
-        (!f.activityName || r.name.includes(f.activityName)) &&
-        (!f.taskName || campaignTaskNames(r).includes(f.taskName)) &&
-        (!f.project || r.project === f.project) &&
-        (!(f.statuses || []).length || (f.statuses || []).some(s => campaignStatuses(r).includes(s))) &&
-        (!f.start || comparableDateTime(r.createdAt) >= f.start) &&
-        (!f.end || comparableDateTime(r.createdAt) <= `${f.end} 23:59`)
-      );
+      let rows = state.data.campaigns.filter(r => {
+        const q = String(f.id || "").trim();
+        const idMatched = !q || [
+          r.id,
+          r.batch,
+          ...campaignTaskIds(r),
+          ...(r.coupons || []),
+          ...campaignConfigBatches(r).map(b => b.configId),
+          ...campaignBatches(r).map(b => b.id)
+        ].some(v => String(v || "").includes(q) || batchIdMatchesFilter(v, q));
+        return idMatched &&
+          (!f.activityName || r.name.includes(f.activityName)) &&
+          (!f.taskName || campaignTaskNames(r).includes(f.taskName)) &&
+          (!f.project || r.project === f.project) &&
+          (!(f.statuses || []).length || (f.statuses || []).some(s => campaignStatuses(r).includes(s))) &&
+          (!f.start || comparableDateTime(r.createdAt) >= f.start) &&
+          (!f.end || comparableDateTime(r.createdAt) <= `${f.end} 23:59`);
+      });
       if (state.forceEmpty) rows = [];
       el.query.innerHTML = `
         <div class="coupon-filter-card p-3">
@@ -2668,7 +2780,7 @@
               <option value="Dana" ${f.project==="Dana"?"selected":""}>Dana</option>
               <option value="TW" ${f.project==="TW"?"selected":""}>TW</option>
             </select>
-            <input id="qCampaignId" class="coupon-input" placeholder="活动ID / 任务ID / 红包ID" value="${f.id}">
+            <input id="qCampaignId" class="coupon-input" placeholder="活动ID / 任务批次 / 红包ID" value="${f.id}">
             <input id="qCampaignActivityName" class="coupon-input" placeholder="活动名称" value="${f.activityName}">
             <input id="qCampaignTaskName" class="coupon-input" placeholder="任务名称" value="${f.taskName}">
             <select id="qCampaignStatus" class="coupon-input">
@@ -2701,8 +2813,8 @@
                   <td class="px-3 py-2" title="${r.name}">${r.name}</td>
                   <td class="px-3 py-2">${campaignBatchLinksHtml(r)}</td>
                   <td class="px-3 py-2"><a class="text-primary hover:underline" data-campaign-audience="${r.id}">${campaignAudienceLabel(r)}</a></td>
-                  <td class="px-3 py-2"><div class="flex flex-wrap gap-1">${campaignStatuses(r).map(s => badge(s)).join("")}</div></td>
-                  <td class="px-3 py-2">${formatDisplayTime(r.deliverTime || r.deliverAt)}</td>
+                  <td class="px-3 py-2"><div class="flex flex-wrap gap-1 items-center">${campaignStatuses(r).map(s => badge(s)).join("")}${isLoopCampaign(r) ? loopPublishTagHtml() : ""}</div></td>
+                  <td class="px-3 py-2">${campaignDeliverTimeText(r)}</td>
                   <td class="px-3 py-2">${formatDisplayTime(r.createdAt)}</td>
                   <td class="px-3 py-2 col-ops"><div class="table-ops">
                     <button class="icon-action-btn" title="查看详情" data-campaign-detail="${r.id}">${iconSvg("view")}</button>
@@ -2868,13 +2980,18 @@
         acc.total += total;
         return acc;
       }, { received: 0, total: 0 });
-      const detailRows = relatedBatches.length ? relatedBatches : [{ id: row.batch, task: row.task, coupon: campaignCouponText(row), issue: "0/0" }];
+      const configBatches = campaignConfigBatches(row);
+      const detailRows = configBatches.length
+        ? configBatches
+        : [{ id: batchConfigId(row.batch), configId: batchConfigId(row.batch), linkId: row.batch, task: row.task, coupon: campaignCouponText(row), issue: "0/0" }];
+      const loopTag = isLoopCampaign(row) ? loopPublishTagHtml() : "";
       el.query.innerHTML = `
         <div class="border border-line rounded bg-white text-[12px]">
           <div class="p-4 border-b border-line">
-            <div class="flex items-center gap-3 mb-4">
+            <div class="flex items-center gap-3 mb-4 flex-wrap">
               <div class="text-[18px] font-semibold">${row.name}</div>
               ${campaignStatuses(row).map(s => badge(s)).join("")}
+              ${loopTag}
             </div>
             <div class="grid grid-cols-4 gap-y-4">
               <div><div class="text-[#64748b] mb-1">活动ID</div><div>${row.id}</div></div>
@@ -2884,7 +3001,8 @@
               <div><div class="text-[#64748b] mb-1">发放对象</div><a class="text-primary hover:underline" data-campaign-audience="${row.id}">${campaignAudienceLabel(row)}</a></div>
               <div><div class="text-[#64748b] mb-1">创建人</div><div>Jenny</div></div>
               <div><div class="text-[#64748b] mb-1">创建时间</div><div>${formatDisplayTime(row.createdAt)}</div></div>
-              <div><div class="text-[#64748b] mb-1">备注</div><div>${row.revokeReason && row.revokeReason !== "--" ? row.revokeReason : "--"}</div></div>
+              <div><div class="text-[#64748b] mb-1">发放时间</div><div>${campaignDeliverTimeText(row)}</div></div>
+              <div class="col-span-4"><div class="text-[#64748b] mb-1">备注</div><div>${row.revokeReason && row.revokeReason !== "--" ? row.revokeReason : "--"}</div></div>
             </div>
           </div>
         </div>
@@ -2900,7 +3018,8 @@
               ${detailRows.map(batch => {
                 const task = state.data.tasks.find(t => t.id === batch.task);
                 const [received, total] = String(batch.issue || "0/0").split("/");
-                return `<tr class="border-b border-line/60"><td class="px-3 py-2">${task ? `<a class="text-primary hover:underline" data-campaign-task="${task.id}">${task.id}</a>` : "--"}</td><td class="px-3 py-2">${task?.name || "--"}</td><td class="px-3 py-2">${task?.condition || "--"}</td><td class="px-3 py-2">${batch.coupon || campaignCouponText(row)}</td><td class="px-3 py-2">${task?.type === "理财" ? "--" : "$50"}</td><td class="px-3 py-2">${total || 0}</td><td class="px-3 py-2">${received || 0}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-campaign-batch="${batch.id}">${batch.id}</a></td></tr>`;
+                const displayBatch = batch.configId || batchConfigId(batch.id);
+                return `<tr class="border-b border-line/60"><td class="px-3 py-2">${task ? `<a class="text-primary hover:underline" data-campaign-task="${task.id}">${task.id}</a>` : "--"}</td><td class="px-3 py-2">${task?.name || "--"}</td><td class="px-3 py-2">${task?.condition || "--"}</td><td class="px-3 py-2">${batch.coupon || campaignCouponText(row)}</td><td class="px-3 py-2">${task?.type === "理财" ? "--" : "$50"}</td><td class="px-3 py-2">${total || 0}</td><td class="px-3 py-2">${received || 0}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-campaign-batch="${displayBatch}" title="查看任务批次列表">${displayBatch}</a></td></tr>`;
               }).join("")}
             </tbody>
           </table>
@@ -2918,7 +3037,7 @@
       const statusOptions = ["待审核","执行中","完成","已撤销","已过期","审核拒绝"];
       let rows = state.data.batches.filter(r => {
         const campaign = batchCampaign(r);
-        return (!f.campaignId || r.campaign.includes(f.campaignId) || r.id.includes(f.campaignId)) &&
+        return (!f.campaignId || r.campaign.includes(f.campaignId) || batchIdMatchesFilter(r.id, f.campaignId)) &&
         (!f.activityName || String(campaign.name || "").includes(f.activityName)) &&
         (!f.project || r.project === f.project) &&
         (!f.region || r.region === f.region) &&
@@ -2961,14 +3080,15 @@
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无任务批次数据</div>` : `
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
-            ${tableColgroup([6, 11, 10, 8, 8, 8, 7, 7, 7, 7, 9, 12])}
-            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">批次状态</th><th class="text-left px-3 py-2">关联红包</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">发放数量</th><th class="text-left px-3 py-2">领取数量</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">任务有效期</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
+            ${tableColgroup([5, 10, 9, 8, 7, 9, 7, 6, 6, 6, 6, 8, 13])}
+            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">批次状态</th><th class="text-left px-3 py-2">发放时间</th><th class="text-left px-3 py-2">关联红包</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">发放数量</th><th class="text-left px-3 py-2">领取数量</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">任务有效期</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
             <tbody>
               ${rows.map(r => {
                 const campaign = batchCampaign(r);
                 const task = batchTask(r);
                 const counts = batchIssueCounts(r);
-                return `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project || campaign.project || "--"}</td><td class="px-3 py-2" title="${campaign.name || r.campaign || ""}"><a class="text-primary hover:underline" data-batch-campaign-detail="${campaign.id || r.campaign}">${campaign.name || r.campaign}</a></td><td class="px-3 py-2">${task.id ? `<a class="text-primary hover:underline" data-batch-task-detail="${task.id}">${task.name || "--"}</a>` : "--"}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-batch-detail="${r.id}">${r.id}</a></td><td class="px-3 py-2">${badge(r.status)}</td><td class="px-3 py-2">${batchCouponIds(r)}</td><td class="px-3 py-2">${batchTotalAmount(r) === "--" ? "--" : `$${batchTotalAmount(r)}`}</td><td class="px-3 py-2">${counts.total}</td><td class="px-3 py-2">${counts.received}</td><td class="px-3 py-2">${r.region || "--"}</td><td class="px-3 py-2">${task.type === "无任务" ? "--" : "发放后7天"}</td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="查看" data-batch-detail="${r.id}">${iconSvg("view")}</button><button class="icon-action-btn" title="EDM名单" data-export-batch="${r.id}">${iconSvg("list")}</button><button class="icon-action-btn" title="日志" data-batch-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`;
+                const loopTag = isLoopCampaign(campaign) ? loopPublishTagHtml() : "";
+                return `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project || campaign.project || "--"}</td><td class="px-3 py-2" title="${campaign.name || r.campaign || ""}"><a class="text-primary hover:underline" data-batch-campaign-detail="${campaign.id || r.campaign}">${campaign.name || r.campaign}</a></td><td class="px-3 py-2">${task.id ? `<a class="text-primary hover:underline" data-batch-task-detail="${task.id}">${task.name || "--"}</a>` : "--"}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-batch-detail="${r.id}">${r.id}</a></td><td class="px-3 py-2"><div class="flex flex-wrap gap-1 items-center">${badge(r.status)}${loopTag}</div></td><td class="px-3 py-2">${campaignDeliverTimeText(campaign)}</td><td class="px-3 py-2">${batchCouponIds(r)}</td><td class="px-3 py-2">${batchTotalAmount(r) === "--" ? "--" : `$${batchTotalAmount(r)}`}</td><td class="px-3 py-2">${counts.total}</td><td class="px-3 py-2">${counts.received}</td><td class="px-3 py-2">${r.region || "--"}</td><td class="px-3 py-2">${task.type === "无任务" ? "--" : "发放后7天"}</td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="查看" data-batch-detail="${r.id}">${iconSvg("view")}</button><button class="icon-action-btn" title="EDM名单" data-export-batch="${r.id}">${iconSvg("list")}</button><button class="icon-action-btn" title="日志" data-batch-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`;
               }).join("")}
             </tbody>
           </table>
@@ -3004,14 +3124,27 @@
         (!detailFilter.sid || item.sid.includes(detailFilter.sid)) &&
         (!detailFilter.couponId || item.couponId === detailFilter.couponId)
       );
+      const campaignId = campaign.id || row.campaign || "";
+      const campaignName = campaign.name || row.campaign || "--";
+      const campaignNameHtml = campaignId
+        ? `<a class="text-primary hover:underline" data-batch-campaign-detail="${campaignId}" title="查看活动详情">${campaignName}</a>`
+        : campaignName;
+      const loopTag = isLoopCampaign(campaign) ? loopPublishTagHtml() : "";
       el.query.innerHTML = `
         <div class="border border-line rounded p-4 bg-[#fcfdff] text-[12px]">
-          <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2 mb-2 flex-wrap">
             <div class="text-[14px] font-semibold">任务批次详情 · ${row.id}</div>
+            ${badge(row.status)}
+            ${loopTag}
           </div>
           <div class="grid grid-cols-4 gap-2">
-            <div>活动名称：${campaign.name || row.campaign}</div><div>任务名称：${task.name || "--"}</div><div>批次状态：${badge(row.status)}</div><div>项目：${row.project || campaign.project || "--"}</div>
-            <div>备注：${row.reason}</div>
+            <div>活动名称：${campaignNameHtml}</div>
+            <div>任务名称：${task.name || "--"}</div>
+            <div>项目：${row.project || campaign.project || "--"}</div>
+            <div>发放时间：${campaignDeliverTimeText(campaign)}</div>
+            <div>任务批次配置：${batchConfigId(row.id)}</div>
+            <div>循环轮次：${row.loopRound ? `第${row.loopRound}次` : (isLoopCampaign(campaign) ? "--" : "非循环")}</div>
+            <div class="col-span-2">备注：${row.reason && row.reason !== "--" ? row.reason : "--"}</div>
           </div>
         </div>
       `;
@@ -3022,7 +3155,7 @@
             ${tableColgroup([7, 12, 10, 8, 12, 6, 7, 7, 7, 7, 7, 10])}
             <thead class="bg-[#f8faff] text-[#667085]"><tr class="border-b border-line"><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">数量</th><th class="text-left px-3 py-2">总发放</th><th class="text-left px-3 py-2">总领取</th><th class="text-left px-3 py-2">使用数</th><th class="text-left px-3 py-2">待使用</th><th class="text-left px-3 py-2">使用率</th><th class="text-left px-3 py-2">实际抵扣</th></tr></thead>
             <tbody>
-              ${couponRows.length ? couponRows.map(c => `<tr class="border-b border-line/60"><td class="px-3 py-2">${c.id}</td><td class="px-3 py-2">${c.name}</td><td class="px-3 py-2">${c.type}</td><td class="px-3 py-2">${c.amount}</td><td class="px-3 py-2">${couponValidityValue(couponValidityWithId(c.id, c.valid))}</td><td class="px-3 py-2">${c.qty}</td><td class="px-3 py-2">${c.total}</td><td class="px-3 py-2">${c.received}</td><td class="px-3 py-2">${c.used}</td><td class="px-3 py-2">${c.waiting}</td><td class="px-3 py-2">${c.usageRate}</td><td class="px-3 py-2">${c.discount}</td></tr>`).join("") : `<tr><td class="px-3 py-8 text-center text-muted" colspan="12">理财任务无关联红包</td></tr>`}
+              ${couponRows.length ? couponRows.map(c => `<tr class="border-b border-line/60"><td class="px-3 py-2">${c.id}</td><td class="px-3 py-2">${c.name}</td><td class="px-3 py-2">${c.type}</td><td class="px-3 py-2">${c.amount}</td><td class="px-3 py-2">${couponValidityValue(c.valid || couponValidDaysText(7))}</td><td class="px-3 py-2">${c.qty}</td><td class="px-3 py-2">${c.total}</td><td class="px-3 py-2">${c.received}</td><td class="px-3 py-2">${c.used}</td><td class="px-3 py-2">${c.waiting}</td><td class="px-3 py-2">${c.usageRate}</td><td class="px-3 py-2">${c.discount}</td></tr>`).join("") : `<tr><td class="px-3 py-8 text-center text-muted" colspan="12">理财任务无关联红包</td></tr>`}
             </tbody>
           </table>
         </div>
@@ -3376,9 +3509,9 @@
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无使用记录</div>` : `
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
-            ${tableColgroup([5, 6, 4, 5, 7, 7, 5, 7, 6, 6, 6, 8, 5, 5, 6, 6, 6])}
-            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">SID</th><th class="text-left px-3 py-2">VIP</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">任务配置</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">入金订单</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">实际抵扣</th><th class="text-left px-3 py-2">红包抵扣方式</th><th class="text-left px-3 py-2">领取时间</th><th class="text-left px-3 py-2">使用时间</th></tr></thead>
-            <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("receive","user-coupon-detail","user","sid",r.sid)}">${r.sid}</a></td><td class="px-3 py-2">${r.vip}</td><td class="px-3 py-2">${r.region}</td><td class="px-3 py-2" title="${r.campaign}">${r.campaign}</td><td class="px-3 py-2">${linkedTaskName(r.task, r.batch)}</td><td class="px-3 py-2">${r.couponId || "--"}</td><td class="px-3 py-2" title="${couponTitleFromRecord(r)}">${couponTitleFromRecord(r)}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("batch","batch-detail","batch","id",r.batch)}">${r.batch}</a></td><td class="px-3 py-2" title="${r.condition}">${r.condition}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2" title="${r.depositOrder || r.order || "--"}">${r.depositOrder || r.order || "--"}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${r.deduct}</td><td class="px-3 py-2">${r.deductType}</td><td class="px-3 py-2">${formatDisplayTime(r.rewardTime)}</td><td class="px-3 py-2">${formatDisplayTime(r.useTime)}</td></tr>`).join("")}</tbody>
+            ${tableColgroup([5, 6, 4, 5, 7, 5, 6, 7, 7, 6, 6, 8, 5, 5, 6, 6, 6])}
+            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">SID</th><th class="text-left px-3 py-2">VIP</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">任务配置</th><th class="text-left px-3 py-2">入金订单</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">实际抵扣</th><th class="text-left px-3 py-2">红包抵扣方式</th><th class="text-left px-3 py-2">领取时间</th><th class="text-left px-3 py-2">使用时间</th></tr></thead>
+            <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("receive","user-coupon-detail","user","sid",r.sid)}">${r.sid}</a></td><td class="px-3 py-2">${r.vip}</td><td class="px-3 py-2">${r.region}</td><td class="px-3 py-2" title="${r.campaign}">${r.campaign}</td><td class="px-3 py-2">${r.couponId || "--"}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2" title="${couponTitleFromRecord(r)}">${couponTitleFromRecord(r)}</td><td class="px-3 py-2">${linkedTaskName(r.task, r.batch)}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("batch","batch-detail","batch","id",r.batch)}">${r.batch}</a></td><td class="px-3 py-2" title="${r.condition}">${r.condition}</td><td class="px-3 py-2" title="${r.depositOrder || r.order || "--"}">${r.depositOrder || r.order || "--"}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${r.deduct}</td><td class="px-3 py-2">${r.deductType}</td><td class="px-3 py-2">${formatDisplayTime(r.rewardTime)}</td><td class="px-3 py-2">${formatDisplayTime(r.useTime)}</td></tr>`).join("")}</tbody>
           </table>
         </div>
       `;
@@ -3430,7 +3563,13 @@
           if (f.couponId && !String(r.couponId || "").includes(f.couponId)) return false;
           if (f.status && !String(r.status || "").includes(f.status)) return false;
           const batchIds = auditIssueBatchIds(r);
-          if (f.object && !`${batchIds.join(" ")} ${r.batch || ""} ${r.activity || ""} ${r.activityName || r.object || ""}`.includes(f.object)) return false;
+          if (f.object) {
+            const hit = batchIds.some(id => batchIdMatchesFilter(id, f.object) || String(id).includes(f.object))
+              || batchIdMatchesFilter(r.batch, f.object)
+              || String(r.activity || "").includes(f.object)
+              || String(r.activityName || r.object || "").includes(f.object);
+            if (!hit) return false;
+          }
           if (f.start && comparableDateTime(r.apply) < f.start) return false;
           if (f.end && comparableDateTime(r.apply) > `${f.end} 23:59`) return false;
           if (f.reviewStart && (!(r.reviewTime && r.reviewTime !== "--") || comparableDateTime(r.reviewTime) < f.reviewStart)) return false;
@@ -3567,6 +3706,7 @@
             return auditBatchLinksHtml(batchIds);
           }
           if (col.key === "activityId" && r.activityId && r.activityId !== "--") return `<a class="text-primary hover:underline" data-nav="${makeNav("campaign","campaign-detail","campaign","id",r.activityId)}">${r.activityId}</a>`;
+          if (col.key === "couponId") return r.couponId && r.couponId !== "--" ? r.couponId : "--";
           if (col.key === "couponTitle") {
             // 领取/审核列表：标题 = 金额 + 类型，纯文本，不可跳转
             const title = generatedCouponName(r.couponType, r.amount) || r.couponTitle || "--";
@@ -4576,8 +4716,7 @@
           renderModalPage("task-detail-modal");
         });
         document.querySelectorAll("[data-campaign-batch]").forEach(btn => btn.onclick = () => {
-          state.selectedBatchId = btn.dataset.campaignBatch;
-          switchPage("batch-detail", { mainTab: "batch" });
+          openBatchListByConfig(btn.dataset.campaignBatch);
         });
         document.querySelectorAll("[data-campaign-audience]").forEach(btn => btn.onclick = () => {
           const row = state.data.campaigns.find(x => x.id === btn.dataset.campaignAudience);
@@ -5050,8 +5189,7 @@
         switchPage("coupon-list", { mainTab: "coupon" });
       });
       document.querySelectorAll("[data-campaign-batch]").forEach(btn => btn.onclick = () => {
-        state.selectedBatchId = btn.dataset.campaignBatch;
-        switchPage("batch-detail", { mainTab: "batch" });
+        openBatchListByConfig(btn.dataset.campaignBatch);
       });
       document.querySelectorAll("[data-campaign-audience]").forEach(btn => btn.onclick = () => {
         const row = state.data.campaigns.find(x => x.id === btn.dataset.campaignAudience);
