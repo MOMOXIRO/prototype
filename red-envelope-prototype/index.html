@@ -59,6 +59,21 @@
     .modal-panel { transform: translateY(14px) scale(.98); opacity: 0; transition: transform var(--anim-normal) ease, opacity var(--anim-normal) ease; }
     .modal-open .modal-mask { opacity: 1; pointer-events: auto; }
     .modal-open .modal-panel { transform: translateY(0) scale(1); opacity: 1; }
+    .modal-close-btn {
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 22px;
+      line-height: 1;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .modal-close-btn:hover { color: #334155; background: #f1f5f9; }
     .skeleton {
       background: linear-gradient(90deg,#edf2f7 25%,#f8fafc 37%,#edf2f7 63%);
       background-size: 400% 100%;
@@ -420,7 +435,7 @@
       <div class="modal-panel w-full max-w-5xl bg-white border border-line rounded-md shadow-pop overflow-hidden">
         <div class="px-4 py-3 border-b border-line flex items-center justify-between">
           <h3 id="modalTitle" class="font-semibold text-lg">弹窗</h3>
-          <button id="closeModalBtn" class="text-muted text-sm hover:text-text">关闭</button>
+          <button id="closeModalBtn" class="modal-close-btn" aria-label="关闭" title="关闭">×</button>
         </div>
         <div id="modalBody" class="p-4 max-h-[72vh] overflow-auto text-sm"></div>
         <div id="modalFooter" class="p-4 border-t border-line flex justify-end gap-2"></div>
@@ -596,8 +611,8 @@
             logs: [{ operator:"Jenny", time:"2026-06-20 16:18", content:"编辑任务配置：实盘手数 >= 2" }] },
           { id:"T3", name:"理财任务", type:"理财", app:"Dana", condition:"理财时长30天，年化收益2%，最低存款金额1000", coupons:[], taskValidType:"发放后", taskValidDays:"30", appJump:"钱包页-卡券", couponRatios:{}, status:"禁用", enabled:false, updatedAt:"2026-06-18 11:02",
             logs: [{ operator:"Admin", time:"2026-06-18 11:02", content:"新增理财任务，理财任务不关联红包" }] },
-          { id:"T4", name:"无任务体验金", type:"无任务", app:"Dana", condition:"--", coupons:["1001"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"1001":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-22 14:26",
-            logs: [{ operator:"Mia", time:"2026-06-22 14:26", content:"新增无任务奖励，关联红包 1001" }] }
+          { id:"T4", name:"无任务体验金", type:"无任务", app:"Dana", condition:"--", coupons:["1001","1002"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"1001":"100","1002":"50"}, status:"启用", enabled:true, updatedAt:"2026-06-22 14:26",
+            logs: [{ operator:"Mia", time:"2026-06-22 14:26", content:"新增无任务奖励，关联红包 1001、1002" }] }
         ],
         coupons: [
           { id:"1001", project:"Dana", name:"新人户现金红包", type:"现金红包", amount:"$15", validDays:"7", totalIssue:500, totalReceive:50, status:"启用", enabled:true,
@@ -647,12 +662,12 @@
             logs:[{operator:"Jenny", time:"2026-07-20 10:00", content:"创建循环任务批次（第3次）"}] }
         ],
         receives: [
-          { sid:"880102", vip:"V3", project:"Dana", region:"+62 [ID]", campaign:"6月充值激活活动", task:"充50送现金", taskType:"充值", couponId:"1001", coupon:"新人户现金红包", couponType:"现金红包", batch:"A1-T1-1", condition:"充值金额 >= 50", amount:"$15", status:"已激活", receiveType:"用户领取", sent:"25-06-2026 10:23", receive:"25-06-2026 10:23", receiveDate:"2026-06-25", auditType:"自动审核", reviewer:"系统", order:"ORD2142111", useTime:"25-06-2026 10:23", reason:"--", verifyStatus:"已实名" },
+          { sid:"880102", vip:"V3", project:"Dana", region:"+62 [ID]", campaign:"6月充值激活活动", task:"充50送现金", taskType:"充值", couponId:"1001", coupon:"新人户现金红包", couponType:"现金红包", batch:"A1-T1-1", condition:"充值金额 >= 50", amount:"$15", status:"已激活", receiveType:"客户领取", sent:"25-06-2026 10:23", receive:"25-06-2026 10:23", receiveDate:"2026-06-25", auditType:"自动审核", reviewer:"系统", order:"ORD2142111", useTime:"25-06-2026 10:23", reason:"--", verifyStatus:"已实名" },
           { sid:"880103", vip:"V1", project:"TW", region:"+91 [IN]", campaign:"6月理财活动", task:"理财任务", taskType:"理财", couponId:"--", coupon:"--", couponType:"--", batch:"A2-T3", condition:"理财30天", amount:"--", status:"待激活", receiveType:"系统发放", sent:"25-06-2026 10:23", receive:"--", receiveDate:"", auditType:"人工审核", reviewer:"Jenny", order:"--", useTime:"--", reason:"用户已有未结束同类型任务", verifyStatus:"已实名" },
           { sid:"26070001", vip:"V4", project:"Dana", region:"+62 [ID]", campaign:"新人活动", task:"充值50送现金", taskType:"充值", couponId:"1001", coupon:"50元首充红包", couponType:"现金红包", batch:"A2-T4", condition:"充值金额 >= 50", amount:"$20", status:"已激活", receiveType:"系统发放", sent:"25-06-2026 10:23", receive:"25-06-2026 10:23", receiveDate:"2026-06-25", auditType:"人工审核", reviewer:"--", order:"--", useTime:"--", reason:"--", verifyStatus:"已实名" },
           { sid:"26070002", vip:"V2", project:"Dana", region:"+62 [ID]", campaign:"月末冲量活动", task:"实盘2手任务", taskType:"实盘交易", couponId:"2001", coupon:"5元手续费抵扣券", couponType:"手续费抵扣红包", batch:"A8-T5", condition:"实盘手数 >= 2", amount:"$5", status:"已使用", receiveType:"系统发放", sent:"25-06-2026 09:45", receive:"25-06-2026 09:45", receiveDate:"2026-06-25", auditType:"人工审核", reviewer:"Jenny", order:"ORD26070002", useTime:"25-06-2026 12:40", reason:"--", verifyStatus:"已实名" },
           { sid:"26070003", vip:"V1", project:"TW", region:"+91 [IN]", campaign:"拉新活动", task:"无任务奖励", taskType:"无任务", couponId:"1002", coupon:"8元盈亏抵扣红包", couponType:"盈亏抵扣红包", batch:"A9-T5", condition:"--", amount:"$8", status:"待激活", receiveType:"系统发放", sent:"25-06-2026 09:20", receive:"--", receiveDate:"", auditType:"人工审核", reviewer:"Tom", order:"--", useTime:"--", reason:"审核拒绝", verifyStatus:"已实名" },
-          { sid:"26070004", vip:"V5", project:"Dana", region:"+880 [BD]", campaign:"提现促活活动", task:"无任务奖励", taskType:"无任务", couponId:"1001", coupon:"提现免佣券", couponType:"提现免佣券", batch:"A10-T6", condition:"--", amount:"$3", status:"待激活", receiveType:"运营补发", sent:"25-06-2026 11:10", receive:"--", receiveDate:"", auditType:"自动审核", reviewer:"系统", order:"--", useTime:"--", reason:"--", verifyStatus:"已实名" }
+          { sid:"26070004", vip:"V5", project:"Dana", region:"+880 [BD]", campaign:"提现促活活动", task:"无任务奖励", taskType:"无任务", couponId:"1001", coupon:"提现免佣券", couponType:"提现免佣券", batch:"A10-T6", condition:"--", amount:"$3", status:"待激活", receiveType:"系统发放", sent:"25-06-2026 11:10", receive:"--", receiveDate:"", auditType:"自动审核", reviewer:"系统", order:"--", useTime:"--", reason:"--", verifyStatus:"已实名" }
         ],
         usages: [
           { sid:"880102", vip:"V3", project:"Dana", region:"+62 [ID]", campaign:"6月充值激活活动", task:"充50送现金", taskType:"充值", couponId:"1001", coupon:"新人户现金红包", couponType:"现金红包", batch:"A1-T1-1", condition:"充值金额 >= 50", depositOrder:"HCZ1020260714494801", order:"HCZ1020260714494801", amount:"$10", deduct:"$8", deductType:"金额封顶", rewardTime:"25-06-2026 10:23", useTime:"25-06-2026 10:23", useDate:"2026-06-25", status:"自动审核", verifyStatus:"已实名" },
@@ -758,6 +773,18 @@
       }, 2400);
     }
 
+    function normalizeModalFooter(footer = "") {
+      const html = String(footer || "").trim();
+      if (!html) return "";
+      const tmp = document.createElement("div");
+      tmp.innerHTML = html;
+      const buttons = [...tmp.querySelectorAll("button")];
+      if (!buttons.length) return html;
+      // 仅「关闭/知道了」时与顶部叉号重复，去掉底部关闭
+      const onlyClose = buttons.every(btn => /^(关闭|知道了)$/.test((btn.textContent || "").trim()));
+      return onlyClose ? "" : html;
+    }
+
     function openModal({ title, body, footer, size = "lg" }) {
       if (modalCloseTimer) {
         clearTimeout(modalCloseTimer);
@@ -777,7 +804,9 @@
       }
       el.modalTitle.textContent = title;
       el.modalBody.innerHTML = body || "";
-      el.modalFooter.innerHTML = footer || "";
+      const footerHtml = normalizeModalFooter(footer);
+      el.modalFooter.innerHTML = footerHtml;
+      el.modalFooter.classList.toggle("hidden", !footerHtml);
       el.modalHost.classList.add("modal-open");
       el.modalHost.classList.remove("pointer-events-none");
       bindModalClose();
@@ -814,15 +843,16 @@
 
     function openStackedModal({ title, body, footer }) {
       const host = document.createElement("div");
+      const footerHtml = normalizeModalFooter(footer);
       host.className = "stacked-modal-host fixed inset-0 z-[120] bg-black/10 flex items-center justify-center p-4 opacity-0 transition-opacity";
       host.innerHTML = `
         <div class="w-full max-w-5xl bg-white border border-line rounded-md shadow-pop overflow-hidden pointer-events-auto">
           <div class="px-4 py-3 border-b border-line flex items-center justify-between">
             <h3 class="font-semibold text-lg">${title}</h3>
-            <button data-close-stacked-modal class="text-muted text-sm hover:text-text">关闭</button>
+            <button data-close-stacked-modal class="modal-close-btn" aria-label="关闭" title="关闭">×</button>
           </div>
           <div class="stacked-modal-body p-4 max-h-[72vh] overflow-auto text-sm">${body || ""}</div>
-          <div class="stacked-modal-footer p-4 border-t border-line flex justify-end gap-2">${footer || ""}</div>
+          <div class="stacked-modal-footer p-4 border-t border-line flex justify-end gap-2 ${footerHtml ? "" : "hidden"}">${footerHtml}</div>
         </div>
       `;
       document.body.appendChild(host);
@@ -1036,6 +1066,13 @@
 
     function campaignDeliverTimeText(row = {}) {
       const text = row.deliverTime || row.deliverAt || "";
+      if (!text || text === "--") return "--";
+      return formatDisplayTime(text);
+    }
+
+    // 任务批次发放时间：取该批次实际发放/创建时间，不用活动循环规则文案
+    function batchDeliverTimeText(batch = {}) {
+      const text = batch.deliverTime || batch.issueTime || batch.createdAt || "";
       if (!text || text === "--") return "--";
       return formatDisplayTime(text);
     }
@@ -1262,7 +1299,7 @@
         taskId: task.id,
         type: task.type,
         task: `${task.id} ${task.name}${task.condition && task.condition !== "--" ? `；${task.condition}` : ""}`,
-        reward: task.type === "理财" ? "理财任务奖励按任务配置展示" : (taskCoupons.length ? taskCoupons.map(c => `${c.id} ${couponTitle(c)} ${c.amount}`).join("，") : "--"),
+        reward: task.type === "理财" ? "理财任务奖励按任务配置展示" : (taskCoupons.length ? taskCoupons.map(c => `${c.id} ${couponTitle(c)}`).join("，") : "--"),
         taskValid: formatTaskValidity(task),
         couponValid: task.type === "理财" ? "--" : (taskCoupons.length ? taskCoupons.map(c => couponValidityWithId(c.id, couponValidDaysText(c.validDays))).join("，") : couponValidDaysText(7))
       };
@@ -1280,6 +1317,21 @@
 
     function campaignHasCustomTask() {
       return (state.campaignDraft.taskItems || []).some(item => item.custom);
+    }
+
+    function campaignCustomAmounts(item = {}) {
+      if (Array.isArray(item.amounts) && item.amounts.length) return item.amounts.map(v => String(v ?? ""));
+      if (item.amount != null && String(item.amount).trim() !== "") return [String(item.amount).trim()];
+      return [""];
+    }
+
+    function syncCampaignCustomReward(item) {
+      if (!item || !item.custom) return;
+      const amounts = campaignCustomAmounts(item).map(v => String(v || "").trim()).filter(Boolean);
+      item.amounts = campaignCustomAmounts(item);
+      item.amount = amounts[0] || "";
+      item.reward = amounts.length ? amounts.map(a => `自定义现金红包 $${a}`).join("，") : "自定义现金红包";
+      item.couponValid = amounts.length > 1 ? amounts.map(() => "领取后7天").join("，") : "领取后7天";
     }
 
     function batchCampaign(row) {
@@ -2162,9 +2214,12 @@
           ${readonly ? "" : `<div class="mt-3 text-[12px] leading-5 text-[#b7791f]">{number}：实盘交易任务参数；{count}：充值金额任务参数；{ratio}：抵扣比例参数；<br>{days}：理财时长参数；{rate}：理财年化收益参数；{deposit}：最低存款金额参数；</div><div class="text-[12px] text-[#64748b] mt-1">红包标题默认来自红包标题多语言模板，可在当前任务内单独编辑；红包描述仅保存当前任务内该红包组合的副本。</div>`}
         </div>
       </div>`;
-      host.querySelector(".stacked-modal-footer").innerHTML = readonly
+      const stackedFooter = host.querySelector(".stacked-modal-footer");
+      const stackedFooterHtml = normalizeModalFooter(readonly
         ? `<button class="${btnClass(false,true)}" data-close-stacked-modal>关闭</button>`
-        : `<button class="${btnClass(false,true)}" data-close-stacked-modal>取消</button><button id="btnSaveTaskCouponConfig" class="${btnClass(true,true)}">保存</button>`;
+        : `<button class="${btnClass(false,true)}" data-close-stacked-modal>取消</button><button id="btnSaveTaskCouponConfig" class="${btnClass(true,true)}">保存</button>`);
+      stackedFooter.innerHTML = stackedFooterHtml;
+      stackedFooter.classList.toggle("hidden", !stackedFooterHtml);
       host.querySelectorAll("[data-close-stacked-modal]").forEach(btn => btn.onclick = () => closeStackedModal(host));
       host.querySelectorAll("[data-stacked-task-lang-item]").forEach(btn => {
         btn.onclick = () => {
@@ -2539,7 +2594,7 @@
       if (draft.audienceType === "导入" && !(draft.sidList || []).length) return "请先导入有效名单";
       if (!draft.taskItems.length) return "请至少添加一个任务或自定义红包";
       if (draft.taskItems.length > MAX_CAMPAIGN_TASKS) return `单个活动最多添加${MAX_CAMPAIGN_TASKS}个任务（含自定义红包任务）`;
-      if (draft.taskItems.some(item => item.custom && !item.amount)) return "自定义红包金额必填";
+      if (draft.taskItems.some(item => item.custom && !campaignCustomAmounts(item).some(a => String(a || "").trim()))) return "自定义红包金额必填";
       if (draft.deliverType === "定时发放" && !draft.deliverAt) return "请填写定时发放时间";
       if (draft.deliverType === "循环发放" && draft.loopFreq !== "每日" && !draft.loopPoint) return "循环发放需选择每周几/每月几号";
       if (draft.deliverType === "循环发放" && !draft.loopTime) return "循环发放需填写发送时间";
@@ -2953,7 +3008,7 @@
                     <tr class="border-b border-line/60">
                       <td class="px-3 py-2">${item.custom ? "无任务" : (item.type || "--")}</td>
                       <td class="px-3 py-2">${item.custom ? (item.task === "自定义任务：无任务奖励" ? "无任务奖励" : item.task) : item.task}</td>
-                      <td class="px-3 py-2">${item.custom ? `<input class="border border-line rounded px-2 py-1.5 w-[180px]" data-campaign-custom-amount="${idx}" placeholder="请输入红包金额" value="${item.amount || ""}">` : item.reward}</td>
+                      <td class="px-3 py-2">${item.custom ? `<div class="space-y-1.5">${campaignCustomAmounts(item).map((amt, aIdx) => `<div class="flex items-center gap-1"><input class="border border-line rounded px-2 py-1.5 w-[140px]" data-campaign-custom-amount="${idx}" data-amount-index="${aIdx}" placeholder="请输入红包金额" value="${amt || ""}">${campaignCustomAmounts(item).length > 1 ? `<button type="button" class="text-danger hover:underline whitespace-nowrap" data-remove-custom-amount="${idx}" data-amount-index="${aIdx}">删除</button>` : ""}</div>`).join("")}${campaignCustomAmounts(item).length < MAX_TASK_COUPONS ? `<button type="button" class="text-primary hover:underline text-[12px]" data-add-custom-amount="${idx}">添加红包</button>` : ""}</div>` : item.reward}</td>
                       <td class="px-3 py-2">${couponValidityValue(item.couponValid)}</td>
                       <td class="px-3 py-2">${item.taskValid}</td>
                       <td class="px-3 py-2"><button class="text-danger hover:underline" data-remove-campaign-item="${idx}">删除</button></td>
@@ -3042,14 +3097,12 @@
             </div>
             <div class="grid grid-cols-4 gap-y-4">
               <div><div class="text-[#64748b] mb-1">活动ID</div><div>${row.id}</div></div>
-              <div><div class="text-[#64748b] mb-1">发放总量</div><div>${totals.total || row.audienceCount || 0}</div></div>
-              <div><div class="text-[#64748b] mb-1">领取数量</div><div>${totals.received}</div></div>
               <div><div class="text-[#64748b] mb-1">项目</div><div>${row.project || "--"}</div></div>
               <div><div class="text-[#64748b] mb-1">发放对象</div><a class="text-primary hover:underline" data-campaign-audience="${row.id}">${campaignAudienceLabel(row)}</a></div>
               <div><div class="text-[#64748b] mb-1">创建人</div><div>Jenny</div></div>
               <div><div class="text-[#64748b] mb-1">创建时间</div><div>${formatDisplayTime(row.createdAt)}</div></div>
               <div><div class="text-[#64748b] mb-1">发放时间</div><div>${campaignDeliverTimeText(row)}</div></div>
-              <div class="col-span-4"><div class="text-[#64748b] mb-1">备注</div><div>${row.revokeReason && row.revokeReason !== "--" ? row.revokeReason : "--"}</div></div>
+              <div class="col-span-2"><div class="text-[#64748b] mb-1">备注</div><div>${row.revokeReason && row.revokeReason !== "--" ? row.revokeReason : "--"}</div></div>
             </div>
           </div>
         </div>
@@ -3135,7 +3188,7 @@
                 const campaign = batchCampaign(r);
                 const task = batchTask(r);
                 const counts = batchIssueCounts(r);
-                return `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project || campaign.project || "--"}</td><td class="px-3 py-2" title="${campaign.name || r.campaign || ""}"><a class="text-primary hover:underline" data-batch-campaign-detail="${campaign.id || r.campaign}">${campaign.name || r.campaign}</a></td><td class="px-3 py-2">${task.id ? `<a class="text-primary hover:underline" data-batch-task-detail="${task.id}">${task.name || "--"}</a>` : "--"}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-batch-detail="${r.id}">${r.id}</a></td><td class="px-3 py-2">${badge(r.status)}</td><td class="px-3 py-2">${campaignDeliverTimeText(campaign)}</td><td class="px-3 py-2">${batchCouponIds(r)}</td><td class="px-3 py-2">${batchTotalAmount(r) === "--" ? "--" : `$${batchTotalAmount(r)}`}</td><td class="px-3 py-2">${counts.total}</td><td class="px-3 py-2">${counts.received}</td><td class="px-3 py-2">${r.region || "--"}</td><td class="px-3 py-2">${task.type === "无任务" ? "--" : "发放后7天"}</td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="查看" data-batch-detail="${r.id}">${iconSvg("view")}</button><button class="icon-action-btn" title="EDM名单" data-export-batch="${r.id}">${iconSvg("list")}</button><button class="icon-action-btn" title="日志" data-batch-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`;
+                return `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project || campaign.project || "--"}</td><td class="px-3 py-2" title="${campaign.name || r.campaign || ""}"><a class="text-primary hover:underline" data-batch-campaign-detail="${campaign.id || r.campaign}">${campaign.name || r.campaign}</a></td><td class="px-3 py-2">${task.id ? `<a class="text-primary hover:underline" data-batch-task-detail="${task.id}">${task.name || "--"}</a>` : "--"}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-batch-detail="${r.id}">${r.id}</a></td><td class="px-3 py-2">${badge(r.status)}</td><td class="px-3 py-2">${batchDeliverTimeText(r)}</td><td class="px-3 py-2">${batchCouponIds(r)}</td><td class="px-3 py-2">${batchTotalAmount(r) === "--" ? "--" : `$${batchTotalAmount(r)}`}</td><td class="px-3 py-2">${counts.total}</td><td class="px-3 py-2">${counts.received}</td><td class="px-3 py-2">${r.region || "--"}</td><td class="px-3 py-2">${task.type === "无任务" ? "--" : "发放后7天"}</td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="查看" data-batch-detail="${r.id}">${iconSvg("view")}</button><button class="icon-action-btn" title="EDM名单" data-export-batch="${r.id}">${iconSvg("list")}</button><button class="icon-action-btn" title="日志" data-batch-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`;
               }).join("")}
             </tbody>
           </table>
@@ -3186,10 +3239,8 @@
             <div>活动名称：${campaignNameHtml}</div>
             <div>任务名称：${task.name || "--"}</div>
             <div>项目：${row.project || campaign.project || "--"}</div>
-            <div>发放时间：${campaignDeliverTimeText(campaign)}</div>
-            <div>任务批次配置：${batchConfigId(row.id)}</div>
-            <div>循环轮次：${row.loopRound ? `第${row.loopRound}次` : (isLoopCampaign(campaign) ? "--" : "非循环")}</div>
-            <div class="col-span-2">备注：${row.reason && row.reason !== "--" ? row.reason : "--"}</div>
+            <div>发放时间：${batchDeliverTimeText(row)}</div>
+            <div class="col-span-4">备注：${row.reason && row.reason !== "--" ? row.reason : "--"}</div>
           </div>
         </div>
       `;
@@ -3499,7 +3550,7 @@
             <select id="qReceiveCouponType" class="coupon-input"><option value="">红包类型</option><option ${f.couponType==="现金红包"?"selected":""}>现金红包</option><option ${f.couponType==="手续费抵扣红包"?"selected":""}>手续费抵扣红包</option><option ${f.couponType==="盈亏抵扣红包"?"selected":""}>盈亏抵扣红包</option><option ${f.couponType==="提现免佣券"?"selected":""}>提现免佣券</option><option ${f.couponType==="--"?"selected":""}>--</option></select>
             <select id="qReceiveStatus" class="coupon-input"><option value="">红包状态</option><option ${f.couponStatus==="待激活"?"selected":""}>待激活</option><option ${f.couponStatus==="已激活"?"selected":""}>已激活</option><option ${f.couponStatus==="已使用"?"selected":""}>已使用</option><option ${f.couponStatus==="已失效"?"selected":""}>已失效</option><option ${f.couponStatus==="已回收"?"selected":""}>已回收</option></select>
             <select id="qReceiveTaskType" class="coupon-input"><option value="">任务类型</option><option ${f.taskType==="无任务"?"selected":""}>无任务</option><option ${f.taskType==="充值"?"selected":""}>充值</option><option ${f.taskType==="实盘交易"?"selected":""}>实盘交易</option><option ${f.taskType==="理财"?"selected":""}>理财</option></select>
-            <select id="qReceiveType" class="coupon-input"><option value="">领取方式</option><option ${f.receiveType==="用户领取"?"selected":""}>用户领取</option><option ${f.receiveType==="系统发放"?"selected":""}>系统发放</option><option ${f.receiveType==="运营补发"?"selected":""}>运营补发</option><option ${f.receiveType==="导入发放"?"selected":""}>导入发放</option></select>
+            <select id="qReceiveType" class="coupon-input"><option value="">领取方式</option><option ${f.receiveType==="系统发放"?"selected":""}>系统发放</option><option ${f.receiveType==="客户领取"?"selected":""}>客户领取</option></select>
             <div class="filter-more">
               <select id="qReceiveAudit" class="coupon-input"><option value="">审核方式</option><option ${f.auditType==="人工审核"?"selected":""}>人工审核</option><option ${f.auditType==="自动审核"?"selected":""}>自动审核</option></select>
               <select id="qReceiveRegion" class="coupon-input"><option value="">地区</option><option ${f.region==="+880 [BD]"?"selected":""}>+880 [BD]</option><option ${f.region==="+234 [NG]"?"selected":""}>+234 [NG]</option><option ${f.region==="+95 [MM]"?"selected":""}>+95 [MM]</option><option ${f.region==="+92 [PK]"?"selected":""}>+92 [PK]</option><option ${f.region==="+91 [IN]"?"selected":""}>+91 [IN]</option><option ${f.region==="+86 [CN]"?"selected":""}>+86 [CN]</option><option ${f.region==="+84 [VN]"?"selected":""}>+84 [VN]</option><option ${f.region==="+62 [ID]"?"selected":""}>+62 [ID]</option></select>
@@ -3680,7 +3731,7 @@
         ? `<div class="coupon-filter-card p-3">
             <div class="grid grid-cols-6 gap-3 text-[12px]">
               <select id="qAuditProject" class="coupon-input"><option value="">项目</option><option value="Dana" ${f.project==="Dana"?"selected":""}>Dana</option><option value="TW" ${f.project==="TW"?"selected":""}>TW</option></select>
-              <input id="qAuditSid" class="coupon-input" placeholder="用户SID" value="${f.sid || ""}">
+              <input id="qAuditSid" class="coupon-input" placeholder="SID" value="${f.sid || ""}">
               <input id="qAuditCouponId" class="coupon-input" placeholder="红包ID" value="${f.couponId}">
               <input id="qAuditDepositOrder" class="coupon-input" placeholder="入金订单" value="${f.depositOrder || ""}">
               <select id="qAuditCouponType" class="coupon-input"><option value="">红包类型</option><option ${f.couponType==="现金红包"?"selected":""}>现金红包</option><option ${f.couponType==="手续费抵扣红包"?"selected":""}>手续费抵扣红包</option><option ${f.couponType==="盈亏抵扣红包"?"selected":""}>盈亏抵扣红包</option><option ${f.couponType==="提现免佣券"?"selected":""}>提现免佣券</option></select>
@@ -4121,12 +4172,7 @@
         const row = state.data.campaigns.find(x => x.id === state.selectedCampaignId);
         openModal({
           title: `${row?.audience || "TagVerse"} 人群包详情`,
-          body: `<div class="mb-4 grid grid-cols-[1fr_180px_180px] gap-3 text-[12px]">
-            <div></div>
-            <div class="border border-line rounded bg-[#f8faff] px-4 py-2"><div class="text-[#94a3b8]">发放时间</div><div class="font-semibold">${formatDisplayTime(row?.deliverTime || row?.createdAt)}</div></div>
-            <div class="border border-line rounded bg-[#f8faff] px-4 py-2"><div class="text-[#94a3b8]">发放人数</div><div class="font-semibold">${row?.audienceCount || 0} 人</div></div>
-          </div>
-          <div class="grid grid-cols-[280px_1fr] gap-6 text-[12px]">
+          body: `<div class="grid grid-cols-[280px_1fr] gap-6 text-[12px]">
             <div class="bg-[#f6f8fc] border border-line rounded p-5 space-y-5">
               <div><div class="font-semibold text-[14px] border-l-4 border-primary pl-2 mb-3">基本属性</div><div class="grid grid-cols-2 gap-y-3"><span class="font-medium">项目：</span><span>${row?.project || "Dana"}</span><span class="font-medium">地区：</span><span>+62 [ID]</span><span class="font-medium">已激活邮箱：</span><span>是</span><span class="font-medium">已实名：</span><span>是</span><span class="font-medium">手机号：</span><span>已绑定</span></div></div>
               <div><div class="font-semibold text-[14px] border-l-4 border-primary pl-2 mb-3">用户身份关联的属性</div><div>推广员、代理用户</div></div>
@@ -4882,10 +4928,12 @@
           state.campaignDraft.reminderTemplate = val("fReminderTemplate", state.campaignDraft.reminderTemplate);
           document.querySelectorAll("[data-campaign-custom-amount]").forEach(input => {
             const item = state.campaignDraft.taskItems[Number(input.dataset.campaignCustomAmount)];
-            if (item) {
-              item.amount = input.value.trim();
-              item.reward = input.value.trim() ? `自定义现金红包 $${input.value.trim()}` : "自定义现金红包";
-            }
+            if (!item) return;
+            const amounts = campaignCustomAmounts(item);
+            const aIdx = Number(input.dataset.amountIndex || 0);
+            amounts[aIdx] = input.value.trim();
+            item.amounts = amounts;
+            syncCampaignCustomReward(item);
           });
         };
         campaignBack.onclick = () => confirmLeaveCampaignForm(syncDraft);
@@ -4925,11 +4973,17 @@
         if (viewFailures) viewFailures.onclick = () => {
           const rows = state.campaignDraft.importFailures || [];
           if (!rows.length) return notify("success", "暂无失败数据");
-          openModal({
-            title: "导入失败记录",
-            body: `<div class="border border-line rounded overflow-hidden"><table class="w-full text-[13px]"><thead class="bg-[#f3f6fb]"><tr><th class="text-left px-3 py-2">SID</th><th class="text-left px-3 py-2">失败原因</th></tr></thead><tbody>${rows.map(r => `<tr class="border-t border-line"><td class="px-3 py-2">${r.sid}</td><td class="px-3 py-2 text-danger">${r.reason}</td></tr>`).join("")}</tbody></table></div>`,
-            footer: `<button class="${btnClass(true,true)}" data-close-modal>知道了</button>`
-          });
+          const csv = ["SID,失败原因", ...rows.map(r => `${r.sid},${String(r.reason || "").replace(/,/g, "，")}`)].join("\n");
+          const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `导入失败数据_${(state.campaignDraft.importedFileName || "audience").replace(/\.[^.]+$/, "")}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          notify("success", `已下载失败数据 ${rows.length} 条`);
         };
         const addCampaignSid = document.getElementById("btnAddCampaignSid");
         if (addCampaignSid) addCampaignSid.onclick = () => {
@@ -5010,13 +5064,37 @@
             task: "无任务奖励",
             reward: "自定义现金红包",
             taskValid: "--",
-            couponValid: couponValidityWithId("自定义红包", "无期限"),
+            couponValid: "领取后7天",
             custom: true,
-            amount: ""
+            amount: "",
+            amounts: [""]
           });
           notify("success", "已添加自定义任务");
           render();
         };
+        document.querySelectorAll("[data-add-custom-amount]").forEach(btn => btn.onclick = () => {
+          syncDraft();
+          const item = state.campaignDraft.taskItems[Number(btn.dataset.addCustomAmount)];
+          if (!item || !item.custom) return;
+          const amounts = campaignCustomAmounts(item);
+          if (amounts.length >= MAX_TASK_COUPONS) return notify("warn", `单个任务最多添加${MAX_TASK_COUPONS}个红包（按数量累计）`);
+          amounts.push("");
+          item.amounts = amounts;
+          syncCampaignCustomReward(item);
+          render();
+        });
+        document.querySelectorAll("[data-remove-custom-amount]").forEach(btn => btn.onclick = () => {
+          syncDraft();
+          const item = state.campaignDraft.taskItems[Number(btn.dataset.removeCustomAmount)];
+          if (!item || !item.custom) return;
+          const amounts = campaignCustomAmounts(item);
+          const aIdx = Number(btn.dataset.amountIndex || 0);
+          if (amounts.length <= 1) return;
+          amounts.splice(aIdx, 1);
+          item.amounts = amounts;
+          syncCampaignCustomReward(item);
+          render();
+        });
         document.querySelectorAll("[data-remove-campaign-item]").forEach(btn => btn.onclick = () => {
           syncDraft();
           state.campaignDraft.taskItems.splice(Number(btn.dataset.removeCampaignItem), 1);
