@@ -1150,7 +1150,6 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
       <div class="mkt-trigger-list" id="marketTriggerList"></div>
     </div>
     <div class="modal-foot">
-      <button class="btn ghost" onclick="closeMarketChartModal()">关闭</button>
       <button class="btn soft" type="button" id="marketChartJumpAll">查看相关推送记录</button>
     </div>
   </div>
@@ -1191,6 +1190,7 @@ const state = {
   pendingConfirm: null,
   recordsKeyword: '',
   recordsBatchKeyword: '',
+  recordsReasonKeyword: '',
   recordsFilterType: '',
   recordsFilterPriority: '',
   recordsFilterProject: '',
@@ -1630,6 +1630,7 @@ function onRecordsFilterChange(){
 function resetRecordsFilter(){
   state.recordsBatchKeyword = '';
   state.recordsKeyword = '';
+  state.recordsReasonKeyword = '';
   state.recordsFilterType = '';
   state.recordsFilterPriority = '';
   state.recordsFilterProject = '';
@@ -2282,6 +2283,8 @@ function filterRecords(rows){
     );
   }
   if(batchKw) list = list.filter(r=>String(r.id||'').toLowerCase().includes(batchKw));
+  const reasonKw = (state.recordsReasonKeyword || '').trim();
+  if(reasonKw) list = list.filter(r=>String(r.reason||'').includes(reasonKw));
   return list;
 }
 function renderRecords(){
@@ -2314,8 +2317,6 @@ function renderRecords(){
     <td>${statusPill(r.status)}</td>
     <td class="ops"><div class="icon-actions">
       ${iconBtn(I.list,'查看详情',`openDetail('records','${r.id}')`)}
-      ${r.fail>0?iconBtn(I.play,'失败重试',`askConfirm('retry','records','${r.id}','确认重试批次 ${r.id} 中的失败用户吗？')`):''}
-      ${r.fail>0?iconBtn(I.diag,'查看诊断',`openDiagDrawer({source:'records',sourceId:'${r.id}',sourceName:'${r.srcName}',app:'',project:'${r.project||''}'})`):''}
     </div></td>
   </tr>`;
   }).join('');
@@ -2832,6 +2833,7 @@ function jumpRecords(srcId, opts){
   if(typeof closeDetailModal === 'function') closeDetailModal();
   state.recordsKeyword = srcId || '';
   state.recordsBatchKeyword = opts.batchId || '';
+  state.recordsReasonKeyword = opts.symbol || '';
   state.recordsFilterType = opts.type || inferRecordsType(srcId);
   state.page.records = 1;
   switchTab('records');
@@ -7470,35 +7472,11 @@ function openMarketChartTriggerDetail(trId, ev){
 }
 function openMarketChartRelatedRecords(){
   if(!marketChartCache) return;
-  const list = marketChartCache.triggers.slice();
-  if(!list.length){
-    toast('当前品种暂无相关推送记录');
-    return;
-  }
-  const body = `<div class="detail-block"><h4>${marketChartCache.symbol} · 相关推送批次</h4>
-    <div class="log-table-wrap"><table class="log-table">
-      <thead><tr>
-        <th>批次 ID</th><th>触发时间</th><th>通知渠道</th><th>发送时间</th>
-        <th>推送总数</th><th>成功</th><th>失败</th><th>状态</th><th></th>
-      </tr></thead>
-      <tbody>${list.map(tr=>`<tr>
-        <td>${tr.batchId}</td>
-        <td>${tr.time}</td>
-        <td>${channelTags(tr.channels||[])}</td>
-        <td>${tr.plan||tr.time}</td>
-        <td>${Number(tr.target||0).toLocaleString()}</td>
-        <td>${Number(tr.ok||0).toLocaleString()}</td>
-        <td>${Number(tr.fail||0).toLocaleString()}</td>
-        <td>${statusPill(tr.status||'已完成')}</td>
-        <td><button class="link-btn" type="button" onclick="openMarketChartTriggerDetail('${tr.id}')">查看详情</button></td>
-      </tr>`).join('')}</tbody>
-    </table></div>
-  </div>`;
-  openDetailModal(`相关推送记录 · ${marketChartCache.id}`, body,
-    '<div class="left"><span class="muted">停留在行情提醒，不切换页面 Tab</span></div>' +
-    '<div class="right"><button class="btn ghost" onclick="closeDetailModal()">关闭</button></div>',
-    { wide:true, sub: marketChartCache.name + ' · ' + marketChartCache.symbol });
-  elevateDetailOverMarketChart();
+  jumpRecords(marketChartCache.id, {
+    type: '行情提醒',
+    symbol: marketChartCache.symbol,
+    toast: '已定位到 ' + marketChartCache.symbol + ' 相关推送记录 · ' + marketChartCache.id
+  });
 }
 
 document.addEventListener('keydown', e=>{
