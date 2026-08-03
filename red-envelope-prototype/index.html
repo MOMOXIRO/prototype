@@ -431,8 +431,9 @@
               <span id="headerRoleBadge" class="px-2 py-0.5 rounded bg-[#ecfdf3] text-[#047857] font-semibold">超级运营</span>
             </div>
           </div>
-          <div class="px-4 border-b border-line">
-            <div id="mainTabs" class="flex gap-7 overflow-x-auto"></div>
+          <div class="px-4 border-b border-line flex items-center justify-between gap-3">
+            <div id="mainTabs" class="flex gap-7 overflow-x-auto flex-1 min-w-0"></div>
+            <div id="mainTabActions" class="flex items-center shrink-0 py-1"></div>
           </div>
           <div class="p-4 flex-1 overflow-y-auto overflow-x-hidden">
             <div id="queryPanel"></div>
@@ -750,6 +751,7 @@
 
     const el = {
       mainTabs: document.getElementById("mainTabs"),
+      mainTabActions: document.getElementById("mainTabActions"),
       headerRoleBadge: document.getElementById("headerRoleBadge"),
       query: document.getElementById("queryPanel"),
       action: document.getElementById("actionPanel"),
@@ -781,6 +783,63 @@
         /禁用|拒绝|撤销|失败|注销|失效/.test(status) ? "badge-danger" :
         "badge-neutral";
       return `<span class="badge ${cls}">${status}</span>`;
+    }
+
+    /** 活动发放未完成：排除已完成/已撤销等终态 */
+    function isCampaignDistributionIncomplete(campaign) {
+      const status = String(campaign?.status || "");
+      if (!status) return false;
+      return !/^(完成|已完成|已发放完成|已撤销)$/.test(status);
+    }
+
+    function campaignTaskIds(campaign) {
+      const ids = [];
+      if (Array.isArray(campaign?.tasks)) ids.push(...campaign.tasks);
+      if (campaign?.task) ids.push(campaign.task);
+      return [...new Set(ids.map(String).filter(Boolean))];
+    }
+
+    function campaignLinksCoupon(campaign, couponId) {
+      const cid = String(couponId || "");
+      if (!cid || !campaign) return false;
+      if ((campaign.coupons || []).map(String).includes(cid)) return true;
+      const taskIds = campaignTaskIds(campaign);
+      for (const tid of taskIds) {
+        const task = state.data.tasks.find(t => String(t.id) === tid);
+        if (task && (task.coupons || []).map(String).includes(cid)) return true;
+      }
+      return (state.data.batches || []).some(b => {
+        if (String(b.campaign) !== String(campaign.id)) return false;
+        return String(b.coupon || "").split(/[,，]/).map(s => s.trim()).includes(cid);
+      });
+    }
+
+    function campaignLinksTask(campaign, taskId) {
+      const tid = String(taskId || "");
+      if (!tid || !campaign) return false;
+      if (campaignTaskIds(campaign).includes(tid)) return true;
+      return (state.data.batches || []).some(b => String(b.campaign) === String(campaign.id) && String(b.task) === tid);
+    }
+
+    function getAffectedIncompleteCampaigns({ couponId, taskId } = {}) {
+      return (state.data.campaigns || []).filter(c => {
+        if (!isCampaignDistributionIncomplete(c)) return false;
+        if (couponId) return campaignLinksCoupon(c, couponId);
+        if (taskId) return campaignLinksTask(c, taskId);
+        return false;
+      });
+    }
+
+    function affectedCampaignsHtml(campaigns) {
+      if (!campaigns.length) {
+        return `<div class="mt-3 text-[13px] text-[#94a3b8]">当前无进行中的关联活动</div>`;
+      }
+      return `<div class="mt-3">
+        <div class="text-[13px] font-medium text-[#475569] mb-2">受影响的关联活动（未发放完成）</div>
+        <div class="max-h-[200px] overflow-y-auto border border-line rounded">
+          ${campaigns.map(c => `<div class="px-3 py-2 border-b border-line/70 last:border-b-0 text-[13px] text-[#1f2430]">${c.id} · ${c.name}</div>`).join("")}
+        </div>
+      </div>`;
     }
 
     function tableColgroup(widths) {
@@ -980,11 +1039,21 @@
       switchPage(page, { mainTab: main });
     }
 
+    function openMultiLangConfig() {
+      ensureTaskLangTemplates();
+      state.taskLang.tab = "title";
+      state.taskLang.selectedLanguage = "英文";
+      state.taskLang.selectedTitleType = "现金红包";
+      switchPage("task-lang-modal");
+    }
+
     function renderMainTabs() {
       el.mainTabs.innerHTML = MAIN_TABS.map(t => `
         <button data-main="${t.key}" aria-selected="${state.mainTab===t.key}" class="main-tab h-12 border-b-2 whitespace-nowrap">${t.label}</button>
       `).join("");
       el.mainTabs.querySelectorAll("[data-main]").forEach(btn => btn.onclick = () => switchMain(btn.dataset.main));
+      el.mainTabActions.innerHTML = `<button id="btnMultiLangTpl" class="icon-action-btn" type="button" title="多语言配置" aria-label="多语言配置">${iconSvg("settings")}</button>`;
+      document.getElementById("btnMultiLangTpl").onclick = openMultiLangConfig;
     }
 
     function renderRoleSwitcher() {
@@ -2674,7 +2743,8 @@
         list: `<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/><path d="M7 17h4M13 17h4"/></svg>`,
         activity: `<svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/><path d="M4 4h6M4 20h6"/></svg>`,
         pass: `<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>`,
-        reject: `<svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>`
+        reject: `<svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>`,
+        settings: `<svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`
       };
       return map[kind] || "";
     }
@@ -2922,7 +2992,6 @@
       el.action.innerHTML = `
         <div class="flex items-center gap-2">
           <button id="btnCouponCreate" class="coupon-tool-btn">新增红包</button>
-          <button id="btnMultiLangTpl" class="coupon-tool-btn">多语言配置</button>
         </div>
       `;
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无红包数据</div>` : `
@@ -4187,17 +4256,23 @@
         const keepIssuedText = currentCoupon?.enabled
           ? "红包数据为实时数据，活动发放使用红包实时配置而非快照，禁用后会影响发放中的活动，不影响已经发放完成的。"
           : "红包数据为实时数据，活动发放使用红包实时配置而非快照，启用后会影响发放中的活动，不影响已经发放完成的。";
+        const affectedListHtml = currentCoupon?.enabled
+          ? affectedCampaignsHtml(getAffectedIncompleteCampaigns({ couponId: currentCoupon.id }))
+          : "";
         openModal({
           title: `${actionText}操作确认`,
-          body: `<div class="flex gap-3 items-start"><div class="w-9 h-9 rounded-full border border-[#f59e0b] text-[#f59e0b] flex items-center justify-center text-xl">!</div><div><div class="text-[24px] font-semibold mb-2">确认${actionText}该红包？</div><div class="text-[16px] text-[#64748b]">${nextUsageText}</div><div class="text-[14px] text-[#94a3b8] mt-2">注：${keepIssuedText}</div></div></div>`,
+          body: `<div class="flex gap-3 items-start"><div class="w-9 h-9 rounded-full border border-[#f59e0b] text-[#f59e0b] flex items-center justify-center text-xl shrink-0">!</div><div class="min-w-0 flex-1"><div class="text-[24px] font-semibold mb-2">确认${actionText}该红包？</div><div class="text-[16px] text-[#64748b]">${nextUsageText}</div><div class="text-[14px] text-[#94a3b8] mt-2">注：${keepIssuedText}</div>${affectedListHtml}</div></div>`,
           footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button class="h-9 px-4 rounded ${currentCoupon?.enabled ? "bg-[#ef4444]" : "bg-primary"} text-white font-semibold whitespace-nowrap shrink-0">确认${actionText}</button>`
         });
       } else if (pageId === "task-toggle-modal") {
         const currentTask = state.data.tasks.find(r => r.id === state.selectedTaskId) || state.data.tasks[0];
         const actionText = currentTask?.enabled ? "禁用" : "启用";
+        const affectedListHtml = currentTask?.enabled
+          ? affectedCampaignsHtml(getAffectedIncompleteCampaigns({ taskId: currentTask.id }))
+          : "";
         openModal({
           title: `${actionText}任务操作确认`,
-          body: `<div class="flex gap-3 items-start"><div class="w-9 h-9 rounded-full border border-[#f59e0b] text-[#f59e0b] flex items-center justify-center text-xl">!</div><div><div class="text-[24px] font-semibold mb-2">确认${actionText}该任务？</div><div class="text-[16px] text-[#64748b]">${currentTask?.enabled ? "禁用后，该任务不能被新活动引用。" : "启用后，该任务可以被新活动引用。"}</div><div class="text-[14px] text-[#94a3b8] mt-2">注：该开关仅控制后续新活动引用，不影响已经生成的活动和任务批次。</div></div></div>`,
+          body: `<div class="flex gap-3 items-start"><div class="w-9 h-9 rounded-full border border-[#f59e0b] text-[#f59e0b] flex items-center justify-center text-xl shrink-0">!</div><div class="min-w-0 flex-1"><div class="text-[24px] font-semibold mb-2">确认${actionText}该任务？</div><div class="text-[16px] text-[#64748b]">${currentTask?.enabled ? "禁用后，该任务不能被新活动引用。" : "启用后，该任务可以被新活动引用。"}</div><div class="text-[14px] text-[#94a3b8] mt-2">注：该开关仅控制后续新活动引用，不影响已经生成的活动和任务批次。</div>${affectedListHtml}</div></div>`,
           footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button class="h-9 px-4 rounded ${currentTask?.enabled ? "bg-[#ef4444]" : "bg-primary"} text-white font-semibold whitespace-nowrap shrink-0">确认${actionText}</button>`
         });
       } else if (pageId === "task-detail-modal") {
@@ -4786,13 +4861,6 @@
         };
         document.getElementById("btnCouponReset").onclick = () => { state.filters.coupon = { id:"", name:"", type:"", status:"", project:"", amountMin:"", amountMax:"" }; render(); notify("warn","已重置筛选条件"); };
         document.getElementById("btnCouponCreate").onclick = () => openCouponCreateModal("create");
-        document.getElementById("btnMultiLangTpl").onclick = () => {
-          ensureTaskLangTemplates();
-          state.taskLang.tab = "title";
-          state.taskLang.selectedLanguage = "英文";
-          state.taskLang.selectedTitleType = "现金红包";
-          switchPage("task-lang-modal");
-        };
         document.querySelectorAll("[data-coupon-edit]").forEach(btn => {
           btn.onclick = () => {
             openCouponCreateModal("edit", btn.dataset.couponEdit);
