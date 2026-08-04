@@ -2181,14 +2181,13 @@
     function normalizeTaskValidType(type = "") {
       if (type === "领取后N天") return "领取后";
       if (type === "发放后N天") return "发放后";
-      if (type === "固定日期范围") return "日期范围";
+      if (type === "固定日期范围" || type === "日期范围") return "";
       return type || "";
     }
 
     function formatTaskValidity(taskOrDraft = {}) {
       if (taskOrDraft.type === "无任务") return "--";
       const validType = normalizeTaskValidType(taskOrDraft.taskValidType) || "发放后";
-      if (validType === "日期范围") return `${taskOrDraft.taskValidStart || "--"} ~ ${taskOrDraft.taskValidEnd || "--"}`;
       return `${validType}${taskOrDraft.taskValidDays || "N"}天`;
     }
 
@@ -2280,8 +2279,6 @@
         financeDeposit: task.type === "理财" ? (String(task.condition || "").match(/金额(\d+)/)?.[1] || "1000") : "1000",
         taskValidType: normalizeTaskValidType(task.taskValidType) || (task.type === "无任务" ? "" : "发放后"),
         taskValidDays: task.taskValidDays || (task.type === "无任务" ? "" : "30"),
-        taskValidStart: task.taskValidStart || "",
-        taskValidEnd: task.taskValidEnd || "",
         jumpType,
         appJump: jumpType === "APP内部跳转" ? (task.appJump || "") : "",
         jumpUrl: jumpType === "URL链接" ? jumpValue : (task.jumpUrl || ""),
@@ -2429,8 +2426,6 @@
       if (d.type === "无任务") {
         d.taskValidType = "";
         d.taskValidDays = "";
-        d.taskValidStart = "";
-        d.taskValidEnd = "";
         d.jumpType = "APP内部跳转";
         d.appJump = "";
         d.jumpUrl = "";
@@ -2466,8 +2461,6 @@
         financeDeposit: "",
         taskValidType: "",
         taskValidDays: "",
-        taskValidStart: "",
-        taskValidEnd: "",
         jumpType: "APP内部跳转",
         appJump: "",
         jumpUrl: "",
@@ -2480,7 +2473,7 @@
 
     function saveCurrentTaskDraft() {
       const d = state.taskModal.draft || {};
-      const ids = ["taskName","taskType","taskProject","taskRechargeAmount","taskTradeLots","taskFinanceDays","taskFinanceRate","taskFinanceDeposit","taskValidType","taskValidDays","taskValidStart","taskValidEnd","taskJumpType","taskAppJump","taskJumpUrl"];
+      const ids = ["taskName","taskType","taskProject","taskRechargeAmount","taskTradeLots","taskFinanceDays","taskFinanceRate","taskFinanceDeposit","taskValidType","taskValidDays","taskJumpType","taskAppJump","taskJumpUrl"];
       ids.forEach(id => {
         const node = document.getElementById(id);
         if (!node) return;
@@ -2495,8 +2488,6 @@
           taskFinanceDeposit: "financeDeposit",
           taskValidType: "taskValidType",
           taskValidDays: "taskValidDays",
-          taskValidStart: "taskValidStart",
-          taskValidEnd: "taskValidEnd",
           taskJumpType: "jumpType",
           taskAppJump: "appJump",
           taskJumpUrl: "jumpUrl"
@@ -2517,13 +2508,8 @@
       if (d.type === "理财" && (!d.financeDays || !d.financeRate || !d.financeDeposit)) return "理财任务需填写理财时长、年化收益、最低存款金额";
       if (d.type !== "无任务") {
         if (!d.taskValidType) return "请选择任务有效期类型";
-        if (d.taskValidType === "日期范围") {
-          if (!d.taskValidStart || !d.taskValidEnd) return "日期范围需选择开始日期和结束日期";
-          if (d.taskValidStart > d.taskValidEnd) return "任务有效期结束日期不能早于开始日期";
-        } else {
-          const taskValidDaysNum = Number(d.taskValidDays);
-          if (!Number.isInteger(taskValidDaysNum) || taskValidDaysNum <= 0) return "任务有效期天数必须填写正整数";
-        }
+        const taskValidDaysNum = Number(d.taskValidDays);
+        if (!Number.isInteger(taskValidDaysNum) || taskValidDaysNum <= 0) return "任务有效期天数必须填写正整数";
         if (!d.jumpType) return "请选择跳转方式";
         if (d.jumpType === "APP内部跳转" && !d.appJump) return "请选择APP跳转页面";
         if (d.jumpType === "URL链接") {
@@ -3371,15 +3357,15 @@
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无任务批次数据</div>` : `
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
-            ${tableColgroup([5, 9, 8, 7, 6, 6, 5, 5, 5, 5, 7, 8, 12])}
-            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">批次状态</th><th class="text-left px-3 py-2">关联红包</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">发放数量</th><th class="text-left px-3 py-2">领取数量</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">任务类型</th><th class="text-left px-3 py-2">发放时间</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
+            ${tableColgroup([5, 9, 8, 7, 6, 7, 6, 5, 5, 5, 5, 8, 12])}
+            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">批次状态</th><th class="text-left px-3 py-2">任务类型</th><th class="text-left px-3 py-2">关联红包</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">发放数量</th><th class="text-left px-3 py-2">领取数量</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">发放时间</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
             <tbody>
               ${rows.map(r => {
                 const campaign = batchCampaign(r);
                 const task = batchTask(r);
                 const counts = batchIssueCounts(r);
                 const type = batchTaskType(r);
-                return `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project || campaign.project || "--"}</td><td class="px-3 py-2" title="${campaign.name || r.campaign || ""}"><a class="text-primary hover:underline" data-batch-campaign-detail="${campaign.id || r.campaign}">${campaign.name || r.campaign}</a></td><td class="px-3 py-2">${task.id ? `<a class="text-primary hover:underline" data-batch-task-detail="${task.id}">${task.name || "--"}</a>` : "--"}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-batch-detail="${r.id}">${r.id}</a></td><td class="px-3 py-2">${badge(r.status)}</td><td class="px-3 py-2">${batchCouponIds(r)}</td><td class="px-3 py-2">${batchTotalAmount(r) === "--" ? "--" : `$${batchTotalAmount(r)}`}</td><td class="px-3 py-2">${counts.total}</td><td class="px-3 py-2">${counts.received}</td><td class="px-3 py-2">${r.region || "--"}</td><td class="px-3 py-2">${type}</td><td class="px-3 py-2">${batchDeliverTimeText(r)}</td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="查看" data-batch-detail="${r.id}">${iconSvg("view")}</button><button class="icon-action-btn" title="EDM名单" data-export-batch="${r.id}">${iconSvg("list")}</button><button class="icon-action-btn" title="日志" data-batch-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`;
+                return `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project || campaign.project || "--"}</td><td class="px-3 py-2" title="${campaign.name || r.campaign || ""}"><a class="text-primary hover:underline" data-batch-campaign-detail="${campaign.id || r.campaign}">${campaign.name || r.campaign}</a></td><td class="px-3 py-2">${task.id ? `<a class="text-primary hover:underline" data-batch-task-detail="${task.id}">${task.name || "--"}</a>` : "--"}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-batch-detail="${r.id}">${r.id}</a></td><td class="px-3 py-2">${badge(r.status)}</td><td class="px-3 py-2">${type}</td><td class="px-3 py-2">${batchCouponIds(r)}</td><td class="px-3 py-2">${batchTotalAmount(r) === "--" ? "--" : `$${batchTotalAmount(r)}`}</td><td class="px-3 py-2">${counts.total}</td><td class="px-3 py-2">${counts.received}</td><td class="px-3 py-2">${r.region || "--"}</td><td class="px-3 py-2">${batchDeliverTimeText(r)}</td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="查看" data-batch-detail="${r.id}">${iconSvg("view")}</button><button class="icon-action-btn" title="EDM名单" data-export-batch="${r.id}">${iconSvg("list")}</button><button class="icon-action-btn" title="日志" data-batch-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`;
               }).join("")}
             </tbody>
           </table>
@@ -4133,12 +4119,10 @@
           <div><label class="form-label required mb-1">理财年化收益(%)</label><input id="taskFinanceRate" class="w-full border border-line rounded px-2 py-2" placeholder="填写年化收益" value="${d.financeRate || ""}"></div>
           <div><label class="form-label required mb-1">最低存款金额($)</label><input id="taskFinanceDeposit" class="w-full border border-line rounded px-2 py-2" placeholder="填写最低存款金额" value="${d.financeDeposit || ""}"></div>
         ` : `<div class="text-[#64748b] self-end">无任务类型不需要填写任务配置。</div>`;
-        const taskValidityType = normalizeTaskValidType(d.taskValidType) || "发放后";
-        const taskValidityInputHtml = taskValidityType === "日期范围"
-          ? `<div class="inline-flex items-center gap-2"><input id="taskValidStart" type="date" class="w-[148px] border border-line rounded px-2 py-2" value="${d.taskValidStart || ""}"><span class="text-[#64748b]">~</span><input id="taskValidEnd" type="date" class="w-[148px] border border-line rounded px-2 py-2" value="${d.taskValidEnd || ""}"></div>`
-          : `<div class="inline-flex items-center gap-2"><input id="taskValidDays" class="w-[88px] border border-line rounded px-2 py-2" value="${d.taskValidDays || ""}"><span class="text-[#64748b]">天</span></div>`;
+        const taskValidityType = normalizeTaskValidType(d.taskValidType);
+        const taskValidityInputHtml = `<div class="inline-flex items-center gap-2"><input id="taskValidDays" class="w-[88px] border border-line rounded px-2 py-2" value="${d.taskValidDays || ""}"><span class="text-[#64748b]">天</span></div>`;
         const taskValidityHtml = isNoTask ? "" : `
-          <div class="col-span-2"><label class="form-label required mb-1">任务有效期</label><div class="flex items-center gap-2 flex-wrap"><select id="taskValidType" class="w-[160px] border border-line rounded px-2 py-2"><option value="">请选择有效期类型</option>${["领取后","发放后","日期范围"].map(t => `<option value="${t}" ${taskValidityType===t?"selected":""}>${t}</option>`).join("")}</select>${taskValidityInputHtml}</div></div>
+          <div class="col-span-2"><label class="form-label required mb-1">任务有效期</label><div class="flex items-center gap-2 flex-wrap"><select id="taskValidType" class="w-[160px] border border-line rounded px-2 py-2"><option value="">请选择</option>${["领取后","发放后"].map(t => `<option value="${t}" ${taskValidityType===t?"selected":""}>${t}</option>`).join("")}</select>${taskValidityInputHtml}</div></div>
         `;
         const jumpType = d.jumpType === "URL链接" ? "URL链接" : "APP内部跳转";
         const taskJumpHtml = isNoTask ? "" : `
@@ -4803,8 +4787,6 @@
             row.coupons = coupons;
             row.taskValidType = d.type === "无任务" ? "" : d.taskValidType;
             row.taskValidDays = d.type === "无任务" ? "" : d.taskValidDays;
-            row.taskValidStart = d.type === "无任务" ? "" : d.taskValidStart;
-            row.taskValidEnd = d.type === "无任务" ? "" : d.taskValidEnd;
             row.jumpType = d.type === "无任务" ? "" : d.jumpType;
             row.appJump = d.type === "无任务" ? "" : (d.jumpType === "URL链接" ? (d.jumpUrl || "") : (d.appJump || ""));
             row.jumpUrl = d.type === "无任务" || d.jumpType !== "URL链接" ? "" : (d.jumpUrl || "");
@@ -4823,8 +4805,6 @@
               coupons,
               taskValidType: d.type === "无任务" ? "" : d.taskValidType,
               taskValidDays: d.type === "无任务" ? "" : d.taskValidDays,
-              taskValidStart: d.type === "无任务" ? "" : d.taskValidStart,
-              taskValidEnd: d.type === "无任务" ? "" : d.taskValidEnd,
               jumpType: d.type === "无任务" ? "" : d.jumpType,
               appJump: d.type === "无任务" ? "" : (d.jumpType === "URL链接" ? (d.jumpUrl || "") : (d.appJump || "")),
               jumpUrl: d.type === "无任务" || d.jumpType !== "URL链接" ? "" : (d.jumpUrl || ""),
