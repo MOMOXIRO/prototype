@@ -585,7 +585,6 @@
         notifyTimezone: "GMT+08:00",
         notifyTemplate: "",
         reminderEnabled: false,
-        reminderType: "立即通知",
         reminderDays: "3",
         reminderTimezone: "GMT+08:00",
         reminderTime: "10:00:00",
@@ -2765,8 +2764,9 @@
       if (draft.deliverType === "循环发放" && !draft.loopTime) return "循环发放需填写发送时间";
       if (draft.notifyEnabled && !draft.notifyTemplate) return "请选择推送模板";
       if (draft.notifyEnabled && draft.notifyType === "定时通知" && !draft.notifyAt) return "定时通知需填写通知时间";
-      if (draft.reminderEnabled && !draft.reminderTemplate) return "临期提醒需选择模板";
-      if (draft.reminderEnabled && draft.reminderType === "定时通知" && !draft.reminderTime) return "定时临期提醒需填写提醒时间";
+      if (draft.reminderEnabled && !String(draft.reminderDays || "").trim()) return "临期提醒需填写临期天数";
+      if (draft.reminderEnabled && !draft.reminderTime) return "临期提醒需填写提醒时间";
+      if (draft.reminderEnabled && !draft.reminderTemplate) return "临期提醒需选择推送模板";
       if (state.data.campaigns.some(c => c.name === draft.name)) return "活动名称不能重复";
       if (draft.activityType === "特批活动" && state.role !== "super") return "特批活动仅超级运营可提交";
       if (draft.activityType === "特批活动" && !draft.approvalReason) return "特批活动需填写申请原因";
@@ -2798,7 +2798,6 @@
         notifyTimezone: "GMT+08:00",
         notifyTemplate: "",
         reminderEnabled: false,
-        reminderType: "立即通知",
         reminderDays: "3",
         reminderTimezone: "GMT+08:00",
         reminderTime: "10:00:00",
@@ -3198,22 +3197,31 @@
             <div class="grid grid-cols-2 gap-3">
               <div class="border border-line rounded p-3">
                 <label class="flex items-center gap-2 mb-3"><input id="fNotifyEnabled" type="checkbox" class="accent-primary" ${d.notifyEnabled ? "checked" : ""}>发送通知</label>
-                <div class="grid ${d.notifyType === "定时通知" ? "grid-cols-4" : "grid-cols-2"} gap-2">
-                  <select id="fNotifyType" class="border border-line rounded px-2 py-2">
+                <div class="grid ${d.notifyType === "定时通知" ? "grid-cols-4" : "grid-cols-2"} gap-2 ${d.notifyEnabled ? "" : "opacity-50"}">
+                  <select id="fNotifyType" class="border border-line rounded px-2 py-2 ${d.notifyEnabled ? "" : "bg-gray-50"}" ${d.notifyEnabled ? "" : "disabled"}>
                     <option ${d.notifyType==="立即通知"?"selected":""}>立即通知</option><option ${d.notifyType==="定时通知"?"selected":""}>定时通知</option>
                   </select>
-                  ${d.notifyType === "定时通知" ? `<select id="fNotifyTimezone" class="border border-line rounded px-2 py-2"><option ${d.notifyTimezone==="GMT+08:00"?"selected":""}>GMT+08:00</option><option ${d.notifyTimezone==="GMT+07:00"?"selected":""}>GMT+07:00</option></select><input id="fNotifyAt" class="border border-line rounded px-2 py-2" placeholder="通知时间" value="${d.notifyAt}">` : ""}
-                  <select id="fNotifyTemplate" class="border border-line rounded px-2 py-2"><option value="">推送模板</option>${["充值提醒模板","交易激励模板","红包到账模板"].map(x => `<option value="${x}" ${d.notifyTemplate===x?"selected":""}>${x}</option>`).join("")}</select>
+                  ${d.notifyType === "定时通知" ? `<select id="fNotifyTimezone" class="border border-line rounded px-2 py-2 ${d.notifyEnabled ? "" : "bg-gray-50"}" ${d.notifyEnabled ? "" : "disabled"}><option ${d.notifyTimezone==="GMT+08:00"?"selected":""}>GMT+08:00</option><option ${d.notifyTimezone==="GMT+07:00"?"selected":""}>GMT+07:00</option></select><input id="fNotifyAt" class="border border-line rounded px-2 py-2 ${d.notifyEnabled ? "" : "bg-gray-50"}" placeholder="通知时间" value="${d.notifyAt}" ${d.notifyEnabled ? "" : "disabled"}>` : ""}
+                  <select id="fNotifyTemplate" class="border border-line rounded px-2 py-2 ${d.notifyEnabled ? "" : "bg-gray-50"}" ${d.notifyEnabled ? "" : "disabled"}><option value="">推送模板</option>${["充值提醒模板","交易激励模板","红包到账模板"].map(x => `<option value="${x}" ${d.notifyTemplate===x?"selected":""}>${x}</option>`).join("")}</select>
                 </div>
               </div>
               <div class="border border-line rounded p-3">
                 <label class="flex items-center gap-2 mb-3"><input id="fReminderEnabled" type="checkbox" class="accent-primary" ${d.reminderEnabled ? "checked" : ""}>临期提醒</label>
-                <div class="grid ${d.reminderType === "定时通知" ? "grid-cols-4" : "grid-cols-2"} gap-2">
-                  <select id="fReminderType" class="border border-line rounded px-2 py-2">
-                    <option ${d.reminderType==="立即通知"?"selected":""}>立即通知</option><option ${d.reminderType==="定时通知"?"selected":""}>定时通知</option>
+                <div class="grid grid-cols-4 gap-2 ${d.reminderEnabled ? "" : "opacity-50"}">
+                  <div class="flex items-center gap-1 min-w-0">
+                    <span class="shrink-0 text-[#475569]">到期前第</span>
+                    <input id="fReminderDays" type="number" min="1" class="w-full min-w-0 border border-line rounded px-2 py-2 ${d.reminderEnabled ? "" : "bg-gray-50"}" placeholder="天" value="${d.reminderDays || ""}" ${d.reminderEnabled ? "" : "disabled"}>
+                    <span class="shrink-0 text-[#475569]">天</span>
+                  </div>
+                  <select id="fReminderTimezone" class="border border-line rounded px-2 py-2 ${d.reminderEnabled ? "" : "bg-gray-50"}" ${d.reminderEnabled ? "" : "disabled"}>
+                    <option ${d.reminderTimezone==="GMT+08:00"?"selected":""}>GMT+08:00</option>
+                    <option ${d.reminderTimezone==="GMT+07:00"?"selected":""}>GMT+07:00</option>
                   </select>
-                  ${d.reminderType === "定时通知" ? `<select id="fReminderTimezone" class="border border-line rounded px-2 py-2"><option ${d.reminderTimezone==="GMT+08:00"?"selected":""}>GMT+08:00</option><option ${d.reminderTimezone==="GMT+07:00"?"selected":""}>GMT+07:00</option></select><input id="fReminderTime" class="border border-line rounded px-2 py-2" placeholder="10:00:00" value="${d.reminderTime}">` : ""}
-                  <select id="fReminderTemplate" class="border border-line rounded px-2 py-2"><option value="">提醒模板</option>${["任务临期提醒","红包临期提醒"].map(x => `<option value="${x}" ${d.reminderTemplate===x?"selected":""}>${x}</option>`).join("")}</select>
+                  <input id="fReminderTime" class="border border-line rounded px-2 py-2 ${d.reminderEnabled ? "" : "bg-gray-50"}" placeholder="10:00:00" value="${d.reminderTime || "10:00:00"}" ${d.reminderEnabled ? "" : "disabled"}>
+                  <select id="fReminderTemplate" class="border border-line rounded px-2 py-2 ${d.reminderEnabled ? "" : "bg-gray-50"}" ${d.reminderEnabled ? "" : "disabled"}>
+                    <option value="">推送模板</option>
+                    ${["任务临期提醒","红包临期提醒"].map(x => `<option value="${x}" ${d.reminderTemplate===x?"selected":""}>${x}</option>`).join("")}
+                  </select>
                 </div>
               </div>
             </div>
@@ -5132,10 +5140,9 @@
           state.campaignDraft.notifyTimezone = val("fNotifyTimezone", state.campaignDraft.notifyTimezone);
           state.campaignDraft.notifyTemplate = val("fNotifyTemplate", state.campaignDraft.notifyTemplate);
           state.campaignDraft.reminderEnabled = checked("fReminderEnabled");
-          state.campaignDraft.reminderType = val("fReminderType", state.campaignDraft.reminderType || "立即通知");
           state.campaignDraft.reminderDays = val("fReminderDays", state.campaignDraft.reminderDays);
-          state.campaignDraft.reminderTimezone = val("fReminderTimezone", state.campaignDraft.reminderTimezone);
-          state.campaignDraft.reminderTime = val("fReminderTime", state.campaignDraft.reminderTime);
+          state.campaignDraft.reminderTimezone = val("fReminderTimezone", state.campaignDraft.reminderTimezone || "GMT+08:00");
+          state.campaignDraft.reminderTime = val("fReminderTime", state.campaignDraft.reminderTime || "10:00:00");
           state.campaignDraft.reminderTemplate = val("fReminderTemplate", state.campaignDraft.reminderTemplate);
           document.querySelectorAll("[data-campaign-custom-amount]").forEach(input => {
             const item = state.campaignDraft.taskItems[Number(input.dataset.campaignCustomAmount)];
@@ -5148,7 +5155,7 @@
           });
         };
         campaignBack.onclick = () => confirmLeaveCampaignForm(syncDraft);
-        ["fCampaignType","fAudienceType","fDeliverType","fLoopFreq","fNotifyType","fReminderType"].forEach(id => {
+        ["fCampaignType","fAudienceType","fDeliverType","fLoopFreq","fNotifyType","fNotifyEnabled","fReminderEnabled"].forEach(id => {
           const node = document.getElementById(id);
           if (node) node.onchange = () => { syncDraft(); render(); };
         });
