@@ -549,6 +549,30 @@
     // =============================
     const SHOW_FINANCE_TASK = false;
 
+    // 操作日志文案（最简操作，三页统一规范）
+    const LOG_TEXT = {
+      coupon: {
+        create: "新增红包",
+        enable: "启用红包",
+        disable: "禁用红包",
+        edit: "编辑红包"
+      },
+      task: {
+        create: "新增任务",
+        edit: "编辑任务",
+        enable: "启用任务",
+        disable: "禁用任务"
+      },
+      campaign: {
+        create: "创建活动",
+        auditPass: "活动审核通过",
+        auditReject: "活动审核拒绝",
+        revoke: "撤销活动",
+        copy: "复制活动",
+        complete: "活动完成"
+      }
+    };
+
     function isFinanceTaskType(type) {
       return String(type || "") === "理财";
     }
@@ -682,80 +706,79 @@
         tasks: [
           { id:"T1", name:"充值50送现金", type:"充值", app:"Dana", condition:"充值金额 >= 50", coupons:["1001"], taskValidType:"发放后", taskValidDays:"30", appJump:"首页-活动页", couponRatios:{"1001":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-10 10:32",
             logs: [
-              { operator:"Jenny", time:"2026-06-10 10:32", content:"创建任务并关联红包 1001" },
-              { operator:"Jenny", time:"2026-06-11 09:12", content:"启用任务，允许新活动引用" }
+              { operator:"Jenny", time:"2026-06-10 10:32", content:"新增任务" },
+              { operator:"Jenny", time:"2026-06-11 09:12", content:"启用任务" }
             ] },
           { id:"T2", name:"交易2手送现金", type:"实盘交易", app:"TW", condition:"实盘手数 >= 2", coupons:["2001"], taskValidType:"领取后", taskValidDays:"14", appJump:"交易页-任务中心", couponRatios:{"2001":"80"}, status:"启用", enabled:true, updatedAt:"2026-06-20 16:18",
-            logs: [{ operator:"Jenny", time:"2026-06-20 16:18", content:"编辑任务配置：实盘手数 >= 2" }] },
+            logs: [{ operator:"Jenny", time:"2026-06-20 16:18", content:"编辑任务" }] },
           // [临时隐藏] 理财任务样例数据保留；SHOW_FINANCE_TASK=false 时列表/入口不展示
           { id:"T3", name:"理财任务", type:"理财", app:"Dana", condition:"理财时长30天，年化收益2%，最低存款金额1000", coupons:[], taskValidType:"发放后", taskValidDays:"30", appJump:"钱包页-卡券", couponRatios:{}, status:"禁用", enabled:false, updatedAt:"2026-06-18 11:02",
-            logs: [{ operator:"Admin", time:"2026-06-18 11:02", content:"新增理财任务，理财任务不关联红包" }] },
+            logs: [{ operator:"Admin", time:"2026-06-18 11:02", content:"新增任务" }] },
           { id:"T4", name:"无任务体验金", type:"无任务", app:"Dana", condition:"--", coupons:["1001","1002"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"1001":"100","1002":"50"}, status:"启用", enabled:true, updatedAt:"2026-06-22 14:26",
-            logs: [{ operator:"Mia", time:"2026-06-22 14:26", content:"新增无任务奖励，关联红包 1001、1002" }] },
+            logs: [{ operator:"Mia", time:"2026-06-22 14:26", content:"新增任务" }] },
           { id:"T5", name:"充值100送现金", type:"充值", app:"Dana", condition:"充值金额 >= 100", coupons:["1003"], taskValidType:"发放后", taskValidDays:"30", appJump:"首页-活动页", couponRatios:{"1003":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-23 10:00",
-            logs: [{ operator:"Jenny", time:"2026-06-23 10:00", content:"创建任务并关联红包 1003" }] },
+            logs: [{ operator:"Jenny", time:"2026-06-23 10:00", content:"新增任务" }] },
           { id:"T6", name:"充值200送现金", type:"充值", app:"Dana", condition:"充值金额 >= 200", coupons:["1004"], taskValidType:"领取后", taskValidDays:"15", appJump:"钱包页-充值", couponRatios:{"1004":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-24 11:20",
-            logs: [{ operator:"Jenny", time:"2026-06-24 11:20", content:"创建任务并关联红包 1004" }] },
+            logs: [{ operator:"Jenny", time:"2026-06-24 11:20", content:"新增任务" }] },
           { id:"T7", name:"交易5手送抵扣", type:"实盘交易", app:"TW", condition:"实盘手数 >= 5", coupons:["2003"], taskValidType:"领取后", taskValidDays:"14", appJump:"交易页-任务中心", couponRatios:{"2003":"70"}, status:"启用", enabled:true, updatedAt:"2026-06-25 09:40",
-            logs: [{ operator:"Tom", time:"2026-06-25 09:40", content:"创建任务并关联红包 2003" }] },
+            logs: [{ operator:"Tom", time:"2026-06-25 09:40", content:"新增任务" }] },
           { id:"T8", name:"无任务新人礼包", type:"无任务", app:"Dana", condition:"--", coupons:["1003","1005"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"1003":"100","1005":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-26 14:10",
-            logs: [{ operator:"Mia", time:"2026-06-26 14:10", content:"新增无任务奖励，关联红包 1003、1005" }] },
+            logs: [{ operator:"Mia", time:"2026-06-26 14:10", content:"新增任务" }] },
           { id:"T9", name:"无任务老客回馈", type:"无任务", app:"Dana", condition:"--", coupons:["1004","1006"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"1004":"100","1006":"60"}, status:"启用", enabled:true, updatedAt:"2026-06-27 15:30",
-            logs: [{ operator:"Mia", time:"2026-06-27 15:30", content:"新增无任务奖励，关联红包 1004、1006" }] },
+            logs: [{ operator:"Mia", time:"2026-06-27 15:30", content:"新增任务" }] },
           { id:"T10", name:"无任务TW体验礼", type:"无任务", app:"TW", condition:"--", coupons:["2002","2004"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"2002":"100","2004":"50"}, status:"启用", enabled:true, updatedAt:"2026-06-28 16:00",
-            logs: [{ operator:"Tom", time:"2026-06-28 16:00", content:"新增无任务奖励，关联红包 2002、2004" }] },
+            logs: [{ operator:"Tom", time:"2026-06-28 16:00", content:"新增任务" }] },
           // [临时隐藏] 理财任务样例数据保留；SHOW_FINANCE_TASK=false 时列表/入口不展示
           { id:"T11", name:"理财30天体验", type:"理财", app:"Dana", condition:"理财时长30天，年化收益3%，最低存款金额500", coupons:[], taskValidType:"发放后", taskValidDays:"30", appJump:"钱包页-卡券", couponRatios:{}, status:"启用", enabled:true, updatedAt:"2026-06-29 10:15",
-            logs: [{ operator:"Jenny", time:"2026-06-29 10:15", content:"新增启用态理财任务，不关联红包" }] },
+            logs: [{ operator:"Jenny", time:"2026-06-29 10:15", content:"新增任务" }] },
           { id:"T12", name:"交易1手送现金", type:"实盘交易", app:"Dana", condition:"实盘手数 >= 1", coupons:["1006"], taskValidType:"发放后", taskValidDays:"21", appJump:"交易页-任务中心", couponRatios:{"1006":"50"}, status:"启用", enabled:true, updatedAt:"2026-06-30 11:45",
-            logs: [{ operator:"Jenny", time:"2026-06-30 11:45", content:"创建任务并关联红包 1006" }] }
+            logs: [{ operator:"Jenny", time:"2026-06-30 11:45", content:"新增任务" }] }
         ],
         coupons: [
           { id:"1001", project:"Dana", name:"新人户现金红包", type:"现金红包", amount:"$15", validDays:"7", totalIssue:500, totalReceive:50, status:"启用", enabled:true,
             logs: [
-              { operator: "Jenny", time: "2026-07-06 10:45", content: "启用红包，状态由“禁用”变为“启用”" },
-              { operator: "Jenny", time: "2026-07-06 10:36", content: "编辑红包，编辑红包标题" },
-              { operator: "Jenny", time: "2026-07-06 10:28", content: "编辑红包，编辑红包金额、适用项目" },
-              { operator: "Admin", time: "2026-07-05 18:22", content: "禁用红包，状态由“启用”变为“禁用”" }
+              { operator: "Jenny", time: "2026-07-06 10:45", content: "启用红包" },
+              { operator: "Admin", time: "2026-07-05 18:22", content: "禁用红包" },
+              { operator: "Jenny", time: "2026-07-05 10:20", content: "新增红包" }
             ] },
           { id:"1002", project:"Dana", name:"交易盈亏抵扣红包", type:"盈亏抵扣红包", amount:"$40", ratio:"50", validDays:"7", totalIssue:300, totalReceive:50, status:"启用", enabled:true,
-            logs: [{ operator: "Admin", time: "2026-07-01 09:15", content: "创建红包" }, { operator: "Jenny", time: "2026-07-05 11:00", content: "启用红包" }] },
+            logs: [{ operator: "Admin", time: "2026-07-01 09:15", content: "新增红包" }, { operator: "Jenny", time: "2026-07-05 11:00", content: "启用红包" }] },
           { id:"1003", project:"Dana", name:"充值满额现金红包", type:"现金红包", amount:"$20", validDays:"7", totalIssue:400, totalReceive:80, status:"启用", enabled:true,
-            logs: [{ operator: "Jenny", time: "2026-06-23 09:50", content: "创建红包" }] },
+            logs: [{ operator: "Jenny", time: "2026-06-23 09:50", content: "新增红包" }] },
           { id:"1004", project:"Dana", name:"高额充值现金红包", type:"现金红包", amount:"$30", validDays:"14", totalIssue:200, totalReceive:40, status:"启用", enabled:true,
-            logs: [{ operator: "Jenny", time: "2026-06-24 10:40", content: "创建红包" }] },
+            logs: [{ operator: "Jenny", time: "2026-06-24 10:40", content: "新增红包" }] },
           { id:"1005", project:"Dana", name:"提现免佣券", type:"提现免佣券", amount:"$3", validDays:"7", totalIssue:600, totalReceive:120, status:"启用", enabled:true,
-            logs: [{ operator: "Mia", time: "2026-06-26 13:20", content: "创建红包" }] },
+            logs: [{ operator: "Mia", time: "2026-06-26 13:20", content: "新增红包" }] },
           { id:"1006", project:"Dana", name:"轻量盈亏抵扣红包", type:"盈亏抵扣红包", amount:"$10", ratio:"50", validDays:"7", totalIssue:350, totalReceive:70, status:"启用", enabled:true,
-            logs: [{ operator: "Jenny", time: "2026-06-27 14:00", content: "创建红包" }] },
+            logs: [{ operator: "Jenny", time: "2026-06-27 14:00", content: "新增红包" }] },
           { id:"2001", project:"TW", name:"实盘手续费抵扣红包", type:"手续费抵扣红包", amount:"$5", ratio:"80", validDays:"7", totalIssue:80, totalReceive:50, status:"启用", enabled:true,
-            logs: [{ operator: "Jenny", time: "2026-07-03 11:05", content: "创建红包" }] },
+            logs: [{ operator: "Jenny", time: "2026-07-03 11:05", content: "新增红包" }] },
           { id:"2002", project:"TW", name:"口令现金红包", type:"现金红包", amount:"$10", validDays:"7", totalIssue:150, totalReceive:30, status:"启用", enabled:true,
-            logs: [{ operator: "Mia", time: "2026-07-02 10:00", content: "创建红包" }] },
+            logs: [{ operator: "Mia", time: "2026-07-02 10:00", content: "新增红包" }] },
           { id:"2003", project:"TW", name:"高频交易手续费抵扣", type:"手续费抵扣红包", amount:"$8", ratio:"70", validDays:"10", totalIssue:120, totalReceive:36, status:"启用", enabled:true,
-            logs: [{ operator: "Tom", time: "2026-06-25 09:00", content: "创建红包" }] },
+            logs: [{ operator: "Tom", time: "2026-06-25 09:00", content: "新增红包" }] },
           { id:"2004", project:"TW", name:"TW盈亏抵扣红包", type:"盈亏抵扣红包", amount:"$25", ratio:"50", validDays:"7", totalIssue:180, totalReceive:45, status:"启用", enabled:true,
-            logs: [{ operator: "Tom", time: "2026-06-28 15:20", content: "创建红包" }] }
+            logs: [{ operator: "Tom", time: "2026-06-28 15:20", content: "新增红包" }] }
         ],
         campaigns: [
           { id:"A1", name:"6月充值激活活动", audience:"Recharge_Q2", audienceType:"TagVerse", audienceCount:12486, mode:"循环发放", deliverTime:"每日 10:00", task:"T1", tasks:["T1","T2"], batch:"A1-T1-2", project:"Dana", coupons:["1001"], status:"执行中", statuses:["执行中"], createdAt:"2026-07-06 11:20", revokeReason:"--",
-            logs:[{ operator:"Jenny", time:"2026-07-06 11:20", content:"新增活动发放配置，选择发放人群和发放红包" }] },
+            logs:[{ operator:"Jenny", time:"2026-07-06 11:20", content:"创建活动" }] },
           { id:"A2", name:"Dana理财体验活动", audience:"VIP_v4", audienceType:"TagVerse", audienceCount:8200, mode:"特批活动 / 定时发放", deliverTime:"2026-07-08 10:00", task:"T3", tasks:["T3"], batch:"A2-T3-1", project:"TW", coupons:[], status:"完成", statuses:["完成"], createdAt:"2026-07-06 11:20", revokeReason:"--",
-            logs:[{ operator:"Tom", time:"2026-07-06 11:28", content:"全部发放任务收到终态，活动完成" }] },
+            logs:[{ operator:"Tom", time:"2026-07-06 11:28", content:"活动完成" }] },
           { id:"A3", name:"口令红包补发活动", audience:"添加5人", audienceType:"添加", audienceCount:5, mode:"普通活动 / 立即发放", deliverTime:"2026-07-06 11:20", task:"T4", tasks:["T4"], batch:"A3-T4-1", project:"Dana", coupons:["2002"], status:"已撤销", statuses:["已撤销"], createdAt:"2026-07-06 11:20", revokeReason:"撤销原因：名单包含已注销用户，停止继续发放",
-            logs:[{ operator:"Mia", time:"2026-07-06 12:00", content:"撤销活动，未领取令牌已回收" }] },
+            logs:[{ operator:"Mia", time:"2026-07-06 12:00", content:"撤销活动" }] },
           { id:"A4", name:"老客特批激活活动", audience:"导入268人", audienceType:"导入", audienceCount:268, importFile:"A4_import.xlsx", mode:"特批活动 / 循环发放", deliverTime:"每周一 10:00", task:"T4", tasks:["T4"], batch:"A4-T4-3", project:"Dana", coupons:["1001","1001"], status:"执行中", statuses:["执行中"], createdAt:"2026-07-06 11:20", revokeReason:"--",
-            logs:[{ operator:"Jenny", time:"2026-07-06 12:12", content:"创建特批循环活动发放配置" }] },
+            logs:[{ operator:"Jenny", time:"2026-07-06 12:12", content:"创建活动" }] },
           { id:"A5", name:"高风险特批活动", audience:"导入268人", audienceType:"导入", audienceCount:268, importFile:"A5_import.xlsx", mode:"特批活动 / 立即发放", deliverTime:"待审核通过后立即发放", task:"T2", tasks:["T2"], batch:"A5-T2-1", project:"TW", coupons:["2001"], status:"审核拒绝", statuses:["审核拒绝"], createdAt:"2026-07-06 11:30", revokeReason:"--",
-            logs:[{ operator:"Admin", time:"2026-07-06 11:45", content:"特批活动人工审核拒绝" }] },
+            logs:[{ operator:"Admin", time:"2026-07-06 11:45", content:"活动审核拒绝" }] },
           { id:"A6", name:"单人补发", audience:"添加120人", audienceType:"添加", audienceCount:120, mode:"普通活动 / 立即发放", deliverTime:"2026-06-25 10:30", task:"T1", tasks:["T1","T2"], batch:"A6-T2-1", project:"Dana", coupons:["1001","2001"], status:"待审核", statuses:["待审核"], createdAt:"2026-06-25 10:20", revokeReason:"--",
-            logs:[{ operator:"Mia", time:"2026-06-25 10:30", content:"创建自定义红包补发活动，进入发放审核" }] },
+            logs:[{ operator:"Mia", time:"2026-06-25 10:30", content:"创建活动" }] },
           { id:"A7", name:"补偿活动", audience:"导入268人", audienceType:"导入", audienceCount:268, importFile:"A7_import.xlsx", mode:"特批活动 / 立即发放", deliverTime:"待审核通过后立即发放", task:"T1", tasks:["T1","T2"], batch:"A7-T2-1", project:"Dana", coupons:["1001"], status:"待审核", statuses:["待审核"], createdAt:"2026-06-25 11:00", revokeReason:"--",
-            logs:[{ operator:"Admin", time:"2026-06-25 11:05", content:"创建特批补偿活动，进入发放审核" }] },
+            logs:[{ operator:"Admin", time:"2026-06-25 11:05", content:"创建活动" }] },
           { id:"A8", name:"8月定时激活活动", audience:"Recharge_Q2", audienceType:"TagVerse", audienceCount:8200, mode:"普通活动 / 定时发放", deliverTime:"2026-08-05 10:00", task:"T1", tasks:["T1"], batch:"--", project:"Dana", coupons:["1001"], status:"待执行", statuses:["待执行"], createdAt:"2026-07-06 15:00", revokeReason:"--",
-            logs:[{ operator:"Jenny", time:"2026-07-06 15:00", content:"活动审核通过，等待定时发放" }] },
+            logs:[{ operator:"Jenny", time:"2026-07-06 15:00", content:"活动审核通过" }] },
           { id:"A14", name:"自定义现金补发", audience:"添加3人", audienceType:"添加", audienceCount:3, mode:"普通活动 / 立即发放", deliverTime:"2026-07-06 14:00", task:"T0", tasks:["T0"], batch:"A14-T0-1", project:"Dana", coupons:[], status:"完成", statuses:["完成"], createdAt:"2026-07-06 14:00", revokeReason:"--",
-            logs:[{ operator:"Jenny", time:"2026-07-06 14:00", content:"新增自定义任务活动发放" }] }
+            logs:[{ operator:"Jenny", time:"2026-07-06 14:00", content:"创建活动" }] }
         ],
         batches: [
           { id:"A1-T1-1", campaign:"A1", task:"T1", taskType:"充值", coupon:"1001,1002", couponType:"现金红包", issue:"126/200", status:"完成", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-06 11:45", reason:"--", loopRound:1,
@@ -1496,7 +1519,7 @@
         createdAt: nowStamp(),
         logs: []
       };
-      pushCampaignLog(row, needsAudit ? "新增特批活动，进入发放审核（审核通过前不生成任务批次）" : "新增活动发放配置，选择发放人群和发放红包");
+      pushCampaignLog(row, LOG_TEXT.campaign.create);
       state.data.campaigns.unshift(row);
       if (needsAudit) {
         const plannedBatches = batchTaskIds.map(taskId => makeBatchId(id, taskId, cycle));
@@ -2035,9 +2058,9 @@
           campaign.statuses = [campaign.status];
           if (decision === "pass") {
             ensureCampaignBatches(campaign, "执行中");
-            pushCampaignLog(campaign, category === "special" ? "特批活动审核通过，生成任务批次" : "发放审核通过，生成任务批次");
+            pushCampaignLog(campaign, LOG_TEXT.campaign.auditPass);
           } else {
-            pushCampaignLog(campaign, category === "special" ? "特批活动审核拒绝，不生成任务批次" : "发放审核拒绝，不生成任务批次");
+            pushCampaignLog(campaign, LOG_TEXT.campaign.auditReject);
           }
         }
       }
@@ -3590,7 +3613,7 @@
                 const task = batchTask(r);
                 const counts = batchIssueCounts(r);
                 const type = batchTaskType(r);
-                return `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project || campaign.project || "--"}</td><td class="px-3 py-2" title="${campaign.name || r.campaign || ""}"><a class="text-primary hover:underline" data-batch-campaign-detail="${campaign.id || r.campaign}">${campaign.name || r.campaign}</a></td><td class="px-3 py-2">${task.id ? `<a class="text-primary hover:underline" data-batch-task-detail="${task.id}">${task.name || "--"}</a>` : "--"}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-batch-detail="${r.id}">${r.id}</a></td><td class="px-3 py-2">${badge(r.status)}</td><td class="px-3 py-2">${type}</td><td class="px-3 py-2">${batchCouponIds(r)}</td><td class="px-3 py-2">${batchTotalAmount(r) === "--" ? "--" : `$${batchTotalAmount(r)}`}</td><td class="px-3 py-2">${counts.total}</td><td class="px-3 py-2">${counts.received}</td><td class="px-3 py-2">${r.region || "--"}</td><td class="px-3 py-2">${batchDeliverTimeText(r)}</td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="查看" data-batch-detail="${r.id}">${iconSvg("view")}</button><button class="icon-action-btn" title="EDM名单" data-export-batch="${r.id}">${iconSvg("list")}</button><button class="icon-action-btn" title="日志" data-batch-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`;
+                return `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project || campaign.project || "--"}</td><td class="px-3 py-2" title="${campaign.name || r.campaign || ""}"><a class="text-primary hover:underline" data-batch-campaign-detail="${campaign.id || r.campaign}">${campaign.name || r.campaign}</a></td><td class="px-3 py-2">${task.id ? `<a class="text-primary hover:underline" data-batch-task-detail="${task.id}">${task.name || "--"}</a>` : "--"}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-batch-detail="${r.id}">${r.id}</a></td><td class="px-3 py-2">${badge(r.status)}</td><td class="px-3 py-2">${type}</td><td class="px-3 py-2">${batchCouponIds(r)}</td><td class="px-3 py-2">${batchTotalAmount(r) === "--" ? "--" : `$${batchTotalAmount(r)}`}</td><td class="px-3 py-2">${counts.total}</td><td class="px-3 py-2">${counts.received}</td><td class="px-3 py-2">${r.region || "--"}</td><td class="px-3 py-2">${batchDeliverTimeText(r)}</td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="查看" data-batch-detail="${r.id}">${iconSvg("view")}</button><button class="icon-action-btn" title="EDM名单" data-export-batch="${r.id}">${iconSvg("list")}</button></div></td></tr>`;
               }).join("")}
             </tbody>
           </table>
@@ -4733,9 +4756,9 @@
         const batch = pageId === "batch-log-modal" ? state.data.batches.find(x => x.id === state.selectedBatchId) : null;
         const logTitle = campaign ? `${campaign.id} ${campaign.name}` : batch ? `${batch.id} ${batchTask(batch).name || "--"}` : titleMap[pageId];
         const logs = (campaign?.logs || batch?.logs) || [
-          { operator:"Jenny", time:"25-06-2026 10:26", content:"新增记录" },
-          { operator:"Tom", time:"25-06-2026 11:10", content:"编辑配置" },
-          { operator:"Mia", time:"25-06-2026 13:42", content:"状态变更" }
+          { operator:"Jenny", time:"25-06-2026 10:26", content: LOG_TEXT.campaign.create },
+          { operator:"Tom", time:"25-06-2026 11:10", content: LOG_TEXT.campaign.auditPass },
+          { operator:"Mia", time:"25-06-2026 13:42", content: LOG_TEXT.campaign.revoke }
         ];
         openModal({ title: logTitle, body: `<div class="border border-line rounded overflow-auto"><table class="w-full text-[12px]"><thead class="bg-[#f8faff]"><tr><th class="text-left px-3 py-2">操作人</th><th class="text-left px-3 py-2">操作时间</th><th class="text-left px-3 py-2">操作内容</th></tr></thead><tbody>${logs.map(row => `<tr class="border-t border-line"><td class="px-3 py-2">${row.operator}</td><td class="px-3 py-2">${formatDisplayTime(row.time)}</td><td class="px-3 py-2">${row.content}</td></tr>`).join("")}</tbody></table></div><div class="mt-4 text-muted">共 ${logs.length} 条</div>`, footer: `<button class="${btnClass(false,true)}" data-close-modal>关闭</button>` });
       } else if (["audit-redpacket","audit-custom","audit-special"].includes(pageId)) {
@@ -4847,7 +4870,7 @@
                 row.enabled = !row.enabled;
                 row.status = row.enabled ? "启用" : "禁用";
                 row.updatedAt = nowStamp();
-                pushTaskLog(row, `${row.status}任务，状态变更为“${row.status}”`);
+                pushTaskLog(row, row.status === "启用" ? LOG_TEXT.task.enable : LOG_TEXT.task.disable);
                 closeModal();
                 notify("success", `任务 ${row.id} 已${row.status}`);
                 switchPage("task-list");
@@ -5047,7 +5070,7 @@
             row.couponRatios = d.type === "理财" ? {} : { ...(d.couponRatios || {}) };
             row.langConfigs = JSON.parse(JSON.stringify(d.langConfigs || {}));
             row.updatedAt = nowStamp();
-            pushTaskLog(row, "编辑任务，更新基础信息、任务配置和关联红包");
+            pushTaskLog(row, LOG_TEXT.task.edit);
             notify("success", "任务编辑成功");
           } else {
             const row = {
@@ -5069,7 +5092,7 @@
               updatedAt: nowStamp(),
               logs: []
             };
-            pushTaskLog(row, `创建任务，关联红包 ${formatTaskCoupons(coupons)}`);
+            pushTaskLog(row, LOG_TEXT.task.create);
             state.data.tasks.unshift(row);
             notify("success", "任务新增成功");
           }
@@ -5128,7 +5151,7 @@
               confirmBtn.onclick = () => {
                 row.enabled = !row.enabled;
                 row.status = row.enabled ? "启用" : "禁用";
-                pushCouponLog(row, `${row.status}红包，状态变更为“${row.status}”`);
+                pushCouponLog(row, row.status === "启用" ? LOG_TEXT.coupon.enable : LOG_TEXT.coupon.disable);
                 closeModal();
                 notify("success", `红包 ${row.id} 已${row.status}`);
                 switchPage("coupon-list");
@@ -5333,7 +5356,7 @@
                 couponValid: campaignCouponText(src) === "--" ? "--" : couponValidityWithId(campaignCouponText(src), couponValidDaysText(7))
               };
             });
-            pushCampaignLog(src, "复制活动配置，打开新建活动发放页面");
+            pushCampaignLog(src, LOG_TEXT.campaign.copy);
           }
           notify("success", "已沿用当前配置，进入活动发放页面");
           switchPage("campaign-form");
@@ -5574,7 +5597,7 @@
         campaignDetailBack.onclick = () => goBack("campaign-record", "campaign");
         document.getElementById("btnCampaignDetailCopy").onclick = () => {
           const src = state.data.campaigns.find(x => x.id === state.selectedCampaignId);
-          if (src) pushCampaignLog(src, "复制活动配置，打开新建活动发放页面");
+          if (src) pushCampaignLog(src, LOG_TEXT.campaign.copy);
           notify("success", "已复制活动配置并跳转至活动发放");
           switchPage("campaign-form");
         };
@@ -5606,10 +5629,6 @@
           switchPage("batch-detail");
         });
         document.querySelectorAll("[data-export-batch]").forEach(btn => btn.onclick = () => notify("success", `已生成EDM名单：${btn.dataset.exportBatch}`));
-        document.querySelectorAll("[data-batch-log]").forEach(btn => btn.onclick = () => {
-          state.selectedBatchId = btn.dataset.batchLog;
-          switchPage("batch-log-modal");
-        });
       }
       const batchDetailBack = document.getElementById("btnBatchDetailBack");
       if (batchDetailBack) {
@@ -5885,7 +5904,7 @@
             item.status = "已撤销";
             item.statuses = ["已撤销"];
             item.revokeReason = revokeReason;
-            pushCampaignLog(item, pendingAudit ? "撤销待审核活动，同步撤销发放审核记录" : "撤销活动");
+            pushCampaignLog(item, LOG_TEXT.campaign.revoke);
           });
           const targetCampaignIds = new Set(targetCampaigns.map(item => item.id));
           state.data.audits
@@ -6047,7 +6066,7 @@
           row.validDays = String(validDaysNum);
           if (ratioValue) row.ratio = ratioValue;
           else delete row.ratio;
-          pushCouponLog(row, "编辑红包，更新红包标题、红包类型、金额、抵扣比例或有效期");
+          pushCouponLog(row, LOG_TEXT.coupon.edit);
         } else {
           const newId = nextCouponId(draft.project);
           createdCouponId = newId;
@@ -6062,7 +6081,7 @@
             totalReceive: 0,
             status: "启用",
             enabled: true,
-            logs: [{ operator: "Jenny", time: nowStamp(), content: "创建红包" }]
+            logs: [{ operator: "Jenny", time: nowStamp(), content: LOG_TEXT.coupon.create }]
           };
           if (ratioValue) row.ratio = ratioValue;
           state.data.coupons.unshift(row);
