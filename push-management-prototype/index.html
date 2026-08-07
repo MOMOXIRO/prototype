@@ -616,7 +616,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
           <div class="filter-grid">
             <div class="filter-item"><label>任务 ID / 任务名称</label><input class="control" placeholder="ID 精确 / 名称模糊" data-f="q"></div>
             <div class="filter-item"><label>业务类型</label><select class="control" data-f="bizType"><option value="">全部</option><option>活动推送</option><option>业务推送</option></select></div>
-            <div class="filter-item"><label>活动 / 业务场景</label><select class="control" data-f="bizRef"><option value="">全部</option><option>实名认证</option><option>充值成功</option><option>提现失败</option><option>异常登录</option><option>新设备登录</option><option>修改密码成功</option><option>绑定银行卡成功</option><option>模拟交易大赛</option><option>模拟交易大赛-交易提醒三</option><option>模拟交易大赛-对手匹配成功</option><option>四周年活动</option><option>四周年活动-确认收货地址通知</option></select></div>
+            <div class="filter-item"><label>活动 / 业务场景</label><select class="control" data-f="bizRef"><option value="">全部</option><option>实名认证</option><option>充值成功</option><option>提现失败</option><option>异常登录</option><option>新设备登录</option><option>修改密码成功</option><option>绑定银行卡成功</option><option>客户盈利</option><option>模拟交易大赛</option><option>模拟交易大赛-交易提醒三</option><option>模拟交易大赛-对手匹配成功</option><option>四周年活动</option><option>四周年活动-确认收货地址通知</option></select></div>
             <div class="filter-item"><label>项目</label><select class="control" data-f="project"><option value="">全部</option><option>Dana</option><option>TW</option></select></div>
             <div class="filter-item"><label>优先级</label>
               <select class="control" id="biz-priority-filter" data-f="priority" onchange="onBizFilterChange()">
@@ -871,7 +871,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
               <div class="settings-pane-hd">
                 <div>
                   <h2>活动优先级</h2>
-                  <p>维护活动名称与 P0–P3 优先级；业务通知选择「活动推送」时从此列表选活动，优先级只读跟随。</p>
+                  <p>维护活动名称与 P0–P3 优先级；业务通知选择「活动推送」时下拉展示为「活动名-优先级」。</p>
                 </div>
                 <button class="btn" type="button" onclick="openBizRefEditor('activity')">+ 新增活动</button>
               </div>
@@ -893,7 +893,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
               <div class="settings-pane-hd">
                 <div>
                   <h2>业务场景优先级</h2>
-                  <p>维护业务场景名称与 P0–P3 优先级；业务通知选择「业务推送」时从此列表选业务场景，优先级只读跟随。</p>
+                  <p>维护业务场景名称与 P0–P3 优先级；业务通知选择「业务推送」时下拉展示为「场景名-优先级」。</p>
                 </div>
                 <button class="btn" type="button" onclick="openBizRefEditor('scenario')">+ 新增业务场景</button>
               </div>
@@ -1320,6 +1320,7 @@ function regionCodes(list){
 /* ========== Mock Data ========== */
 const DATA = {
   business: [
+    {id:'BN0019',name:'客户盈利达标提醒',project:'Dana',app:['DANA App','GoCap'],regions:['+62 [ID]','+84 [VN]'],bizType:'业务推送',scenarioId:'SCN009',channels:['Push','私信'],priority:'P2',pushIntervalMin:1440,last:'2026-07-24 11:20:18',sent:3260,status:'运行中',created:'2026-07-22 10:00:00',updated:'2026-07-24 11:20:18',profitConfig:{profitPeriod:'日盈利',profitThreshold:30000}},
     {id:'BN0018',name:'实名认证成功通知',project:'Dana',app:['DANA App','GoCap'],regions:['+62 [ID]','+84 [VN]'],bizType:'业务推送',scenarioId:'SCN001',channels:['Push','私信','邮件'],priority:'P1',pushIntervalMin:30,last:'2026-07-24 09:12:03',sent:128420,status:'运行中',created:'2026-07-10 09:00:00',updated:'2026-07-20 14:22:11'},
     {id:'BN0017',name:'大额充值成功提醒',project:'Dana',app:['DANA App','GoCap','Partner App'],regions:['+62 [ID]'],bizType:'业务推送',scenarioId:'SCN002',channels:['Push','私信'],priority:'P1',pushIntervalMin:15,last:'2026-07-24 08:55:41',sent:8420,status:'运行中',created:'2026-07-08 11:00:00',updated:'2026-07-18 11:02:00'},
     {id:'BN0016',name:'模拟大赛交易提醒三',project:'Dana',app:['DANA App','ForexDana'],regions:['+62 [ID]','+60 [MY]'],bizType:'活动推送',activityId:'ACT005',channels:['Push','私信'],priority:'P2',pushIntervalMin:60,last:'2026-07-24 10:00:12',sent:15680,status:'运行中',created:'2026-07-15 18:00:00',updated:'2026-07-23 18:20:00'},
@@ -1342,7 +1343,9 @@ const DATA = {
     {id:'MK0039',name:'USOIL 成交量异常',project:'TW',apps:['TW Lite'],app:'TW Lite',mktType:'成交量异常',source:'MT5',symbols:['USOIL'],symbol:'USOIL',change:'80%',cond:'成交量增长 ≥ 80%',audience:'近7日活跃',audienceMode:'tagverse',regions:[],marketTagVerse:'近7日活跃',tagVerse:'近7日活跃',listen:'交易时段',freq:'每 15 分钟',cool:'120 分钟',today:2,last:'2026-07-23 16:30:00',status:'监听中',priority:'P2',created:'2026-07-10 11:00:00'},
   ],
   recordsBatch: [
+    /* 业务推送场景批次仍保留在 DATA，推送记录列表按规则过滤不展示 */
     {id:'RB22081',type:'业务通知',srcId:'BN0018',srcName:'实名认证成功通知',project:'Dana',apps:['DANA App','GoCap'],priority:'P1',reason:'用户完成实名认证',channels:['Push','私信','邮件'],plan:'2026-07-24 09:12:03',start:'2026-07-24 09:12:03',end:'2026-07-24 09:12:08',target:1,ok:1,fail:0,reach:1,click:0,status:'已完成',operator:'王敏'},
+    {id:'RB22082',type:'业务通知',srcId:'BN0016',srcName:'模拟大赛交易提醒三',project:'Dana',apps:['DANA App','ForexDana'],priority:'P2',reason:'活动推送触发 · 模拟大赛交易提醒三',channels:['Push','私信'],plan:'2026-07-24 10:00:12',start:'2026-07-24 10:00:12',end:'2026-07-24 10:02:40',target:3260,ok:3188,fail:72,reach:2740,click:486,status:'已完成',operator:'王敏'},
     {id:'RB22080',type:'运营推送',srcId:'OP0091',srcName:'印尼斋月活动召回',project:'Dana',apps:['Dana App'],priority:'P1',reason:'每周一 10:00 定时执行',channels:['Push','私信'],plan:'2026-07-21 10:00:00',start:'2026-07-21 10:00:02',end:'2026-07-21 10:08:41',target:128420,ok:126880,fail:1540,reach:110204,click:18220,status:'已完成',operator:'amy.li'},
     {id:'RB22079',type:'行情提醒',srcId:'MK0042',srcName:'BTC 短时暴涨提醒',project:'TW',apps:['TW Trade'],priority:'P2',reason:'BTCUSD 5 分钟涨幅达到 3.18%',channels:['Push'],plan:'2026-07-24 10:18:22',start:'2026-07-24 10:18:22',end:'2026-07-24 10:18:55',target:8420,ok:8390,fail:30,reach:7102,click:1204,status:'已完成',operator:'林涛'},
     {id:'RB22076',type:'行情提醒',srcId:'MK0042',srcName:'BTC 短时暴涨提醒',project:'TW',apps:['TW Trade'],priority:'P2',reason:'BTCUSD 5 分钟涨幅达到 3.05%',channels:['Push'],plan:'2026-07-24 08:42:10',start:'2026-07-24 08:42:10',end:'2026-07-24 08:42:40',target:8210,ok:8188,fail:22,reach:6901,click:980,status:'已完成',operator:'林涛'},
@@ -1354,10 +1357,12 @@ const DATA = {
     {id:'RB22071',type:'行情提醒',srcId:'MK0040',srcName:'ETH 剧烈波动',project:'TW',apps:['TW Trade','TW Lite'],priority:'P2',reason:'BTCUSD 15 分钟振幅达到 5.11%',channels:['Push'],plan:'2026-07-19 14:12:33',start:'2026-07-19 14:12:33',end:'2026-07-19 14:13:02',target:6120,ok:6010,fail:110,reach:4488,click:720,status:'已完成',operator:'林涛'},
     {id:'RB22078',type:'运营推送',srcId:'OP0089',srcName:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',priority:'P0',reason:'运营人员手动立即发送',channels:['Push','私信','邮件'],plan:'2026-07-24 22:00:00',start:'2026-07-24 22:00:01',end:'--',target:2136,ok:860,fail:12,reach:0,click:0,status:'执行中',operator:'ops.admin'},
     {id:'RB22077',type:'业务通知',srcId:'BN0017',srcName:'大额充值成功提醒',project:'Dana',apps:['DANA App','GoCap','Partner App'],priority:'P1',reason:'用户完成充值',channels:['Push','私信'],plan:'2026-07-24 08:55:41',start:'2026-07-24 08:55:41',end:'2026-07-24 08:55:42',target:1,ok:0,fail:1,reach:0,click:0,status:'已完成',operator:'李晨'},
+    {id:'RB22066',type:'业务通知',srcId:'BN0012',srcName:'模拟大赛对手匹配',project:'Dana',apps:['DANA App','FDTrek'],priority:'P2',reason:'活动推送触发 · 模拟大赛对手匹配',channels:['Push'],plan:'2026-07-15 09:30:00',start:'2026-07-15 09:30:00',end:'2026-07-15 09:31:18',target:1840,ok:1792,fail:48,reach:1510,click:220,status:'已完成',operator:'王敏'},
     {id:'RB22073',type:'运营推送',srcId:'OP0087',srcName:'订阅黄金行情用户活动',project:'TW',apps:['TW Trade'],priority:'P2',reason:'单次定时待发送',channels:['Push','WhatsApp'],plan:'2026-07-28 14:00:00',start:'--',end:'--',target:18640,ok:0,fail:0,reach:0,click:0,status:'未开始',operator:'张三',title:'黄金行情专属活动',body:'订阅黄金行情的用户专属福利即将开启，记得准时参与。'},
     {id:'RB22070',type:'运营推送',srcId:'OP0090',srcName:'VIP3 及以上周末福利',project:'TW',apps:['TW Trade'],priority:'P2',reason:'单次定时待发送',channels:['Push','邮件'],plan:'2026-07-30 09:00:00',start:'--',end:'--',target:42880,ok:0,fail:0,reach:0,click:0,status:'未开始',operator:'李晨',title:'VIP 周末福利提醒',body:'尊敬的 VIP 用户，本周末专属福利即将发放，请留意站内消息。'},
   ],
   recordsUser: [
+    {id:'RB22082',sid:'10086231',project:'Dana',app:'Dana App',region:'+62 [ID]',lang:'印尼语',channel:'Push',title:'模拟大赛交易提醒',body:'Hi Budi, BTCUSD 现价有变动，活动截止前记得交易…',vars:'{userName}=Budi,{activityName}=模拟大赛交易提醒三',plan:'2026-07-24 10:00:12',sent:'2026-07-24 10:00:13',reach:'2026-07-24 10:00:16',click:'2026-07-24 10:01:02',status:'成功',fail:'--',retry:0},
     {id:'RB22081',sid:'10086231',project:'Dana',app:'Dana App',region:'+62 [ID]',lang:'印尼语',channel:'Push',title:'验证已通过',body:'Hi Budi, 您的实名认证已通过…',vars:'{userName}=Budi',plan:'2026-07-24 09:12:03',sent:'2026-07-24 09:12:03',reach:'2026-07-24 09:12:05',click:'--',status:'成功',fail:'--',retry:0},
     {id:'RB22080',sid:'10077412',project:'Dana',app:'Dana App',region:'+62 [ID]',lang:'印尼语',channel:'Push',title:'斋月专属福利',body:'专属礼包即将到期…',vars:'{activityName}=Ramadan',plan:'2026-07-21 10:00:00',sent:'2026-07-21 10:01:12',reach:'--',click:'--',status:'失败',fail:'Device token invalid',retry:1},
     {id:'RB22079',sid:'20033108',project:'TW',app:'TW Trade',region:'+84 [VN]',lang:'越南语',channel:'Push',title:'BTC 短时上涨',body:'BTCUSD 5分钟涨幅 3.18%',vars:'{changeRate}=3.18%',plan:'2026-07-24 10:18:22',sent:'2026-07-24 10:18:23',reach:'2026-07-24 10:18:26',click:'2026-07-24 10:19:01',status:'成功',fail:'--',retry:0},
@@ -1379,6 +1384,7 @@ const DATA = {
     {id:'app-tw-app',name:'TW App',project:'TW',packageName:'com.tw.app',version:'3.4.0',status:'异常',firebaseStatus:'已验证',firebaseProjectId:'tw-app-prod',firebaseVerifiedAt:'2026-07-20 09:00:00',firebaseUpdatedAt:'2026-07-05 18:20:00',apnsStatus:'未配置',apnsUpdatedAt:'--',bizConfigured:4,bizTotal:8,opRunning:1,marketListening:0,todaySent:18240,todaySuccess:79.1,iosSupported:true},
   ],
   templates: [
+    {id:'TP0010',name:'客户盈利达标提醒',type:'业务通知',bizType:'业务推送',scenarioId:'SCN009',scope:'公用',projects:[],desc:'客户盈利达标触达模板；盈利周期与阈值在任务「场景配置」中配置。',creator:'王敏',updated:'2026-07-24 16:00:00',byLang:{en:{title:'Market move alert',body:'Market is moving — {userName} made {profitAmount} USD profit {profitPeriod}. Check how to trade.'},zh:{title:'行情到了',body:'行情到了，{userName}{profitPeriod}盈利{profitAmount}美金，快去看看怎么操作。'},id:{title:'Peluang pasar',body:'Pasar bergerak — {userName} profit {profitAmount} USD {profitPeriod}. Cek cara trading.'}}},
     {id:'TP0008',name:'实名认证成功通用模板',type:'业务通知',bizType:'业务推送',scenarioId:'SCN001',scope:'公用',projects:[],desc:'实名认证通过后的通用触达文案，可复用于各项目。',creator:'王敏',updated:'2026-07-24 11:20:00',byLang:{en:{title:'Your verification is approved',body:'Hi {userName}, your identity verification was approved at {verifyTime}.'},zh:{title:'实名认证已通过',body:'您好 {userName}，您的实名认证已于 {verifyTime} 通过。'},id:{title:'Verifikasi berhasil',body:'Halo {userName}, verifikasi Anda disetujui pada {verifyTime}.'},vi:{title:'Xác minh thành công',body:'Xin chào {userName}, xác minh danh tính của bạn đã được duyệt lúc {verifyTime}.'}}},
     {id:'TP0007',name:'充值成功-Dana',type:'业务通知',bizType:'业务推送',scenarioId:'SCN002',scope:'指定项目',projects:['Dana'],desc:'Dana 项目充值成功通知，含金额与订单号。',creator:'李晨',updated:'2026-07-23 16:40:00',byLang:{en:{title:'Deposit successful',body:'Hi {userName}, your deposit of {depositAmount} {currency} is successful. Order {orderId}.'},zh:{title:'充值成功',body:'您好 {userName}，您已成功充值 {depositAmount} {currency}，订单号 {orderId}。'},id:{title:'Deposit berhasil',body:'Halo {userName}, deposit {depositAmount} {currency} berhasil. Order {orderId}.'}}},
     {id:'TP0006',name:'提现失败-TW',type:'业务通知',bizType:'业务推送',scenarioId:'SCN003',scope:'指定项目',projects:['TW'],desc:'TW 提现失败原因告知模板。',creator:'陈浩',updated:'2026-07-22 09:18:00',byLang:{en:{title:'Withdrawal failed',body:'Hi {userName}, withdrawal {orderId} failed: {failReason}.'},zh:{title:'提现失败',body:'您好 {userName}，提现订单 {orderId} 失败：{failReason}。'},vi:{title:'Rút tiền thất bại',body:'Xin chào {userName}, lệnh rút {orderId} thất bại: {failReason}.'}}},
@@ -1418,6 +1424,7 @@ const DATA = {
     {id:'SCN006', name:'修改密码成功', priority:'P1', status:'启用'},
     {id:'SCN007', name:'绑定银行卡成功', priority:'P1', status:'启用'},
     {id:'SCN008', name:'账户变更', priority:'P1', status:'启用'},
+    {id:'SCN009', name:'客户盈利', priority:'P2', status:'启用'},
   ],
   /** 运营推送类型 → 固定优先级（可在推送设置中修改） */
   opTypePriority: [
@@ -2458,7 +2465,7 @@ function renderRecordsFilter(){
   const appOptsHtml = appOpts.map(a=>`<option value="${a}">${a}</option>`).join('');
   box.innerHTML = `
     <div class="filter-item"><label>批次 ID</label><input class="control" id="recordsFilterBatch" placeholder="批次 ID" value="${batchKw}"></div>
-    <div class="filter-item"><label>来源类型</label><select class="control" id="recordsFilterType" onchange="onRecordsFilterChange()"><option value="">全部</option><option>业务通知</option><option>运营推送</option><option>行情提醒</option></select></div>
+    <div class="filter-item"><label>来源类型</label><select class="control" id="recordsFilterType" onchange="onRecordsFilterChange()"><option value="">全部</option><option value="活动通知">活动通知</option><option value="运营推送">运营推送</option><option value="行情提醒">行情提醒</option></select></div>
     <div class="filter-item"><label>来源 ID / 名称</label><input class="control" id="recordsFilterSrc" placeholder="来源 ID / 名称" value="${kw}"></div>
     <div class="filter-item"><label>优先级</label>
       <select class="control" id="records-priority-filter" onchange="onRecordsFilterChange()">
@@ -2531,15 +2538,43 @@ function purgeDisabledOverviewApps(){
   DATA.overviewApps = DATA.overviewApps.filter(a=>a.status!=='停用');
 }
 
+/** 推送记录：业务模块仅展示活动推送（来源类型显示为活动通知），隐藏业务推送场景类业务通知；运营/行情照常展示 */
+function recordBatchBizTask(batch){
+  if(!batch) return null;
+  if(batch.type==='业务通知' || batch.type==='活动通知'){
+    return (DATA.business||[]).find(x=>x.id===batch.srcId) || null;
+  }
+  return null;
+}
+function isActivityNotifyBatch(batch){
+  if(!batch) return false;
+  if(batch.type==='活动通知') return true;
+  if(batch.type!=='业务通知') return false;
+  const src = recordBatchBizTask(batch);
+  return !!(src && bizTypeKeyFromLabel(src.bizType)==='activity');
+}
+function isRecordsBatchListed(batch){
+  if(!batch) return false;
+  if(batch.type==='运营推送' || batch.type==='行情提醒') return true;
+  if(batch.type==='活动通知') return true;
+  if(batch.type==='业务通知') return isActivityNotifyBatch(batch);
+  return false;
+}
+function recordSourceTypeLabel(batch){
+  if(!batch) return '';
+  if(batch.type==='运营推送' || batch.type==='行情提醒') return batch.type;
+  if(isActivityNotifyBatch(batch)) return '活动通知';
+  return batch.type || '';
+}
 function filterRecords(rows){
-  let list = rows.slice();
+  let list = (rows || []).filter(isRecordsBatchListed);
   const kw = (state.recordsKeyword || '').trim().toLowerCase();
   const batchKw = (state.recordsBatchKeyword || '').trim().toLowerCase();
   const type = state.recordsFilterType || '';
   const pri = state.recordsFilterPriority || '';
   const proj = state.recordsFilterProject || '';
   const app = state.recordsFilterApp || '';
-  if(type) list = list.filter(r=>r.type===type);
+  if(type) list = list.filter(r=>recordSourceTypeLabel(r)===type);
   if(pri) list = list.filter(r=>matchPriorityFilter(r.priority, pri));
   if(proj) list = list.filter(r=>r.project===proj);
   if(app) list = list.filter(r=>recordMatchesAppFilter(r, app));
@@ -2567,9 +2602,10 @@ function renderRecords(){
   </tr>`;
   table.querySelector('tbody').innerHTML = pageRows.map(r=>{
     const appLabel = formatAppCell(r.project, rowAppsValue(r));
+    const srcType = recordSourceTypeLabel(r);
     return `<tr>
     <td><span class="id-link" onclick="openDetail('records','${r.id}')">${r.id}</span></td>
-    <td><span class="pill info">${r.type}</span></td>
+    <td><span class="pill info">${srcType}</span></td>
     <td>${r.srcId}</td><td><div class="cell-2line" title="${r.srcName}">${r.srcName}</div></td>
     <td>${r.project||'—'}</td>
     <td><div class="cell-2line" title="${appLabel}">${appLabel}</div></td>
@@ -2688,6 +2724,21 @@ function selectableActivities(includeId){
 }
 function selectableScenarios(includeId){
   return (DATA.bizScenarios||[]).filter(s=>s.status==='启用' || s.id===includeId);
+}
+function bizRefOptionLabel(ref){
+  return ref?.name || '';
+}
+function bizRefDisplayById(typeKey, id){
+  const ref = typeKey === 'activity' ? getActivityById(id) : getScenarioById(id);
+  return ref?.name || '-';
+}
+function bizRefPriBadgeHtml(typeKey, refId){
+  return priBadge(priorityFromBizRef(typeKey, refId));
+}
+function bizRefDisplayForRow(row){
+  const typeKey = bizTypeKeyFromLabel(row?.bizType);
+  if(typeKey==='activity') return bizRefDisplayById('activity', row?.activityId);
+  return bizRefDisplayById('business', row?.scenarioId);
 }
 function priorityFromBizRef(typeKey, refId){
   if(typeKey==='activity'){
@@ -3129,7 +3180,11 @@ function savePriorityRules(){
 
 function inferRecordsType(srcId){
   const s = String(srcId||'');
-  if(s.startsWith('BN')) return '业务通知';
+  if(s.startsWith('BN')){
+    const biz = (DATA.business||[]).find(x=>x.id===s);
+    if(biz && bizTypeKeyFromLabel(biz.bizType)==='activity') return '活动通知';
+    return '';
+  }
   if(s.startsWith('OP')) return '运营推送';
   if(s.startsWith('MK')) return '行情提醒';
   return '';
@@ -4180,6 +4235,10 @@ function openCreatePage(type){
     if(!state.drawer.contentDraft) state.drawer.contentDraft = emptyContentDraft(['push']);
     ensureDraftByLang();
     ensureJumpConfigState(true);
+    if(isProfitScenarioId(state.drawer.bizRefId)){
+      state.drawer.profitConfig = defaultProfitConfig();
+      applyProfitScenarioDefaults({ resetContent: true });
+    }
   } else if(type==='operation'){
     state.drawer.project = 'Dana';
     state.drawer.apps = bizAppOptions('Dana').slice();
@@ -4288,6 +4347,10 @@ function openEditDrawer(type, id){
     state.drawer.msgGroup = row?.project==='TW' ? '【TW】系统通知' : '【DANA】资金变更';
     ensureDraftByLang();
     ensureJumpConfigState(true);
+    if(isProfitScenarioId(state.drawer.bizRefId)){
+      ensureProfitConfig(row);
+      applyProfitScenarioDefaults({ resetContent: false });
+    }
   }
   if(type==='operation'){
     state.drawer.project = state.drawer.project || row?.project || 'Dana';
@@ -4681,7 +4744,8 @@ const VAR_LABELS = {
   orderId:'订单号', symbol:'交易品种', currentPrice:'当前价格',
   changeRate:'涨跌幅', activityName:'活动名称', endTime:'结束时间',
   cardTail:'卡号末尾', period:'周期', failReason:'失败原因',
-  currentDate:'当前日期', triggerTime:'触发时间'
+  currentDate:'当前日期', triggerTime:'触发时间',
+  profitAmount:'盈利金额', profitPeriod:'盈利周期'
 };
 const VAR_DESCS = {
   userName:'发送时替换为用户昵称/姓名',
@@ -4700,7 +4764,9 @@ const VAR_DESCS = {
   period:'行情统计周期，如 5m',
   failReason:'失败原因说明文案',
   currentDate:'当前日期',
-  triggerTime:'规则触发时间'
+  triggerTime:'规则触发时间',
+  profitAmount:'触发时的盈利金额数值',
+  profitPeriod:'跟随场景配置所选盈利周期，如 今日 / 本周 / 本月（对应日/周/月盈利）'
 };
 const SYSTEM_VAR_KEYS = ['userName','verifyTime','depositAmount','orderId','symbol','currentPrice','changeRate','activityName','endTime'];
 /* 运营推送 / 行情提醒：正文插入变量（英文 key；芯片展示中文） */
@@ -4717,6 +4783,7 @@ const BIZ_EVENT_VARS = {
   '异常登录': ['userName','verifyTime','currentDate','failReason'],
   '绑定银行卡成功': ['userName','cardTail','verifyTime'],
   '账户变更': ['userName','verifyTime','currentDate'],
+  '客户盈利': ['userName','profitAmount','profitPeriod','currency'],
   '模拟交易大赛': ['userName','activityName','symbol','currentPrice','changeRate','endTime'],
   '模拟交易大赛-对手匹配成功': ['userName','activityName','symbol'],
   '模拟交易大赛-交易提醒一': ['userName','activityName','symbol','currentPrice','changeRate','endTime'],
@@ -4734,7 +4801,7 @@ function varsForTemplateType(type){
   if(type === '行情提醒') return MARKET_ALERT_VARS.slice();
   const set = new Set(SYSTEM_VAR_KEYS);
   Object.values(BIZ_EVENT_VARS).forEach(arr => (arr || []).forEach(k => set.add(k)));
-  ['currency','amount','failReason','verifyLevel','cardTail','currentDate'].forEach(k => set.add(k));
+  ['currency','amount','failReason','verifyLevel','cardTail','currentDate','profitAmount','profitPeriod'].forEach(k => set.add(k));
   return [...set];
 }
 function varsForBizEvent(refName){
@@ -4958,6 +5025,11 @@ function saveWithEnglishCheck(successMsg, thenClose){
       }
       delete state.drawer.detail.event;
       if(state.drawer.pushIntervalMin != null) state.drawer.detail.pushIntervalMin = Number(state.drawer.pushIntervalMin) || 0;
+      if(typeKey === 'business' && isProfitScenarioId(state.drawer.bizRefId)){
+        state.drawer.detail.profitConfig = ensureProfitConfig();
+      } else {
+        delete state.drawer.detail.profitConfig;
+      }
       state.drawer.detail.updated = formatNow();
     }
   }
@@ -5484,6 +5556,7 @@ function tplBizBindFieldsHtml(){
     : selectableScenarios(state.drawer.tplBizRefId);
   const refLabel = isActivity ? '活动' : '业务场景';
   const emptyHint = isActivity ? '暂无可用活动，请先在推送设置中配置' : '暂无可用业务场景，请先在推送设置中配置';
+  const priHtml = bizRefPriBadgeHtml(type, state.drawer.tplBizRefId);
   return '<div class="grid2">' +
     '<div class="field"><label class="label"><span class="req">*</span>业务类型</label>' +
       '<select class="control" id="tplBizType" onchange="onTplBizTypeChange(this.value)">' +
@@ -5491,9 +5564,11 @@ function tplBizBindFieldsHtml(){
       '</select></div>' +
     '<div class="field"><label class="label"><span class="req">*</span>' + refLabel + '</label>' +
       (refOpts.length
-        ? ('<select class="control" id="tplBizRefId" onchange="onTplBizRefChange(this.value)">' +
-            refOpts.map(r=>'<option value="' + r.id + '"' + (r.id===state.drawer.tplBizRefId?' selected':'') + '>' + escHtml(r.name) + '</option>').join('') +
-          '</select>')
+        ? ('<div style="display:flex;align-items:center;gap:8px">' +
+            '<select class="control" id="tplBizRefId" style="flex:1;min-width:0" onchange="onTplBizRefChange(this.value)">' +
+              refOpts.map(r=>'<option value="' + r.id + '"' + (r.id===state.drawer.tplBizRefId?' selected':'') + '>' + escHtml(bizRefOptionLabel(r)) + '</option>').join('') +
+            '</select>' + priHtml +
+          '</div>')
         : ('<div class="control" style="display:flex;align-items:center;color:var(--muted);background:#f8fafc">' + emptyHint + '</div>')) +
     '</div></div>';
 }
@@ -6011,7 +6086,112 @@ function updateOpPlanSummaryCard(){
   const el = document.getElementById('opPlanSummary');
   if(el) el.textContent = '当前计划：' + opSendPlanSummary();
 }
-const JUMP_INTERNAL_ADDR_OPTS = ['首页','资产页','交易页','活动中心','个人中心','消息中心'];
+const JUMP_INTERNAL_ADDR_OPTS = ['首页','资产页','交易页','盈利排行榜','活动中心','个人中心','消息中心'];
+const PROFIT_SCENARIO_ID = 'SCN009';
+const PROFIT_SCENARIO_NAME = '客户盈利';
+const PROFIT_PERIOD_OPTS = ['日盈利','周盈利','月盈利'];
+const PROFIT_PERIOD_VAR_TEXT = { '日盈利':'今日', '周盈利':'本周', '月盈利':'本月' };
+const PROFIT_THRESHOLD_DEFAULTS = { '日盈利': 30000, '周盈利': 80000, '月盈利': 150000 };
+const DEFAULT_PROFIT_CONFIG = {
+  profitPeriod: '日盈利',
+  profitThreshold: PROFIT_THRESHOLD_DEFAULTS['日盈利']
+};
+function isProfitScenarioId(id){
+  return id === PROFIT_SCENARIO_ID || getScenarioById(id)?.name === PROFIT_SCENARIO_NAME;
+}
+function defaultProfitThresholdForPeriod(period){
+  return PROFIT_THRESHOLD_DEFAULTS[normalizeProfitPeriod(period)] ?? PROFIT_THRESHOLD_DEFAULTS['日盈利'];
+}
+function defaultProfitConfig(){
+  const period = DEFAULT_PROFIT_CONFIG.profitPeriod;
+  return { profitPeriod: period, profitThreshold: defaultProfitThresholdForPeriod(period) };
+}
+function normalizeProfitPeriod(v){
+  if(PROFIT_PERIOD_OPTS.includes(v)) return v;
+  if(v === 'day' || v === 'daily') return '日盈利';
+  if(v === 'week' || v === 'weekly') return '周盈利';
+  if(v === 'month' || v === 'monthly') return '月盈利';
+  return DEFAULT_PROFIT_CONFIG.profitPeriod;
+}
+function profitPeriodVarText(period){
+  return PROFIT_PERIOD_VAR_TEXT[normalizeProfitPeriod(period)] || '今日';
+}
+function ensureProfitConfig(fromRow){
+  const src = fromRow && fromRow.profitConfig ? fromRow.profitConfig
+    : (state.drawer && state.drawer.profitConfig ? state.drawer.profitConfig : null);
+  const raw = src || {};
+  let period = normalizeProfitPeriod(raw.profitPeriod);
+  let threshold = raw.profitThreshold;
+  if(threshold == null || threshold === ''){
+    if(period === '周盈利' && raw.weekThreshold != null) threshold = raw.weekThreshold;
+    else if(period === '月盈利' && raw.monthThreshold != null) threshold = raw.monthThreshold;
+    else if(raw.dayThreshold != null) threshold = raw.dayThreshold;
+    else if(raw.weekThreshold != null){ period = '周盈利'; threshold = raw.weekThreshold; }
+    else if(raw.monthThreshold != null){ period = '月盈利'; threshold = raw.monthThreshold; }
+  }
+  threshold = Number(threshold);
+  if(!Number.isFinite(threshold)) threshold = defaultProfitThresholdForPeriod(period);
+  const cfg = { profitPeriod: period, profitThreshold: threshold };
+  if(state.drawer) state.drawer.profitConfig = cfg;
+  return cfg;
+}
+function setProfitConfigField(key, value){
+  const cfg = ensureProfitConfig();
+  if(key === 'profitPeriod'){
+    cfg.profitPeriod = normalizeProfitPeriod(value);
+    cfg.profitThreshold = defaultProfitThresholdForPeriod(cfg.profitPeriod);
+    if(state.drawer) state.drawer.profitConfig = cfg;
+    renderFormBody();
+    return;
+  }
+  if(key === 'profitThreshold'){
+    const n = value === '' ? '' : Number(value);
+    cfg.profitThreshold = n;
+  }
+  if(state.drawer) state.drawer.profitConfig = cfg;
+}
+function applyProfitScenarioDefaults(opts){
+  const resetContent = !!(opts && opts.resetContent);
+  ensureProfitConfig();
+  ensureJumpConfigState();
+  if(!state.drawer.jumpMode) state.drawer.jumpMode = 'APP内部跳转';
+  if(!state.drawer.jumpInternalAddr) state.drawer.jumpInternalAddr = '盈利排行榜';
+  if(!resetContent) return;
+  if(!state.drawer.contentDraft) state.drawer.contentDraft = emptyContentDraft(['push']);
+  const draft = state.drawer.contentDraft;
+  const zhTitle = '行情到了';
+  const zhBody = '行情到了，{userName}{profitPeriod}盈利{profitAmount}美金，快去看看怎么操作。';
+  const enTitle = 'Market move alert';
+  const enBody = 'Market is moving — {userName} made {profitAmount} USD profit {profitPeriod}. Check how to trade.';
+  draft.title = enTitle;
+  draft.body = enBody;
+  draft.channels = draft.channels && draft.channels.length ? draft.channels : ['push'];
+  if(!draft.byChannel) draft.byChannel = {};
+  draft.channels.forEach(ch=>{
+    if(!draft.byChannel[ch]) draft.byChannel[ch] = defaultChannelContent(ch);
+    draft.byChannel[ch].title = enTitle;
+    draft.byChannel[ch].body = enBody;
+  });
+  if(!draft.byLang) draft.byLang = {};
+  draft.byLang.en = { title: enTitle, body: enBody, channels: draft.channels.slice(), byChannel: JSON.parse(JSON.stringify(draft.byChannel)) };
+  draft.byLang.zh = { title: zhTitle, body: zhBody, channels: draft.channels.slice(), byChannel: { push: { title: zhTitle, body: zhBody } } };
+  draft.dirty = false;
+  state.drawer.lang = 'en';
+}
+function profitScenarioConfigBlock(){
+  if(state.drawer.bizType !== 'business' || !isProfitScenarioId(state.drawer.bizRefId)) return '';
+  const cfg = ensureProfitConfig();
+  const th = cfg.profitThreshold === '' || cfg.profitThreshold == null ? '' : cfg.profitThreshold;
+  return '<div class="grid2" style="margin-top:12px">' +
+    '<div class="field"><label class="label"><span class="req">*</span>盈利周期</label>' +
+      '<select class="control" onchange="setProfitConfigField(\'profitPeriod\', this.value)">' +
+        PROFIT_PERIOD_OPTS.map(o=>'<option value="' + o + '"' + (cfg.profitPeriod===o?' selected':'') + '>' + o + '</option>').join('') +
+      '</select></div>' +
+    '<div class="field"><label class="label"><span class="req">*</span>盈利阈值</label>' +
+      '<input class="control" type="number" min="0" step="1" value="' + th + '"' +
+        ' oninput="setProfitConfigField(\'profitThreshold\', this.value)"></div>' +
+  '</div>';
+}
 function ensureJumpConfigState(reset){
   const d = state.drawer;
   if(reset || !d.jumpMode) d.jumpMode = 'APP内部跳转';
@@ -6408,15 +6588,18 @@ function renderDrawerFoot(){ renderFormFoot(); }
 /** 批次详情：解析来源任务行 */
 function resolveBatchSourceRow(batch){
   if(!batch) return null;
-  if(batch.type==='业务通知') return (DATA.business||[]).find(x=>x.id===batch.srcId) || null;
+  if(batch.type==='业务通知' || batch.type==='活动通知') return (DATA.business||[]).find(x=>x.id===batch.srcId) || null;
   if(batch.type==='运营推送') return (DATA.operation||[]).find(x=>x.id===batch.srcId) || null;
   if(batch.type==='行情提醒') return (DATA.market||[]).find(x=>x.id===batch.srcId) || null;
   return null;
 }
+function isBizModuleBatch(batch){
+  return !!(batch && (batch.type==='业务通知' || batch.type==='活动通知' || isActivityNotifyBatch(batch)));
+}
 /** 批次受众摘要：优先来源任务，否则按类型给展示占位 */
 function batchAudienceSummary(batch, src){
   if(src){
-    if(batch.type==='业务通知'){
+    if(isBizModuleBatch(batch)){
       const regions = bizRegionsText(src.regions);
       const text = '触发当前' + (bizTypeKeyFromLabel(src.bizType)==='activity'?'活动':'业务场景') + '的用户'
         + (regions && regions!=='-' && regions!=='—' ? ' · 地区 ' + regions : '');
@@ -6426,7 +6609,7 @@ function batchAudienceSummary(batch, src){
       return formatAudienceCell(src);
     }
   }
-  if(batch.type==='业务通知') return '触发当前业务场景的用户';
+  if(isBizModuleBatch(batch)) return isActivityNotifyBatch(batch) ? '触发当前活动的用户' : '触发当前业务场景的用户';
   if(batch.type==='运营推送') return '按任务选择对象执行（快照 ' + Number(batch.target||0).toLocaleString() + ' 人）';
   if(batch.type==='行情提醒') return '满足行情条件的订阅用户';
   return '—';
@@ -6445,7 +6628,7 @@ function batchJumpSummary(batch, src){
   }
   if(batch.type==='行情提醒') return 'APP内部跳转 · 品种行情页';
   if(batch.type==='运营推送') return 'APP内部跳转 · 活动落地页';
-  if(batch.type==='业务通知') return 'APP内部跳转 · 业务详情页';
+  if(isBizModuleBatch(batch)) return isActivityNotifyBatch(batch) ? 'APP内部跳转 · 活动详情页' : 'APP内部跳转 · 业务详情页';
   return '无跳转';
 }
 /** 从触发原因解析行情实际触发值 */
@@ -6514,10 +6697,11 @@ function renderRecordsBatchDetail(d){
   const content = batchContentPreview(d);
   const n = v => Number(v||0).toLocaleString();
   const summaryFull = ['来源', '触发原因'];
+  const srcTypeLabel = recordSourceTypeLabel(d) || d.type || '—';
   const summaryBlock = `<div class="detail-block compact"><h4>批次摘要</h4>${kv2colHtml([
     ['批次 ID', d.id],
     ['状态', statusPill(d.status)],
-    ['来源', `${d.type} · ${d.srcId} · ${escHtml(d.srcName||'')}`],
+    ['来源', `${srcTypeLabel} · ${d.srcId} · ${escHtml(d.srcName||'')}`],
     ['项目', d.project||'—'],
     ['APP', appLabel],
     ['优先级', priBadge(normalizeBizPriority(d.priority, 'P2'))],
@@ -6582,9 +6766,7 @@ function renderDetailView(){
     const bizTypeKey = isBizTpl ? bizTypeKeyFromLabel(d.bizType) : '';
     const bizRefLabel = bizTypeKey === 'activity' ? '活动' : '业务场景';
     const bizRefName = isBizTpl
-      ? (bizTypeKey === 'activity'
-          ? (getActivityById(d.activityId)?.name || '-')
-          : (getScenarioById(d.scenarioId)?.name || '-'))
+      ? bizRefDisplayById(bizTypeKey, bizTypeKey === 'activity' ? d.activityId : d.scenarioId)
       : '';
     return `<div class="detail-block"><h4>基础信息</h4><div class="kv">
       <div class="k">模板 ID</div><div class="v">${d.id||'-'}</div>
@@ -6616,9 +6798,13 @@ function renderDetailView(){
     </div></div>
     <div class="detail-block"><h4>业务类型</h4><div class="kv">
       <div class="k">业务类型</div><div class="v">${d.bizType||'-'}</div>
-      <div class="k">${bizTypeKeyFromLabel(d.bizType)==='activity'?'活动':'业务场景'}</div><div class="v">${bizRefNameForRow(d)}</div>
-      <div class="k">优先级</div><div class="v">${priBadge(resolveBizRowPriority(d))}</div>
+      <div class="k">${bizTypeKeyFromLabel(d.bizType)==='activity'?'活动':'业务场景'}</div><div class="v">${escHtml(bizRefDisplayForRow(d))} ${priBadge(resolveBizRowPriority(d))}</div>
       <div class="k">默认对象</div><div class="v">触发当前${bizTypeKeyFromLabel(d.bizType)==='activity'?'活动':'业务场景'}的用户</div>
+      ${isProfitScenarioId(d.scenarioId) ? (()=>{
+        const pc = ensureProfitConfig(d);
+        return `<div class="k">盈利周期</div><div class="v">${escHtml(pc.profitPeriod)}</div>
+      <div class="k">盈利阈值</div><div class="v">${pc.profitThreshold}</div>`;
+      })() : ''}
       <div class="k">通知渠道</div><div class="v">${channelTags(d.channels||[])}</div>
     </div></div>
     <div class="detail-block"><h4>时间与执行</h4><div class="kv">
@@ -6819,8 +7005,7 @@ function businessStep(step){
       <div class="summary-card">
         <div class="row"><div class="k">任务名称</div><div class="v">${state.drawer.detail?.name||'新建业务通知'}</div></div>
         <div class="row"><div class="k">业务类型</div><div class="v">${bizTypeLabelFromKey(state.drawer.bizType||'business')}</div></div>
-        <div class="row"><div class="k">${state.drawer.bizType==='activity'?'活动':'业务场景'}</div><div class="v">${bizRefNameById(state.drawer.bizType, state.drawer.bizRefId)}</div></div>
-        <div class="row"><div class="k">优先级</div><div class="v">${priBadge(syncBizPriorityFromRef())}</div></div>
+        <div class="row"><div class="k">${state.drawer.bizType==='activity'?'活动':'业务场景'}</div><div class="v">${escHtml(bizRefDisplayById(state.drawer.bizType||'business', state.drawer.bizRefId))}</div></div>
         <div class="row"><div class="k">默认对象</div><div class="v">触发当前${state.drawer.bizType==='activity'?'活动':'业务场景'}的用户</div></div>
         <div class="row"><div class="k">项目</div><div class="v">${state.drawer.project||'-'}</div></div>
         <div class="row"><div class="k">APP</div><div class="v">${formatAppCell(state.drawer.project, state.drawer.apps)}</div></div>
@@ -6865,9 +7050,16 @@ function setBizType(type){
 }
 function setBizRefId(id){
   syncDraftFromInputs();
+  const prevId = state.drawer.bizRefId;
   state.drawer.bizRefId = id || '';
   syncBizPriorityFromRef();
   clearMismatchedBizTemplate();
+  if(state.drawer.bizType === 'business' && isProfitScenarioId(id)){
+    const draft = state.drawer.contentDraft;
+    const canPrefill = state.drawer.mode === 'create' && (!draft || !draft.dirty) && prevId !== id;
+    if(canPrefill || !state.drawer.profitConfig) state.drawer.profitConfig = defaultProfitConfig();
+    applyProfitScenarioDefaults({ resetContent: canPrefill });
+  }
   refreshBizEventVarChips();
   renderFormBody();
 }
@@ -6875,11 +7067,13 @@ function bizEventCondBlock(){
   const type = state.drawer.bizType || 'business';
   ensureBizRefSelection();
   const isActivity = type==='activity';
+  const typeKey = isActivity ? 'activity' : 'business';
   const refOpts = isActivity
     ? selectableActivities(state.drawer.bizRefId)
     : selectableScenarios(state.drawer.bizRefId);
   const refLabel = isActivity ? '活动' : '业务场景';
   const emptyHint = isActivity ? '暂无可用活动，请先在推送设置中配置' : '暂无可用业务场景，请先在推送设置中配置';
+  const priHtml = bizRefPriBadgeHtml(typeKey, state.drawer.bizRefId);
   return '<div class="grid2">' +
     '<div class="field"><label class="label"><span class="req">*</span>业务类型</label>' +
       '<select class="control" id="bizType" onchange="setBizType(this.value)">' +
@@ -6887,17 +7081,15 @@ function bizEventCondBlock(){
       '</select></div>' +
     '<div class="field"><label class="label"><span class="req">*</span>' + refLabel + '</label>' +
       (refOpts.length
-        ? ('<select class="control" id="bizRefId" onchange="setBizRefId(this.value)">' +
-            refOpts.map(r=>'<option value="' + r.id + '"' + (r.id===state.drawer.bizRefId?' selected':'') + '>' + escHtml(r.name) + '</option>').join('') +
-          '</select>')
+        ? ('<div style="display:flex;align-items:center;gap:8px">' +
+            '<select class="control" id="bizRefId" style="flex:1;min-width:0" onchange="setBizRefId(this.value)">' +
+              refOpts.map(r=>'<option value="' + r.id + '"' + (r.id===state.drawer.bizRefId?' selected':'') + '>' + escHtml(bizRefOptionLabel(r)) + '</option>').join('') +
+            '</select>' + priHtml +
+          '</div>')
         : ('<div class="control" style="display:flex;align-items:center;color:var(--muted);background:#f8fafc">' + emptyHint + '</div>')) +
     '</div>' +
-    '<div class="field"><label class="label">优先级</label>' +
-      '<div class="control" style="display:flex;align-items:center;gap:8px;background:#f8fafc">' +
-        priBadge(state.drawer.bizPriority) +
-        '<span class="muted" style="font-size:12px">跟随所选' + refLabel + '</span>' +
-      '</div></div>' +
-  '</div>';
+  '</div>' +
+  profitScenarioConfigBlock();
 }
 function addCond(){
   const list = document.getElementById('condList');
