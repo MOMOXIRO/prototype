@@ -1522,11 +1522,6 @@
       return (state.campaignDraft.taskItems || []).some(item => campaignItemTaskId(item) === taskId);
     }
 
-    function campaignHasTaskType(type) {
-      if (!type) return false;
-      return (state.campaignDraft.taskItems || []).some(item => !item.custom && item.type === type);
-    }
-
     function campaignHasCustomTask() {
       return (state.campaignDraft.taskItems || []).some(item => item.custom);
     }
@@ -2897,16 +2892,12 @@
       if (draft.audienceType === "导入" && !(draft.sidList || []).length) return "请先导入有效名单";
       if (!draft.taskItems.length) return "请至少添加一个任务或自定义红包";
       if (draft.taskItems.length > MAX_CAMPAIGN_TASKS) return `单个活动最多添加${MAX_CAMPAIGN_TASKS}个任务（含自定义红包任务）`;
-      const nonNoTaskTypes = {};
+      if ((draft.taskItems || []).filter(item => item.custom).length > 1) return "自定义任务一次只能添加一个";
       for (const item of draft.taskItems || []) {
-        if (!item.custom) {
-          const task = state.data.tasks.find(t => t.id === campaignItemTaskId(item));
-          if (task && task.app !== draft.project) return `任务 ${task.id} 不属于当前项目（${draft.project}）`;
-        }
-        if (item.custom || item.type === "无任务") continue;
-        const key = item.type || "--";
-        nonNoTaskTypes[key] = (nonNoTaskTypes[key] || 0) + 1;
-        if (nonNoTaskTypes[key] > 1) return `${key}任务一次只能添加一个`;
+        if (item.custom) continue;
+        const task = state.data.tasks.find(t => t.id === campaignItemTaskId(item));
+        if (!task) return `任务 ${campaignItemTaskId(item) || "--"} 不存在`;
+        if (task.app !== draft.project) return `任务 ${task.id} 不属于当前项目（${draft.project}）`;
       }
       if (draft.taskItems.some(item => item.custom && !campaignCustomAmounts(item).some(a => String(a || "").trim()))) return "自定义红包金额必填";
       if (draft.deliverType === "定时发放" && !draft.deliverAt) return "请填写定时发放时间";
@@ -3151,7 +3142,7 @@
             ${tableColgroup([7, 7, 13, 10, 7, 7, 8, 7, 7, 7, 8, 12])}
             <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">总发放</th><th class="text-left px-3 py-2">总领取</th><th class="text-left px-3 py-2">状态</th><th class="text-left px-3 py-2">启用/禁用</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
             <tbody>
-              ${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2" title="${r.project}">${r.project}</td><td class="px-3 py-2 font-medium text-[#2f3a4d]" title="${r.id}">${r.id}</td><td class="px-3 py-2" title="${couponTitle(r)}">${couponTitle(r)}</td><td class="px-3 py-2" title="${r.type}">${r.type}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${couponRatioText(r)}</td><td class="px-3 py-2">${couponValidityValue(couponValidDaysText(r.validDays))}</td><td class="px-3 py-2">${r.totalIssue}</td><td class="px-3 py-2">${r.totalReceive}</td><td class="px-3 py-2"><span class="${r.enabled ? "badge badge-ok" : "badge badge-neutral"}">${r.status}</span></td><td class="px-3 py-2"><button class="coupon-switch ${r.enabled ? "on" : "off"}" data-coupon-toggle="${r.id}"></button></td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="编辑" data-coupon-edit="${r.id}">${iconSvg("edit")}</button><button class="icon-action-btn" title="复制" data-coupon-copy="${r.id}">${iconSvg("copy")}</button><button class="icon-action-btn" title="日志" data-coupon-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`).join("")}
+              ${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2" title="${r.project}">${r.project}</td><td class="px-3 py-2 font-medium text-[#2f3a4d]" title="${r.id}">${r.id}</td><td class="px-3 py-2" title="${couponTitle(r)}">${couponTitle(r)}</td><td class="px-3 py-2" title="${r.type}">${r.type}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${couponRatioText(r)}</td><td class="px-3 py-2">${couponValidityValue(couponValidDaysText(r.validDays))}</td><td class="px-3 py-2">${r.totalIssue}</td><td class="px-3 py-2">${r.totalReceive}</td><td class="px-3 py-2"><span class="${r.enabled ? "badge badge-ok" : "badge badge-neutral"}">${r.status}</span></td><td class="px-3 py-2"><button class="coupon-switch ${r.enabled ? "on" : "off"}" data-coupon-toggle="${r.id}"></button></td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="复制" data-coupon-copy="${r.id}">${iconSvg("copy")}</button><button class="icon-action-btn" title="日志" data-coupon-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`).join("")}
             </tbody>
           </table>
         </div>
@@ -3314,7 +3305,7 @@
               </div>
               <button id="btnAddTaskItem" class="${btnClass(true,canAddCampaignTask)}">添加任务</button>
               <button id="btnAddCustomCoupon" class="${btnClass(false,canAddCustomCampaignTask)}">添加自定义任务</button>
-              <span class="self-center text-[12px] text-[#64748b]">已添加 ${(d.taskItems || []).length}/${MAX_CAMPAIGN_TASKS} 个任务（无任务可多个；充值/实盘/理财各限1个；自定义限1个）</span>
+              <span class="self-center text-[12px] text-[#64748b]">已添加 ${(d.taskItems || []).length}/${MAX_CAMPAIGN_TASKS} 个任务（可选任意类型，须为当前项目任务；自定义任务限1个）</span>
             </div>
             <div class="border border-line rounded overflow-auto">
               <table class="w-full data-table table-fill text-[12px]">
@@ -5041,11 +5032,6 @@
         };
         document.getElementById("btnCouponReset").onclick = () => { state.filters.coupon = { id:"", name:"", type:"", status:"", project:"", amountMin:"", amountMax:"" }; render(); notify("warn","已重置筛选条件"); };
         document.getElementById("btnCouponCreate").onclick = () => openCouponCreateModal("create");
-        document.querySelectorAll("[data-coupon-edit]").forEach(btn => {
-          btn.onclick = () => {
-            openCouponCreateModal("edit", btn.dataset.couponEdit);
-          };
-        });
         document.querySelectorAll("[data-coupon-copy]").forEach(btn => {
           btn.onclick = () => {
             openCouponCreateModal("copy", btn.dataset.couponCopy);
@@ -5415,9 +5401,6 @@
           if (task.enabled === false) return notify("error", "只能添加启用状态的任务");
           if (task.app !== state.campaignDraft.project) return notify("error", `只能添加${state.campaignDraft.project}项目的任务`);
           if (campaignHasTaskId(task.id)) return notify("warn", "该任务已添加，不能重复添加");
-          if (task.type !== "无任务" && campaignHasTaskType(task.type)) {
-            return notify("warn", `${task.type}任务一次只能添加一个`);
-          }
           state.campaignDraft.taskItems.push(campaignItemFromTask(task));
           state.campaignDraft.taskKeyword = "";
           notify("success", "已添加任务并读取关联红包");
