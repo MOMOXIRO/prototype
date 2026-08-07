@@ -491,6 +491,7 @@
         { id: "task-list", label: "02 任务列表", frame: "741:3073" },
         { id: "task-create-none", label: "02.1 创建任务-无任务", frame: "741:3221" },
         { id: "task-create-trade", label: "02.2 创建任务-充值交易", frame: "741:3353" },
+        // [临时隐藏] 理财任务创建页映射保留，SHOW_FINANCE_TASK=false 时不作为入口使用
         { id: "task-create-finance", label: "02.3 创建任务-理财", frame: "741:3463" },
         { id: "task-toggle-modal", label: "启用禁用任务确认", frame: "802:31" },
         { id: "task-lang-view-modal", label: "查看多语言配置", frame: "980:421" },
@@ -540,6 +541,35 @@
       { key: "audit", label: "审核管理" },
       { key: "consume", label: "红包消耗" }
     ];
+
+    // =============================
+    // [临时隐藏] 理财任务入口与列表展示
+    // 说明：相关样例数据、创建/校验/详情逻辑均保留未删除。
+    // 下次需要恢复时，将 SHOW_FINANCE_TASK 改为 true 即可重新展示。
+    // =============================
+    const SHOW_FINANCE_TASK = false;
+
+    function isFinanceTaskType(type) {
+      return String(type || "") === "理财";
+    }
+
+    /** [临时隐藏] 过滤理财任务类型选项；SHOW_FINANCE_TASK=true 时原样返回 */
+    function visibleTaskTypeOptions(types) {
+      const list = Array.isArray(types) ? types : [];
+      return SHOW_FINANCE_TASK ? list : list.filter(t => !isFinanceTaskType(t));
+    }
+
+    /** [临时隐藏] 列表行是否展示；理财任务在关闭开关时不展示 */
+    function isVisibleTaskRow(row = {}) {
+      if (SHOW_FINANCE_TASK) return true;
+      return !isFinanceTaskType(row.type) && !isFinanceTaskType(row.taskType);
+    }
+
+    function taskTypeFilterOptionsHtml(selected = "") {
+      return visibleTaskTypeOptions(["无任务", "充值", "实盘交易", "理财"])
+        .map(t => `<option value="${t}" ${selected === t ? "selected" : ""}>${t}</option>`)
+        .join("");
+    }
 
     /** 最近 N 天（含今天）：today-(n-1) → today，YYYY-MM-DD */
     function lastNDaysRange(n = 7) {
@@ -621,8 +651,8 @@
         tab: "title", // title | desc
         languages: ["英文","繁体中文","印尼","越南","印度英文","菲律宾","西班牙语","葡萄牙语","泰国"],
         titleTypes: ["现金红包","手续费抵扣红包","盈亏抵扣红包","提现免佣券"],
-        descTypes: ["无任务","充值任务","实盘交易","理财任务"],
-        types: ["无任务","充值任务","实盘交易","理财任务"],
+        descTypes: ["无任务","充值任务","实盘交易"],
+        types: ["无任务","充值任务","实盘交易"],
         selectedLanguage: "英文",
         selectedTitleType: "现金红包",
         selectedType: "无任务",
@@ -657,6 +687,7 @@
             ] },
           { id:"T2", name:"交易2手送现金", type:"实盘交易", app:"TW", condition:"实盘手数 >= 2", coupons:["2001"], taskValidType:"领取后", taskValidDays:"14", appJump:"交易页-任务中心", couponRatios:{"2001":"80"}, status:"启用", enabled:true, updatedAt:"2026-06-20 16:18",
             logs: [{ operator:"Jenny", time:"2026-06-20 16:18", content:"编辑任务配置：实盘手数 >= 2" }] },
+          // [临时隐藏] 理财任务样例数据保留；SHOW_FINANCE_TASK=false 时列表/入口不展示
           { id:"T3", name:"理财任务", type:"理财", app:"Dana", condition:"理财时长30天，年化收益2%，最低存款金额1000", coupons:[], taskValidType:"发放后", taskValidDays:"30", appJump:"钱包页-卡券", couponRatios:{}, status:"禁用", enabled:false, updatedAt:"2026-06-18 11:02",
             logs: [{ operator:"Admin", time:"2026-06-18 11:02", content:"新增理财任务，理财任务不关联红包" }] },
           { id:"T4", name:"无任务体验金", type:"无任务", app:"Dana", condition:"--", coupons:["1001","1002"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"1001":"100","1002":"50"}, status:"启用", enabled:true, updatedAt:"2026-06-22 14:26",
@@ -673,6 +704,7 @@
             logs: [{ operator:"Mia", time:"2026-06-27 15:30", content:"新增无任务奖励，关联红包 1004、1006" }] },
           { id:"T10", name:"无任务TW体验礼", type:"无任务", app:"TW", condition:"--", coupons:["2002","2004"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"2002":"100","2004":"50"}, status:"启用", enabled:true, updatedAt:"2026-06-28 16:00",
             logs: [{ operator:"Tom", time:"2026-06-28 16:00", content:"新增无任务奖励，关联红包 2002、2004" }] },
+          // [临时隐藏] 理财任务样例数据保留；SHOW_FINANCE_TASK=false 时列表/入口不展示
           { id:"T11", name:"理财30天体验", type:"理财", app:"Dana", condition:"理财时长30天，年化收益3%，最低存款金额500", coupons:[], taskValidType:"发放后", taskValidDays:"30", appJump:"钱包页-卡券", couponRatios:{}, status:"启用", enabled:true, updatedAt:"2026-06-29 10:15",
             logs: [{ operator:"Jenny", time:"2026-06-29 10:15", content:"新增启用态理财任务，不关联红包" }] },
           { id:"T12", name:"交易1手送现金", type:"实盘交易", app:"Dana", condition:"实盘手数 >= 1", coupons:["1006"], taskValidType:"发放后", taskValidDays:"21", appJump:"交易页-任务中心", couponRatios:{"1006":"50"}, status:"启用", enabled:true, updatedAt:"2026-06-30 11:45",
@@ -1254,7 +1286,8 @@
     }
 
     function batchTaskTypeOptions() {
-      return ["无任务", "充值", "实盘交易", "理财"];
+      // [临时隐藏] 理财：visibleTaskTypeOptions 会按 SHOW_FINANCE_TASK 过滤
+      return visibleTaskTypeOptions(["无任务", "充值", "实盘交易", "理财"]);
     }
 
     function batchCouponTypeOptions() {
@@ -2466,7 +2499,9 @@
     function taskTypeOptionsForProject(project) {
       if (!project) return [];
       const base = ["无任务","充值","实盘交易"];
-      return project === "Dana" ? [...base, "理财"] : base;
+      // [临时隐藏] 理财任务创建入口：Dana 下原本追加「理财」，现按开关控制是否展示
+      const withFinance = project === "Dana" ? [...base, "理财"] : base;
+      return visibleTaskTypeOptions(withFinance);
     }
 
     function filterTaskCouponsByProject(couponsText, project) {
@@ -2525,6 +2560,10 @@
 
     function openTaskModal(mode = "create", sourceId = "") {
       const source = state.data.tasks.find(t => t.id === sourceId);
+      // [临时隐藏] 理财任务创建/编辑入口关闭时拦截
+      if (!SHOW_FINANCE_TASK && source && isFinanceTaskType(source.type)) {
+        return notify("warn", "理财任务入口已临时隐藏");
+      }
       const draft = source ? taskDraftFromTask(source) : {
         id: "",
         name: "",
@@ -2611,10 +2650,11 @@
     function ensureTaskLangTemplates() {
       const L = state.taskLang;
       if (!Array.isArray(L.titleTypes)) L.titleTypes = ["现金红包","手续费抵扣红包","盈亏抵扣红包","提现免佣券"];
-      if (!Array.isArray(L.descTypes)) L.descTypes = ["无任务","充值任务","实盘交易","理财任务"];
-      if (!L.types) L.types = L.descTypes;
+      L.descTypes = ["无任务","充值任务","实盘交易"];
+      L.types = L.descTypes;
       if (!L.selectedTitleType) L.selectedTitleType = "现金红包";
       if (!L.tab) L.tab = "title";
+      if (!L.descTypes.includes(L.selectedType)) L.selectedType = "无任务";
       if (!L.titleTemplates) L.titleTemplates = {};
       if (!L.templates) L.templates = {};
       L.languages.forEach((lang) => {
@@ -2696,12 +2736,12 @@
       { key: "ratio", label: "抵扣比例", desc: "抵扣比例参数，实际展示时自动替换为红包抵扣比例（如 30%）", ratioOnly: true }
     ];
     const TASK_LANG_DESC_VARS = [
-      { key: "number", label: "手数", desc: "实盘交易任务参数，发送时替换为实际手数" },
-      { key: "count", label: "充值金额", desc: "充值金额任务参数，发送时替换为实际充值金额" },
-      { key: "ratio", label: "抵扣比例", desc: "抵扣比例参数，发送时替换为红包抵扣比例" },
-      { key: "days", label: "理财时长", desc: "理财时长参数，发送时替换为理财天数" },
-      { key: "rate", label: "年化收益", desc: "理财年化收益参数，发送时替换为年化收益率" },
-      { key: "deposit", label: "最低存款", desc: "最低存款金额参数，发送时替换为最低存款金额" }
+      { key: "number", label: "手数", desc: "实盘交易任务参数，发送时替换为实际手数", types: ["实盘交易"] },
+      { key: "count", label: "充值金额", desc: "充值金额任务参数，发送时替换为实际充值金额", types: ["充值任务"] },
+      { key: "ratio", label: "抵扣比例", desc: "抵扣比例参数，发送时替换为红包抵扣比例", types: [] },
+      { key: "days", label: "理财时长", desc: "理财时长参数，发送时替换为理财天数", types: [] },
+      { key: "rate", label: "年化收益", desc: "理财年化收益参数，发送时替换为年化收益率", types: [] },
+      { key: "deposit", label: "最低存款", desc: "最低存款金额参数，发送时替换为最低存款金额", types: [] }
     ];
     function taskLangVarToken(key) {
       return `{${String(key || "").replace(/^\{|\}$/g, "")}}`;
@@ -2712,8 +2752,12 @@
     function taskLangTitleVarsForType(type) {
       return TASK_LANG_TITLE_VARS.filter(item => !item.ratioOnly || couponSupportsRatio(type));
     }
+    function taskLangDescVarsForType(type) {
+      return TASK_LANG_DESC_VARS.filter(item => (item.types || []).includes(type));
+    }
     function renderTaskLangVarChips(isTitleTab, selectedType = "") {
-      const vars = isTitleTab ? taskLangTitleVarsForType(selectedType) : TASK_LANG_DESC_VARS;
+      const vars = isTitleTab ? taskLangTitleVarsForType(selectedType) : taskLangDescVarsForType(selectedType);
+      if (!vars.length) return "";
       return `<div class="lang-var-chips">${vars.map(item =>
         `<button type="button" class="lang-var-chip" data-insert-lang-var="${item.key}" title="${taskLangVarTooltip(item).replace(/"/g, "&quot;")}">${item.label}</button>`
       ).join("")}</div>`;
@@ -2790,7 +2834,9 @@
       if (!text) return null;
       const enabled = state.data.tasks
         .filter(t => t.enabled !== false)
-        .filter(t => !project || t.app === project);
+        .filter(t => !project || t.app === project)
+        // [临时隐藏] 活动发放选任务时不暴露理财任务
+        .filter(t => isVisibleTaskRow(t));
       return enabled.find(t => t.id === text)
         || enabled.find(t => t.name === text)
         || enabled.find(t => t.id.includes(text) || String(t.name || "").includes(text))
@@ -2803,6 +2849,8 @@
       return state.data.tasks
         .filter(t => t.enabled !== false)
         .filter(t => t.app === project)
+        // [临时隐藏] 活动发放选任务时不暴露理财任务
+        .filter(t => isVisibleTaskRow(t))
         .filter(t => t.id.includes(text) || String(t.name || "").includes(text))
         .slice(0, 8);
     }
@@ -2817,7 +2865,9 @@
       draft.taskItems = (draft.taskItems || []).filter(item => {
         if (item.custom) return true;
         const task = state.data.tasks.find(t => t.id === campaignItemTaskId(item));
-        return task && task.app === project;
+        // [临时隐藏] 同步项目时一并清掉理财任务
+        if (!task || task.app !== project) return false;
+        return isVisibleTaskRow(task);
       });
     }
 
@@ -2997,7 +3047,10 @@
 
     function renderTaskList() {
       const f = state.filters.task;
+      // [临时隐藏] 若筛选残留「理财」，清空以免列表空白
+      if (!SHOW_FINANCE_TASK && isFinanceTaskType(f.type)) f.type = "";
       let rows = state.data.tasks.filter(r =>
+        isVisibleTaskRow(r) &&
         (!f.id || r.id.includes(f.id)) &&
         (!f.name || r.name.includes(f.name)) &&
         (!f.type || r.type === f.type) &&
@@ -3017,7 +3070,7 @@
             <input id="qTaskName" class="coupon-input" placeholder="任务名称" value="${f.name}">
             <select id="qTaskType" class="coupon-input">
               <option value="">任务类型</option>
-              ${["无任务","充值","实盘交易","理财"].map(t => `<option value="${t}" ${f.type===t?"selected":""}>${t}</option>`).join("")}
+              ${taskTypeFilterOptionsHtml(f.type)}
             </select>
             <select id="qTaskStatus" class="coupon-input">
               <option value="">任务状态</option>
@@ -3149,6 +3202,13 @@
       `;
     }
 
+    function campaignIncludesFinanceTask(row) {
+      return campaignTaskIds(row).some(id => {
+        const task = state.data.tasks.find(t => t.id === id);
+        return task && isFinanceTaskType(task.type);
+      });
+    }
+
     function renderCampaignRecord() {
       const f = state.filters.campaign;
       const statusOptions = ["待审核","待执行","执行中","完成","已撤销","审核拒绝"];
@@ -3156,6 +3216,8 @@
       const taskQ = String(f.taskId || "").trim();
       let rows = state.data.campaigns.filter(r => {
         const taskIds = campaignTaskIds(r);
+        // [临时隐藏] 关联了理财任务的活动不展示
+        if (!SHOW_FINANCE_TASK && campaignIncludesFinanceTask(r)) return false;
         return (!activityQ || String(r.id || "").includes(activityQ)) &&
           (!taskQ || taskIds.some(id => String(id || "").includes(taskQ))) &&
           (!f.activityName || r.name.includes(f.activityName)) &&
@@ -3458,11 +3520,15 @@
       if (f.taskType == null) f.taskType = "";
       if (f.couponType == null) f.couponType = "";
       const statusOptions = ["执行中","完成","已撤销"];
+      // [临时隐藏] 若筛选残留「理财」，清空以免列表空白
+      if (!SHOW_FINANCE_TASK && isFinanceTaskType(f.taskType)) f.taskType = "";
       let rows = state.data.batches.filter(r => {
         if (isAuditRelatedBatchStatus(r.status)) return false;
         const campaign = batchCampaign(r);
         const type = batchTaskType(r);
         const couponType = batchCouponType(r);
+        // [临时隐藏] 理财任务批次不展示
+        if (!SHOW_FINANCE_TASK && isFinanceTaskType(type)) return false;
         return (!f.campaignId || r.campaign.includes(f.campaignId) || batchIdMatchesFilter(r.id, f.campaignId)) &&
         (!f.activityName || String(campaign.name || "").includes(f.activityName)) &&
         (!f.project || r.project === f.project) &&
@@ -3865,7 +3931,10 @@
     function renderReceiveList() {
       const f = state.filters.receive;
       const expanded = !!state.filterExpanded.receive;
+      // [临时隐藏] 若筛选残留「理财」，清空以免列表空白
+      if (!SHOW_FINANCE_TASK && isFinanceTaskType(f.taskType)) f.taskType = "";
       let rows = state.data.receives.filter(r =>
+        isVisibleTaskRow(r) &&
         (!f.sid || r.sid.includes(f.sid)) &&
         (!f.couponId || String(r.couponId || "").includes(f.couponId)) &&
         (!f.couponTitle || String(couponTitleFromRecord(r) || r.coupon || "").includes(f.couponTitle)) &&
@@ -3899,7 +3968,7 @@
             <select id="qReceiveVip" class="coupon-input"><option value="">VIP</option><option ${f.vip==="V1"?"selected":""}>V1</option><option ${f.vip==="V2"?"selected":""}>V2</option><option ${f.vip==="V3"?"selected":""}>V3</option><option ${f.vip==="V4"?"selected":""}>V4</option><option ${f.vip==="V5"?"selected":""}>V5</option></select>
             <select id="qReceiveCouponType" class="coupon-input"><option value="">红包类型</option><option ${f.couponType==="现金红包"?"selected":""}>现金红包</option><option ${f.couponType==="手续费抵扣红包"?"selected":""}>手续费抵扣红包</option><option ${f.couponType==="盈亏抵扣红包"?"selected":""}>盈亏抵扣红包</option><option ${f.couponType==="提现免佣券"?"selected":""}>提现免佣券</option><option ${f.couponType==="自定义红包"?"selected":""}>自定义红包</option><option ${f.couponType==="--"?"selected":""}>--</option></select>
             <select id="qReceiveStatus" class="coupon-input"><option value="">红包状态</option><option ${f.couponStatus==="激活中"?"selected":""}>激活中</option><option ${f.couponStatus==="已激活"?"selected":""}>已激活</option><option ${f.couponStatus==="已使用"?"selected":""}>已使用</option><option ${f.couponStatus==="已失效"?"selected":""}>已失效</option></select>
-            <select id="qReceiveTaskType" class="coupon-input"><option value="">任务类型</option><option ${f.taskType==="无任务"?"selected":""}>无任务</option><option ${f.taskType==="充值"?"selected":""}>充值</option><option ${f.taskType==="实盘交易"?"selected":""}>实盘交易</option><option ${f.taskType==="理财"?"selected":""}>理财</option></select>
+            <select id="qReceiveTaskType" class="coupon-input"><option value="">任务类型</option>${taskTypeFilterOptionsHtml(f.taskType)}</select>
             <div class="range-wrap grid-range">
               <input id="qReceiveStart" placeholder="领取开始日期" value="${f.start}">
               <span class="range-mid">~</span>
@@ -3941,7 +4010,10 @@
     function renderUsageList() {
       const f = state.filters.usage;
       const expanded = !!state.filterExpanded.usage;
+      // [临时隐藏] 若筛选残留「理财」，清空以免列表空白
+      if (!SHOW_FINANCE_TASK && isFinanceTaskType(f.taskType)) f.taskType = "";
       let rows = state.data.usages.filter(r =>
+        isVisibleTaskRow(r) &&
         (!f.sid || r.sid.includes(f.sid)) &&
         (!f.vip || r.vip === f.vip) &&
         (!f.depositOrder || String(r.depositOrder || r.order || "").includes(f.depositOrder)) &&
@@ -3970,7 +4042,7 @@
             <input id="qUsageCouponId" class="coupon-input" placeholder="红包ID" value="${f.couponId}">
             <input id="qUsageBatch" class="coupon-input" placeholder="任务ID/活动ID/任务批次" value="${f.batchId}">
             <select id="qUsageCouponType" class="coupon-input"><option value="">红包类型</option><option ${f.couponType==="现金红包"?"selected":""}>现金红包</option><option ${f.couponType==="手续费抵扣红包"?"selected":""}>手续费抵扣红包</option><option ${f.couponType==="盈亏抵扣红包"?"selected":""}>盈亏抵扣红包</option><option ${f.couponType==="提现免佣券"?"selected":""}>提现免佣券</option><option ${f.couponType==="自定义红包"?"selected":""}>自定义红包</option><option ${f.couponType==="--"?"selected":""}>--</option></select>
-            <select id="qUsageTaskType" class="coupon-input"><option value="">任务类型</option><option ${f.taskType==="无任务"?"selected":""}>无任务</option><option ${f.taskType==="充值"?"selected":""}>充值</option><option ${f.taskType==="实盘交易"?"selected":""}>实盘交易</option><option ${f.taskType==="理财"?"selected":""}>理财</option></select>
+            <select id="qUsageTaskType" class="coupon-input"><option value="">任务类型</option>${taskTypeFilterOptionsHtml(f.taskType)}</select>
             <input id="qUsageCouponTitle" class="coupon-input" placeholder="红包标题" value="${f.couponTitle || ""}">
             <input id="qUsageTaskName" class="coupon-input" placeholder="任务名称" value="${f.taskName || ""}">
             <input id="qUsageCampaignName" class="coupon-input" placeholder="活动名称" value="${f.campaignName || ""}">
@@ -4320,6 +4392,7 @@
                   ${taskValidityHtml}
                 </div>
                 ${isFinance ? `
+                  <!-- [临时隐藏] 理财任务表单区块保留；因类型入口已隐藏，正常流程进不来，恢复 SHOW_FINANCE_TASK 后可用 -->
                   <div class="mt-4 flex items-center justify-between gap-3 flex-wrap">
                     <div class="text-[12px] text-[#64748b]">理财任务不关联红包，可配置任务多语言文案。</div>
                     <button id="btnFinanceLangConfig" class="${btnClass(true,true)}" type="button">查看配置</button>
@@ -4595,13 +4668,13 @@
                   <textarea id="taskLangInput" class="w-full min-h-[96px] border border-line rounded px-3 py-2" placeholder="${isTitleTab ? (couponSupportsRatio(selectedType) ? "例如：{amount} Cash Bonus（{ratio}%）" : "例如：{amount} Cash Bonus") : "请输入红包描述模板"}">${currentTpl}</textarea>
                   <button id="btnOpenTaskLangSync" class="${btnClass(false,true)} self-start">同步</button>
                 </div>
-                <div class="mt-2">
-                  <div class="text-[12px] text-[#64748b] mb-1">插入参数</div>
-                  ${renderTaskLangVarChips(isTitleTab, selectedType)}
-                </div>
+                ${(() => {
+                  const chips = renderTaskLangVarChips(isTitleTab, selectedType);
+                  return chips ? `<div class="mt-2"><div class="text-[12px] text-[#64748b] mb-1">插入参数</div>${chips}</div>` : "";
+                })()}
                 <div class="text-[#64748b] mt-3 text-[12px] leading-5">${isTitleTab
                   ? "保存时，所有语言下全部红包类型的标题模板均需填写完整。"
-                  : "保存时，所有语言下全部任务类型（含无任务）的描述模板均需填写完整。用户端会根据实际收到的任务和红包组合，自动代入发放时填写的对应参数并展示。"}</div>
+                  : "保存时，所有语言下无任务/充值任务/实盘交易的描述模板均需填写完整。充值任务可插入充值金额，实盘交易可插入手数；无任务无参数。"}</div>
               </div>
             </div>
           `,
@@ -5158,7 +5231,7 @@
             notify("success", "红包标题多语言配置保存成功");
           } else {
             const missing = state.taskLang.languages.some(lang => !isTaskLanguageConfigured(lang));
-            if (missing) return notify("error", "保存失败：所有语言下全部任务类型（含无任务）的描述模板都必须填写");
+            if (missing) return notify("error", "保存失败：所有语言下无任务/充值任务/实盘交易的描述模板都必须填写");
             notify("success", "红包描述多语言配置保存成功");
           }
           closeModal();
