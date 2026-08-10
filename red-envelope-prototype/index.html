@@ -704,23 +704,23 @@
       },
       data: {
         tasks: [
-          { id:"T1", name:"充值50送现金", type:"充值", app:"Dana", condition:"充值金额 >= 50", coupons:["1001"], taskValidType:"发放后", taskValidDays:"30", appJump:"首页-活动页", couponRatios:{"1001":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-10 10:32",
+          { id:"T1", name:"充值50送现金", type:"充值", app:"Dana", condition:"充值金额 >= 50", coupons:["1001"], taskValidType:"发放后", taskValidDays:"30", appJump:"Dana充值页面", couponRatios:{"1001":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-10 10:32",
             logs: [
               { operator:"Jenny", time:"2026-06-10 10:32", content:"新增任务" },
               { operator:"Jenny", time:"2026-06-11 09:12", content:"启用任务" }
             ] },
-          { id:"T2", name:"交易2手送现金", type:"实盘交易", app:"TW", condition:"实盘手数 >= 2", coupons:["2001"], taskValidType:"领取后", taskValidDays:"14", appJump:"交易页-任务中心", couponRatios:{"2001":"80"}, status:"启用", enabled:true, updatedAt:"2026-06-20 16:18",
+          { id:"T2", name:"交易2手送现金", type:"实盘交易", app:"TW", condition:"实盘手数 >= 2", coupons:["2001"], taskValidType:"领取后", taskValidDays:"14", appJump:"TW交易页面", couponRatios:{"2001":"80"}, status:"启用", enabled:true, updatedAt:"2026-06-20 16:18",
             logs: [{ operator:"Jenny", time:"2026-06-20 16:18", content:"编辑任务" }] },
           // [临时隐藏] 理财任务样例数据保留；SHOW_FINANCE_TASK=false 时列表/入口不展示
           { id:"T3", name:"理财任务", type:"理财", app:"Dana", condition:"理财时长30天，年化收益2%，最低存款金额1000", coupons:[], taskValidType:"发放后", taskValidDays:"30", appJump:"钱包页-卡券", couponRatios:{}, status:"禁用", enabled:false, updatedAt:"2026-06-18 11:02",
             logs: [{ operator:"Admin", time:"2026-06-18 11:02", content:"新增任务" }] },
           { id:"T4", name:"无任务体验金", type:"无任务", app:"Dana", condition:"--", coupons:["1001","1002"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"1001":"100","1002":"50"}, status:"启用", enabled:true, updatedAt:"2026-06-22 14:26",
             logs: [{ operator:"Mia", time:"2026-06-22 14:26", content:"新增任务" }] },
-          { id:"T5", name:"充值100送现金", type:"充值", app:"Dana", condition:"充值金额 >= 100", coupons:["1003"], taskValidType:"发放后", taskValidDays:"30", appJump:"首页-活动页", couponRatios:{"1003":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-23 10:00",
+          { id:"T5", name:"充值100送现金", type:"充值", app:"Dana", condition:"充值金额 >= 100", coupons:["1003"], taskValidType:"发放后", taskValidDays:"30", appJump:"Dana充值页面", couponRatios:{"1003":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-23 10:00",
             logs: [{ operator:"Jenny", time:"2026-06-23 10:00", content:"新增任务" }] },
-          { id:"T6", name:"充值200送现金", type:"充值", app:"Dana", condition:"充值金额 >= 200", coupons:["1004"], taskValidType:"领取后", taskValidDays:"15", appJump:"钱包页-充值", couponRatios:{"1004":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-24 11:20",
+          { id:"T6", name:"充值200送现金", type:"充值", app:"Dana", condition:"充值金额 >= 200", coupons:["1004"], taskValidType:"领取后", taskValidDays:"15", appJump:"Dana充值页面", couponRatios:{"1004":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-24 11:20",
             logs: [{ operator:"Jenny", time:"2026-06-24 11:20", content:"新增任务" }] },
-          { id:"T7", name:"交易5手送抵扣", type:"实盘交易", app:"TW", condition:"实盘手数 >= 5", coupons:["2003"], taskValidType:"领取后", taskValidDays:"14", appJump:"交易页-任务中心", couponRatios:{"2003":"70"}, status:"启用", enabled:true, updatedAt:"2026-06-25 09:40",
+          { id:"T7", name:"交易5手送抵扣", type:"实盘交易", app:"TW", condition:"实盘手数 >= 5", coupons:["2003"], taskValidType:"领取后", taskValidDays:"14", appJump:"TW交易页面", couponRatios:{"2003":"70"}, status:"启用", enabled:true, updatedAt:"2026-06-25 09:40",
             logs: [{ operator:"Tom", time:"2026-06-25 09:40", content:"新增任务" }] },
           { id:"T8", name:"无任务新人礼包", type:"无任务", app:"Dana", condition:"--", coupons:["1003","1005"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"1003":"100","1005":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-26 14:10",
             logs: [{ operator:"Mia", time:"2026-06-26 14:10", content:"新增任务" }] },
@@ -731,7 +731,7 @@
           // [临时隐藏] 理财任务样例数据保留；SHOW_FINANCE_TASK=false 时列表/入口不展示
           { id:"T11", name:"理财30天体验", type:"理财", app:"Dana", condition:"理财时长30天，年化收益3%，最低存款金额500", coupons:[], taskValidType:"发放后", taskValidDays:"30", appJump:"钱包页-卡券", couponRatios:{}, status:"启用", enabled:true, updatedAt:"2026-06-29 10:15",
             logs: [{ operator:"Jenny", time:"2026-06-29 10:15", content:"新增任务" }] },
-          { id:"T12", name:"交易1手送现金", type:"实盘交易", app:"Dana", condition:"实盘手数 >= 1", coupons:["1006"], taskValidType:"发放后", taskValidDays:"21", appJump:"交易页-任务中心", couponRatios:{"1006":"50"}, status:"启用", enabled:true, updatedAt:"2026-06-30 11:45",
+          { id:"T12", name:"交易1手送现金", type:"实盘交易", app:"Dana", condition:"实盘手数 >= 1", coupons:["1006"], taskValidType:"发放后", taskValidDays:"21", appJump:"Dana交易页面", couponRatios:{"1006":"50"}, status:"启用", enabled:true, updatedAt:"2026-06-30 11:45",
             logs: [{ operator:"Jenny", time:"2026-06-30 11:45", content:"新增任务" }] }
         ],
         coupons: [
@@ -2290,7 +2290,7 @@
 
     function formatTaskValidity(taskOrDraft = {}) {
       if (taskOrDraft.type === "无任务") return "--";
-      const validType = normalizeTaskValidType(taskOrDraft.taskValidType) || "发放后";
+      const validType = normalizeTaskValidType(taskOrDraft.taskValidType) || "领取后";
       return `${validType}${taskOrDraft.taskValidDays || "N"}天`;
     }
 
@@ -2374,6 +2374,43 @@
       return isJumpUrlValue(task.jumpUrl || task.appJump) ? "URL链接" : "APP内部跳转";
     }
 
+    const TASK_APP_JUMP_COMMON = ["首页-活动页", "交易页-任务中心", "钱包页-卡券"];
+    const TASK_APP_JUMP_BY_TYPE_PROJECT = {
+      充值: { Dana: "Dana充值页面", TW: "TW充值页面" },
+      实盘交易: { Dana: "Dana交易页面", TW: "TW交易页面" }
+    };
+
+    function defaultAppJumpForTask(type = "", project = "") {
+      return TASK_APP_JUMP_BY_TYPE_PROJECT[type]?.[project] || "";
+    }
+
+    function isProjectDefaultAppJump(value = "") {
+      return Object.values(TASK_APP_JUMP_BY_TYPE_PROJECT).some((map) => Object.values(map).includes(value))
+        || value === "钱包页-充值";
+    }
+
+    function taskAppJumpOptions(project = "", selected = "") {
+      const projectPages = project === "TW"
+        ? ["TW充值页面", "TW交易页面"]
+        : project === "Dana"
+          ? ["Dana充值页面", "Dana交易页面"]
+          : ["Dana充值页面", "Dana交易页面", "TW充值页面", "TW交易页面"];
+      const list = [...projectPages, ...TASK_APP_JUMP_COMMON];
+      if (selected && !list.includes(selected)) list.unshift(selected);
+      return list;
+    }
+
+    function applyDefaultAppJump(d) {
+      if (!d || !d.app || (d.type !== "充值" && d.type !== "实盘交易")) return d;
+      if (d.jumpType && d.jumpType !== "APP内部跳转") return d;
+      const def = defaultAppJumpForTask(d.type, d.app);
+      if (!def) return d;
+      d.jumpType = "APP内部跳转";
+      d.jumpUrl = "";
+      if (!d.appJump || isProjectDefaultAppJump(d.appJump)) d.appJump = def;
+      return d;
+    }
+
     function taskDraftFromTask(task = {}) {
       const jumpType = resolveTaskJumpType(task);
       const jumpValue = task.jumpUrl || task.appJump || "";
@@ -2390,8 +2427,8 @@
         financeDays: task.type === "理财" ? (String(task.condition || "").match(/时长(\d+)天/)?.[1] || "30") : "30",
         financeRate: task.type === "理财" ? (String(task.condition || "").match(/收益(\d+(?:\.\d+)?)%/)?.[1] || "2") : "2",
         financeDeposit: task.type === "理财" ? (String(task.condition || "").match(/金额(\d+)/)?.[1] || "1000") : "1000",
-        taskValidType: normalizeTaskValidType(task.taskValidType) || (task.type === "无任务" ? "" : "发放后"),
-        taskValidDays: task.taskValidDays || (task.type === "无任务" ? "" : "30"),
+        taskValidType: normalizeTaskValidType(task.taskValidType) || (task.type === "无任务" ? "" : "领取后"),
+        taskValidDays: task.taskValidDays || (task.type === "无任务" ? "" : "7"),
         jumpType,
         appJump: jumpType === "APP内部跳转" ? (task.appJump || "") : "",
         jumpUrl: jumpType === "URL链接" ? jumpValue : (task.jumpUrl || ""),
@@ -2558,7 +2595,8 @@
       }
       if (!options.includes(d.type)) d.type = "无任务";
       d.couponsText = filterTaskCouponsByProject(d.couponsText || "", d.app);
-      if (d.type !== "无任务" && !d.taskValidType) d.taskValidType = "发放后";
+      if (d.type !== "无任务" && !d.taskValidType) d.taskValidType = "领取后";
+      if (d.type !== "无任务" && !d.taskValidDays) d.taskValidDays = "7";
       d.taskValidType = normalizeTaskValidType(d.taskValidType);
       if (!d.jumpType || !["APP内部跳转", "URL链接"].includes(d.jumpType)) {
         d.jumpType = resolveTaskJumpType(d);
@@ -2581,6 +2619,7 @@
       if (!d.couponRatios) d.couponRatios = {};
       if (!d.jumpUrl) d.jumpUrl = "";
       if (!d.appJump) d.appJump = "";
+      applyDefaultAppJump(d);
       return d;
     }
 
@@ -4398,7 +4437,7 @@
           </div>
           ${jumpType === "URL链接"
             ? `<div><label class="form-label required mb-1">URL链接</label><input id="taskJumpUrl" class="w-full border border-line rounded px-2 py-2" placeholder="请输入 http:// 或 https:// 开头的链接" value="${d.jumpUrl || ""}"></div>`
-            : `<div><label class="form-label required mb-1">APP内部跳转</label><select id="taskAppJump" class="w-full border border-line rounded px-2 py-2"><option value="">选择页面</option><option ${d.appJump==="首页-活动页"?"selected":""}>首页-活动页</option><option ${d.appJump==="交易页-任务中心"?"selected":""}>交易页-任务中心</option><option ${d.appJump==="钱包页-卡券"?"selected":""}>钱包页-卡券</option></select></div>`}
+            : `<div><label class="form-label required mb-1">APP内部跳转</label><select id="taskAppJump" class="w-full border border-line rounded px-2 py-2"><option value="">选择页面</option>${taskAppJumpOptions(d.app, d.appJump).map(p => `<option value="${p}" ${d.appJump===p?"selected":""}>${p}</option>`).join("")}</select></div>`}
         `;
         openModal({
           title: isEditMode ? "编辑任务" : "创建任务",
@@ -4918,6 +4957,7 @@
         taskJumpType.onchange = () => {
           saveCurrentTaskDraft();
           state.taskModal.draft.jumpType = taskJumpType.value;
+          if (taskJumpType.value === "APP内部跳转") applyDefaultAppJump(state.taskModal.draft);
           switchPage("task-create-modal");
         };
       }
