@@ -4411,7 +4411,6 @@
                   <div><label class="form-label required mb-1">项目</label><select id="taskProject" class="w-full border border-line rounded px-2 py-2 ${lockCls}" ${lockAttr}><option value="">请选择项目</option><option value="Dana" ${d.app==="Dana"?"selected":""}>Dana</option><option value="TW" ${d.app==="TW"?"selected":""}>TW</option></select></div>
                   <div><label class="form-label required mb-1">任务类型</label><select id="taskType" class="w-full border border-line rounded px-2 py-2 ${hasProject && !isEditMode ? "" : "bg-gray-50 text-[#94a3b8]"}" ${hasProject && !isEditMode ? "" : "disabled"}>${hasProject ? taskTypeOptions.map(t => `<option value="${t}" ${d.type===t?"selected":""}>${t}</option>`).join("") : `<option value="">请先选择项目</option>`}</select></div>
                 </div>
-                ${isEditMode ? `<div class="mt-2 text-[12px] text-[#64748b]">编辑任务仅支持修改任务名称、跳转方式和多语言配置。</div>` : ""}
               </section>
               ${!hasProject || isNoTask ? "" : `<section class="border border-line rounded p-3">
                 <div class="font-semibold mb-3">2. 任务配置</div>
