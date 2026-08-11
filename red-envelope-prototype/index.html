@@ -2653,13 +2653,8 @@
         notify("error", "红包描述必填");
         return false;
       }
-      const titleInput = document.getElementById("taskCouponTitleInput");
       const coupon = state.data.coupons.find(c => c.id === state.taskModal.selectedCouponId);
-      const title = (titleInput ? titleInput.value.trim() : "") || resolveCouponTitleTemplate(coupon, state.taskLang.selectedLanguage);
-      if (titleInput && !titleInput.value.trim()) {
-        notify("error", "红包标题必填");
-        return false;
-      }
+      const title = resolveCouponTitleTemplate(coupon, state.taskLang.selectedLanguage);
       const config = ensureTaskCouponConfig(state.taskModal.selectedCouponId);
       config[state.taskLang.selectedLanguage] = { title, desc };
       return true;
@@ -2672,7 +2667,7 @@
       const coupon = state.data.coupons.find(c => c.id === couponId);
       const config = ensureTaskCouponConfig(couponId);
       const current = config[L.selectedLanguage] || { title: "", desc: "" };
-      const titleValue = current.title || resolveCouponTitleTemplate(coupon, L.selectedLanguage);
+      const titleValue = couponId === "FINANCE" ? (current.title || "理财任务") : resolveCouponTitleTemplate(coupon, L.selectedLanguage);
       host.querySelector(".stacked-modal-body").innerHTML = `<div class="grid grid-cols-[340px_1fr] gap-8 text-[14px]">
         <div>
           <div class="font-semibold mb-3">1 选择语言</div>
@@ -2684,13 +2679,11 @@
             ${readonly ? "" : `<button id="btnResetTaskCouponConfig" class="${btnClass(false,true)}">同步</button>`}
           </div>
           <div class="mb-4 text-[#64748b]">${couponId === "FINANCE" ? "当前任务：理财任务" : `当前红包：${couponId || "--"} ${couponTitle(coupon)}`}</div>
-          <label class="form-label ${readonly ? "" : "required"} mb-1">红包标题</label>
-          ${readonly
-            ? `<div class="w-full border border-line rounded px-3 py-2 mb-4 bg-gray-50 text-[#475569]">${titleValue}</div>`
-            : `<input id="taskCouponTitleInput" class="w-full border border-line rounded px-3 py-2 mb-4" placeholder="请输入红包标题" value="${String(titleValue || "").replace(/"/g, "&quot;")}">`}
+          <label class="form-label mb-1">红包标题</label>
+          <div class="w-full border border-line rounded px-3 py-2 mb-4 bg-gray-50 text-[#475569]">${titleValue}</div>
           <label class="form-label required mb-1">红包描述</label>
           <textarea id="taskCouponDescInput" class="w-full min-h-[108px] border border-line rounded px-3 py-2 ${readonly ? "bg-gray-50 text-[#475569]" : ""}" placeholder="You must first complete the 3-way trade." ${readonly ? "disabled" : ""}>${current.desc || ""}</textarea>
-          ${readonly ? "" : `<div class="mt-3 text-[12px] leading-5 text-[#b7791f]">{number}：实盘交易任务参数；{count}：充值金额任务参数；{ratio}：抵扣比例参数；<br>{days}：理财时长参数；{rate}：理财年化收益参数；{deposit}：最低存款金额参数；</div><div class="text-[12px] text-[#64748b] mt-1">红包标题默认来自红包标题多语言模板，可在当前任务内单独编辑；红包描述仅保存当前任务内该红包组合的副本。</div>`}
+          ${readonly ? "" : `<div class="mt-3 text-[12px] leading-5 text-[#b7791f]">{number}：实盘交易任务参数；{count}：充值金额任务参数；{ratio}：抵扣比例参数；<br>{days}：理财时长参数；{rate}：理财年化收益参数；{deposit}：最低存款金额参数；</div><div class="text-[12px] text-[#64748b] mt-1">红包标题不可编辑，始终按红包标题多语言模板生成；红包描述仅保存当前任务内该红包组合的副本。</div>`}
         </div>
       </div>`;
       const stackedFooter = host.querySelector(".stacked-modal-footer");
@@ -3040,8 +3033,6 @@
 
     function couponTitle(coupon) {
       if (!coupon) return "--";
-      const customName = String(coupon.name || "").trim();
-      if (customName) return customName;
       return generatedCouponName(coupon.type, coupon.amount, coupon.ratio) || "--";
     }
 
@@ -3135,7 +3126,7 @@
       const source = state.data.coupons.find(c => c.id === sourceId);
       const baseDraft = source ? {
         project: source.project,
-        name: String(source.name || "").trim() || generatedCouponName(source.type, source.amount, source.ratio),
+        name: generatedCouponName(source.type, source.amount, source.ratio),
         type: source.type,
         amount: String(parseMoney(source.amount)),
         ratio: couponSupportsRatio(source) ? String(source.ratio ?? "100") : "",
@@ -4818,9 +4809,9 @@
                 <div class="font-semibold mb-3">2. 红包模板标题</div>
                 <div class="grid grid-cols-2 gap-3">
                   <div class="col-span-2">
-                    <label class="form-label required mb-1">红包模板标题</label>
-                    <input id="mCouponName" class="w-full border border-line rounded px-2 py-2" placeholder="填写红包模板标题，可按类型/金额自动生成后修改" value="${String(d.name || "").replace(/"/g, "&quot;")}">
-                    <p class="mt-1 text-[11px] text-[#64748b]">切换类型、金额或抵扣比例时会自动刷新标题，仍可继续手动编辑</p>
+                    <label class="form-label mb-1">红包模板标题</label>
+                    <input id="mCouponName" class="w-full border border-line rounded px-2 py-2 bg-gray-50 text-[#475569]" placeholder="按类型/金额/比例自动生成" value="${String(d.name || "").replace(/"/g, "&quot;")}" readonly disabled>
+                    <p class="mt-1 text-[11px] text-[#64748b]">标题不可编辑，按多语言规则根据红包类型、金额、抵扣比例自动生成</p>
                   </div>
                 </div>
               </section>
@@ -5063,7 +5054,7 @@
               </div>
               <div class="mb-4 text-[#64748b]">当前红包：${couponId || "--"} ${couponTitle(coupon)}</div>
               <label class="block mb-1">红包标题</label>
-              <div class="w-full border border-line rounded px-3 py-2 mb-4 bg-gray-50 text-[#475569]">${current.title || resolveCouponTitleTemplate(coupon, L.selectedLanguage)}</div>
+              <div class="w-full border border-line rounded px-3 py-2 mb-4 bg-gray-50 text-[#475569]">${resolveCouponTitleTemplate(coupon, L.selectedLanguage)}</div>
               <label class="form-label required mb-1">红包描述</label>
               <textarea id="taskCouponDescInput" class="w-full min-h-[108px] border border-line rounded px-3 py-2 bg-gray-50 text-[#475569]" placeholder="You must first complete the 3-way trade." disabled>${current.desc || ""}</textarea>
               <div class="mt-3 text-[12px] leading-5 text-[#b7791f]">{number}：实盘交易任务参数；{count}：充值金额任务参数；{ratio}：抵扣比例参数；<br>{days}：理财时长参数；{rate}：理财年化收益参数；{deposit}：最低存款金额参数；</div>
@@ -5657,15 +5648,12 @@
       const btnSaveTaskCouponConfig = document.getElementById("btnSaveTaskCouponConfig");
       if (btnSaveTaskCouponConfig) {
         btnSaveTaskCouponConfig.onclick = () => {
-          const titleInput = document.getElementById("taskCouponTitleInput");
-          const title = (titleInput ? titleInput.value.trim() : "");
           const desc = document.getElementById("taskCouponDescInput").value.trim();
-          if (titleInput && !title) return notify("error", "红包标题必填");
           if (!desc) return notify("error", "红包描述必填");
           const config = ensureTaskCouponConfig(state.taskModal.selectedCouponId);
           const coupon = state.data.coupons.find(c => c.id === state.taskModal.selectedCouponId);
           config[state.taskLang.selectedLanguage] = {
-            title: title || resolveCouponTitleTemplate(coupon, state.taskLang.selectedLanguage),
+            title: resolveCouponTitleTemplate(coupon, state.taskLang.selectedLanguage),
             desc
           };
           notify("success", "当前红包配置保存成功");
@@ -6402,7 +6390,7 @@
           const type = couponTypeSelect?.value || "";
           const canRatio = couponSupportsRatio(type);
           const name = generatedCouponName(type, couponAmountInput?.value || "", canRatio ? (couponRatioInput?.value || "") : "");
-          if (name) couponNameInput.value = name;
+          couponNameInput.value = name || "";
         };
         if (couponTypeSelect) couponTypeSelect.onchange = () => {
           refreshCouponRatioField();
@@ -6411,17 +6399,16 @@
         if (couponAmountInput) couponAmountInput.oninput = refreshCouponNameSuggestion;
         if (couponRatioInput) couponRatioInput.oninput = refreshCouponNameSuggestion;
         refreshCouponRatioField();
-        if (state.couponModal.mode === "create" && !couponNameInput?.value.trim()) refreshCouponNameSuggestion();
+        refreshCouponNameSuggestion();
         saveCouponModal.onclick = () => {
         const draft = {
           project: document.getElementById("mCouponProject").value.trim(),
-          name: document.getElementById("mCouponName")?.value.trim() || "",
           type: document.getElementById("mCouponType").value.trim(),
           amount: document.getElementById("mCouponAmount").value.trim(),
           ratio: document.getElementById("mCouponRatio")?.value.trim() || "",
           validDays: document.getElementById("mCouponValidDays").value.trim()
         };
-        if (!draft.project || !draft.type || !draft.amount || !draft.validDays || !draft.name) return notify("error", "请填写完整必填项");
+        if (!draft.project || !draft.type || !draft.amount || !draft.validDays) return notify("error", "请填写完整必填项");
         const amountNum = Number(draft.amount);
         if (!Number.isFinite(amountNum) || amountNum < 0) return notify("error", "红包金额只支持数字，支持小数");
         const validDaysNum = Number(draft.validDays);
@@ -6432,6 +6419,8 @@
           if (!Number.isFinite(ratioNum) || ratioNum <= 0 || ratioNum > 100) return notify("error", "抵扣比例需填写 0~100 的数字");
           ratioValue = String(ratioNum);
         }
+        draft.name = generatedCouponName(draft.type, formatAmount(amountNum), ratioValue);
+        if (!draft.name) return notify("error", "无法按规则生成红包模板标题");
         const editingId = state.couponModal.mode === "edit" ? state.couponModal.sourceId : "";
         const duplicate = state.data.coupons.some(c => {
           if (c.id === editingId || c.type !== draft.type || parseMoney(c.amount) !== amountNum) return false;
