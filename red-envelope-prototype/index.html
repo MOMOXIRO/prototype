@@ -2930,7 +2930,9 @@
 
     function couponTitle(coupon) {
       if (!coupon) return "--";
-      return generatedCouponName(coupon.type, coupon.amount, coupon.ratio) || coupon.name || "--";
+      const customName = String(coupon.name || "").trim();
+      if (customName) return customName;
+      return generatedCouponName(coupon.type, coupon.amount, coupon.ratio) || "--";
     }
 
     function findCouponByKeyword(keyword, project = "") {
@@ -3023,7 +3025,7 @@
       const source = state.data.coupons.find(c => c.id === sourceId);
       const baseDraft = source ? {
         project: source.project,
-        name: generatedCouponName(source.type, source.amount, source.ratio),
+        name: String(source.name || "").trim() || generatedCouponName(source.type, source.amount, source.ratio),
         type: source.type,
         amount: String(parseMoney(source.amount)),
         ratio: couponSupportsRatio(source) ? String(source.ratio ?? "100") : "",
@@ -3439,7 +3441,7 @@
             ${tableColgroup([7, 8, 14, 10, 8, 8, 9, 8, 7, 8, 13])}
             <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">模板ID</th><th class="text-left px-3 py-2">红包模板标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">总使用</th><th class="text-left px-3 py-2">状态</th><th class="text-left px-3 py-2">启用/禁用</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
             <tbody>
-              ${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2" title="${r.project}">${r.project}</td><td class="px-3 py-2 font-medium text-[#2f3a4d]" title="${r.id}">${r.id}</td><td class="px-3 py-2" title="${couponTitle(r)}">${couponTitle(r)}</td><td class="px-3 py-2" title="${r.type}">${r.type}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${couponRatioText(r)}</td><td class="px-3 py-2">${couponValidityValue(couponValidDaysText(r.validDays))}</td><td class="px-3 py-2">${r.totalUsed ?? 0}</td><td class="px-3 py-2"><span class="${r.enabled ? "badge badge-ok" : "badge badge-neutral"}">${r.status}</span></td><td class="px-3 py-2"><button class="coupon-switch ${r.enabled ? "on" : "off"}" data-coupon-toggle="${r.id}"></button></td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="复制" data-coupon-copy="${r.id}">${iconSvg("copy")}</button><button class="icon-action-btn" title="日志" data-coupon-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`).join("")}
+              ${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2" title="${r.project}">${r.project}</td><td class="px-3 py-2 font-medium text-[#2f3a4d]" title="${r.id}">${r.id}</td><td class="px-3 py-2" title="${couponTitle(r)}">${couponTitle(r)}</td><td class="px-3 py-2" title="${r.type}">${r.type}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${couponRatioText(r)}</td><td class="px-3 py-2">${couponValidityValue(couponValidDaysText(r.validDays))}</td><td class="px-3 py-2">${r.totalUsed ?? 0}</td><td class="px-3 py-2"><span class="${r.enabled ? "badge badge-ok" : "badge badge-neutral"}">${r.status}</span></td><td class="px-3 py-2"><button class="coupon-switch ${r.enabled ? "on" : "off"}" data-coupon-toggle="${r.id}"></button></td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="编辑" data-coupon-edit="${r.id}">${iconSvg("edit")}</button><button class="icon-action-btn" title="复制" data-coupon-copy="${r.id}">${iconSvg("copy")}</button><button class="icon-action-btn" title="日志" data-coupon-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`).join("")}
             </tbody>
           </table>
         </div>
@@ -4707,7 +4709,11 @@
               <section class="border border-line rounded p-3">
                 <div class="font-semibold mb-3">2. 红包模板标题</div>
                 <div class="grid grid-cols-2 gap-3">
-                  <div class="col-span-2"><label class="block mb-1">红包模板标题</label><div id="mCouponNamePreview" class="min-h-[36px] rounded border border-dashed border-line bg-[#f8fafc] px-2 py-2 text-[#64748b]">保存时按红包类型、金额${canEditRatio ? "和抵扣比例" : ""}自动生成</div></div>
+                  <div class="col-span-2">
+                    <label class="form-label required mb-1">红包模板标题</label>
+                    <input id="mCouponName" class="w-full border border-line rounded px-2 py-2" placeholder="填写红包模板标题，可按类型/金额自动生成后修改" value="${String(d.name || "").replace(/"/g, "&quot;")}">
+                    <p class="mt-1 text-[11px] text-[#64748b]">切换类型、金额或抵扣比例时会自动刷新标题，仍可继续手动编辑</p>
+                  </div>
                 </div>
               </section>
               <section class="border border-line rounded p-3">
@@ -5357,6 +5363,9 @@
         };
         document.getElementById("btnCouponReset").onclick = () => { state.filters.coupon = { id:"", name:"", type:"", status:"", project:"", amountMin:"", amountMax:"" }; render(); notify("warn","已重置筛选条件"); };
         document.getElementById("btnCouponCreate").onclick = () => openCouponCreateModal("create");
+        document.querySelectorAll("[data-coupon-edit]").forEach(btn => {
+          btn.onclick = () => openCouponCreateModal("edit", btn.dataset.couponEdit);
+        });
         document.querySelectorAll("[data-coupon-copy]").forEach(btn => {
           btn.onclick = () => {
             openCouponCreateModal("copy", btn.dataset.couponCopy);
@@ -6268,7 +6277,7 @@
         const couponTypeSelect = document.getElementById("mCouponType");
         const couponAmountInput = document.getElementById("mCouponAmount");
         const couponRatioInput = document.getElementById("mCouponRatio");
-        const couponNamePreview = document.getElementById("mCouponNamePreview");
+        const couponNameInput = document.getElementById("mCouponName");
         const refreshCouponRatioField = () => {
           if (!couponRatioInput) return;
           const canEdit = couponSupportsRatio(couponTypeSelect?.value || "");
@@ -6281,32 +6290,31 @@
           const ratioLabel = couponRatioInput.closest("div")?.parentElement?.querySelector("label");
           if (ratioLabel) ratioLabel.className = `form-label ${canEdit ? "required" : ""} mb-1`;
         };
-        const refreshCouponNamePreview = () => {
-          if (!couponNamePreview) return;
+        const refreshCouponNameSuggestion = () => {
+          if (!couponNameInput) return;
           const type = couponTypeSelect?.value || "";
           const canRatio = couponSupportsRatio(type);
           const name = generatedCouponName(type, couponAmountInput?.value || "", canRatio ? (couponRatioInput?.value || "") : "");
-          couponNamePreview.textContent = name || `保存时按红包类型、金额${canRatio ? "和抵扣比例" : ""}自动生成`;
-          couponNamePreview.classList.toggle("text-[#0f172a]", Boolean(name));
+          if (name) couponNameInput.value = name;
         };
         if (couponTypeSelect) couponTypeSelect.onchange = () => {
           refreshCouponRatioField();
-          refreshCouponNamePreview();
+          refreshCouponNameSuggestion();
         };
-        if (couponAmountInput) couponAmountInput.oninput = refreshCouponNamePreview;
-        if (couponRatioInput) couponRatioInput.oninput = refreshCouponNamePreview;
+        if (couponAmountInput) couponAmountInput.oninput = refreshCouponNameSuggestion;
+        if (couponRatioInput) couponRatioInput.oninput = refreshCouponNameSuggestion;
         refreshCouponRatioField();
-        refreshCouponNamePreview();
+        if (state.couponModal.mode === "create" && !couponNameInput?.value.trim()) refreshCouponNameSuggestion();
         saveCouponModal.onclick = () => {
         const draft = {
           project: document.getElementById("mCouponProject").value.trim(),
-          name: "",
+          name: document.getElementById("mCouponName")?.value.trim() || "",
           type: document.getElementById("mCouponType").value.trim(),
           amount: document.getElementById("mCouponAmount").value.trim(),
           ratio: document.getElementById("mCouponRatio")?.value.trim() || "",
           validDays: document.getElementById("mCouponValidDays").value.trim()
         };
-        if (!draft.project || !draft.type || !draft.amount || !draft.validDays) return notify("error", "请填写完整必填项");
+        if (!draft.project || !draft.type || !draft.amount || !draft.validDays || !draft.name) return notify("error", "请填写完整必填项");
         const amountNum = Number(draft.amount);
         if (!Number.isFinite(amountNum) || amountNum < 0) return notify("error", "红包金额只支持数字，支持小数");
         const validDaysNum = Number(draft.validDays);
@@ -6317,7 +6325,6 @@
           if (!Number.isFinite(ratioNum) || ratioNum <= 0 || ratioNum > 100) return notify("error", "抵扣比例需填写 0~100 的数字");
           ratioValue = String(ratioNum);
         }
-        draft.name = generatedCouponName(draft.type, amountNum, ratioValue);
         const editingId = state.couponModal.mode === "edit" ? state.couponModal.sourceId : "";
         const duplicate = state.data.coupons.some(c => {
           if (c.id === editingId || c.type !== draft.type || parseMoney(c.amount) !== amountNum) return false;
@@ -6331,7 +6338,7 @@
         let createdCouponId = "";
         if (state.couponModal.mode === "edit") {
           const row = state.data.coupons.find(c => c.id === state.couponModal.sourceId);
-          if (!row) return notify("error", "红包不存在，无法编辑");
+          if (!row) return notify("error", "红包模板不存在，无法编辑");
           row.project = draft.project;
           row.name = draft.name;
           row.type = draft.type;
