@@ -534,6 +534,13 @@
       consume: [{ id: "consume-list", label: "08 红包消耗", frame: "consume:1" }]
     };
 
+    const MODAL_PAGE_IDS = new Set([
+      "coupon-create-modal", "coupon-toggle-modal", "coupon-log-modal",
+      "task-create-modal", "task-toggle-modal", "task-detail-modal", "task-lang-modal", "task-lang-view-modal", "task-log-modal",
+      "campaign-tagverse-modal", "campaign-tagverse-detail-modal", "campaign-revoke-modal", "campaign-log-modal",
+      "batch-log-modal", "audit-redpacket", "audit-custom", "audit-special", "audit-batch-modal"
+    ]);
+
     const MAIN_TABS = [
       { key: "coupon", label: "红包模板" },
       { key: "task", label: "任务管理" },
@@ -1098,8 +1105,25 @@
       el.modalHost.classList.remove("pointer-events-none");
       bindModalClose();
     }
+    function isModalPage(pageId = state.pageId) {
+      return MODAL_PAGE_IDS.has(pageId);
+    }
+
+    function dismissModalNavigation() {
+      if (!isModalPage(state.pageId)) return;
+      const prev = [...state.navHistory].reverse().find(h => h && !isModalPage(h.pageId));
+      if (prev) {
+        state.mainTab = prev.mainTab;
+        state.pageId = prev.pageId;
+        return;
+      }
+      const listId = PAGE_MAP[state.mainTab]?.[0]?.id;
+      if (listId) state.pageId = listId;
+    }
+
     function closeModal() {
       el.modalHost.classList.remove("modal-open");
+      dismissModalNavigation();
       if (modalCloseTimer) clearTimeout(modalCloseTimer);
       modalCloseTimer = setTimeout(() => {
         el.modalHost.classList.add("pointer-events-none");
@@ -1257,6 +1281,8 @@
         // 运营默认按超级运营权限（保留原审核/特批能力）
         state.role = "super";
       }
+      document.querySelectorAll(".stacked-modal-host").forEach(host => closeStackedModal(host));
+      closeModal();
       ensureRoleAccessibleTab();
       render();
     }
@@ -5108,13 +5134,7 @@
     function renderCurrentPage() {
       if (state.loading) return renderLoading();
       const p = state.pageId;
-      const modalPages = [
-        "coupon-create-modal","coupon-toggle-modal","coupon-log-modal",
-        "task-create-modal","task-toggle-modal","task-detail-modal","task-lang-modal","task-lang-view-modal","task-log-modal",
-        "campaign-tagverse-modal","campaign-tagverse-detail-modal","campaign-revoke-modal","campaign-log-modal",
-        "batch-log-modal","audit-redpacket","audit-custom","audit-special","audit-batch-modal"
-      ];
-      if (modalPages.includes(p)) {
+      if (isModalPage(p)) {
         renderModalPage(p);
         // fallback content keep previous context visible
         if (state.mainTab === "task") renderTaskList();
