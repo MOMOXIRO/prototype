@@ -551,7 +551,7 @@
     // 说明：相关样例数据、创建/校验/详情逻辑均保留未删除。
     // 下次需要恢复时，将 SHOW_FINANCE_TASK 改为 true 即可重新展示。
     // =============================
-    const SHOW_FINANCE_TASK = false;
+    const SHOW_FINANCE_TASK = true;
 
     // 操作日志文案（最简操作，三页统一规范）
     const LOG_TEXT = {
@@ -616,6 +616,54 @@
     function emptyUsageFilters() {
       const { start, end } = lastNDaysRange(7);
       return { sid: "", vip: "", depositOrder: "", couponId: "", couponTitle: "", taskName: "", campaignName: "", couponType: "", batchId: "", taskType: "", project: "", region: "", start, end };
+    }
+
+    /** 样例领取/使用日期对齐到最近 N 天，避免默认日期筛选导致列表为空 */
+    function alignDemoReceiveUsageDates(days = 7) {
+      const ymd = (ago) => {
+        const d = new Date();
+        d.setHours(12, 0, 0, 0);
+        d.setDate(d.getDate() - Math.max(0, Math.min(days - 1, ago)));
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      };
+      const stamp = (ago, time = "10:00") => {
+        const [y, m, day] = ymd(ago).split("-");
+        return `${day}-${m}-${y} ${time}`;
+      };
+      const receivePlans = [
+        { ago: 1, time: "10:23", useAgo: 1, useTime: "10:23" },
+        { ago: 5, pending: true },
+        { ago: 2, time: "10:23", useAgo: 2, useTime: "10:23" },
+        { ago: 3, time: "09:45", useAgo: 3, useTime: "12:40" },
+        { ago: 5, pending: true },
+        { ago: 4, time: "11:10" },
+        { ago: 2, time: "14:00" }
+      ];
+      (state.data.receives || []).forEach((row, idx) => {
+        const plan = receivePlans[idx] || { ago: Math.min(idx, days - 1), time: "10:00" };
+        // receiveDate 用于默认近 N 天筛选；未领取记录也写入发放日，避免被日期筛掉
+        row.receiveDate = ymd(plan.ago);
+        row.sent = stamp(plan.ago, plan.time || "10:00");
+        if (plan.pending) {
+          row.receive = "--";
+          row.useTime = "--";
+          return;
+        }
+        row.receive = stamp(plan.ago, plan.time || "10:00");
+        if (plan.useAgo != null) row.useTime = stamp(plan.useAgo, plan.useTime || "10:00");
+      });
+      const usagePlans = [
+        { ago: 1, time: "10:23" },
+        { ago: 3, time: "14:15" },
+        { ago: 4, time: "12:40" },
+        { ago: 2, time: "15:20" }
+      ];
+      (state.data.usages || []).forEach((row, idx) => {
+        const plan = usagePlans[idx] || { ago: Math.min(idx, days - 1), time: "10:00" };
+        row.useDate = ymd(plan.ago);
+        row.useTime = stamp(plan.ago, plan.time || "10:00");
+        row.rewardTime = stamp(plan.ago, plan.time || "10:00");
+      });
     }
 
     const state = {
@@ -865,6 +913,8 @@
         ]
       }
     };
+    alignDemoReceiveUsageDates(7);
+    ensureTaskCouponCreateRecords();
 
     const el = {
       mainTabs: document.getElementById("mainTabs"),
@@ -1276,6 +1326,66 @@
         return acc;
       }, {});
       return Object.entries(grouped).map(([id, count]) => count > 1 ? `${id}*${count}` : id).join("、");
+    }
+
+    function taskCreatedCouponRecords(taskId = "") {
+      return (state.data.couponCreates || []).filter(r => String(r.taskId || "") === String(taskId || ""));
+    }
+
+    function formatTaskCreatedCouponIds(task = {}) {
+      if (!task || task.type === "理财") return "--";
+      const ids = taskCreatedCouponRecords(task.id).map(r => String(r.couponId || "")).filter(Boolean);
+      return ids.length ? formatTaskCoupons(ids) : "--";
+    }
+
+    function nextCreatedCouponId() {
+      const max = Math.max(0, ...(state.data.couponCreates || []).map(r => Number(r.couponId) || 0));
+      return String(max + 1);
+    }
+
+    function nextCouponCreateRecordId() {
+      const max = Math.max(0, ...(state.data.couponCreates || []).map(r => Number(String(r.id || "").replace(/\D/g, "")) || 0));
+      return `RC${max + 1}`;
+    }
+
+    function appendCouponCreateRecord(task, templateId) {
+      if (!task?.id || !templateId) return null;
+      const coupon = state.data.coupons.find(c => c.id === templateId);
+      const row = {
+        id: nextCouponCreateRecordId(),
+        project: task.app || coupon?.project || "",
+        couponId: nextCreatedCouponId(),
+        couponType: coupon?.type || "--",
+        amount: coupon?.amount || "--",
+        ratio: coupon?.ratio || "",
+        validDays: coupon?.validDays || "7",
+        taskId: task.id,
+        taskName: task.name || "",
+        taskType: task.type || "",
+        condition: task.condition || "--",
+        templateId: String(templateId),
+        taskValidType: task.taskValidType || "",
+        taskValidDays: task.taskValidDays || ""
+      };
+      if (!Array.isArray(state.data.couponCreates)) state.data.couponCreates = [];
+      state.data.couponCreates.push(row);
+      return row;
+    }
+
+    function ensureTaskCouponCreateRecords() {
+      (state.data.tasks || []).forEach(task => {
+        if (!task || task.type === "理财") return;
+        const templateIds = task.coupons || [];
+        const needMap = templateIds.reduce((acc, id) => {
+          const key = String(id);
+          acc[key] = (acc[key] || 0) + 1;
+          return acc;
+        }, {});
+        Object.entries(needMap).forEach(([templateId, need]) => {
+          const have = taskCreatedCouponRecords(task.id).filter(r => String(r.templateId) === templateId).length;
+          for (let i = have; i < need; i += 1) appendCouponCreateRecord(task, templateId);
+        });
+      });
     }
 
     function campaignStatuses(row) {
@@ -3227,7 +3337,7 @@
                 <th class="text-left px-3 py-2">任务名称</th>
                 <th class="text-left px-3 py-2">任务类型</th>
                 <th class="text-left px-3 py-2">任务配置</th>
-                <th class="text-left px-3 py-2">关联红包模板</th>
+                <th class="text-left px-3 py-2">关联红包</th>
                 <th class="text-left px-3 py-2">任务有效期</th>
                 <th class="text-left px-3 py-2">总发放</th>
                 <th class="text-left px-3 py-2">总领取</th>
@@ -3244,7 +3354,7 @@
                   <td class="px-3 py-2" title="${r.name}">${r.name}</td>
                   <td class="px-3 py-2">${r.type}</td>
                   <td class="px-3 py-2" title="${r.condition}">${r.condition}</td>
-                  <td class="px-3 py-2">${r.type === "理财" ? "--" : formatTaskCoupons(r.coupons)}</td>
+                  <td class="px-3 py-2">${formatTaskCreatedCouponIds(r)}</td>
                   <td class="px-3 py-2">${formatTaskValidity(r)}</td>
                   <td class="px-3 py-2">${r.totalIssue ?? 0}</td>
                   <td class="px-3 py-2">${r.totalReceive ?? 0}</td>
@@ -3337,7 +3447,7 @@
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无红包创建记录</div>` : `
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
-            ${tableColgroup([5, 6, 7, 5, 5, 6, 5, 8, 6, 8, 7, 7, 5, 10])}
+            ${tableColgroup([5, 6, 8, 6, 5, 7, 5, 9, 6, 9, 8, 5, 11])}
             <thead class="coupon-head">
               <tr class="border-b border-line">
                 <th class="text-left px-3 py-2">项目</th>
@@ -3350,7 +3460,6 @@
                 <th class="text-left px-3 py-2">任务名称</th>
                 <th class="text-left px-3 py-2">任务类型</th>
                 <th class="text-left px-3 py-2">任务配置</th>
-                <th class="text-left px-3 py-2">关联红包模板</th>
                 <th class="text-left px-3 py-2">任务有效期</th>
                 <th class="text-left px-3 py-2">状态</th>
                 <th class="text-left px-3 py-2 col-ops">操作</th>
@@ -3369,7 +3478,6 @@
                   <td class="px-3 py-2" title="${r.taskName}">${r.taskName}</td>
                   <td class="px-3 py-2">${r.taskType}</td>
                   <td class="px-3 py-2" title="${r.condition}">${r.condition}</td>
-                  <td class="px-3 py-2" title="${r.templateId}">${r.templateId || "--"}</td>
                   <td class="px-3 py-2">${couponCreateRecordValidity(r)}</td>
                   <td class="px-3 py-2">${(() => { const st = couponCreateStatusFromTask(r); return `<span class="${st === "启用" ? "badge badge-ok" : "badge badge-neutral"}">${st}</span>`; })()}</td>
                   <td class="px-3 py-2 col-ops">
@@ -4766,10 +4874,7 @@
         const d = normalizeTaskDraft(taskDraftFromTask(t));
         const isFinance = d.type === "理财";
         const isNoTask = d.type === "无任务";
-        const couponGroups = Object.entries((d.couponsText || "").split(",").map(x => x.trim()).filter(Boolean).reduce((acc, id) => {
-          acc[id] = (acc[id] || 0) + 1;
-          return acc;
-        }, {}));
+        const createdCoupons = taskCreatedCouponRecords(t.id);
         const conditionRows = d.type === "充值" ? [
           `充值金额：${d.rechargeAmount || "--"}`
         ] : d.type === "实盘交易" ? [
@@ -4801,10 +4906,11 @@
             <section class="border border-line rounded p-3">
               <div class="font-semibold mb-3">${isNoTask ? "2" : "3"}. 有效期与奖励</div>
               ${isNoTask ? "" : `<div class="mb-3">任务有效期：${taskValidityText}</div>`}
-              ${isFinance ? `<div class="flex items-center justify-between gap-3 flex-wrap"><div class="text-muted">理财任务不关联红包模板，可配置任务多语言文案。</div><button id="btnFinanceDetailLangConfig" class="${btnClass(true,true)}" type="button">查看配置</button></div>` : `<div class="border border-line rounded overflow-auto"><table class="w-full text-[12px]"><thead class="bg-[#f3f6fb]"><tr><th class="text-left px-3 py-2">模板ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">数量</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">多语言配置</th></tr></thead><tbody>${couponGroups.map(([id, count]) => {
-                const c = state.data.coupons.find(item => item.id === id);
-                return `<tr class="border-t border-line"><td class="px-3 py-2">${id}</td><td class="px-3 py-2">${c ? couponTitle(c) : "未匹配红包模板"}</td><td class="px-3 py-2">${c?.type || "--"}</td><td class="px-3 py-2">${c?.amount || "--"}</td><td class="px-3 py-2">${couponValidityValue(c ? couponValidDaysText(c.validDays) : "--")}</td><td class="px-3 py-2">${count}</td><td class="px-3 py-2">${couponRatioText(c)}</td><td class="px-3 py-2"><button class="${btnClass(false,true)}" data-task-detail-coupon-config="${id}" data-task-detail-source="${t.id}">查看配置</button></td></tr>`;
-              }).join("") || `<tr><td class="px-3 py-4 text-muted" colspan="8">暂无关联红包模板</td></tr>`}</tbody></table></div>`}
+              ${isFinance ? `<div class="flex items-center justify-between gap-3 flex-wrap"><div class="text-muted">理财任务不关联红包，可配置任务多语言文案。</div><button id="btnFinanceDetailLangConfig" class="${btnClass(true,true)}" type="button">查看配置</button></div>` : `<div class="border border-line rounded overflow-auto"><table class="w-full text-[12px]"><thead class="bg-[#f3f6fb]"><tr><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">数量</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">多语言配置</th></tr></thead><tbody>${createdCoupons.map(r => {
+                const c = state.data.coupons.find(item => item.id === r.templateId);
+                const title = c ? couponTitle(c) : (r.couponType && r.amount ? generatedCouponName(r.couponType, r.amount, r.ratio) : "未匹配红包");
+                return `<tr class="border-t border-line"><td class="px-3 py-2">${r.couponId}</td><td class="px-3 py-2">${title}</td><td class="px-3 py-2">${r.couponType || c?.type || "--"}</td><td class="px-3 py-2">${r.amount || c?.amount || "--"}</td><td class="px-3 py-2">${couponValidityValue(couponValidDaysText(r.validDays || c?.validDays))}</td><td class="px-3 py-2">1</td><td class="px-3 py-2">${couponRatioText(c || { type: r.couponType, ratio: r.ratio })}</td><td class="px-3 py-2"><button class="${btnClass(false,true)}" data-task-detail-coupon-config="${r.templateId}" data-task-detail-source="${t.id}">查看配置</button></td></tr>`;
+              }).join("") || `<tr><td class="px-3 py-4 text-muted" colspan="8">暂无关联红包</td></tr>`}</tbody></table></div>`}
             </section>
           </div>`,
           footer: `<button class="${btnClass(false,true)}" data-close-modal>关闭</button>`
@@ -5329,6 +5435,7 @@
             };
             pushTaskLog(row, LOG_TEXT.task.create);
             state.data.tasks.unshift(row);
+            coupons.forEach(templateId => appendCouponCreateRecord(row, templateId));
             notify("success", "任务新增成功");
           }
           closeModal();
