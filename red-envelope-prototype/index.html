@@ -442,7 +442,7 @@
             </div>
             <div class="flex items-center gap-2">
               <span>主页，网络，GMT+08:00，Jenny</span>
-              <span id="headerRoleBadge" class="px-2 py-0.5 rounded bg-[#ecfdf3] text-[#047857] font-semibold">超级运营</span>
+              <div id="headerRoleSwitcher" class="inline-flex items-center rounded border border-line bg-white p-0.5 text-[11px]"></div>
             </div>
           </div>
           <div class="px-4 border-b border-line flex items-center justify-between gap-3">
@@ -481,10 +481,10 @@
     // =============================
     const PAGE_MAP = {
       coupon: [
-        { id: "coupon-list", label: "01 红包列表", frame: "741:3637" },
-        { id: "coupon-create-modal", label: "创建红包-弹窗", frame: "741:3798" },
-        { id: "coupon-toggle-modal", label: "启用禁用红包确认", frame: "802:30" },
-        { id: "coupon-log-modal", label: "红包操作日志", frame: "953:12" },
+        { id: "coupon-list", label: "01 红包模板", frame: "741:3637" },
+        { id: "coupon-create-modal", label: "创建红包模板-弹窗", frame: "741:3798" },
+        { id: "coupon-toggle-modal", label: "启用禁用红包模板确认", frame: "802:30" },
+        { id: "coupon-log-modal", label: "红包模板操作日志", frame: "953:12" },
         { id: "task-lang-modal", label: "多语言配置", frame: "970:224" }
       ],
       task: [
@@ -496,6 +496,9 @@
         { id: "task-toggle-modal", label: "启用禁用任务确认", frame: "802:31" },
         { id: "task-lang-view-modal", label: "查看多语言配置", frame: "980:421" },
         { id: "task-log-modal", label: "任务操作日志", frame: "955:12" }
+      ],
+      "coupon-create": [
+        { id: "coupon-create-list", label: "02.5 红包创建记录", frame: "coupon-create:1" }
       ],
       campaign: [
         { id: "campaign-record", label: "03.5 活动发放记录", frame: "741:4528" },
@@ -532,8 +535,9 @@
     };
 
     const MAIN_TABS = [
-      { key: "coupon", label: "红包列表" },
+      { key: "coupon", label: "红包模板" },
       { key: "task", label: "任务管理" },
+      { key: "coupon-create", label: "红包创建记录", rdOnly: true },
       { key: "campaign", label: "活动发放" },
       { key: "batch", label: "任务批次" },
       { key: "receive", label: "领取记录" },
@@ -552,10 +556,10 @@
     // 操作日志文案（最简操作，三页统一规范）
     const LOG_TEXT = {
       coupon: {
-        create: "新增红包",
-        enable: "启用红包",
-        disable: "禁用红包",
-        edit: "编辑红包"
+        create: "新增红包模板",
+        enable: "启用红包模板",
+        disable: "禁用红包模板",
+        edit: "编辑红包模板"
       },
       task: {
         create: "新增任务",
@@ -615,7 +619,7 @@
     }
 
     const state = {
-      role: "super", // normal | super
+      role: "super", // rd | normal | super ；rd=研发，super/normal=运营（超级/普通）
       loading: false,
       forceEmpty: false,
       mainTab: "coupon",
@@ -700,65 +704,78 @@
         usage: emptyUsageFilters(),
         audit: { type: "", object: "", activity: "", batch: "", project: "", couponId: "", couponName: "", sid: "", mt4Order: "", depositOrder: "", couponType: "", region: "", auditMethod: "", status: "", reviewer: "", start: "", end: "", reviewStart: "", reviewEnd: "" },
         consume: { project: "", couponId: "", region: "", operator: "", start: "2026-05-01 00:00:00", end: "2026-05-30 23:59:59" },
-        userCoupon: { couponId: "", batchId: "", status: "", start: "", end: "" }
+        userCoupon: { couponId: "", batchId: "", status: "", start: "", end: "" },
+        couponCreate: { project: "", couponId: "", couponType: "", amountMin: "", amountMax: "", taskId: "", taskName: "" }
       },
       data: {
+        couponCreates: [
+          { id:"RC1", project:"Dana", couponId:"1", couponType:"现金红包", amount:"$15", ratio:"", validDays:"7", taskId:"T1", taskName:"充值50送现金", taskType:"充值", condition:"充值金额 >= 50", templateId:"1001", taskValidType:"领取后", taskValidDays:"7" },
+          { id:"RC2", project:"TW", couponId:"2", couponType:"手续费抵扣红包", amount:"$5", ratio:"80", validDays:"7", taskId:"T2", taskName:"交易2手送现金", taskType:"实盘交易", condition:"实盘手数 >= 2", templateId:"2001", taskValidType:"领取后", taskValidDays:"14" },
+          { id:"RC3", project:"Dana", couponId:"3", couponType:"盈亏抵扣红包", amount:"$40", ratio:"50", validDays:"7", taskId:"T4", taskName:"无任务体验金", taskType:"无任务", condition:"--", templateId:"1002", taskValidType:"", taskValidDays:"" },
+          { id:"RC4", project:"Dana", couponId:"4", couponType:"现金红包", amount:"$20", ratio:"", validDays:"7", taskId:"T5", taskName:"充值100送现金", taskType:"充值", condition:"充值金额 >= 100", templateId:"1003", taskValidType:"领取后", taskValidDays:"7" },
+          { id:"RC5", project:"Dana", couponId:"5", couponType:"现金红包", amount:"$30", ratio:"", validDays:"14", taskId:"T6", taskName:"充值200送现金", taskType:"充值", condition:"充值金额 >= 200", templateId:"1004", taskValidType:"领取后", taskValidDays:"15" },
+          { id:"RC6", project:"TW", couponId:"6", couponType:"手续费抵扣红包", amount:"$8", ratio:"70", validDays:"10", taskId:"T7", taskName:"交易5手送抵扣", taskType:"实盘交易", condition:"实盘手数 >= 5", templateId:"2003", taskValidType:"领取后", taskValidDays:"14" },
+          { id:"RC7", project:"Dana", couponId:"7", couponType:"提现免佣券", amount:"$3", ratio:"", validDays:"7", taskId:"T8", taskName:"无任务新人礼包", taskType:"无任务", condition:"--", templateId:"1005", taskValidType:"", taskValidDays:"" },
+          { id:"RC8", project:"Dana", couponId:"8", couponType:"盈亏抵扣红包", amount:"$10", ratio:"50", validDays:"7", taskId:"T9", taskName:"无任务老客回馈", taskType:"无任务", condition:"--", templateId:"1006", taskValidType:"", taskValidDays:"" },
+          { id:"RC9", project:"TW", couponId:"9", couponType:"现金红包", amount:"$10", ratio:"", validDays:"7", taskId:"T10", taskName:"无任务TW体验礼", taskType:"无任务", condition:"--", templateId:"2002", taskValidType:"", taskValidDays:"" },
+          { id:"RC10", project:"Dana", couponId:"10", couponType:"盈亏抵扣红包", amount:"$10", ratio:"50", validDays:"7", taskId:"T12", taskName:"交易1手送现金", taskType:"实盘交易", condition:"实盘手数 >= 1", templateId:"1006", taskValidType:"领取后", taskValidDays:"21" }
+        ],
         tasks: [
-          { id:"T1", name:"充值50送现金", type:"充值", app:"Dana", condition:"充值金额 >= 50", coupons:["1001"], taskValidType:"发放后", taskValidDays:"30", appJump:"Dana充值页面", couponRatios:{"1001":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-10 10:32",
+          { id:"T1", name:"充值50送现金", type:"充值", app:"Dana", condition:"充值金额 >= 50", coupons:["1001"], taskValidType:"发放后", taskValidDays:"30", appJump:"Dana充值页面", couponRatios:{"1001":"100"}, totalIssue:1260, totalReceive:980, status:"启用", enabled:true, updatedAt:"2026-06-10 10:32",
             logs: [
               { operator:"Jenny", time:"2026-06-10 10:32", content:"新增任务" },
               { operator:"Jenny", time:"2026-06-11 09:12", content:"启用任务" }
             ] },
-          { id:"T2", name:"交易2手送现金", type:"实盘交易", app:"TW", condition:"实盘手数 >= 2", coupons:["2001"], taskValidType:"领取后", taskValidDays:"14", appJump:"TW交易页面", couponRatios:{"2001":"80"}, status:"启用", enabled:true, updatedAt:"2026-06-20 16:18",
+          { id:"T2", name:"交易2手送现金", type:"实盘交易", app:"TW", condition:"实盘手数 >= 2", coupons:["2001"], taskValidType:"领取后", taskValidDays:"14", appJump:"TW交易页面", couponRatios:{"2001":"80"}, totalIssue:860, totalReceive:640, status:"启用", enabled:true, updatedAt:"2026-06-20 16:18",
             logs: [{ operator:"Jenny", time:"2026-06-20 16:18", content:"编辑任务" }] },
           // [临时隐藏] 理财任务样例数据保留；SHOW_FINANCE_TASK=false 时列表/入口不展示
-          { id:"T3", name:"理财任务", type:"理财", app:"Dana", condition:"理财时长30天，年化收益2%，最低存款金额1000", coupons:[], taskValidType:"发放后", taskValidDays:"30", appJump:"钱包页-卡券", couponRatios:{}, status:"禁用", enabled:false, updatedAt:"2026-06-18 11:02",
+          { id:"T3", name:"理财任务", type:"理财", app:"Dana", condition:"理财时长30天，年化收益2%，最低存款金额1000", coupons:[], taskValidType:"发放后", taskValidDays:"30", appJump:"钱包页-卡券", couponRatios:{}, totalIssue:420, totalReceive:300, status:"禁用", enabled:false, updatedAt:"2026-06-18 11:02",
             logs: [{ operator:"Admin", time:"2026-06-18 11:02", content:"新增任务" }] },
-          { id:"T4", name:"无任务体验金", type:"无任务", app:"Dana", condition:"--", coupons:["1001","1002"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"1001":"100","1002":"50"}, status:"启用", enabled:true, updatedAt:"2026-06-22 14:26",
+          { id:"T4", name:"无任务体验金", type:"无任务", app:"Dana", condition:"--", coupons:["1001","1002"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"1001":"100","1002":"50"}, totalIssue:1500, totalReceive:1120, status:"启用", enabled:true, updatedAt:"2026-06-22 14:26",
             logs: [{ operator:"Mia", time:"2026-06-22 14:26", content:"新增任务" }] },
-          { id:"T5", name:"充值100送现金", type:"充值", app:"Dana", condition:"充值金额 >= 100", coupons:["1003"], taskValidType:"发放后", taskValidDays:"30", appJump:"Dana充值页面", couponRatios:{"1003":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-23 10:00",
+          { id:"T5", name:"充值100送现金", type:"充值", app:"Dana", condition:"充值金额 >= 100", coupons:["1003"], taskValidType:"发放后", taskValidDays:"30", appJump:"Dana充值页面", couponRatios:{"1003":"100"}, totalIssue:900, totalReceive:720, status:"启用", enabled:true, updatedAt:"2026-06-23 10:00",
             logs: [{ operator:"Jenny", time:"2026-06-23 10:00", content:"新增任务" }] },
-          { id:"T6", name:"充值200送现金", type:"充值", app:"Dana", condition:"充值金额 >= 200", coupons:["1004"], taskValidType:"领取后", taskValidDays:"15", appJump:"Dana充值页面", couponRatios:{"1004":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-24 11:20",
+          { id:"T6", name:"充值200送现金", type:"充值", app:"Dana", condition:"充值金额 >= 200", coupons:["1004"], taskValidType:"领取后", taskValidDays:"15", appJump:"Dana充值页面", couponRatios:{"1004":"100"}, totalIssue:680, totalReceive:510, status:"启用", enabled:true, updatedAt:"2026-06-24 11:20",
             logs: [{ operator:"Jenny", time:"2026-06-24 11:20", content:"新增任务" }] },
-          { id:"T7", name:"交易5手送抵扣", type:"实盘交易", app:"TW", condition:"实盘手数 >= 5", coupons:["2003"], taskValidType:"领取后", taskValidDays:"14", appJump:"TW交易页面", couponRatios:{"2003":"70"}, status:"启用", enabled:true, updatedAt:"2026-06-25 09:40",
+          { id:"T7", name:"交易5手送抵扣", type:"实盘交易", app:"TW", condition:"实盘手数 >= 5", coupons:["2003"], taskValidType:"领取后", taskValidDays:"14", appJump:"TW交易页面", couponRatios:{"2003":"70"}, totalIssue:540, totalReceive:390, status:"启用", enabled:true, updatedAt:"2026-06-25 09:40",
             logs: [{ operator:"Tom", time:"2026-06-25 09:40", content:"新增任务" }] },
-          { id:"T8", name:"无任务新人礼包", type:"无任务", app:"Dana", condition:"--", coupons:["1003","1005"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"1003":"100","1005":"100"}, status:"启用", enabled:true, updatedAt:"2026-06-26 14:10",
+          { id:"T8", name:"无任务新人礼包", type:"无任务", app:"Dana", condition:"--", coupons:["1003","1005"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"1003":"100","1005":"100"}, totalIssue:1100, totalReceive:860, status:"启用", enabled:true, updatedAt:"2026-06-26 14:10",
             logs: [{ operator:"Mia", time:"2026-06-26 14:10", content:"新增任务" }] },
-          { id:"T9", name:"无任务老客回馈", type:"无任务", app:"Dana", condition:"--", coupons:["1004","1006"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"1004":"100","1006":"60"}, status:"启用", enabled:true, updatedAt:"2026-06-27 15:30",
+          { id:"T9", name:"无任务老客回馈", type:"无任务", app:"Dana", condition:"--", coupons:["1004","1006"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"1004":"100","1006":"60"}, totalIssue:980, totalReceive:740, status:"启用", enabled:true, updatedAt:"2026-06-27 15:30",
             logs: [{ operator:"Mia", time:"2026-06-27 15:30", content:"新增任务" }] },
-          { id:"T10", name:"无任务TW体验礼", type:"无任务", app:"TW", condition:"--", coupons:["2002","2004"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"2002":"100","2004":"50"}, status:"启用", enabled:true, updatedAt:"2026-06-28 16:00",
+          { id:"T10", name:"无任务TW体验礼", type:"无任务", app:"TW", condition:"--", coupons:["2002","2004"], taskValidType:"", taskValidDays:"", appJump:"", couponRatios:{"2002":"100","2004":"50"}, totalIssue:720, totalReceive:560, status:"启用", enabled:true, updatedAt:"2026-06-28 16:00",
             logs: [{ operator:"Tom", time:"2026-06-28 16:00", content:"新增任务" }] },
           // [临时隐藏] 理财任务样例数据保留；SHOW_FINANCE_TASK=false 时列表/入口不展示
-          { id:"T11", name:"理财30天体验", type:"理财", app:"Dana", condition:"理财时长30天，年化收益3%，最低存款金额500", coupons:[], taskValidType:"发放后", taskValidDays:"30", appJump:"钱包页-卡券", couponRatios:{}, status:"启用", enabled:true, updatedAt:"2026-06-29 10:15",
+          { id:"T11", name:"理财30天体验", type:"理财", app:"Dana", condition:"理财时长30天，年化收益3%，最低存款金额500", coupons:[], taskValidType:"发放后", taskValidDays:"30", appJump:"钱包页-卡券", couponRatios:{}, totalIssue:360, totalReceive:240, status:"启用", enabled:true, updatedAt:"2026-06-29 10:15",
             logs: [{ operator:"Jenny", time:"2026-06-29 10:15", content:"新增任务" }] },
-          { id:"T12", name:"交易1手送现金", type:"实盘交易", app:"Dana", condition:"实盘手数 >= 1", coupons:["1006"], taskValidType:"发放后", taskValidDays:"21", appJump:"Dana交易页面", couponRatios:{"1006":"50"}, status:"启用", enabled:true, updatedAt:"2026-06-30 11:45",
+          { id:"T12", name:"交易1手送现金", type:"实盘交易", app:"Dana", condition:"实盘手数 >= 1", coupons:["1006"], taskValidType:"发放后", taskValidDays:"21", appJump:"Dana交易页面", couponRatios:{"1006":"50"}, totalIssue:480, totalReceive:360, status:"启用", enabled:true, updatedAt:"2026-06-30 11:45",
             logs: [{ operator:"Jenny", time:"2026-06-30 11:45", content:"新增任务" }] }
         ],
         coupons: [
-          { id:"1001", project:"Dana", name:"新人户现金红包", type:"现金红包", amount:"$15", validDays:"7", totalIssue:500, totalReceive:50, status:"启用", enabled:true,
+          { id:"1001", project:"Dana", name:"新人户现金红包", type:"现金红包", amount:"$15", validDays:"7", totalUsed:35, status:"启用", enabled:true,
             logs: [
-              { operator: "Jenny", time: "2026-07-06 10:45", content: "启用红包" },
-              { operator: "Admin", time: "2026-07-05 18:22", content: "禁用红包" },
-              { operator: "Jenny", time: "2026-07-05 10:20", content: "新增红包" }
+              { operator: "Jenny", time: "2026-07-06 10:45", content: "启用红包模板" },
+              { operator: "Admin", time: "2026-07-05 18:22", content: "禁用红包模板" },
+              { operator: "Jenny", time: "2026-07-05 10:20", content: "新增红包模板" }
             ] },
-          { id:"1002", project:"Dana", name:"交易盈亏抵扣红包", type:"盈亏抵扣红包", amount:"$40", ratio:"50", validDays:"7", totalIssue:300, totalReceive:50, status:"启用", enabled:true,
-            logs: [{ operator: "Admin", time: "2026-07-01 09:15", content: "新增红包" }, { operator: "Jenny", time: "2026-07-05 11:00", content: "启用红包" }] },
-          { id:"1003", project:"Dana", name:"充值满额现金红包", type:"现金红包", amount:"$20", validDays:"7", totalIssue:400, totalReceive:80, status:"启用", enabled:true,
-            logs: [{ operator: "Jenny", time: "2026-06-23 09:50", content: "新增红包" }] },
-          { id:"1004", project:"Dana", name:"高额充值现金红包", type:"现金红包", amount:"$30", validDays:"14", totalIssue:200, totalReceive:40, status:"启用", enabled:true,
-            logs: [{ operator: "Jenny", time: "2026-06-24 10:40", content: "新增红包" }] },
-          { id:"1005", project:"Dana", name:"提现免佣券", type:"提现免佣券", amount:"$3", validDays:"7", totalIssue:600, totalReceive:120, status:"启用", enabled:true,
-            logs: [{ operator: "Mia", time: "2026-06-26 13:20", content: "新增红包" }] },
-          { id:"1006", project:"Dana", name:"轻量盈亏抵扣红包", type:"盈亏抵扣红包", amount:"$10", ratio:"50", validDays:"7", totalIssue:350, totalReceive:70, status:"启用", enabled:true,
-            logs: [{ operator: "Jenny", time: "2026-06-27 14:00", content: "新增红包" }] },
-          { id:"2001", project:"TW", name:"实盘手续费抵扣红包", type:"手续费抵扣红包", amount:"$5", ratio:"80", validDays:"7", totalIssue:80, totalReceive:50, status:"启用", enabled:true,
-            logs: [{ operator: "Jenny", time: "2026-07-03 11:05", content: "新增红包" }] },
-          { id:"2002", project:"TW", name:"口令现金红包", type:"现金红包", amount:"$10", validDays:"7", totalIssue:150, totalReceive:30, status:"启用", enabled:true,
-            logs: [{ operator: "Mia", time: "2026-07-02 10:00", content: "新增红包" }] },
-          { id:"2003", project:"TW", name:"高频交易手续费抵扣", type:"手续费抵扣红包", amount:"$8", ratio:"70", validDays:"10", totalIssue:120, totalReceive:36, status:"启用", enabled:true,
-            logs: [{ operator: "Tom", time: "2026-06-25 09:00", content: "新增红包" }] },
-          { id:"2004", project:"TW", name:"TW盈亏抵扣红包", type:"盈亏抵扣红包", amount:"$25", ratio:"50", validDays:"7", totalIssue:180, totalReceive:45, status:"启用", enabled:true,
-            logs: [{ operator: "Tom", time: "2026-06-28 15:20", content: "新增红包" }] }
+          { id:"1002", project:"Dana", name:"交易盈亏抵扣红包", type:"盈亏抵扣红包", amount:"$40", ratio:"50", validDays:"7", totalUsed:35, status:"启用", enabled:true,
+            logs: [{ operator: "Admin", time: "2026-07-01 09:15", content: "新增红包模板" }, { operator: "Jenny", time: "2026-07-05 11:00", content: "启用红包模板" }] },
+          { id:"1003", project:"Dana", name:"充值满额现金红包", type:"现金红包", amount:"$20", validDays:"7", totalUsed:56, status:"启用", enabled:true,
+            logs: [{ operator: "Jenny", time: "2026-06-23 09:50", content: "新增红包模板" }] },
+          { id:"1004", project:"Dana", name:"高额充值现金红包", type:"现金红包", amount:"$30", validDays:"14", totalUsed:28, status:"启用", enabled:true,
+            logs: [{ operator: "Jenny", time: "2026-06-24 10:40", content: "新增红包模板" }] },
+          { id:"1005", project:"Dana", name:"提现免佣券", type:"提现免佣券", amount:"$3", validDays:"7", totalUsed:84, status:"启用", enabled:true,
+            logs: [{ operator: "Mia", time: "2026-06-26 13:20", content: "新增红包模板" }] },
+          { id:"1006", project:"Dana", name:"轻量盈亏抵扣红包", type:"盈亏抵扣红包", amount:"$10", ratio:"50", validDays:"7", totalUsed:49, status:"启用", enabled:true,
+            logs: [{ operator: "Jenny", time: "2026-06-27 14:00", content: "新增红包模板" }] },
+          { id:"2001", project:"TW", name:"实盘手续费抵扣红包", type:"手续费抵扣红包", amount:"$5", ratio:"80", validDays:"7", totalUsed:35, status:"启用", enabled:true,
+            logs: [{ operator: "Jenny", time: "2026-07-03 11:05", content: "新增红包模板" }] },
+          { id:"2002", project:"TW", name:"口令现金红包", type:"现金红包", amount:"$10", validDays:"7", totalUsed:21, status:"启用", enabled:true,
+            logs: [{ operator: "Mia", time: "2026-07-02 10:00", content: "新增红包模板" }] },
+          { id:"2003", project:"TW", name:"高频交易手续费抵扣", type:"手续费抵扣红包", amount:"$8", ratio:"70", validDays:"10", totalUsed:25, status:"启用", enabled:true,
+            logs: [{ operator: "Tom", time: "2026-06-25 09:00", content: "新增红包模板" }] },
+          { id:"2004", project:"TW", name:"TW盈亏抵扣红包", type:"盈亏抵扣红包", amount:"$25", ratio:"50", validDays:"7", totalUsed:31, status:"启用", enabled:true,
+            logs: [{ operator: "Tom", time: "2026-06-28 15:20", content: "新增红包模板" }] }
         ],
         campaigns: [
           { id:"1", name:"6月充值激活活动", audience:"Recharge_Q2", audienceType:"TagVerse", audienceCount:12486, mode:"循环发放", deliverTime:"每日 10:00", task:"T1", tasks:["T1","T2"], batch:"1-T1-2", project:"Dana", coupons:["1001"], status:"执行中", statuses:["执行中"], createdAt:"2026-07-06 11:20", revokeReason:"--",
@@ -852,7 +869,7 @@
     const el = {
       mainTabs: document.getElementById("mainTabs"),
       mainTabActions: document.getElementById("mainTabActions"),
-      headerRoleBadge: document.getElementById("headerRoleBadge"),
+      headerRoleSwitcher: document.getElementById("headerRoleSwitcher"),
       query: document.getElementById("queryPanel"),
       action: document.getElementById("actionPanel"),
       table: document.getElementById("tablePanel"),
@@ -866,8 +883,29 @@
     };
     let modalCloseTimer = null;
 
+    function isRdRole() {
+      return state.role === "rd";
+    }
+
+    function isOpsRole() {
+      return state.role === "super" || state.role === "normal";
+    }
+
     function canAudit() {
       return state.role === "super";
+    }
+
+    function visibleMainTabs() {
+      return MAIN_TABS.filter(t => !t.rdOnly || isRdRole());
+    }
+
+    function ensureRoleAccessibleTab() {
+      const tab = MAIN_TABS.find(t => t.key === state.mainTab);
+      if (tab?.rdOnly && !isRdRole()) {
+        state.mainTab = "task";
+        state.pageId = "task-list";
+        state.navHistory = [];
+      }
     }
 
     function btnClass(primary = false, enabled = true) {
@@ -878,7 +916,7 @@
 
     function badge(status) {
       const cls =
-        /启用|通过|执行中|完成|自动审核|已激活|已使用/.test(status) ? "badge-ok" :
+        /启用|通过|执行中|完成|自动审核|已激活|已使用|成功/.test(status) ? "badge-ok" :
         /待审核|待执行|待领取|未兑换|人工审核/.test(status) ? "badge-warn" :
         /禁用|拒绝|撤销|失败|注销|失效/.test(status) ? "badge-danger" :
         "badge-neutral";
@@ -1090,6 +1128,11 @@
     }
 
     function switchMain(main) {
+      const tab = MAIN_TABS.find(t => t.key === main);
+      if (tab?.rdOnly && !isRdRole()) {
+        notify("warn", "红包创建记录仅研发角色可见");
+        return;
+      }
       state.navHistory = [];
       state.mainTab = main;
       state.pageId = PAGE_MAP[main][0].id;
@@ -1148,7 +1191,8 @@
     }
 
     function renderMainTabs() {
-      el.mainTabs.innerHTML = MAIN_TABS.map(t => `
+      ensureRoleAccessibleTab();
+      el.mainTabs.innerHTML = visibleMainTabs().map(t => `
         <button data-main="${t.key}" aria-selected="${state.mainTab===t.key}" class="main-tab h-12 border-b-2 whitespace-nowrap">${t.label}</button>
       `).join("");
       el.mainTabs.querySelectorAll("[data-main]").forEach(btn => btn.onclick = () => switchMain(btn.dataset.main));
@@ -1156,12 +1200,29 @@
       document.getElementById("btnMultiLangTpl").onclick = openMultiLangConfig;
     }
 
+    function setBizRole(next) {
+      if (next === "rd") {
+        state.role = "rd";
+      } else if (next === "ops") {
+        // 运营默认按超级运营权限（保留原审核/特批能力）
+        state.role = "super";
+      }
+      ensureRoleAccessibleTab();
+      render();
+    }
+
     function renderRoleSwitcher() {
-      const isSuper = canAudit();
-      el.headerRoleBadge.textContent = isSuper ? "超级运营" : "普通运营";
-      el.headerRoleBadge.className = isSuper
-        ? "px-2 py-0.5 rounded bg-[#ecfdf3] text-[#047857] font-semibold"
-        : "px-2 py-0.5 rounded bg-[#f1f5f9] text-[#64748b] font-semibold";
+      if (!el.headerRoleSwitcher) return;
+      const rdActive = isRdRole();
+      const opsActive = isOpsRole();
+      const btnBase = "h-6 px-2.5 rounded transition whitespace-nowrap";
+      el.headerRoleSwitcher.innerHTML = `
+        <button type="button" data-biz-role="ops" class="${btnBase} ${opsActive ? "bg-primary text-white font-semibold" : "text-[#64748b] hover:bg-[#f8fafc]"}">运营</button>
+        <button type="button" data-biz-role="rd" class="${btnBase} ${rdActive ? "bg-primary text-white font-semibold" : "text-[#64748b] hover:bg-[#f8fafc]"}">研发</button>
+      `;
+      el.headerRoleSwitcher.querySelectorAll("[data-biz-role]").forEach(btn => {
+        btn.onclick = () => setBizRole(btn.dataset.bizRole);
+      });
     }
 
     function renderLoading() {
@@ -2141,8 +2202,7 @@
           </div>
           <div class="border border-line rounded p-3">
             <div class="font-semibold mb-2">触发审核理由</div>
-            <div class="text-[#475569] leading-6">${meta.trigger}</div>
-            ${usageHit ? `<div class="mt-2 text-[12px] text-primary">本次命中：${usageHit}</div>` : ""}
+            <div class="text-[12px] text-primary leading-6">${usageHit ? `本次命中：${usageHit}` : "--"}</div>
           </div>
           ${decisionForm}
         </div>`;
@@ -2160,8 +2220,7 @@
           </div>
           <div class="border border-line rounded p-3">
             <div class="font-semibold mb-2">触发审核理由</div>
-            <div class="text-[#475569] leading-6">${meta.trigger}</div>
-            ${hitTrigger ? `<div class="mt-2 text-[12px] text-primary">本次命中：${hitTrigger}</div>` : ""}
+            <div class="text-[12px] text-primary leading-6">${hitTrigger ? `本次命中：${hitTrigger}` : "--"}</div>
           </div>
           ${decisionForm}
         </div>`;
@@ -2175,7 +2234,7 @@
           </div>`;
       return `<div class="space-y-4 text-[13px]">
         ${campaignInfo}
-        <div class="border border-line rounded p-3"><div class="font-semibold mb-2">触发审核理由</div><div class="text-[#475569] leading-6">${meta.trigger}</div>${hitTrigger ? `<div class="mt-2 text-[12px] text-primary">本次命中：${hitTrigger}</div>` : ""}</div>
+        <div class="border border-line rounded p-3"><div class="font-semibold mb-2">触发审核理由</div><div class="text-[12px] text-primary leading-6">${hitTrigger ? `本次命中：${hitTrigger}` : "--"}</div></div>
         ${reasonBlock}
         ${decisionForm}
       </div>`;
@@ -2700,14 +2759,14 @@
           if (!isJumpUrlValue(d.jumpUrl)) return "URL链接需以 http:// 或 https:// 开头";
         }
       }
-      if (d.type !== "理财" && !d.couponsText.trim()) return "请至少关联一个红包";
+      if (d.type !== "理财" && !d.couponsText.trim()) return "请至少关联一个红包模板";
       const couponIds = taskCouponIdsFromText(d.couponsText);
-      if (d.type !== "无任务" && d.type !== "理财" && couponIds.length > 1) return "充值/实盘交易任务一次只能关联一个红包";
-      if (d.type !== "理财" && couponIds.length > MAX_TASK_COUPONS) return `单个任务最多添加${MAX_TASK_COUPONS}个红包（按数量累计）`;
+      if (d.type !== "无任务" && d.type !== "理财" && couponIds.length > 1) return "充值/实盘交易任务一次只能关联一个红包模板";
+      if (d.type !== "理财" && couponIds.length > MAX_TASK_COUPONS) return `单个任务最多添加${MAX_TASK_COUPONS}个红包模板（按数量累计）`;
       for (const id of couponIds) {
         const coupon = state.data.coupons.find(c => c.id === id);
-        if (!coupon) return `红包 ${id} 不存在`;
-        if (coupon.project !== d.app) return `只能关联当前项目（${d.app}）下的红包`;
+        if (!coupon) return `红包模板 ${id} 不存在`;
+        if (coupon.project !== d.app) return `只能关联当前项目（${d.app}）下的红包模板`;
       }
       return "";
     }
@@ -3158,7 +3217,7 @@
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无任务数据</div>` : `
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
-            ${tableColgroup([7, 8, 14, 9, 14, 14, 8, 8, 18])}
+            ${tableColgroup([5, 6, 11, 7, 11, 9, 8, 6, 6, 6, 6, 19])}
             <thead class="coupon-head">
               <tr class="border-b border-line">
                 <th class="text-left px-3 py-2">项目</th>
@@ -3166,7 +3225,10 @@
                 <th class="text-left px-3 py-2">任务名称</th>
                 <th class="text-left px-3 py-2">任务类型</th>
                 <th class="text-left px-3 py-2">任务配置</th>
-                <th class="text-left px-3 py-2">关联红包</th>
+                <th class="text-left px-3 py-2">关联红包模板</th>
+                <th class="text-left px-3 py-2">任务有效期</th>
+                <th class="text-left px-3 py-2">总发放</th>
+                <th class="text-left px-3 py-2">总领取</th>
                 <th class="text-left px-3 py-2">任务状态</th>
                 <th class="text-left px-3 py-2">启用/禁用</th>
                 <th class="text-left px-3 py-2 col-ops">操作</th>
@@ -3181,6 +3243,9 @@
                   <td class="px-3 py-2">${r.type}</td>
                   <td class="px-3 py-2" title="${r.condition}">${r.condition}</td>
                   <td class="px-3 py-2">${r.type === "理财" ? "--" : formatTaskCoupons(r.coupons)}</td>
+                  <td class="px-3 py-2">${formatTaskValidity(r)}</td>
+                  <td class="px-3 py-2">${r.totalIssue ?? 0}</td>
+                  <td class="px-3 py-2">${r.totalReceive ?? 0}</td>
                   <td class="px-3 py-2"><span class="${r.enabled ? "badge badge-ok" : "badge badge-neutral"}">${r.status}</span></td>
                   <td class="px-3 py-2"><button class="coupon-switch ${r.enabled ? "on" : "off"}" data-task-toggle="${r.id}"></button></td>
                   <td class="px-3 py-2 col-ops">
@@ -3202,6 +3267,120 @@
     function renderTaskCreate(typeLabel) {
       openTaskModal("create");
       renderTaskList();
+    }
+
+    function couponCreateRecordValidity(row) {
+      if (!row.taskValidType || row.taskType === "无任务") return "--";
+      return `${row.taskValidType}${row.taskValidDays || "N"}天`;
+    }
+
+    function couponCreateRatioText(row) {
+      if (row.ratio === undefined || row.ratio === null || String(row.ratio).trim() === "") return "--";
+      return `${String(row.ratio).trim().replace(/%$/, "")}%`;
+    }
+
+    function couponCreateStatusFromTask(row) {
+      const task = state.data.tasks.find(t => t.id === row.taskId);
+      if (!task) return row.status || "禁用";
+      if (task.enabled === false || task.status === "禁用") return "禁用";
+      return "启用";
+    }
+
+    function renderCouponCreateList() {
+      if (!isRdRole()) {
+        switchMain("task");
+        return;
+      }
+      const f = state.filters.couponCreate;
+      const min = f.amountMin === "" ? NaN : Number(f.amountMin);
+      const max = f.amountMax === "" ? NaN : Number(f.amountMax);
+      let rows = (state.data.couponCreates || []).filter(r =>
+        (!f.project || r.project === f.project) &&
+        (!f.couponId || String(r.couponId || "").includes(f.couponId)) &&
+        (!f.couponType || r.couponType === f.couponType) &&
+        (!f.taskId || String(r.taskId || "").includes(f.taskId)) &&
+        (!f.taskName || String(r.taskName || "").includes(f.taskName)) &&
+        (Number.isNaN(min) || parseMoney(r.amount) >= min) &&
+        (Number.isNaN(max) || parseMoney(r.amount) <= max)
+      );
+      if (state.forceEmpty) rows = [];
+      el.query.innerHTML = `
+        <div class="coupon-filter-card p-3">
+          <div class="grid grid-cols-6 gap-3 text-[12px]">
+            <select id="qCouponCreateProject" class="coupon-input">
+              <option value="">项目</option>
+              <option value="Dana" ${f.project==="Dana"?"selected":""}>Dana</option>
+              <option value="TW" ${f.project==="TW"?"selected":""}>TW</option>
+            </select>
+            <input id="qCouponCreateId" class="coupon-input" placeholder="红包ID" value="${f.couponId}">
+            <select id="qCouponCreateType" class="coupon-input">
+              <option value="">红包类型</option>
+              ${["现金红包","手续费抵扣红包","盈亏抵扣红包","提现免佣券"].map(t => `<option value="${t}" ${f.couponType===t?"selected":""}>${t}</option>`).join("")}
+            </select>
+            <div class="range-wrap grid-range">
+              <input id="qCouponCreateAmountMin" placeholder="红包金额" value="${f.amountMin}">
+              <span class="range-mid">~</span>
+              <input id="qCouponCreateAmountMax" placeholder="红包金额" value="${f.amountMax}">
+            </div>
+            <input id="qCouponCreateTaskId" class="coupon-input" placeholder="任务ID" value="${f.taskId}">
+            <input id="qCouponCreateTaskName" class="coupon-input" placeholder="任务名称" value="${f.taskName}">
+            <div class="search-actions col-span-6">
+              <button id="btnCouponCreateReset" class="${btnClass(false,true)}">重置</button>
+              <button id="btnCouponCreateSearch" class="${btnClass(true,true)}">查询</button>
+            </div>
+          </div>
+        </div>
+      `;
+      el.action.innerHTML = ``;
+      el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无红包创建记录</div>` : `
+        <div class="coupon-table-wrap overflow-auto">
+          <table class="w-full data-table table-fill text-[12px]">
+            ${tableColgroup([5, 6, 7, 5, 5, 6, 5, 8, 6, 8, 7, 7, 5, 10])}
+            <thead class="coupon-head">
+              <tr class="border-b border-line">
+                <th class="text-left px-3 py-2">项目</th>
+                <th class="text-left px-3 py-2">红包ID</th>
+                <th class="text-left px-3 py-2">红包类型</th>
+                <th class="text-left px-3 py-2">红包金额</th>
+                <th class="text-left px-3 py-2">抵扣比例</th>
+                <th class="text-left px-3 py-2">${couponValidityLabel()}</th>
+                <th class="text-left px-3 py-2">任务ID</th>
+                <th class="text-left px-3 py-2">任务名称</th>
+                <th class="text-left px-3 py-2">任务类型</th>
+                <th class="text-left px-3 py-2">任务配置</th>
+                <th class="text-left px-3 py-2">关联红包模板</th>
+                <th class="text-left px-3 py-2">任务有效期</th>
+                <th class="text-left px-3 py-2">状态</th>
+                <th class="text-left px-3 py-2 col-ops">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(r => `
+                <tr class="border-b border-line/60 hover:bg-[#f8fbff]">
+                  <td class="px-3 py-2" title="${r.project}">${r.project}</td>
+                  <td class="px-3 py-2 font-medium text-[#2f3a4d]" title="${r.couponId}">${r.couponId}</td>
+                  <td class="px-3 py-2" title="${r.couponType}">${r.couponType}</td>
+                  <td class="px-3 py-2">${r.amount}</td>
+                  <td class="px-3 py-2">${couponCreateRatioText(r)}</td>
+                  <td class="px-3 py-2">${couponValidityValue(couponValidDaysText(r.validDays))}</td>
+                  <td class="px-3 py-2" title="${r.taskId}">${r.taskId}</td>
+                  <td class="px-3 py-2" title="${r.taskName}">${r.taskName}</td>
+                  <td class="px-3 py-2">${r.taskType}</td>
+                  <td class="px-3 py-2" title="${r.condition}">${r.condition}</td>
+                  <td class="px-3 py-2" title="${r.templateId}">${r.templateId || "--"}</td>
+                  <td class="px-3 py-2">${couponCreateRecordValidity(r)}</td>
+                  <td class="px-3 py-2">${(() => { const st = couponCreateStatusFromTask(r); return `<span class="${st === "启用" ? "badge badge-ok" : "badge badge-neutral"}">${st}</span>`; })()}</td>
+                  <td class="px-3 py-2 col-ops">
+                    <div class="table-ops">
+                      <button class="${btnClass(true,true)}" type="button" data-coupon-create-config="${r.id}" data-task-id="${r.taskId}" data-template-id="${r.templateId || ""}">查看配置</button>
+                    </div>
+                  </td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
     }
 
     function renderCouponList() {
@@ -3226,14 +3405,14 @@
               <option value="Dana" ${f.project==="Dana"?"selected":""}>Dana</option>
               <option value="TW" ${f.project==="TW"?"selected":""}>TW</option>
             </select>
-            <input id="qCouponId" class="coupon-input" placeholder="红包ID" value="${f.id}">
-            <input id="qCouponName" class="coupon-input" placeholder="红包标题" value="${f.name}">
+            <input id="qCouponId" class="coupon-input" placeholder="模板ID" value="${f.id}">
+            <input id="qCouponName" class="coupon-input" placeholder="红包模板标题" value="${f.name}">
             <select id="qCouponType" class="coupon-input">
               <option value="">红包类型</option>
               ${["现金红包","手续费抵扣红包","盈亏抵扣红包","提现免佣券"].map(t => `<option value="${t}" ${f.type===t?"selected":""}>${t}</option>`).join("")}
             </select>
             <select id="qCouponStatus" class="coupon-input">
-              <option value="">红包状态</option>
+              <option value="">模板状态</option>
               <option value="启用" ${f.status==="启用"?"selected":""}>启用</option>
               <option value="禁用" ${f.status==="禁用"?"selected":""}>禁用</option>
             </select>
@@ -3251,16 +3430,16 @@
       `;
       el.action.innerHTML = `
         <div class="flex items-center gap-2">
-          <button id="btnCouponCreate" class="coupon-tool-btn">创建红包</button>
+          <button id="btnCouponCreate" class="coupon-tool-btn">创建红包模板</button>
         </div>
       `;
-      el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无红包数据</div>` : `
+      el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无红包模板数据</div>` : `
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
-            ${tableColgroup([7, 7, 13, 10, 7, 7, 8, 7, 7, 7, 8, 12])}
-            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">总发放</th><th class="text-left px-3 py-2">总领取</th><th class="text-left px-3 py-2">状态</th><th class="text-left px-3 py-2">启用/禁用</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
+            ${tableColgroup([7, 8, 14, 10, 8, 8, 9, 8, 7, 8, 13])}
+            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">模板ID</th><th class="text-left px-3 py-2">红包模板标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">总使用</th><th class="text-left px-3 py-2">状态</th><th class="text-left px-3 py-2">启用/禁用</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
             <tbody>
-              ${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2" title="${r.project}">${r.project}</td><td class="px-3 py-2 font-medium text-[#2f3a4d]" title="${r.id}">${r.id}</td><td class="px-3 py-2" title="${couponTitle(r)}">${couponTitle(r)}</td><td class="px-3 py-2" title="${r.type}">${r.type}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${couponRatioText(r)}</td><td class="px-3 py-2">${couponValidityValue(couponValidDaysText(r.validDays))}</td><td class="px-3 py-2">${r.totalIssue}</td><td class="px-3 py-2">${r.totalReceive}</td><td class="px-3 py-2"><span class="${r.enabled ? "badge badge-ok" : "badge badge-neutral"}">${r.status}</span></td><td class="px-3 py-2"><button class="coupon-switch ${r.enabled ? "on" : "off"}" data-coupon-toggle="${r.id}"></button></td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="复制" data-coupon-copy="${r.id}">${iconSvg("copy")}</button><button class="icon-action-btn" title="日志" data-coupon-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`).join("")}
+              ${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2" title="${r.project}">${r.project}</td><td class="px-3 py-2 font-medium text-[#2f3a4d]" title="${r.id}">${r.id}</td><td class="px-3 py-2" title="${couponTitle(r)}">${couponTitle(r)}</td><td class="px-3 py-2" title="${r.type}">${r.type}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${couponRatioText(r)}</td><td class="px-3 py-2">${couponValidityValue(couponValidDaysText(r.validDays))}</td><td class="px-3 py-2">${r.totalUsed ?? 0}</td><td class="px-3 py-2"><span class="${r.enabled ? "badge badge-ok" : "badge badge-neutral"}">${r.status}</span></td><td class="px-3 py-2"><button class="coupon-switch ${r.enabled ? "on" : "off"}" data-coupon-toggle="${r.id}"></button></td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="复制" data-coupon-copy="${r.id}">${iconSvg("copy")}</button><button class="icon-action-btn" title="日志" data-coupon-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`).join("")}
             </tbody>
           </table>
         </div>
@@ -4457,14 +4636,14 @@
               </section>`}
               <section class="border border-line rounded p-3">
                 <div class="font-semibold mb-3">${!hasProject || isNoTask ? "2" : "3"}. 有效期与奖励</div>
-                ${!hasProject ? `<div class="text-[12px] text-[#64748b]">请先选择项目后，再配置任务类型与关联红包。</div>` : `
+                ${!hasProject ? `<div class="text-[12px] text-[#64748b]">请先选择项目后，再配置任务类型与关联红包模板。</div>` : `
                 <div class="grid grid-cols-3 gap-3">
                   ${taskValidityHtml}
                 </div>
                 ${isFinance ? `
                   <!-- [临时隐藏] 理财任务表单区块保留；因类型入口已隐藏，正常流程进不来，恢复 SHOW_FINANCE_TASK 后可用 -->
                   <div class="mt-4 flex items-center justify-between gap-3 flex-wrap">
-                    <div class="text-[12px] text-[#64748b]">理财任务不关联红包，可配置任务多语言文案。</div>
+                    <div class="text-[12px] text-[#64748b]">理财任务不关联红包模板，可配置任务多语言文案。</div>
                     <button id="btnFinanceLangConfig" class="${btnClass(true,true)}" type="button">查看配置</button>
                   </div>
                 ` : `
@@ -4472,24 +4651,24 @@
                     ${isEditMode ? "" : `
                     <div class="grid grid-cols-[1fr_auto_auto] gap-2 mb-3 items-start">
                       <div class="relative">
-                        <input id="taskCouponAddInput" class="w-full border border-line rounded px-3 py-2" placeholder="输入${d.app}项目红包ID/标题模糊搜索" autocomplete="off">
+                        <input id="taskCouponAddInput" class="w-full border border-line rounded px-3 py-2" placeholder="输入红包模板ID/标题模糊搜索" autocomplete="off">
                         <div id="taskCouponSearchDropdown" class="hidden absolute left-0 right-0 top-[38px] z-[80] max-h-[220px] overflow-auto rounded border border-line bg-white shadow-pop"></div>
                       </div>
-                      <button id="btnTaskAddCouponDemo" class="${btnClass(true,canAddTaskCoupon)}">添加红包</button>
-                      <button id="btnTaskCreateCouponFromTask" class="${btnClass(false,canAddTaskCoupon)}">创建红包</button>
+                      <button id="btnTaskAddCouponDemo" class="${btnClass(true,canAddTaskCoupon)}">添加</button>
+                      <button id="btnTaskCreateCouponFromTask" class="${btnClass(false,canAddTaskCoupon)}">创建红包模板</button>
                     </div>
                     `}
-                    <div class="mb-2 text-[12px] text-[#64748b]">已添加 ${couponTotalCount}/${MAX_TASK_COUPONS} 个红包（按数量累计，最多${MAX_TASK_COUPONS}个）</div>
+                    <div class="mb-2 text-[12px] text-[#64748b]">已添加 ${couponTotalCount}/${MAX_TASK_COUPONS} 个红包模板（按数量累计，最多${MAX_TASK_COUPONS}个）</div>
                     <div class="border border-line rounded overflow-auto">
                       <table class="w-full text-[12px]">
-                        <thead class="bg-[#f3f6fb]"><tr><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">数量</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">多语言配置</th>${isEditMode ? "" : `<th class="text-left px-3 py-2">操作</th>`}</tr></thead>
+                        <thead class="bg-[#f3f6fb]"><tr><th class="text-left px-3 py-2">模板ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">数量</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">多语言配置</th>${isEditMode ? "" : `<th class="text-left px-3 py-2">操作</th>`}</tr></thead>
                         <tbody>${couponGroups.map(([id, count]) => {
                           const c = state.data.coupons.find(item => item.id === id);
                           const quantityCell = (!isEditMode && isNoTask)
                             ? `<div class="inline-flex items-center border border-line rounded overflow-hidden"><button class="w-7 h-7 hover:bg-gray-50" data-task-coupon-dec="${id}">-</button><span class="w-8 text-center border-x border-line">${count}</span><button class="w-7 h-7 hover:bg-gray-50" data-task-coupon-inc="${id}">+</button></div>`
                             : `<span class="inline-flex items-center justify-center w-8 h-7 rounded border border-line bg-gray-50 text-[#475569]">${count}</span>`;
-                          return `<tr class="border-t border-line"><td class="px-3 py-2">${id}</td><td class="px-3 py-2">${c ? couponTitle(c) : "未匹配红包"}</td><td class="px-3 py-2">${c?.type || "--"}</td><td class="px-3 py-2">${c?.amount || "--"}</td><td class="px-3 py-2">${couponValidityValue(c ? couponValidDaysText(c.validDays) : "--")}</td><td class="px-3 py-2">${quantityCell}</td><td class="px-3 py-2">${couponRatioText(c)}</td><td class="px-3 py-2"><button class="${btnClass(true,true)}" data-task-coupon-config="${id}">查看配置</button></td>${isEditMode ? "" : `<td class="px-3 py-2"><button class="text-primary hover:underline" data-task-coupon-remove="${id}">移除</button></td>`}</tr>`;
-                        }).join("") || `<tr><td class="px-3 py-4 text-muted" colspan="${isEditMode ? 8 : 9}">暂未添加红包</td></tr>`}</tbody>
+                          return `<tr class="border-t border-line"><td class="px-3 py-2">${id}</td><td class="px-3 py-2">${c ? couponTitle(c) : "未匹配红包模板"}</td><td class="px-3 py-2">${c?.type || "--"}</td><td class="px-3 py-2">${c?.amount || "--"}</td><td class="px-3 py-2">${couponValidityValue(c ? couponValidDaysText(c.validDays) : "--")}</td><td class="px-3 py-2">${quantityCell}</td><td class="px-3 py-2">${couponRatioText(c)}</td><td class="px-3 py-2"><button class="${btnClass(true,true)}" data-task-coupon-config="${id}">查看配置</button></td>${isEditMode ? "" : `<td class="px-3 py-2"><button class="text-primary hover:underline" data-task-coupon-remove="${id}">移除</button></td>`}</tr>`;
+                        }).join("") || `<tr><td class="px-3 py-4 text-muted" colspan="${isEditMode ? 8 : 9}">暂未添加红包模板</td></tr>`}</tbody>
                       </table>
                     </div>
                   </div>
@@ -4502,12 +4681,12 @@
         });
       } else if (pageId === "coupon-create-modal") {
         const d = state.couponModal.draft || { project:"", name:"", type:"", amount:"", ratio:"" };
-        const titleMap = { create: "创建红包", edit: "编辑红包", copy: "复制红包" };
+        const titleMap = { create: "创建红包模板", edit: "编辑红包模板", copy: "复制红包模板" };
         const typeOptions = ["现金红包","手续费抵扣红包","盈亏抵扣红包","提现免佣券"];
         const canEditRatio = couponSupportsRatio(d.type);
         const ratioValue = canEditRatio ? (d.ratio || "100") : "";
         openModal({
-          title: titleMap[state.couponModal.mode] || "创建红包",
+          title: titleMap[state.couponModal.mode] || "创建红包模板",
           body: `
             <div class="space-y-4 text-[12px]">
               <section class="border border-line rounded p-3">
@@ -4515,7 +4694,7 @@
                 <div class="grid grid-cols-2 gap-3">
                   <div><label class="form-label required mb-1">项目</label><select id="mCouponProject" class="w-full border border-line rounded px-2 py-2"><option value="">Dana / TW</option><option value="Dana" ${d.project==="Dana"?"selected":""}>Dana</option><option value="TW" ${d.project==="TW"?"selected":""}>TW</option></select></div>
                   <div><label class="form-label required mb-1">红包类型</label><select id="mCouponType" class="w-full border border-line rounded px-2 py-2"><option value="">请选择</option>${typeOptions.map(t => `<option value="${t}" ${d.type===t?"selected":""}>${t}</option>`).join("")}</select></div>
-                  <div><label class="form-label required mb-1">红包金额</label><input id="mCouponAmount" class="w-full border border-line rounded px-2 py-2" placeholder="填写固定金额，单位$" value="${d.amount || ""}"><p id="mCouponAmountErr" class="mt-1 text-danger text-[11px] hidden">已存在相同红包！</p></div>
+                  <div><label class="form-label required mb-1">红包金额</label><input id="mCouponAmount" class="w-full border border-line rounded px-2 py-2" placeholder="填写固定金额，单位$" value="${d.amount || ""}"><p id="mCouponAmountErr" class="mt-1 text-danger text-[11px] hidden">已存在相同红包模板！</p></div>
                   <div>
                     <label class="form-label ${canEditRatio ? "required" : ""} mb-1">抵扣比例</label>
                     <div class="grid grid-cols-[1fr_28px] gap-2 items-center">
@@ -4526,9 +4705,9 @@
                 </div>
               </section>
               <section class="border border-line rounded p-3">
-                <div class="font-semibold mb-3">2. 红包标题</div>
+                <div class="font-semibold mb-3">2. 红包模板标题</div>
                 <div class="grid grid-cols-2 gap-3">
-                  <div class="col-span-2"><label class="block mb-1">红包标题</label><div id="mCouponNamePreview" class="min-h-[36px] rounded border border-dashed border-line bg-[#f8fafc] px-2 py-2 text-[#64748b]">保存时按红包类型、金额${canEditRatio ? "和抵扣比例" : ""}自动生成</div></div>
+                  <div class="col-span-2"><label class="block mb-1">红包模板标题</label><div id="mCouponNamePreview" class="min-h-[36px] rounded border border-dashed border-line bg-[#f8fafc] px-2 py-2 text-[#64748b]">保存时按红包类型、金额${canEditRatio ? "和抵扣比例" : ""}自动生成</div></div>
                 </div>
               </section>
               <section class="border border-line rounded p-3">
@@ -4552,17 +4731,17 @@
         const currentCoupon = state.data.coupons.find(r => r.id === state.selectedCouponId) || state.data.coupons[0];
         const actionText = currentCoupon?.enabled ? "禁用" : "启用";
         const nextUsageText = currentCoupon?.enabled
-          ? "禁用后，该红包不能被任务关联下发"
-          : "启用后，该红包可以被任务关联下发";
+          ? "禁用后，该红包模板不能被任务关联下发"
+          : "启用后，该红包模板可以被任务关联下发";
         const keepIssuedText = currentCoupon?.enabled
-          ? "红包数据为实时数据，活动发放使用红包实时配置而非快照，禁用后会影响发放中的活动，不影响已经发放完成的。"
-          : "红包数据为实时数据，活动发放使用红包实时配置而非快照，启用后会影响发放中的活动，不影响已经发放完成的。";
+          ? "红包模板数据为实时数据，活动发放使用红包模板实时配置而非快照，禁用后会影响发放中的活动，不影响已经发放完成的。"
+          : "红包模板数据为实时数据，活动发放使用红包模板实时配置而非快照，启用后会影响发放中的活动，不影响已经发放完成的。";
         const affectedListHtml = currentCoupon?.enabled
           ? affectedCampaignsHtml(getAffectedIncompleteCampaigns({ couponId: currentCoupon.id }))
           : "";
         openModal({
           title: `${actionText}操作确认`,
-          body: `<div class="flex gap-3 items-start"><div class="w-9 h-9 rounded-full border border-[#f59e0b] text-[#f59e0b] flex items-center justify-center text-xl shrink-0">!</div><div class="min-w-0 flex-1"><div class="text-[24px] font-semibold mb-2">确认${actionText}该红包？</div><div class="text-[16px] text-[#64748b]">${nextUsageText}</div><div class="text-[14px] text-[#94a3b8] mt-2">注：${keepIssuedText}</div>${affectedListHtml}</div></div>`,
+          body: `<div class="flex gap-3 items-start"><div class="w-9 h-9 rounded-full border border-[#f59e0b] text-[#f59e0b] flex items-center justify-center text-xl shrink-0">!</div><div class="min-w-0 flex-1"><div class="text-[24px] font-semibold mb-2">确认${actionText}该红包模板？</div><div class="text-[16px] text-[#64748b]">${nextUsageText}</div><div class="text-[14px] text-[#94a3b8] mt-2">注：${keepIssuedText}</div>${affectedListHtml}</div></div>`,
           footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button class="h-9 px-4 rounded ${currentCoupon?.enabled ? "bg-[#ef4444]" : "bg-primary"} text-white font-semibold whitespace-nowrap shrink-0">确认${actionText}</button>`
         });
       } else if (pageId === "task-toggle-modal") {
@@ -4616,10 +4795,10 @@
             <section class="border border-line rounded p-3">
               <div class="font-semibold mb-3">${isNoTask ? "2" : "3"}. 有效期与奖励</div>
               ${isNoTask ? "" : `<div class="mb-3">任务有效期：${taskValidityText}</div>`}
-              ${isFinance ? `<div class="flex items-center justify-between gap-3 flex-wrap"><div class="text-muted">理财任务不关联红包，可配置任务多语言文案。</div><button id="btnFinanceDetailLangConfig" class="${btnClass(true,true)}" type="button">查看配置</button></div>` : `<div class="border border-line rounded overflow-auto"><table class="w-full text-[12px]"><thead class="bg-[#f3f6fb]"><tr><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">数量</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">多语言配置</th></tr></thead><tbody>${couponGroups.map(([id, count]) => {
+              ${isFinance ? `<div class="flex items-center justify-between gap-3 flex-wrap"><div class="text-muted">理财任务不关联红包模板，可配置任务多语言文案。</div><button id="btnFinanceDetailLangConfig" class="${btnClass(true,true)}" type="button">查看配置</button></div>` : `<div class="border border-line rounded overflow-auto"><table class="w-full text-[12px]"><thead class="bg-[#f3f6fb]"><tr><th class="text-left px-3 py-2">模板ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">数量</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">多语言配置</th></tr></thead><tbody>${couponGroups.map(([id, count]) => {
                 const c = state.data.coupons.find(item => item.id === id);
-                return `<tr class="border-t border-line"><td class="px-3 py-2">${id}</td><td class="px-3 py-2">${c ? couponTitle(c) : "未匹配红包"}</td><td class="px-3 py-2">${c?.type || "--"}</td><td class="px-3 py-2">${c?.amount || "--"}</td><td class="px-3 py-2">${couponValidityValue(c ? couponValidDaysText(c.validDays) : "--")}</td><td class="px-3 py-2">${count}</td><td class="px-3 py-2">${couponRatioText(c)}</td><td class="px-3 py-2"><button class="${btnClass(false,true)}" data-task-detail-coupon-config="${id}" data-task-detail-source="${t.id}">查看配置</button></td></tr>`;
-              }).join("") || `<tr><td class="px-3 py-4 text-muted" colspan="8">暂无关联红包</td></tr>`}</tbody></table></div>`}
+                return `<tr class="border-t border-line"><td class="px-3 py-2">${id}</td><td class="px-3 py-2">${c ? couponTitle(c) : "未匹配红包模板"}</td><td class="px-3 py-2">${c?.type || "--"}</td><td class="px-3 py-2">${c?.amount || "--"}</td><td class="px-3 py-2">${couponValidityValue(c ? couponValidDaysText(c.validDays) : "--")}</td><td class="px-3 py-2">${count}</td><td class="px-3 py-2">${couponRatioText(c)}</td><td class="px-3 py-2"><button class="${btnClass(false,true)}" data-task-detail-coupon-config="${id}" data-task-detail-source="${t.id}">查看配置</button></td></tr>`;
+              }).join("") || `<tr><td class="px-3 py-4 text-muted" colspan="8">暂无关联红包模板</td></tr>`}</tbody></table></div>`}
             </section>
           </div>`,
           footer: `<button class="${btnClass(false,true)}" data-close-modal>关闭</button>`
@@ -4837,6 +5016,7 @@
         // fallback content keep previous context visible
         if (state.mainTab === "task") renderTaskList();
         else if (state.mainTab === "coupon") renderCouponList();
+        else if (state.mainTab === "coupon-create") renderCouponCreateList();
         else if (state.mainTab === "campaign") renderCampaignRecord();
         else if (state.mainTab === "batch") renderBatchList();
         else if (state.mainTab === "receive") renderReceiveList();
@@ -4847,6 +5027,7 @@
       }
       if (p === "task-list") return renderTaskList();
       if (p === "task-create-none" || p === "task-create-trade" || p === "task-create-finance") return renderTaskList();
+      if (p === "coupon-create-list") return renderCouponCreateList();
       if (p === "coupon-list") return renderCouponList();
       if (p === "campaign-record") return renderCampaignRecord();
       if (p === "campaign-form" || p === "campaign-tagverse" || p === "campaign-import") return renderCampaignForm();
@@ -5016,14 +5197,14 @@
           const d = state.taskModal.draft;
           if (!d.app) return notify("error", "请先选择项目");
           const keyword = document.getElementById("taskCouponAddInput")?.value.trim();
-          if (!keyword) return notify("error", "请输入要添加的红包ID或红包标题");
+          if (!keyword) return notify("error", "请输入要添加的模板ID或红包模板标题");
           const selected = taskCouponIdsFromText(d.couponsText);
-          if (d.type !== "无任务" && selected.length >= 1) return notify("warn", "该任务类型一次只能添加一个红包");
-          if (selected.length >= MAX_TASK_COUPONS) return notify("warn", `单个任务最多添加${MAX_TASK_COUPONS}个红包（按数量累计）`);
+          if (d.type !== "无任务" && selected.length >= 1) return notify("warn", "该任务类型一次只能添加一个红包模板");
+          if (selected.length >= MAX_TASK_COUPONS) return notify("warn", `单个任务最多添加${MAX_TASK_COUPONS}个红包模板（按数量累计）`);
           const coupon = findCouponByKeyword(keyword, d.app);
-          if (!coupon) return notify("error", `未找到${d.app}项目下的匹配红包`);
-          if (!coupon.enabled) return notify("error", "只能添加启用状态的红包");
-          if (coupon.project !== d.app) return notify("error", `只能添加${d.app}项目的红包`);
+          if (!coupon) return notify("error", `未找到${d.app}项目下的匹配红包模板`);
+          if (!coupon.enabled) return notify("error", "只能添加启用状态的红包模板");
+          if (coupon.project !== d.app) return notify("error", `只能添加${d.app}项目的红包模板`);
           state.taskModal.draft.couponsText = [state.taskModal.draft.couponsText, coupon.id].filter(Boolean).join(state.taskModal.draft.couponsText ? "," : "");
           switchPage("task-create-modal");
         };
@@ -5034,8 +5215,8 @@
           saveCurrentTaskDraft();
           if (!state.taskModal.draft.app) return notify("error", "请先选择项目");
           const selected = taskCouponIdsFromText(state.taskModal.draft.couponsText);
-          if (state.taskModal.draft.type !== "无任务" && selected.length >= 1) return notify("warn", "该任务类型一次只能添加一个红包");
-          if (selected.length >= MAX_TASK_COUPONS) return notify("warn", `单个任务最多添加${MAX_TASK_COUPONS}个红包（按数量累计）`);
+          if (state.taskModal.draft.type !== "无任务" && selected.length >= 1) return notify("warn", "该任务类型一次只能添加一个红包模板");
+          if (selected.length >= MAX_TASK_COUPONS) return notify("warn", `单个任务最多添加${MAX_TASK_COUPONS}个红包模板（按数量累计）`);
           state.taskModal.returnAfterCouponCreate = true;
           openCouponCreateModal("create", "", state.taskModal.draft.app);
         };
@@ -5057,9 +5238,9 @@
         btn.onclick = () => {
           saveCurrentTaskDraft();
           const id = btn.dataset.taskCouponInc;
-          if (state.taskModal.draft.type !== "无任务") return notify("warn", "该任务类型红包数量只能为1");
+          if (state.taskModal.draft.type !== "无任务") return notify("warn", "该任务类型红包模板数量只能为1");
           const total = taskCouponIdsFromText(state.taskModal.draft.couponsText).length;
-          if (total >= MAX_TASK_COUPONS) return notify("warn", `单个任务最多添加${MAX_TASK_COUPONS}个红包（按数量累计）`);
+          if (total >= MAX_TASK_COUPONS) return notify("warn", `单个任务最多添加${MAX_TASK_COUPONS}个红包模板（按数量累计）`);
           const count = taskCouponIdsFromText(state.taskModal.draft.couponsText).filter(x => x === id).length;
           setTaskCouponQuantity(id, count + 1);
           switchPage("task-create-modal");
@@ -5133,6 +5314,8 @@
               jumpUrl: d.type === "无任务" || d.jumpType !== "URL链接" ? "" : (d.jumpUrl || ""),
               couponRatios: d.type === "理财" ? {} : { ...(d.couponRatios || {}) },
               langConfigs: JSON.parse(JSON.stringify(d.langConfigs || {})),
+              totalIssue: 0,
+              totalReceive: 0,
               status: "启用",
               enabled: true,
               updatedAt: nowStamp(),
@@ -5199,13 +5382,53 @@
                 row.status = row.enabled ? "启用" : "禁用";
                 pushCouponLog(row, row.status === "启用" ? LOG_TEXT.coupon.enable : LOG_TEXT.coupon.disable);
                 closeModal();
-                notify("success", `红包 ${row.id} 已${row.status}`);
+                notify("success", `红包模板 ${row.id} 已${row.status}`);
                 switchPage("coupon-list");
               };
             }, 0);
           };
         });
       }
+
+      // 红包创建记录（研发可见）
+      const couponCreateSearch = document.getElementById("btnCouponCreateSearch");
+      if (couponCreateSearch) {
+        couponCreateSearch.onclick = () => {
+          withLoading(() => {
+            state.filters.couponCreate.project = document.getElementById("qCouponCreateProject").value.trim();
+            state.filters.couponCreate.couponId = document.getElementById("qCouponCreateId").value.trim();
+            state.filters.couponCreate.couponType = document.getElementById("qCouponCreateType").value.trim();
+            state.filters.couponCreate.amountMin = document.getElementById("qCouponCreateAmountMin").value.trim();
+            state.filters.couponCreate.amountMax = document.getElementById("qCouponCreateAmountMax").value.trim();
+            state.filters.couponCreate.taskId = document.getElementById("qCouponCreateTaskId").value.trim();
+            state.filters.couponCreate.taskName = document.getElementById("qCouponCreateTaskName").value.trim();
+            const min = state.filters.couponCreate.amountMin === "" ? NaN : Number(state.filters.couponCreate.amountMin);
+            const max = state.filters.couponCreate.amountMax === "" ? NaN : Number(state.filters.couponCreate.amountMax);
+            if ((!Number.isNaN(min) && min < 0) || (!Number.isNaN(max) && max < 0)) {
+              notify("error", "红包金额范围不能为负数");
+              state.filters.couponCreate.amountMin = "";
+              state.filters.couponCreate.amountMax = "";
+            } else if (!Number.isNaN(min) && !Number.isNaN(max) && min > max) {
+              notify("error", "红包金额范围无效：最小值不能大于最大值");
+              state.filters.couponCreate.amountMin = "";
+              state.filters.couponCreate.amountMax = "";
+            }
+          }, "查询完成");
+        };
+        document.getElementById("btnCouponCreateReset").onclick = () => {
+          state.filters.couponCreate = { project: "", couponId: "", couponType: "", amountMin: "", amountMax: "", taskId: "", taskName: "" };
+          render();
+          notify("warn", "已重置筛选条件");
+        };
+      }
+      document.querySelectorAll("[data-coupon-create-config]").forEach(btn => {
+        btn.onclick = () => {
+          const taskId = btn.dataset.taskId || "";
+          const templateId = btn.dataset.templateId || "";
+          if (!taskId || !templateId) return notify("warn", "缺少任务或红包模板信息，无法查看配置");
+          openReadonlyTaskCouponConfig(taskId, templateId);
+        };
+      });
 
       document.querySelectorAll("[data-multi-lang-tab]").forEach(btn => {
         btn.onclick = () => {
@@ -5545,7 +5768,7 @@
           if (campaignHasTaskId(task.id)) return notify("warn", "该任务已添加，不能重复添加");
           state.campaignDraft.taskItems.push(campaignItemFromTask(task));
           state.campaignDraft.taskKeyword = "";
-          notify("success", "已添加任务并读取关联红包");
+          notify("success", "已添加任务并读取关联红包模板");
           render();
         };
         if (campaignTaskKeywordInput && campaignTaskSearchDropdown) {
@@ -6103,7 +6326,7 @@
         });
         const dupTip = document.getElementById("mCouponAmountErr");
         if (dupTip) dupTip.classList.toggle("hidden", !duplicate);
-        if (duplicate) return notify("error", "已存在相同红包！");
+        if (duplicate) return notify("error", "已存在相同红包模板！");
 
         let createdCouponId = "";
         if (state.couponModal.mode === "edit") {
@@ -6127,8 +6350,7 @@
             type: draft.type,
             amount: formatAmount(amountNum),
             validDays: String(validDaysNum),
-            totalIssue: 0,
-            totalReceive: 0,
+            totalUsed: 0,
             status: "启用",
             enabled: true,
             logs: [{ operator: "Jenny", time: nowStamp(), content: LOG_TEXT.coupon.create }]
@@ -6138,18 +6360,18 @@
         }
 
         closeModal();
-        notify("success", state.couponModal.mode === "edit" ? "红包编辑成功" : "红包保存成功");
+        notify("success", state.couponModal.mode === "edit" ? "红包模板编辑成功" : "红包模板保存成功");
         if (state.taskModal.returnAfterCouponCreate) {
           state.taskModal.returnAfterCouponCreate = false;
           const d = state.taskModal.draft;
           const selected = taskCouponIdsFromText(d.couponsText);
           const created = createdCouponId ? state.data.coupons.find(c => c.id === createdCouponId) : null;
           if (created && created.project !== d.app) {
-            notify("warn", `新建红包属于${created.project}，与当前任务项目不一致，未自动关联`);
+            notify("warn", `新建红包模板属于${created.project}，与当前任务项目不一致，未自动关联`);
           } else if (createdCouponId && (d.type === "无任务" || selected.length === 0) && selected.length < MAX_TASK_COUPONS) {
             d.couponsText = [d.couponsText, createdCouponId].filter(Boolean).join(d.couponsText ? "," : "");
           } else if (createdCouponId && selected.length >= MAX_TASK_COUPONS) {
-            notify("warn", `单个任务最多添加${MAX_TASK_COUPONS}个红包（按数量累计）`);
+            notify("warn", `单个任务最多添加${MAX_TASK_COUPONS}个红包模板（按数量累计）`);
           }
           state.mainTab = "task";
           switchPage("task-create-modal");
