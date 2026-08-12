@@ -4125,7 +4125,7 @@
       `;
       el.action.innerHTML = `
         <div class="flex items-center justify-between gap-3 flex-wrap">
-          <div class="text-[13px] text-[#334155]">实际抵扣金额：<span class="font-semibold text-primary">${deductTotal.toFixed(2)}</span></div>
+          <div class="text-[13px] text-[#334155]">实际抵扣金额($)：<span class="font-semibold text-primary">${deductTotal.toFixed(2)}</span></div>
           <button id="btnConsumeExport" class="${btnClass(false,true)}" title="导出数据量需在 1w ，数据量过大会导致系统崩溃">导出</button>
         </div>
       `;
@@ -4812,6 +4812,9 @@
         const typeOptions = ["现金红包","手续费抵扣红包","盈亏抵扣红包","提现免佣券"];
         const canEditRatio = couponSupportsRatio(d.type);
         const ratioValue = canEditRatio ? (d.ratio || "100") : "";
+        const isEditMode = state.couponModal.mode === "edit";
+        const projectLockCls = isEditMode ? "bg-gray-50 text-[#94a3b8]" : "";
+        const projectLockAttr = isEditMode ? "disabled" : "";
         openModal({
           title: titleMap[state.couponModal.mode] || "创建红包模板",
           body: `
@@ -4819,7 +4822,7 @@
               <section class="border border-line rounded p-3">
                 <div class="font-semibold mb-3">1. 基础信息</div>
                 <div class="grid grid-cols-2 gap-3">
-                  <div><label class="form-label required mb-1">项目</label><select id="mCouponProject" class="w-full border border-line rounded px-2 py-2"><option value="">Dana / TW</option><option value="Dana" ${d.project==="Dana"?"selected":""}>Dana</option><option value="TW" ${d.project==="TW"?"selected":""}>TW</option></select></div>
+                  <div><label class="form-label required mb-1">项目</label><select id="mCouponProject" class="w-full border border-line rounded px-2 py-2 ${projectLockCls}" ${projectLockAttr}><option value="">Dana / TW</option><option value="Dana" ${d.project==="Dana"?"selected":""}>Dana</option><option value="TW" ${d.project==="TW"?"selected":""}>TW</option></select>${isEditMode ? `<p class="mt-1 text-[11px] text-[#64748b]">项目创建后不可修改</p>` : ""}</div>
                   <div><label class="form-label required mb-1">红包类型</label><select id="mCouponType" class="w-full border border-line rounded px-2 py-2"><option value="">请选择</option>${typeOptions.map(t => `<option value="${t}" ${d.type===t?"selected":""}>${t}</option>`).join("")}</select></div>
                   <div><label class="form-label required mb-1">红包金额</label><input id="mCouponAmount" class="w-full border border-line rounded px-2 py-2" placeholder="填写固定金额，单位$" value="${d.amount || ""}"><p id="mCouponAmountErr" class="mt-1 text-danger text-[11px] hidden">已存在相同红包模板！</p></div>
                   <div>
@@ -6428,6 +6431,10 @@
           ratio: document.getElementById("mCouponRatio")?.value.trim() || "",
           validDays: document.getElementById("mCouponValidDays").value.trim()
         };
+        if (state.couponModal.mode === "edit") {
+          const source = state.data.coupons.find(c => c.id === state.couponModal.sourceId);
+          draft.project = source?.project || state.couponModal.draft?.project || draft.project;
+        }
         if (!draft.project || !draft.type || !draft.amount || !draft.validDays) return notify("error", "请填写完整必填项");
         const amountNum = Number(draft.amount);
         if (!Number.isFinite(amountNum) || amountNum < 0) return notify("error", "红包金额只支持数字，支持小数");
@@ -6455,7 +6462,7 @@
         if (state.couponModal.mode === "edit") {
           const row = state.data.coupons.find(c => c.id === state.couponModal.sourceId);
           if (!row) return notify("error", "红包模板不存在，无法编辑");
-          row.project = draft.project;
+          // 项目创建后不可修改
           row.name = draft.name;
           row.type = draft.type;
           row.amount = formatAmount(amountNum);
