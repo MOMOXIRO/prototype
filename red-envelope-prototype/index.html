@@ -558,7 +558,7 @@
     // 说明：相关样例数据、创建/校验/详情逻辑均保留未删除。
     // 下次需要恢复时，将 SHOW_FINANCE_TASK 改为 true 即可重新展示。
     // =============================
-    const SHOW_FINANCE_TASK = true;
+    const SHOW_FINANCE_TASK = false;
 
     // 操作日志文案（最简操作，三页统一规范）
     const LOG_TEXT = {
@@ -1266,8 +1266,10 @@
 
     function renderMainTabs() {
       ensureRoleAccessibleTab();
+      // 用户红包详情为独立页展示，不选中顶部业务 Tab（领取记录/审核管理等）
+      const standaloneDetail = state.pageId === "user-coupon-detail";
       el.mainTabs.innerHTML = visibleMainTabs().map(t => `
-        <button data-main="${t.key}" aria-selected="${state.mainTab===t.key}" class="main-tab h-12 border-b-2 whitespace-nowrap">${t.label}</button>
+        <button data-main="${t.key}" aria-selected="${!standaloneDetail && state.mainTab===t.key}" class="main-tab h-12 border-b-2 whitespace-nowrap">${t.label}</button>
       `).join("");
       el.mainTabs.querySelectorAll("[data-main]").forEach(btn => btn.onclick = () => switchMain(btn.dataset.main));
       el.mainTabActions.innerHTML = `<button id="btnMultiLangTpl" class="icon-action-btn" type="button" title="多语言配置" aria-label="多语言配置">${iconSvg("settings")}</button>`;
@@ -2679,8 +2681,13 @@
         notify("error", "红包描述必填");
         return false;
       }
+      const titleInput = document.getElementById("taskCouponTitleInput");
       const coupon = state.data.coupons.find(c => c.id === state.taskModal.selectedCouponId);
-      const title = resolveCouponTitleTemplate(coupon, state.taskLang.selectedLanguage);
+      const title = (titleInput ? titleInput.value.trim() : "") || resolveCouponTitleTemplate(coupon, state.taskLang.selectedLanguage);
+      if (titleInput && !titleInput.value.trim()) {
+        notify("error", "红包标题必填");
+        return false;
+      }
       const config = ensureTaskCouponConfig(state.taskModal.selectedCouponId);
       config[state.taskLang.selectedLanguage] = { title, desc };
       return true;
@@ -2693,7 +2700,7 @@
       const coupon = state.data.coupons.find(c => c.id === couponId);
       const config = ensureTaskCouponConfig(couponId);
       const current = config[L.selectedLanguage] || { title: "", desc: "" };
-      const titleValue = couponId === "FINANCE" ? (current.title || "理财任务") : resolveCouponTitleTemplate(coupon, L.selectedLanguage);
+      const titleValue = current.title || (couponId === "FINANCE" ? "理财任务" : resolveCouponTitleTemplate(coupon, L.selectedLanguage));
       host.querySelector(".stacked-modal-body").innerHTML = `<div class="grid grid-cols-[340px_1fr] gap-8 text-[14px]">
         <div>
           <div class="font-semibold mb-3">1 选择语言</div>
@@ -2705,11 +2712,12 @@
             ${readonly ? "" : `<button id="btnResetTaskCouponConfig" class="${btnClass(false,true)}">同步</button>`}
           </div>
           <div class="mb-4 text-[#64748b]">${couponId === "FINANCE" ? "当前任务：理财任务" : `当前红包：${couponId || "--"} ${couponTitle(coupon)}`}</div>
-          <label class="form-label mb-1">红包标题</label>
-          <div class="w-full border border-line rounded px-3 py-2 mb-4 bg-gray-50 text-[#475569]">${titleValue}</div>
+          <label class="form-label ${readonly ? "" : "required"} mb-1">红包标题</label>
+          ${readonly
+            ? `<div class="w-full border border-line rounded px-3 py-2 mb-4 bg-gray-50 text-[#475569]">${titleValue}</div>`
+            : `<input id="taskCouponTitleInput" class="w-full border border-line rounded px-3 py-2 mb-4" placeholder="请输入红包标题" value="${String(titleValue || "").replace(/"/g, "&quot;")}">`}
           <label class="form-label required mb-1">红包描述</label>
           <textarea id="taskCouponDescInput" class="w-full min-h-[108px] border border-line rounded px-3 py-2 ${readonly ? "bg-gray-50 text-[#475569]" : ""}" placeholder="You must first complete the 3-way trade." ${readonly ? "disabled" : ""}>${current.desc || ""}</textarea>
-          ${readonly ? "" : `<div class="mt-3 text-[12px] leading-5 text-[#b7791f]">{number}：实盘交易任务参数；{count}：充值金额任务参数；{ratio}：抵扣比例参数；<br>{days}：理财时长参数；{rate}：理财年化收益参数；{deposit}：最低存款金额参数；</div><div class="text-[12px] text-[#64748b] mt-1">红包标题不可编辑，始终按红包标题多语言模板生成；红包描述仅保存当前任务内该红包组合的副本。</div>`}
         </div>
       </div>`;
       const stackedFooter = host.querySelector(".stacked-modal-footer");
@@ -2728,15 +2736,54 @@
       });
       const reset = host.querySelector("#btnResetTaskCouponConfig");
       if (reset) reset.onclick = () => {
-        state.taskModal.draft.langConfigs[couponId] = defaultTaskCouponConfig(couponId, state.taskModal.draft);
-        notify("success", "已同步模板文案");
-        renderStackedTaskCouponConfig(host);
+        if (!saveStackedTaskCouponConfig()) return;
+        openTaskCouponConfigSync(host);
       };
       const save = host.querySelector("#btnSaveTaskCouponConfig");
       if (save) save.onclick = () => {
         if (!saveStackedTaskCouponConfig()) return;
         notify("success", "当前红包配置保存成功");
         closeStackedModal(host);
+      };
+    }
+
+    function openTaskCouponConfigSync(host) {
+      const couponId = state.taskModal.selectedCouponId;
+      const config = ensureTaskCouponConfig(couponId);
+      const currentLang = state.taskLang.selectedLanguage;
+      const source = config[currentLang] || { title: "", desc: "" };
+      const syncHost = openStackedModal({
+        title: "选择要同步的语言",
+        body: `<div class="space-y-4 text-[14px]">
+          <label class="flex items-center gap-2 font-medium"><input id="syncAllTaskCouponLangs" type="checkbox">全选其他语言</label>
+          <div class="grid grid-cols-3 gap-3">${state.taskLang.languages.map(lang => `<label class="flex items-center gap-2 min-h-[32px] ${lang===currentLang ? "text-[#94a3b8]" : ""}"><input type="checkbox" data-sync-task-coupon-lang="${lang}" ${lang===currentLang ? "checked disabled" : ""}>${lang}${lang===currentLang ? "（当前）" : ""}</label>`).join("")}</div>
+        </div>`,
+        footer: `<button class="${btnClass(false,true)}" data-close-stacked-modal>取消</button><button id="confirmTaskCouponSyncLang" class="${btnClass(true,true)}">保存</button>`
+      });
+      syncHost.querySelectorAll("[data-close-stacked-modal]").forEach(btn => {
+        btn.onclick = () => closeStackedModal(syncHost);
+      });
+      const syncAll = syncHost.querySelector("#syncAllTaskCouponLangs");
+      if (syncAll) {
+        syncAll.onchange = () => {
+          syncHost.querySelectorAll("[data-sync-task-coupon-lang]").forEach(chk => {
+            if (chk.disabled) return;
+            chk.checked = syncAll.checked;
+          });
+        };
+      }
+      const confirm = syncHost.querySelector("#confirmTaskCouponSyncLang");
+      if (confirm) confirm.onclick = () => {
+        const targets = [...syncHost.querySelectorAll("[data-sync-task-coupon-lang]")]
+          .filter(chk => chk.checked && !chk.disabled)
+          .map(chk => chk.dataset.syncTaskCouponLang);
+        if (!targets.length) return notify("error", "请选择要同步的语言");
+        targets.forEach(lang => {
+          config[lang] = { title: source.title || "", desc: source.desc || "" };
+        });
+        closeStackedModal(syncHost);
+        notify("success", "红包多语言文案同步成功");
+        if (host) renderStackedTaskCouponConfig(host, false);
       };
     }
 
@@ -3738,7 +3785,7 @@
               </div>
               <button id="btnAddTaskItem" class="${btnClass(true,canAddCampaignTask)}">添加任务</button>
               <button id="btnAddCustomCoupon" class="${btnClass(false,canAddCustomCampaignTask)}">添加自定义任务</button>
-              <span class="self-center text-[12px] text-[#64748b]">已添加 ${(d.taskItems || []).length}/${MAX_CAMPAIGN_TASKS} 个任务（可选任意类型，须为当前项目任务；自定义任务限1个）</span>
+              <span class="self-center text-[12px] text-[#64748b]">已添加 ${(d.taskItems || []).length}/${MAX_CAMPAIGN_TASKS} 个任务</span>
             </div>
             <div class="border border-line rounded overflow-auto">
               <table class="w-full data-table table-fill text-[12px]">
@@ -4133,7 +4180,7 @@
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
             ${tableColgroup([8, 6, 8, 6, 8, 6, 6, 8, 8, 6, 6, 6, 6, 6, 6])}
-            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">发放人群</th><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">红包有效期</th><th class="text-left px-3 py-2">发放时间</th><th class="text-left px-3 py-2">发放总量</th><th class="text-left px-3 py-2">成功发放</th><th class="text-left px-3 py-2">激活数量</th><th class="text-left px-3 py-2">使用数量</th><th class="text-left px-3 py-2">实际抵扣金额</th><th class="text-left px-3 py-2">操作人</th></tr></thead>
+            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">批次</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">发放人群</th><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">红包有效期</th><th class="text-left px-3 py-2">发放时间</th><th class="text-left px-3 py-2">发放总量</th><th class="text-left px-3 py-2">成功发放</th><th class="text-left px-3 py-2">激活数量</th><th class="text-left px-3 py-2">使用数量</th><th class="text-left px-3 py-2">实际抵扣金额</th><th class="text-left px-3 py-2">操作人</th></tr></thead>
             <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.batchId}</td><td class="px-3 py-2">${r.couponId}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${r.tagVerse || "--"}</td><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2">${r.region || "--"}</td><td class="px-3 py-2">${r.validUntil}</td><td class="px-3 py-2">${r.issueTime}</td><td class="px-3 py-2">${r.totalIssue}</td><td class="px-3 py-2">${r.successIssue}</td><td class="px-3 py-2">${r.activated}</td><td class="px-3 py-2">${r.used}</td><td class="px-3 py-2">${formatDeduct(r.deduct)}</td><td class="px-3 py-2">${r.operator || "--"}</td></tr>`).join("")}</tbody>
           </table>
         </div>
@@ -4163,12 +4210,12 @@
         const usage = state.data.usages.find(u => u.sid === r.sid && (u.batch === r.batch || u.couponId === r.couponId || u.coupon === r.coupon || u.task === r.task));
         const taskId = taskIdByDisplayName(r.task, r.batch) || extractTaskIdFromText(r.batch) || "--";
         const taskProgress = r.taskType === "无任务"
-          ? "无任务，直接领取"
+          ? "直接领取"
           : r.status === "激活中"
-            ? `待完成：${r.condition || "--"}`
-            : r.status === "已使用"
-              ? "已完成并已使用"
-              : "已完成，待使用";
+            ? "待完成"
+            : (r.status === "已使用" || usage)
+              ? "已使用"
+              : "待使用";
         return {
           couponId: r.couponId || "--",
           batch: r.batch || "--",
@@ -4192,7 +4239,7 @@
         <div class="coupon-filter-card p-3">
           <div class="mb-3">
             <div class="text-[18px] font-semibold text-[#1f2a44]">用户详情 - 红包</div>
-            <div class="text-[12px] text-[#64748b] mt-1">SID：<span class="font-semibold text-[#2f3a4d]">${sid}</span>，销售可在此查看用户红包状态并引导使用。</div>
+            <div class="text-[12px] text-[#64748b] mt-1">SID：<span class="font-semibold text-[#2f3a4d]">${sid}</span></div>
           </div>
           <div class="grid grid-cols-6 gap-3 text-[12px]">
             <input id="qUserCouponId" class="coupon-input" placeholder="红包ID" value="${f.couponId || ""}">
@@ -4763,7 +4810,7 @@
               </section>`}
               <section class="border border-line rounded p-3">
                 <div class="font-semibold mb-3">${!hasProject || isNoTask ? "2" : "3"}. 有效期与奖励</div>
-                ${!hasProject ? `<div class="text-[12px] text-[#64748b]">请先选择项目后，再配置任务类型与关联红包模板。</div>` : `
+                ${!hasProject ? `` : `
                 <div class="grid grid-cols-3 gap-3">
                   ${taskValidityHtml}
                 </div>
@@ -4822,7 +4869,7 @@
               <section class="border border-line rounded p-3">
                 <div class="font-semibold mb-3">1. 基础信息</div>
                 <div class="grid grid-cols-2 gap-3">
-                  <div><label class="form-label required mb-1">项目</label><select id="mCouponProject" class="w-full border border-line rounded px-2 py-2 ${projectLockCls}" ${projectLockAttr}><option value="">Dana / TW</option><option value="Dana" ${d.project==="Dana"?"selected":""}>Dana</option><option value="TW" ${d.project==="TW"?"selected":""}>TW</option></select>${isEditMode ? `<p class="mt-1 text-[11px] text-[#64748b]">项目创建后不可修改</p>` : ""}</div>
+                  <div><label class="form-label required mb-1">项目</label><select id="mCouponProject" class="w-full border border-line rounded px-2 py-2 ${projectLockCls}" ${projectLockAttr}><option value="">Dana / TW</option><option value="Dana" ${d.project==="Dana"?"selected":""}>Dana</option><option value="TW" ${d.project==="TW"?"selected":""}>TW</option></select></div>
                   <div><label class="form-label required mb-1">红包类型</label><select id="mCouponType" class="w-full border border-line rounded px-2 py-2"><option value="">请选择</option>${typeOptions.map(t => `<option value="${t}" ${d.type===t?"selected":""}>${t}</option>`).join("")}</select></div>
                   <div><label class="form-label required mb-1">红包金额</label><input id="mCouponAmount" class="w-full border border-line rounded px-2 py-2" placeholder="填写固定金额，单位$" value="${d.amount || ""}"><p id="mCouponAmountErr" class="mt-1 text-danger text-[11px] hidden">已存在相同红包模板！</p></div>
                   <div>
@@ -4840,7 +4887,6 @@
                   <div class="col-span-2">
                     <label class="form-label mb-1">红包模板标题</label>
                     <input id="mCouponName" class="w-full border border-line rounded px-2 py-2 bg-gray-50 text-[#475569]" placeholder="按类型/金额/比例自动生成" value="${String(d.name || "").replace(/"/g, "&quot;")}" readonly disabled>
-                    <p class="mt-1 text-[11px] text-[#64748b]">标题不可编辑，按多语言规则根据红包类型、金额、抵扣比例自动生成</p>
                   </div>
                 </div>
               </section>
@@ -4867,15 +4913,9 @@
         const nextUsageText = currentCoupon?.enabled
           ? "禁用后，该红包模板不能被任务关联下发"
           : "启用后，该红包模板可以被任务关联下发";
-        const keepIssuedText = currentCoupon?.enabled
-          ? "红包模板数据为实时数据，活动发放使用红包模板实时配置而非快照，禁用后会影响发放中的活动，不影响已经发放完成的。"
-          : "红包模板数据为实时数据，活动发放使用红包模板实时配置而非快照，启用后会影响发放中的活动，不影响已经发放完成的。";
-        const affectedListHtml = currentCoupon?.enabled
-          ? affectedCampaignsHtml(getAffectedIncompleteCampaigns({ couponId: currentCoupon.id }))
-          : "";
         openModal({
           title: `${actionText}操作确认`,
-          body: `<div class="flex gap-3 items-start"><div class="w-9 h-9 rounded-full border border-[#f59e0b] text-[#f59e0b] flex items-center justify-center text-xl shrink-0">!</div><div class="min-w-0 flex-1"><div class="text-[24px] font-semibold mb-2">确认${actionText}该红包模板？</div><div class="text-[16px] text-[#64748b]">${nextUsageText}</div><div class="text-[14px] text-[#94a3b8] mt-2">注：${keepIssuedText}</div>${affectedListHtml}</div></div>`,
+          body: `<div class="flex gap-3 items-start"><div class="w-9 h-9 rounded-full border border-[#f59e0b] text-[#f59e0b] flex items-center justify-center text-xl shrink-0">!</div><div class="min-w-0 flex-1"><div class="text-[24px] font-semibold mb-2">确认${actionText}该红包模板？</div><div class="text-[16px] text-[#64748b]">${nextUsageText}</div></div></div>`,
           footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button class="h-9 px-4 rounded ${currentCoupon?.enabled ? "bg-[#ef4444]" : "bg-primary"} text-white font-semibold whitespace-nowrap shrink-0">确认${actionText}</button>`
         });
       } else if (pageId === "task-toggle-modal") {
@@ -5055,9 +5095,6 @@
                   const chips = renderTaskLangVarChips(isTitleTab, selectedType);
                   return chips ? `<div class="mt-2"><div class="text-[12px] text-[#64748b] mb-1">插入参数</div>${chips}</div>` : "";
                 })()}
-                <div class="text-[#64748b] mt-3 text-[12px] leading-5">${isTitleTab
-                  ? "保存时，所有语言下全部红包类型的标题模板均需填写完整。"
-                  : "保存时，所有语言下无任务/充值任务/实盘交易的描述模板均需填写完整。充值任务可插入充值金额，实盘交易可插入手数；无任务无参数。"}</div>
               </div>
             </div>
           `,
@@ -5086,8 +5123,6 @@
               <div class="w-full border border-line rounded px-3 py-2 mb-4 bg-gray-50 text-[#475569]">${resolveCouponTitleTemplate(coupon, L.selectedLanguage)}</div>
               <label class="form-label required mb-1">红包描述</label>
               <textarea id="taskCouponDescInput" class="w-full min-h-[108px] border border-line rounded px-3 py-2 bg-gray-50 text-[#475569]" placeholder="You must first complete the 3-way trade." disabled>${current.desc || ""}</textarea>
-              <div class="mt-3 text-[12px] leading-5 text-[#b7791f]">{number}：实盘交易任务参数；{count}：充值金额任务参数；{ratio}：抵扣比例参数；<br>{days}：理财时长参数；{rate}：理财年化收益参数；{deposit}：最低存款金额参数；</div>
-              <div class="text-[12px] text-[#64748b] mt-1">红包标题来自红包标题多语言模板；红包描述来自描述模板或当前任务副本。</div>
             </div>
           </div>`,
           footer: `<button class="${btnClass(false,true)}" data-close-modal>关闭</button>`
@@ -5611,7 +5646,7 @@
           const currentType = isTitleTab ? state.taskLang.selectedTitleType : state.taskLang.selectedType;
           openModal({
             title: "选择要同步的语言",
-            body: `<div class="space-y-4 text-[14px]"><div class="text-[#64748b]">将当前语言「${state.taskLang.selectedLanguage}」下${isTitleTab ? `红包类型「${currentType}」的标题模板` : `任务类型「${currentType}」的描述模板`}同步到选中的其他语言。</div><label class="flex items-center gap-2 font-medium"><input id="syncAllTaskLangs" type="checkbox">全选其他语言</label><div class="grid grid-cols-4 gap-3">${state.taskLang.languages.map(lang => `<label class="flex items-center gap-2 min-h-[32px] ${lang===state.taskLang.selectedLanguage ? "text-[#94a3b8]" : ""}"><input type="checkbox" data-sync-task-lang="${lang}" ${lang===state.taskLang.selectedLanguage ? "checked disabled" : ""}>${lang}${lang===state.taskLang.selectedLanguage ? "（当前）" : ""}</label>`).join("")}</div></div>`,
+            body: `<div class="space-y-4 text-[14px]"><label class="flex items-center gap-2 font-medium"><input id="syncAllTaskLangs" type="checkbox">全选其他语言</label><div class="grid grid-cols-4 gap-3">${state.taskLang.languages.map(lang => `<label class="flex items-center gap-2 min-h-[32px] ${lang===state.taskLang.selectedLanguage ? "text-[#94a3b8]" : ""}"><input type="checkbox" data-sync-task-lang="${lang}" ${lang===state.taskLang.selectedLanguage ? "checked disabled" : ""}>${lang}${lang===state.taskLang.selectedLanguage ? "（当前）" : ""}</label>`).join("")}</div></div>`,
             footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button id="confirmTaskSyncLang" class="${btnClass(true,true)}">保存</button>`
           });
           const syncAll = document.getElementById("syncAllTaskLangs");
@@ -5662,23 +5697,14 @@
       const btnResetTaskCouponConfig = document.getElementById("btnResetTaskCouponConfig");
       if (btnResetTaskCouponConfig) {
         btnResetTaskCouponConfig.onclick = () => {
-          const couponId = state.taskModal.selectedCouponId;
-          state.taskModal.draft.langConfigs[couponId] = defaultTaskCouponConfig(couponId, state.taskModal.draft);
-          notify("success", "已按模板重新生成当前红包文案");
-          switchPage("task-lang-view-modal");
+          if (!saveStackedTaskCouponConfig()) return;
+          openTaskCouponConfigSync(null);
         };
       }
       const btnSaveTaskCouponConfig = document.getElementById("btnSaveTaskCouponConfig");
       if (btnSaveTaskCouponConfig) {
         btnSaveTaskCouponConfig.onclick = () => {
-          const desc = document.getElementById("taskCouponDescInput").value.trim();
-          if (!desc) return notify("error", "红包描述必填");
-          const config = ensureTaskCouponConfig(state.taskModal.selectedCouponId);
-          const coupon = state.data.coupons.find(c => c.id === state.taskModal.selectedCouponId);
-          config[state.taskLang.selectedLanguage] = {
-            title: resolveCouponTitleTemplate(coupon, state.taskLang.selectedLanguage),
-            desc
-          };
+          if (!saveStackedTaskCouponConfig()) return;
           notify("success", "当前红包配置保存成功");
           closeModal();
           switchPage("task-create-modal");
