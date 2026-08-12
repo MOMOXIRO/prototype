@@ -4832,7 +4832,7 @@
                       <button id="btnTaskCreateCouponFromTask" class="${btnClass(false,canAddTaskCoupon)}">创建红包模板</button>
                     </div>
                     `}
-                    <div class="mb-2 text-[12px] text-[#64748b]">已添加 ${couponTotalCount}/${MAX_TASK_COUPONS} 个红包模板（按数量累计，最多${MAX_TASK_COUPONS}个）</div>
+                    ${isNoTask ? `<div class="mb-2 text-[12px] text-[#64748b]">已添加 ${couponTotalCount}/${MAX_TASK_COUPONS} 个红包模板</div>` : ""}
                     <div class="border border-line rounded overflow-auto">
                       <table class="w-full text-[12px]">
                         <thead class="bg-[#f3f6fb]"><tr><th class="text-left px-3 py-2">模板ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">数量</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">多语言配置</th>${isEditMode ? "" : `<th class="text-left px-3 py-2">操作</th>`}</tr></thead>
