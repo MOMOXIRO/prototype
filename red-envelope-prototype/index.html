@@ -739,7 +739,14 @@
         selectedLanguage: "英文",
         selectedTitleType: "现金红包",
         selectedType: "无任务",
-        titleTemplates: {},
+        titleTemplates: {
+          "英文": {
+            "现金红包": "{amount} Cash Bonus",
+            "手续费抵扣红包": "{amount} Fee Deduction Bonus（{ratio}%）",
+            "盈亏抵扣红包": "{amount} P&L Deduction Bonus（{ratio}%）",
+            "提现免佣券": "{amount} Commission-Free Withdrawal Coupon"
+          }
+        },
         templates: {}
       },
       tagVerseDraft: { selected: "", original: "", dirty: false },
@@ -2523,20 +2530,42 @@
       return Number.isFinite(n) ? String(n) : "";
     }
 
+    function defaultCouponTitleTemplate(type) {
+      const map = {
+        "现金红包": "{amount} Cash Bonus",
+        "手续费抵扣红包": "{amount} Fee Deduction Bonus（{ratio}%）",
+        "盈亏抵扣红包": "{amount} P&L Deduction Bonus（{ratio}%）",
+        "提现免佣券": "{amount} Commission-Free Withdrawal Coupon"
+      };
+      return map[type] || "{amount} Cash Bonus";
+    }
+
+    function couponTitleTemplate(type, lang = "英文") {
+      ensureTaskLangTemplates();
+      const configured = String(state.taskLang.titleTemplates[lang]?.[type] || "").trim();
+      if (configured) return configured;
+      if (lang !== "英文") {
+        const en = String(state.taskLang.titleTemplates["英文"]?.[type] || "").trim();
+        if (en) return en;
+      }
+      return defaultCouponTitleTemplate(type);
+    }
+
+    function fillCouponTitleTemplate(tpl, amount, ratio) {
+      const displayAmount = typeof amount === "number" ? formatAmount(amount) : (formatAmount(parseMoney(amount)) || String(amount || "").trim());
+      const ratioVal = normalizeRatioValue(ratio);
+      return String(tpl || "")
+        .replace(/\{amount\}/g, displayAmount || "")
+        .replace(/\{ratio\}/g, ratioVal || "--");
+    }
+
     function resolveCouponTitleTemplate(coupon, lang = "英文") {
       ensureTaskLangTemplates();
       if (!coupon) {
         if (state.taskModal.selectedCouponId === "FINANCE") return "理财任务";
         return "--";
       }
-      const tpl = state.taskLang.titleTemplates[lang]?.[coupon.type];
-      if (tpl && tpl.trim()) {
-        const ratio = normalizeRatioValue(coupon.ratio);
-        return tpl
-          .replace(/\{amount\}/g, coupon.amount || "")
-          .replace(/\{ratio\}/g, ratio || "--");
-      }
-      return couponTitle(coupon);
+      return fillCouponTitleTemplate(couponTitleTemplate(coupon.type, lang), coupon.amount, coupon.ratio) || "--";
     }
 
     function defaultTaskCouponConfig(couponId, draft = state.taskModal.draft) {
@@ -2916,6 +2945,33 @@
       state.taskModal.draft = d;
     }
 
+    /** 任务配置（条件 + 跳转）是否已填完整；未完整时「查看配置」置灰 */
+    function isTaskConditionComplete(d) {
+      if (!d || !d.type || d.type === "无任务") return true;
+      if (d.type === "充值" && (!d.rechargeAmount || Number(d.rechargeAmount) <= 0)) return false;
+      if (d.type === "实盘交易" && (!d.tradeLots || Number(d.tradeLots) <= 0)) return false;
+      if (d.type === "理财" && (!d.financeDays || !d.financeRate || !d.financeDeposit)) return false;
+      if (!d.jumpType) return false;
+      if (d.jumpType === "APP内部跳转" && !d.appJump) return false;
+      if (d.jumpType === "URL链接") {
+        if (!d.jumpUrl) return false;
+        if (!isJumpUrlValue(d.jumpUrl)) return false;
+      }
+      return true;
+    }
+
+    function refreshTaskConfigButtons() {
+      saveCurrentTaskDraft();
+      const d = state.taskModal.draft || {};
+      const canView = isTaskConditionComplete(d);
+      const cls = btnClass(true, canView);
+      document.querySelectorAll("[data-task-coupon-config]").forEach(btn => {
+        btn.className = cls;
+      });
+      const btnFinanceLangConfig = document.getElementById("btnFinanceLangConfig");
+      if (btnFinanceLangConfig) btnFinanceLangConfig.className = cls;
+    }
+
     function validateTaskDraft(d) {
       if (!d.name) return "任务名称必填";
       if (!d.app) return "项目必填";
@@ -2964,7 +3020,9 @@
           if (typeof L.templates[lang][type] !== "string") L.templates[lang][type] = "";
         });
         L.titleTypes.forEach((type) => {
-          if (typeof L.titleTemplates[lang][type] !== "string") L.titleTemplates[lang][type] = "";
+          if (typeof L.titleTemplates[lang][type] !== "string") {
+            L.titleTemplates[lang][type] = lang === "英文" ? defaultCouponTitleTemplate(type) : "";
+          }
         });
       });
     }
@@ -3090,18 +3148,8 @@
     function generatedCouponName(type, amount, ratio) {
       const displayAmount = typeof amount === "number" ? formatAmount(amount) : formatAmount(parseMoney(amount));
       if (!type || !displayAmount) return "";
-      const templateMap = {
-        "现金红包": "{amount}现金红包",
-        "手续费抵扣红包": "{amount}手续费抵扣红包",
-        "盈亏抵扣红包": "{amount}盈亏抵扣红包",
-        "提现免佣券": "{amount}提现免佣券"
-      };
-      let name = (templateMap[type] || "{amount}{type}").replace("{amount}", displayAmount).replace("{type}", type);
-      if (couponSupportsRatio(type)) {
-        const ratioVal = normalizeRatioValue(ratio);
-        if (ratioVal) name += `（${ratioVal}%）`;
-      }
-      return name;
+      // 红包模板标题默认取多语言「英文」标题规则
+      return fillCouponTitleTemplate(couponTitleTemplate(type, "英文"), displayAmount, ratio).trim();
     }
 
     function couponTitle(coupon) {
@@ -3180,7 +3228,7 @@
       if (!record) return "--";
       const type = record.couponType || "";
       const amount = record.singleAmount || record.amount;
-      // 标题规则：金额 + 类型，抵扣类追加比例，例如 $40盈亏抵扣红包（30%）
+      // 标题规则：取多语言英文标题模板（{amount}/{ratio}）
       return generatedCouponName(type, amount, record.ratio) || "--";
     }
 
@@ -3563,7 +3611,7 @@
       const max = f.amountMax === "" ? NaN : Number(f.amountMax);
       let rows = state.data.coupons.filter(r =>
         (!f.id || r.id.includes(f.id)) &&
-        (!f.name || r.name.includes(f.name)) &&
+        (!f.name || couponTitle(r).includes(f.name) || String(r.name || "").includes(f.name)) &&
         (!f.type || r.type === f.type) &&
         (!f.status || r.status === f.status) &&
         (!f.project || r.project === f.project) &&
@@ -4765,6 +4813,7 @@
         }, {}));
         const couponTotalCount = taskCouponIdsFromText(d.couponsText || "").length;
         const canAddTaskCoupon = !isEditMode && hasProject && !isFinance && ((isNoTask && couponTotalCount < MAX_TASK_COUPONS) || (!isNoTask && couponTotalCount === 0));
+        const canViewTaskConfig = isTaskConditionComplete(d);
         const conditionHtml = d.type === "充值" ? `
           <div><label class="form-label required mb-1">充值金额</label><input id="taskRechargeAmount" class="w-full border border-line rounded px-2 py-2 ${lockCls}" placeholder="充值金额 >= X" value="${d.rechargeAmount || ""}" ${lockAttr}></div>
         ` : d.type === "实盘交易" ? `
@@ -4818,7 +4867,7 @@
                   <!-- [临时隐藏] 理财任务表单区块保留；因类型入口已隐藏，正常流程进不来，恢复 SHOW_FINANCE_TASK 后可用 -->
                   <div class="mt-4 flex items-center justify-between gap-3 flex-wrap">
                     <div class="text-[12px] text-[#64748b]">理财任务不关联红包模板，可配置任务多语言文案。</div>
-                    <button id="btnFinanceLangConfig" class="${btnClass(true,true)}" type="button">查看配置</button>
+                    <button id="btnFinanceLangConfig" class="${btnClass(true,canViewTaskConfig)}" type="button">查看配置</button>
                   </div>
                 ` : `
                   <div class="mt-4">
@@ -4841,7 +4890,7 @@
                           const quantityCell = (!isEditMode && isNoTask)
                             ? `<div class="inline-flex items-center border border-line rounded overflow-hidden"><button class="w-7 h-7 hover:bg-gray-50" data-task-coupon-dec="${id}">-</button><span class="w-8 text-center border-x border-line">${count}</span><button class="w-7 h-7 hover:bg-gray-50" data-task-coupon-inc="${id}">+</button></div>`
                             : `<span class="inline-flex items-center justify-center w-8 h-7 rounded border border-line bg-gray-50 text-[#475569]">${count}</span>`;
-                          return `<tr class="border-t border-line"><td class="px-3 py-2">${id}</td><td class="px-3 py-2">${c ? couponTitle(c) : "未匹配红包模板"}</td><td class="px-3 py-2">${c?.type || "--"}</td><td class="px-3 py-2">${c?.amount || "--"}</td><td class="px-3 py-2">${couponValidityValue(c ? couponValidDaysText(c.validDays) : "--")}</td><td class="px-3 py-2">${quantityCell}</td><td class="px-3 py-2">${couponRatioText(c)}</td><td class="px-3 py-2"><button class="${btnClass(true,true)}" data-task-coupon-config="${id}">查看配置</button></td>${isEditMode ? "" : `<td class="px-3 py-2"><button class="text-primary hover:underline" data-task-coupon-remove="${id}">移除</button></td>`}</tr>`;
+                          return `<tr class="border-t border-line"><td class="px-3 py-2">${id}</td><td class="px-3 py-2">${c ? couponTitle(c) : "未匹配红包模板"}</td><td class="px-3 py-2">${c?.type || "--"}</td><td class="px-3 py-2">${c?.amount || "--"}</td><td class="px-3 py-2">${couponValidityValue(c ? couponValidDaysText(c.validDays) : "--")}</td><td class="px-3 py-2">${quantityCell}</td><td class="px-3 py-2">${couponRatioText(c)}</td><td class="px-3 py-2"><button class="${btnClass(true,canViewTaskConfig)}" data-task-coupon-config="${id}">查看配置</button></td>${isEditMode ? "" : `<td class="px-3 py-2"><button class="text-primary hover:underline" data-task-coupon-remove="${id}">移除</button></td>`}</tr>`;
                         }).join("") || `<tr><td class="px-3 py-4 text-muted" colspan="${isEditMode ? 8 : 9}">暂未添加红包模板</td></tr>`}</tbody>
                       </table>
                     </div>
@@ -4886,7 +4935,7 @@
                 <div class="grid grid-cols-2 gap-3">
                   <div class="col-span-2">
                     <label class="form-label mb-1">红包模板标题</label>
-                    <input id="mCouponName" class="w-full border border-line rounded px-2 py-2 bg-gray-50 text-[#475569]" placeholder="按类型/金额/比例自动生成" value="${String(d.name || "").replace(/"/g, "&quot;")}" readonly disabled>
+                    <input id="mCouponName" class="w-full border border-line rounded px-2 py-2 bg-gray-50 text-[#475569]" placeholder="按多语言英文标题规则自动生成" value="${String(d.name || "").replace(/"/g, "&quot;")}" readonly disabled>
                   </div>
                 </div>
               </section>
@@ -5419,6 +5468,7 @@
       document.querySelectorAll("[data-task-coupon-config]").forEach(btn => {
         btn.onclick = () => {
           saveCurrentTaskDraft();
+          if (!isTaskConditionComplete(state.taskModal.draft)) return notify("warn", "请先完整填写任务配置");
           openTaskCouponConfigStacked(btn.dataset.taskCouponConfig);
         };
       });
@@ -5426,9 +5476,16 @@
       if (btnFinanceLangConfig) {
         btnFinanceLangConfig.onclick = () => {
           saveCurrentTaskDraft();
+          if (!isTaskConditionComplete(state.taskModal.draft)) return notify("warn", "请先完整填写任务配置");
           openTaskCouponConfigStacked("FINANCE");
         };
       }
+      ["taskRechargeAmount","taskTradeLots","taskFinanceDays","taskFinanceRate","taskFinanceDeposit","taskAppJump","taskJumpUrl"].forEach(id => {
+        const node = document.getElementById(id);
+        if (!node) return;
+        node.oninput = refreshTaskConfigButtons;
+        node.onchange = refreshTaskConfigButtons;
+      });
       const btnSaveTaskModal = document.getElementById("btnSaveTaskModal");
       if (btnSaveTaskModal) {
         btnSaveTaskModal.onclick = () => {
