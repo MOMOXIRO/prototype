@@ -1771,7 +1771,7 @@
         taskId: task.id,
         type: task.type,
         task: `${task.id} ${task.name}${task.condition && task.condition !== "--" ? `；${task.condition}` : ""}`,
-        reward: task.type === "理财" ? "理财任务奖励按任务配置展示" : (taskCoupons.length ? taskCoupons.map(c => `${c.id} ${couponTitle(c)}`).join("，") : "--"),
+        reward: task.type === "理财" ? "理财任务奖励按任务配置展示" : (taskCoupons.length ? taskCoupons.map(c => `${c.id} ${couponTemplateTitle(c)}`).join("，") : "--"),
         taskValid: formatTaskValidity(task),
         couponValid: task.type === "理财" ? "--" : (taskCoupons.length ? taskCoupons.map(c => couponValidityWithId(c.id, couponValidDaysText(c.validDays))).join("，") : couponValidDaysText(7))
       };
@@ -2740,7 +2740,7 @@
             <div class="font-semibold">2 ${readonly ? "查看" : "配置"}红包多语言</div>
             ${readonly ? "" : `<button id="btnResetTaskCouponConfig" class="${btnClass(false,true)}">同步</button>`}
           </div>
-          <div class="mb-4 text-[#64748b]">${couponId === "FINANCE" ? "当前任务：理财任务" : `当前红包：${couponId || "--"} ${couponTitle(coupon)}`}</div>
+          <div class="mb-4 text-[#64748b]">${couponId === "FINANCE" ? "当前任务：理财任务" : `当前红包：${couponId || "--"} ${couponTemplateTitle(coupon)}`}</div>
           <label class="form-label ${readonly ? "" : "required"} mb-1">红包标题</label>
           ${readonly
             ? `<div class="w-full border border-line rounded px-3 py-2 mb-4 bg-gray-50 text-[#475569]">${titleValue}</div>`
@@ -3148,13 +3148,36 @@
     function generatedCouponName(type, amount, ratio) {
       const displayAmount = typeof amount === "number" ? formatAmount(amount) : formatAmount(parseMoney(amount));
       if (!type || !displayAmount) return "";
-      // 红包模板标题默认取多语言「英文」标题规则
+      // 模板标题：中文规则
+      const templateMap = {
+        "现金红包": "{amount}现金红包",
+        "手续费抵扣红包": "{amount}手续费抵扣红包",
+        "盈亏抵扣红包": "{amount}盈亏抵扣红包",
+        "提现免佣券": "{amount}提现免佣券"
+      };
+      let name = (templateMap[type] || "{amount}{type}").replace("{amount}", displayAmount).replace("{type}", type);
+      if (couponSupportsRatio(type)) {
+        const ratioVal = normalizeRatioValue(ratio);
+        if (ratioVal) name += `（${ratioVal}%）`;
+      }
+      return name;
+    }
+
+    function generatedCouponTitle(type, amount, ratio) {
+      const displayAmount = typeof amount === "number" ? formatAmount(amount) : formatAmount(parseMoney(amount));
+      if (!type || !displayAmount) return "";
+      // 红包标题：取多语言英文标题规则
       return fillCouponTitleTemplate(couponTitleTemplate(type, "英文"), displayAmount, ratio).trim();
+    }
+
+    function couponTemplateTitle(coupon) {
+      if (!coupon) return "--";
+      return generatedCouponName(coupon.type, coupon.amount, coupon.ratio) || "--";
     }
 
     function couponTitle(coupon) {
       if (!coupon) return "--";
-      return generatedCouponName(coupon.type, coupon.amount, coupon.ratio) || "--";
+      return generatedCouponTitle(coupon.type, coupon.amount, coupon.ratio) || "--";
     }
 
     function findCouponByKeyword(keyword, project = "") {
@@ -3162,8 +3185,8 @@
       if (!text) return null;
       const list = state.data.coupons.filter(c => !project || c.project === project);
       return list.find(c => c.id === text)
-        || list.find(c => couponTitle(c) === text || c.name === text)
-        || list.find(c => c.id.includes(text) || couponTitle(c).includes(text) || String(c.name || "").includes(text))
+        || list.find(c => couponTemplateTitle(c) === text || couponTitle(c) === text || c.name === text)
+        || list.find(c => c.id.includes(text) || couponTemplateTitle(c).includes(text) || couponTitle(c).includes(text) || String(c.name || "").includes(text))
         || null;
     }
 
@@ -3173,7 +3196,7 @@
       return state.data.coupons
         .filter(c => c.enabled)
         .filter(c => c.project === project)
-        .filter(c => c.id.includes(text) || couponTitle(c).includes(text) || String(c.name || "").includes(text))
+        .filter(c => c.id.includes(text) || couponTemplateTitle(c).includes(text) || couponTitle(c).includes(text) || String(c.name || "").includes(text))
         .slice(0, 8);
     }
 
@@ -3221,15 +3244,15 @@
 
     function couponTitleFromRecord(record) {
       if (!record || record.coupon === "--") return "--";
-      return generatedCouponName(record.couponType, record.amount, record.ratio) || record.coupon || "--";
+      return generatedCouponTitle(record.couponType, record.amount, record.ratio) || record.coupon || "--";
     }
 
     function auditCouponTitle(record) {
       if (!record) return "--";
       const type = record.couponType || "";
       const amount = record.singleAmount || record.amount;
-      // 标题规则：取多语言英文标题模板（{amount}/{ratio}）
-      return generatedCouponName(type, amount, record.ratio) || "--";
+      // 红包标题：多语言英文标题模板
+      return generatedCouponTitle(type, amount, record.ratio) || "--";
     }
 
     function nextCouponId(project) {
@@ -3559,11 +3582,12 @@
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无红包创建记录</div>` : `
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
-            ${tableColgroup([5, 6, 8, 6, 5, 7, 5, 9, 6, 9, 8, 5, 11])}
+            ${tableColgroup([5, 5, 10, 7, 5, 6, 5, 7, 6, 7, 7, 5, 5, 10])}
             <thead class="coupon-head">
               <tr class="border-b border-line">
                 <th class="text-left px-3 py-2">项目</th>
                 <th class="text-left px-3 py-2">红包ID</th>
+                <th class="text-left px-3 py-2">红包标题</th>
                 <th class="text-left px-3 py-2">红包类型</th>
                 <th class="text-left px-3 py-2">红包金额</th>
                 <th class="text-left px-3 py-2">抵扣比例</th>
@@ -3578,10 +3602,13 @@
               </tr>
             </thead>
             <tbody>
-              ${rows.map(r => `
+              ${rows.map(r => {
+                const title = generatedCouponTitle(r.couponType, r.amount, r.ratio) || "--";
+                return `
                 <tr class="border-b border-line/60 hover:bg-[#f8fbff]">
                   <td class="px-3 py-2" title="${r.project}">${r.project}</td>
                   <td class="px-3 py-2 font-medium text-[#2f3a4d]" title="${r.couponId}">${r.couponId}</td>
+                  <td class="px-3 py-2" title="${title}">${title}</td>
                   <td class="px-3 py-2" title="${r.couponType}">${r.couponType}</td>
                   <td class="px-3 py-2">${r.amount}</td>
                   <td class="px-3 py-2">${couponCreateRatioText(r)}</td>
@@ -3598,7 +3625,8 @@
                     </div>
                   </td>
                 </tr>
-              `).join("")}
+              `;
+              }).join("")}
             </tbody>
           </table>
         </div>
@@ -3611,7 +3639,7 @@
       const max = f.amountMax === "" ? NaN : Number(f.amountMax);
       let rows = state.data.coupons.filter(r =>
         (!f.id || r.id.includes(f.id)) &&
-        (!f.name || couponTitle(r).includes(f.name) || String(r.name || "").includes(f.name)) &&
+        (!f.name || couponTemplateTitle(r).includes(f.name) || String(r.name || "").includes(f.name)) &&
         (!f.type || r.type === f.type) &&
         (!f.status || r.status === f.status) &&
         (!f.project || r.project === f.project) &&
@@ -3628,7 +3656,7 @@
               <option value="TW" ${f.project==="TW"?"selected":""}>TW</option>
             </select>
             <input id="qCouponId" class="coupon-input" placeholder="模板ID" value="${f.id}">
-            <input id="qCouponName" class="coupon-input" placeholder="红包模板标题" value="${f.name}">
+            <input id="qCouponName" class="coupon-input" placeholder="模板标题" value="${f.name}">
             <select id="qCouponType" class="coupon-input">
               <option value="">红包类型</option>
               ${["现金红包","手续费抵扣红包","盈亏抵扣红包","提现免佣券"].map(t => `<option value="${t}" ${f.type===t?"selected":""}>${t}</option>`).join("")}
@@ -3659,9 +3687,9 @@
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
             ${tableColgroup([7, 8, 14, 10, 8, 8, 9, 8, 7, 8, 13])}
-            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">模板ID</th><th class="text-left px-3 py-2">红包模板标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">总使用</th><th class="text-left px-3 py-2">状态</th><th class="text-left px-3 py-2">启用/禁用</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
+            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">模板ID</th><th class="text-left px-3 py-2">模板标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">总使用</th><th class="text-left px-3 py-2">状态</th><th class="text-left px-3 py-2">启用/禁用</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
             <tbody>
-              ${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2" title="${r.project}">${r.project}</td><td class="px-3 py-2 font-medium text-[#2f3a4d]" title="${r.id}">${r.id}</td><td class="px-3 py-2" title="${couponTitle(r)}">${couponTitle(r)}</td><td class="px-3 py-2" title="${r.type}">${r.type}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${couponRatioText(r)}</td><td class="px-3 py-2">${couponValidityValue(couponValidDaysText(r.validDays))}</td><td class="px-3 py-2">${r.totalUsed ?? 0}</td><td class="px-3 py-2"><span class="${r.enabled ? "badge badge-ok" : "badge badge-neutral"}">${r.status}</span></td><td class="px-3 py-2"><button class="coupon-switch ${r.enabled ? "on" : "off"}" data-coupon-toggle="${r.id}"></button></td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="编辑" data-coupon-edit="${r.id}">${iconSvg("edit")}</button><button class="icon-action-btn" title="复制" data-coupon-copy="${r.id}">${iconSvg("copy")}</button><button class="icon-action-btn" title="日志" data-coupon-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`).join("")}
+              ${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2" title="${r.project}">${r.project}</td><td class="px-3 py-2 font-medium text-[#2f3a4d]" title="${r.id}">${r.id}</td><td class="px-3 py-2" title="${couponTemplateTitle(r)}">${couponTemplateTitle(r)}</td><td class="px-3 py-2" title="${r.type}">${r.type}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${couponRatioText(r)}</td><td class="px-3 py-2">${couponValidityValue(couponValidDaysText(r.validDays))}</td><td class="px-3 py-2">${r.totalUsed ?? 0}</td><td class="px-3 py-2"><span class="${r.enabled ? "badge badge-ok" : "badge badge-neutral"}">${r.status}</span></td><td class="px-3 py-2"><button class="coupon-switch ${r.enabled ? "on" : "off"}" data-coupon-toggle="${r.id}"></button></td><td class="px-3 py-2 col-ops"><div class="table-ops"><button class="icon-action-btn" title="编辑" data-coupon-edit="${r.id}">${iconSvg("edit")}</button><button class="icon-action-btn" title="复制" data-coupon-copy="${r.id}">${iconSvg("copy")}</button><button class="icon-action-btn" title="日志" data-coupon-log="${r.id}">${iconSvg("log")}</button></div></td></tr>`).join("")}
             </tbody>
           </table>
         </div>
@@ -4740,7 +4768,7 @@
           if (col.key === "couponId") return r.couponId && r.couponId !== "--" ? r.couponId : "--";
           if (col.key === "couponTitle") {
             // 领取/审核列表：标题 = 金额 + 类型，纯文本，不可跳转
-            const title = generatedCouponName(r.couponType, r.amount, r.ratio) || r.couponTitle || "--";
+            const title = generatedCouponTitle(r.couponType, r.amount, r.ratio) || r.couponTitle || "--";
             return title;
           }
           if (col.key === "taskName") return linkedTaskName(r.taskName, r.batch);
@@ -4931,11 +4959,11 @@
                 </div>
               </section>
               <section class="border border-line rounded p-3">
-                <div class="font-semibold mb-3">2. 红包模板标题</div>
+                <div class="font-semibold mb-3">2. 模板标题</div>
                 <div class="grid grid-cols-2 gap-3">
                   <div class="col-span-2">
-                    <label class="form-label mb-1">红包模板标题</label>
-                    <input id="mCouponName" class="w-full border border-line rounded px-2 py-2 bg-gray-50 text-[#475569]" placeholder="按多语言英文标题规则自动生成" value="${String(d.name || "").replace(/"/g, "&quot;")}" readonly disabled>
+                    <label class="form-label mb-1">模板标题</label>
+                    <input id="mCouponName" class="w-full border border-line rounded px-2 py-2 bg-gray-50 text-[#475569]" placeholder="按类型/金额/比例自动生成中文标题" value="${String(d.name || "").replace(/"/g, "&quot;")}" readonly disabled>
                   </div>
                 </div>
               </section>
@@ -5017,7 +5045,7 @@
               ${isNoTask ? "" : `<div class="mb-3">任务有效期：${taskValidityText}</div>`}
               ${isFinance ? `<div class="flex items-center justify-between gap-3 flex-wrap"><div class="text-muted">理财任务不关联红包，可配置任务多语言文案。</div><button id="btnFinanceDetailLangConfig" class="${btnClass(true,true)}" type="button">查看配置</button></div>` : `<div class="border border-line rounded overflow-auto"><table class="w-full text-[12px]"><thead class="bg-[#f3f6fb]"><tr><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">数量</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">多语言配置</th></tr></thead><tbody>${createdCoupons.map(r => {
                 const c = state.data.coupons.find(item => item.id === r.templateId);
-                const title = c ? couponTitle(c) : (r.couponType && r.amount ? generatedCouponName(r.couponType, r.amount, r.ratio) : "未匹配红包");
+                const title = c ? couponTitle(c) : (r.couponType && r.amount ? generatedCouponTitle(r.couponType, r.amount, r.ratio) : "未匹配红包");
                 return `<tr class="border-t border-line"><td class="px-3 py-2">${r.couponId}</td><td class="px-3 py-2">${title}</td><td class="px-3 py-2">${r.couponType || c?.type || "--"}</td><td class="px-3 py-2">${r.amount || c?.amount || "--"}</td><td class="px-3 py-2">${couponValidityValue(couponValidDaysText(r.validDays || c?.validDays))}</td><td class="px-3 py-2">1</td><td class="px-3 py-2">${couponRatioText(c || { type: r.couponType, ratio: r.ratio })}</td><td class="px-3 py-2"><button class="${btnClass(false,true)}" data-task-detail-coupon-config="${r.templateId}" data-task-detail-source="${t.id}">查看配置</button></td></tr>`;
               }).join("") || `<tr><td class="px-3 py-4 text-muted" colspan="8">暂无关联红包</td></tr>`}</tbody></table></div>`}
             </section>
@@ -5167,7 +5195,7 @@
               <div class="flex items-center justify-between mb-5">
                 <div class="font-semibold">2 查看红包多语言</div>
               </div>
-              <div class="mb-4 text-[#64748b]">当前红包：${couponId || "--"} ${couponTitle(coupon)}</div>
+              <div class="mb-4 text-[#64748b]">当前红包：${couponId || "--"} ${couponTemplateTitle(coupon)}</div>
               <label class="block mb-1">红包标题</label>
               <div class="w-full border border-line rounded px-3 py-2 mb-4 bg-gray-50 text-[#475569]">${resolveCouponTitleTemplate(coupon, L.selectedLanguage)}</div>
               <label class="form-label required mb-1">红包描述</label>
@@ -5179,7 +5207,7 @@
       } else if (pageId === "coupon-log-modal") {
         const c = state.data.coupons.find(x => x.id === state.selectedCouponId) || state.data.coupons[0];
         openModal({
-          title: `${c.id}  ${couponTitle(c)}`,
+          title: `${c.id}  ${couponTemplateTitle(c)}`,
           body: `<div class="border border-line rounded overflow-auto"><table class="w-full text-[12px]"><thead class="bg-[#f3f5fa]"><tr><th class="text-left px-3 py-2">操作人</th><th class="text-left px-3 py-2">操作时间</th><th class="text-left px-3 py-2">操作内容</th></tr></thead><tbody>${(c.logs || []).map(row => `<tr class="border-t border-line"><td class="px-3 py-2">${row.operator}</td><td class="px-3 py-2">${formatDisplayTime(row.time)}</td><td class="px-3 py-2">${row.content}</td></tr>`).join("")}</tbody></table></div><div class="mt-4 text-muted">共 ${(c.logs || []).length} 条</div>`,
           footer: `<button class="${btnClass(true,true)}" data-close-modal>关闭</button>`
         });
@@ -5377,7 +5405,7 @@
             taskCouponSearchDropdown.innerHTML = rows.map(c => `
               <button type="button" class="w-full px-3 py-2 text-left hover:bg-[#f8fbff] border-b border-line/60 last:border-b-0" data-pick-task-coupon="${c.id}">
                 <div class="flex items-center justify-between gap-3">
-                  <span class="font-medium text-[#1f2a44]">${couponTitle(c)}</span>
+                  <span class="font-medium text-[#1f2a44]">${couponTemplateTitle(c)}</span>
                   <span class="text-[#64748b]">${c.id}</span>
                 </div>
                 <div class="mt-1 text-[11px] text-[#64748b]">${c.project} / ${c.type} / ${c.amount} / 抵扣比例 ${couponRatioText(c)} / ${couponValidDaysText(c.validDays)} / ${c.status}</div>
@@ -5389,7 +5417,7 @@
             btn.onmousedown = (event) => event.preventDefault();
             btn.onclick = () => {
               const coupon = state.data.coupons.find(c => c.id === btn.dataset.pickTaskCoupon);
-              taskCouponAddInput.value = coupon ? couponTitle(coupon) : btn.dataset.pickTaskCoupon;
+              taskCouponAddInput.value = coupon ? couponTemplateTitle(coupon) : btn.dataset.pickTaskCoupon;
               taskCouponSearchDropdown.classList.add("hidden");
             };
           });
@@ -5407,7 +5435,7 @@
           const d = state.taskModal.draft;
           if (!d.app) return notify("error", "请先选择项目");
           const keyword = document.getElementById("taskCouponAddInput")?.value.trim();
-          if (!keyword) return notify("error", "请输入要添加的模板ID或红包模板标题");
+          if (!keyword) return notify("error", "请输入要添加的模板ID或模板标题");
           const selected = taskCouponIdsFromText(d.couponsText);
           if (d.type !== "无任务" && selected.length >= 1) return notify("warn", "该任务类型一次只能添加一个红包模板");
           if (selected.length >= MAX_TASK_COUPONS) return notify("warn", `单个任务最多添加${MAX_TASK_COUPONS}个红包模板（按数量累计）`);
@@ -6530,7 +6558,7 @@
           ratioValue = String(ratioNum);
         }
         draft.name = generatedCouponName(draft.type, formatAmount(amountNum), ratioValue);
-        if (!draft.name) return notify("error", "无法按规则生成红包模板标题");
+        if (!draft.name) return notify("error", "无法按规则生成模板标题");
         const editingId = state.couponModal.mode === "edit" ? state.couponModal.sourceId : "";
         const duplicate = state.data.coupons.some(c => {
           if (c.id === editingId || c.type !== draft.type || parseMoney(c.amount) !== amountNum) return false;
