@@ -1617,7 +1617,7 @@
           : (row.audience || row.tagVerseName ? "TagVerse" : ""));
       if (type === "导入") return `导入${count}人`;
       if (type === "添加") return `添加${count}人`;
-      if (type === "TagVerse") return row.audience || row.tagVerseName || "--";
+      if (type === "TagVerse" || type === "选择") return row.audience || row.tagVerseName || "--";
       return row.audience || "--";
     }
 
@@ -1708,12 +1708,13 @@
       const cycle = 1;
       const firstBatchId = makeBatchId(id, batchTaskIds[0], cycle);
       const needsAudit = draft.activityType === "特批活动";
+      const isTagVerseAudience = draft.audienceType === "选择" || draft.audienceType === "TagVerse";
       const row = {
         id,
         name: draft.name,
-        audienceType: draft.audienceType,
-        audienceCount: draft.audienceType === "TagVerse" ? 12486 : (draft.sidList || []).length,
-        audience: draft.audienceType === "TagVerse" ? (draft.tagVerseName || "TagVerse人群") : "",
+        audienceType: isTagVerseAudience ? "TagVerse" : draft.audienceType,
+        audienceCount: isTagVerseAudience ? 12486 : (draft.sidList || []).length,
+        audience: isTagVerseAudience ? (draft.tagVerseName || "TagVerse人群") : "",
         importFile: draft.audienceType === "导入" ? (draft.importedFileName || `${id}_import.xlsx`) : "",
         mode: `${draft.activityType} / ${draft.deliverType}`,
         deliverTime: draft.deliverType === "立即发放" ? nowStamp() : (draft.deliverType === "定时发放" ? draft.deliverAt : `${draft.loopFreq}${draft.loopPoint ? ` ${draft.loopPoint}` : ""} ${draft.loopTime}`),
@@ -3309,7 +3310,8 @@
       if (!draft.name) return "活动名称必填";
       if (!draft.project) return "项目必填";
       if (draft.audienceType === "添加" && !(draft.sidList || []).length) return "请至少添加一个有效SID";
-      if (draft.audienceType === "TagVerse" && !draft.tagVerseName && !(draft.sidList || []).length) return "请选择TagVerse人群包";
+      if (draft.audienceType === "选择" && !draft.tagVerseName) return "请选择TagVerse人群包";
+      if (draft.audienceType === "TagVerse" && !draft.tagVerseName) return "请创建TagVerse人群包";
       if (draft.audienceType === "导入" && !(draft.sidList || []).length) return "请先导入有效名单";
       if (!draft.taskItems.length) return "请至少添加一个任务或自定义红包";
       if (draft.taskItems.length > MAX_CAMPAIGN_TASKS) return `单个活动最多添加${MAX_CAMPAIGN_TASKS}个任务（含自定义红包任务）`;
@@ -3790,13 +3792,16 @@
       const canAddCustomCampaignTask = canAddCampaignTask && !(d.taskItems || []).some(item => item.custom);
       el.query.innerHTML = "";
       el.action.innerHTML = "";
-      const audiencePanel = d.audienceType === "TagVerse" ? `
-        <div class="col-span-5 grid grid-cols-[180px_auto] gap-2 items-center">
-          <select id="fTagVerseName" class="border border-line rounded px-2 py-2">
+      const audiencePanel = d.audienceType === "选择" ? `
+        <div class="col-span-5">
+          <select id="fTagVerseName" class="border border-line rounded px-2 py-2 w-[260px]">
             <option value="">选择已有TagVerse</option>
             ${["Recharge_Q2","VIP_v4","流失召回人群"].map(x => `<option value="${x}" ${d.tagVerseName===x?"selected":""}>${x}</option>`).join("")}
           </select>
-          <button id="btnOpenTagVerse" class="h-8 px-3 rounded border border-line bg-white text-primary text-[12px] hover:bg-[#f8fbff] whitespace-nowrap justify-self-start">创建TagVerse</button>
+        </div>
+      ` : d.audienceType === "TagVerse" ? `
+        <div class="col-span-5">
+          <button id="btnOpenTagVerse" class="h-8 px-3 rounded border border-line bg-white text-primary text-[12px] hover:bg-[#f8fbff] whitespace-nowrap">创建TagVerse</button>
         </div>
       ` : d.audienceType === "导入" ? `
         <div class="col-span-5 flex items-center justify-start gap-2">
@@ -3846,7 +3851,7 @@
             <label class="form-label required col-span-5">选择对象</label>
             <input id="fAudienceType" type="hidden" value="${d.audienceType}">
             <div class="col-span-5 flex items-center gap-8">
-              ${["添加","TagVerse","导入"].map(type => `<label class="inline-flex items-center gap-2"><input type="radio" name="campaignAudienceType" class="accent-primary" data-audience-type="${type}" ${d.audienceType===type ? "checked" : ""}>${type}</label>`).join("")}
+              ${["添加","选择","TagVerse","导入"].map(type => `<label class="inline-flex items-center gap-2"><input type="radio" name="campaignAudienceType" class="accent-primary" data-audience-type="${type}" ${d.audienceType===type ? "checked" : ""}>${type}</label>`).join("")}
               <span class="text-[#64748b]">输入或导入的 SID 会自动过滤注销用户。</span>
             </div>
             ${audiencePanel}
@@ -4912,13 +4917,13 @@
                     ${isNoTask ? `<div class="mb-2 text-[12px] text-[#64748b]">已添加 ${couponTotalCount}/${MAX_TASK_COUPONS} 个红包模板</div>` : ""}
                     <div class="border border-line rounded overflow-auto">
                       <table class="w-full text-[12px]">
-                        <thead class="bg-[#f3f6fb]"><tr><th class="text-left px-3 py-2">模板ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">数量</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">多语言配置</th>${isEditMode ? "" : `<th class="text-left px-3 py-2">操作</th>`}</tr></thead>
+                        <thead class="bg-[#f3f6fb]"><tr><th class="text-left px-3 py-2">模板ID</th><th class="text-left px-3 py-2">模板标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">数量</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">多语言配置</th>${isEditMode ? "" : `<th class="text-left px-3 py-2">操作</th>`}</tr></thead>
                         <tbody>${couponGroups.map(([id, count]) => {
                           const c = state.data.coupons.find(item => item.id === id);
                           const quantityCell = (!isEditMode && isNoTask)
                             ? `<div class="inline-flex items-center border border-line rounded overflow-hidden"><button class="w-7 h-7 hover:bg-gray-50" data-task-coupon-dec="${id}">-</button><span class="w-8 text-center border-x border-line">${count}</span><button class="w-7 h-7 hover:bg-gray-50" data-task-coupon-inc="${id}">+</button></div>`
                             : `<span class="inline-flex items-center justify-center w-8 h-7 rounded border border-line bg-gray-50 text-[#475569]">${count}</span>`;
-                          return `<tr class="border-t border-line"><td class="px-3 py-2">${id}</td><td class="px-3 py-2">${c ? couponTitle(c) : "未匹配红包模板"}</td><td class="px-3 py-2">${c?.type || "--"}</td><td class="px-3 py-2">${c?.amount || "--"}</td><td class="px-3 py-2">${couponValidityValue(c ? couponValidDaysText(c.validDays) : "--")}</td><td class="px-3 py-2">${quantityCell}</td><td class="px-3 py-2">${couponRatioText(c)}</td><td class="px-3 py-2"><button class="${btnClass(true,canViewTaskConfig)}" data-task-coupon-config="${id}">查看配置</button></td>${isEditMode ? "" : `<td class="px-3 py-2"><button class="text-primary hover:underline" data-task-coupon-remove="${id}">移除</button></td>`}</tr>`;
+                          return `<tr class="border-t border-line"><td class="px-3 py-2">${id}</td><td class="px-3 py-2">${c ? couponTemplateTitle(c) : "未匹配红包模板"}</td><td class="px-3 py-2">${c?.type || "--"}</td><td class="px-3 py-2">${c?.amount || "--"}</td><td class="px-3 py-2">${couponValidityValue(c ? couponValidDaysText(c.validDays) : "--")}</td><td class="px-3 py-2">${quantityCell}</td><td class="px-3 py-2">${couponRatioText(c)}</td><td class="px-3 py-2"><button class="${btnClass(true,canViewTaskConfig)}" data-task-coupon-config="${id}">查看配置</button></td>${isEditMode ? "" : `<td class="px-3 py-2"><button class="text-primary hover:underline" data-task-coupon-remove="${id}">移除</button></td>`}</tr>`;
                         }).join("") || `<tr><td class="px-3 py-4 text-muted" colspan="${isEditMode ? 8 : 9}">暂未添加红包模板</td></tr>`}</tbody>
                       </table>
                     </div>
