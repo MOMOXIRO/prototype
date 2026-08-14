@@ -556,6 +556,26 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
 .pri-badge.p1{background:#ffedd5;color:#c2410c}
 .pri-badge.p2{background:#dbeafe;color:#1d4ed8}
 .pri-badge.p3{background:#eef2f7;color:#64748b}
+.market-rule-stack{display:flex;flex-direction:column;gap:20px}
+.market-rule-sec-hd{font-size:16px;font-weight:700;margin:0 0 12px;color:var(--text);letter-spacing:.02em}
+.market-rule-label{font-size:12px;color:#64748b;margin:12px 0 8px}
+.market-rule-label:first-child{margin-top:0}
+.market-shaving-compact{margin-top:12px;padding-top:12px;border-top:1px solid #edf1f7}
+.market-rule-table .control{height:32px;min-width:84px}
+.tier-drag-handle{width:30px;height:30px;border:1px solid var(--field-line);border-radius:7px;background:#fff;color:#94a3b8;display:inline-flex;align-items:center;justify-content:center;cursor:grab;user-select:none}
+.tier-drag-handle:hover{color:var(--pri);border-color:#bfd0ff;background:#f5f8ff}
+.tier-drag-handle:active{cursor:grabbing}
+.tier-drag-handle svg{width:14px;height:14px;fill:currentColor;stroke:none}
+tr.tier-row-dragging{opacity:.45}
+tr.tier-drop-before>td{box-shadow:inset 0 2px 0 var(--pri)}
+tr.tier-drop-after>td{box-shadow:inset 0 -2px 0 var(--pri)}
+.market-rule-summary{margin-top:12px;padding:10px 12px;border:1px solid #dbe4ff;background:#f5f8ff;border-radius:8px;font-size:12px;color:#334155;line-height:1.65}
+.market-rule-inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.market-rule-inline .control{width:88px;height:34px}
+.market-rule-options{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.market-rule-option{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 0;border-bottom:1px solid #edf1f7}
+.market-rule-option:last-child{border-bottom:0}
+.market-policy-list{margin:8px 0 0;padding-left:18px;color:#475569;font-size:12px;line-height:1.8}
 
 @media (max-width:1100px){
   .filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -644,7 +664,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
                   </div>
                 </div>
               </div>
-              <div class="filter-item"><label>通知渠道</label><select class="control" data-f="channel"><option value="">全部</option><option>Push</option><option>私信</option><option>邮件</option><option>WhatsApp</option></select></div>
+              <div class="filter-item"><label>通知渠道</label><select class="control" data-f="channel"><option value="">全部</option><option>Push</option><option>私信</option></select></div>
               <div class="filter-item"><label>更新时间范围</label><div class="range-wrap"><input type="date"><span class="range-mid">至</span><input type="date"></div></div>
             </div>
           </div>
@@ -712,7 +732,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
             </div>
             <div class="filter-more">
               <div class="filter-item"><label>选择对象方式</label><select class="control"><option value="">全部</option><option>添加</option><option>TagVerse</option><option>导入</option><option>按地区</option></select></div>
-              <div class="filter-item"><label>通知渠道</label><select class="control"><option value="">全部</option><option>Push</option><option>私信</option><option>邮件</option><option>WhatsApp</option></select></div>
+              <div class="filter-item"><label>通知渠道</label><select class="control"><option value="">全部</option><option>Push</option><option>私信</option></select></div>
               <div class="filter-item"><label>操作人</label><input class="control" id="op-operator-filter" placeholder="操作人" oninput="onOpFilterChange()"></div>
               <div class="filter-item"><label>更新时间范围</label><div class="range-wrap"><input type="date"><span class="range-mid">至</span><input type="date"></div></div>
             </div>
@@ -841,6 +861,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
             <button type="button" class="settings-nav-btn" data-settings="activityPriority" onclick="switchSettingsSub('activityPriority')">活动优先级</button>
             <button type="button" class="settings-nav-btn" data-settings="scenarioPriority" onclick="switchSettingsSub('scenarioPriority')">业务场景优先级</button>
             <button type="button" class="settings-nav-btn" data-settings="opTypePriority" onclick="switchSettingsSub('opTypePriority')">运营推送类型</button>
+            <button type="button" class="settings-nav-btn" data-settings="marketPushRule" onclick="switchSettingsSub('marketPushRule')">行情推送规则</button>
             <button type="button" class="settings-nav-btn active" data-settings="priority" onclick="switchSettingsSub('priority')">优先级管理</button>
           </nav>
           <div class="settings-main">
@@ -932,6 +953,15 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
                   <tbody id="opTypePriorityBody"></tbody>
                 </table>
               </div>
+            </div>
+            <div class="settings-pane hidden" id="settings-pane-marketPushRule">
+              <div class="settings-pane-hd">
+                <div>
+                  <h2>行情推送规则</h2>
+                </div>
+                <button class="btn" type="button" onclick="saveMarketPushRules()">保存</button>
+              </div>
+              <div class="market-rule-stack" id="marketPushRuleBody"></div>
             </div>
             <div class="settings-pane" id="settings-pane-priority">
               <div class="settings-pane-hd">
@@ -1280,6 +1310,39 @@ const state = {
   marketChartRowId: null,
   tplFilter: { q:'', type:'', scope:'' },
   mktCreateTemplateId: '',
+  marketPushRules: {
+    eligibility: {
+      businessRelation: 'OR',
+      businessConditions: [
+        { key:'recentActive', label:'最近活跃', value:30, unit:'天', enabled:true },
+        { key:'vipLevel', label:'VIP 等级', value:3, prefix:'≥', enabled:true }
+      ],
+      reachabilityRelation: 'AND',
+      reachability: [
+        { key:'validToken', label:'APP 未卸载 / Push Token 有效', enabled:true },
+        { key:'systemPermission', label:'系统通知权限开启', enabled:true },
+        { key:'marketPermission', label:'APP 内「行情通知」开关开启', enabled:true }
+      ]
+    },
+    audiencePriority: {
+      tiers: [
+        { level:1, audience:'当前有持仓用户', delayMinutes:0, enabled:true },
+        { level:2, audience:'VIP 等级', vipLevel:2, delayMinutes:1, enabled:true },
+        { level:3, audience:'已转化用户 且 最近30天活跃', delayMinutes:5, enabled:true },
+        { level:4, audience:'注册未转化 且 最近30天活跃', delayMinutes:30, enabled:true }
+      ],
+      throttle: { enabled:true, mode:'auto', shardIntervalMinutes:1 }
+    },
+    throttle: {
+      dimension: ['用户','品种','行情提醒任务'],
+      cooldownMinutes:60,
+      maxCount:1
+    },
+    duplicateControl: {
+      suppressWhileConditionMet:true,
+      allowAfterRecovery:true
+    }
+  },
 };
 
 const TAB_LABEL = { business:'业务通知', operation:'运营推送', market:'行情提醒', records:'推送记录', template:'模板中心', settings:'推送设置' };
@@ -1294,8 +1357,8 @@ function defaultTabForRole(){ return roleAllowedTabs()[0] || 'operation'; }
 function clampTabForRole(tab){ return canAccessTab(tab) ? tab : defaultTabForRole(); }
 const TPL_TYPE_OPTS = ['业务通知','运营推送','行情提醒'];
 const TPL_PROJECT_OPTS = ['Dana','TW'];
-const SETTINGS_SUB_LABEL = { appPush:'APP推送能力', activityPriority:'活动优先级', scenarioPriority:'业务场景优先级', opTypePriority:'运营推送类型', priority:'优先级管理' };
-const SETTINGS_SUB_KEYS = ['appPush','activityPriority','scenarioPriority','opTypePriority','priority'];
+const SETTINGS_SUB_LABEL = { appPush:'APP推送能力', activityPriority:'活动优先级', scenarioPriority:'业务场景优先级', opTypePriority:'运营推送类型', marketPushRule:'行情推送规则', priority:'优先级管理' };
+const SETTINGS_SUB_KEYS = ['appPush','activityPriority','scenarioPriority','opTypePriority','marketPushRule','priority'];
 
 /* ========== Region codes（与 CRM / 运营推送筛选一致） ========== */
 const REGION_CODE = {
@@ -1466,8 +1529,11 @@ function issueTypePill(type){
   return `<span class="pill ${cls[type]||'draft'}">${type}</span>`;
 }
 function channelTags(arr){
-  const cls = {Push:'push','私信':'msg','邮件':'mail',WhatsApp:'wa','APP Push':'push'};
-  return `<div class="tags">${arr.map(c=>`<span class="tag ${cls[c]||''}">${c}</span>`).join('')}</div>`;
+  const hidden = new Set(['邮件','WhatsApp','Email','WA']);
+  const list = (arr||[]).filter(c=>!hidden.has(c));
+  const cls = {Push:'push','私信':'msg','APP Push':'push'};
+  if(!list.length) return '<span class="muted">--</span>';
+  return `<div class="tags">${list.map(c=>`<span class="tag ${cls[c]||''}">${c}</span>`).join('')}</div>`;
 }
 function appList(app){
   const arr = Array.isArray(app) ? app : (app ? [app] : []);
@@ -1496,14 +1562,6 @@ function formatAppCell(project, apps){
   if(full.length && list.length >= full.length && full.every(a=>list.includes(a))) return 'ALL';
   return list.join('、');
 }
-/** 是否循环推送（发送计划为循环 / 含 loopType / opCycle） */
-function isLoopOpPush(row){
-  if(!row) return false;
-  if(row.plan==='循环发送') return true;
-  if(row.loopType) return true;
-  if(row.opCycle && row.opCycle!=='none') return true;
-  return false;
-}
 /** 启停列：开关；仅运行中/已暂停（行情为监听中/已暂停）展示 */
 function opsToggle(type, row){
   const st = row.status;
@@ -1518,21 +1576,26 @@ function opsToggle(type, row){
   const label = on ? '停用' : '启用';
   return `<span class="exec-switch"><button type="button" class="sw${on?' on':''}" title="${label}" aria-label="${label}" onclick="askExecToggle('${type}','${row.id}')"></button></span>`;
 }
-/** 列表启停开关：二次确认后再改状态；循环推送停用走专项弹窗 */
+/** 列表启停开关：直接切换任务状态（无二次确认） */
 function askExecToggle(type, id){
   const list = type==='business' ? DATA.business : type==='operation' ? DATA.operation : DATA.market;
   const row = (list||[]).find(x=>x.id===id);
   if(!row) return;
   const isOn = row.status==='运行中' || row.status==='监听中';
-  if(isOn){
-    if(type==='operation' && isLoopOpPush(row)){
-      askLoopStopConfirm(type, id);
-      return;
-    }
-    askConfirm('pause', type, id, '确认停用？');
-    return;
+  const action = isOn ? 'pause' : 'resume';
+  const map = {pause:'已停用', resume:'已启用'};
+  toast((map[action]||'操作成功') + '：' + id);
+  if(type==='business'){
+    if(action==='pause') row.status='已暂停';
+    else row.status='运行中';
+  } else if(type==='operation'){
+    if(action==='pause') row.status='已暂停';
+    else row.status='运行中';
+  } else if(type==='market'){
+    if(action==='pause') row.status='已暂停';
+    else row.status='监听中';
   }
-  askConfirm('resume', type, id, '确认启用？');
+  renderCurrent();
 }
 function iconBtn(icon, title, onclick, danger, disabled){
   if(disabled){
@@ -1897,57 +1960,23 @@ function slicePage(key, rows){
 function logBtnForRow(type, row){
   return iconBtn(I.log,'日志',`openTaskLogModal('${type}','${row.id}')`);
 }
-function canDeletePushTask(row){
-  if(!row) return false;
-  return row.status==='已完成' || row.status==='已暂停';
-}
-function askDeletePushTask(type, id){
-  const list = type==='business' ? DATA.business : type==='operation' ? DATA.operation : null;
-  const row = (list||[]).find(x=>x.id===id);
-  if(!row){ toast('任务不存在'); return; }
-  if(!canDeletePushTask(row)){ toast('当前状态不可删除'); return; }
-  const typeLabel = type==='business' ? '业务通知' : '运营推送';
-  askConfirm('deletePushTask', type, id, `确认删除${typeLabel}「${row.name||id}」吗？删除后不可恢复。`);
-}
-function deletePushTask(type, id){
-  const key = type==='business' ? 'business' : type==='operation' ? 'operation' : null;
-  if(!key) return;
-  const list = DATA[key] || [];
-  const idx = list.findIndex(x=>x.id===id);
-  if(idx<0){ toast('任务不存在'); return; }
-  list.splice(idx,1);
-  if(isDetailModal() && state.drawer.type===type && state.drawer.detail?.id===id){
-    closeDetailModal();
-  }
-  renderCurrent();
-  toast('已删除 ' + id);
-}
 function opsBusiness(row){
-  // 操作：查看详情 → 复制 → 记录 → 日志；已完成/已暂停可删除；启停见独立「启停」列
-  let html = iconBtn(I.view,'查看详情',`openDetail('business','${row.id}')`) +
+  // 操作：编辑 → 复制 → 记录 → 日志；业务通知不可删除；启停见独立「启停」列
+  return iconBtn(I.edit,'编辑',`openEditDrawer('business','${row.id}')`) +
          iconBtn(I.copy,'复制',`toast('已复制任务 ${row.id}')`) +
          iconBtn(I.list,'查看记录',`jumpRecords('${row.id}')`) +
          logBtnForRow('business', row);
-  if(canDeletePushTask(row)){
-    html += iconBtn(I.trash,'删除',`askDeletePushTask('business','${row.id}')`,true);
-  }
-  return html;
 }
 function opsOperation(row){
-  // 操作：查看详情 → 复制 → 记录 → 日志；已完成/已暂停可删除；启停见独立「启停」列
-  let html = iconBtn(I.view,'查看详情',`openDetail('operation','${row.id}')`) +
+  // 操作：查看详情 → 复制 → 记录 → 日志；运营推送不可删除；启停见独立「启停」列
+  return iconBtn(I.view,'查看详情',`openDetail('operation','${row.id}')`) +
          iconBtn(I.copy,'复制',`toast('已复制推送 ${row.id}')`) +
          iconBtn(I.list,'查看记录',`jumpRecords('${row.id}')`) +
          logBtnForRow('operation', row);
-  if(canDeletePushTask(row)){
-    html += iconBtn(I.trash,'删除',`askDeletePushTask('operation','${row.id}')`,true);
-  }
-  return html;
 }
 function opsMarket(row){
-  // 操作：编辑对所有状态可用；启停见独立「启停」列
+  // 操作：编辑（全状态）→ 行情图 → 复制 → 记录 → 日志；启停见独立「启停」列
   return iconBtn(I.edit,'编辑',`openEditDrawer('market','${row.id}')`) +
-         iconBtn(I.view,'查看',`openDetail('market','${row.id}')`) +
          iconBtn(I.chart,'行情图',`openMarketChartModal('${row.id}')`) +
          iconBtn(I.copy,'复制',`toast('已复制提醒 ${row.id}')`) +
          iconBtn(I.list,'查看记录',`jumpRecords('${row.id}')`) +
@@ -2489,7 +2518,7 @@ function renderRecordsFilter(){
         ${appOptsHtml}
       </select>
     </div>
-    <div class="filter-item"><label>通知渠道</label><select class="control"><option value="">全部</option><option>Push</option><option>私信</option><option>邮件</option></select></div>
+    <div class="filter-item"><label>通知渠道</label><select class="control"><option value="">全部</option><option>Push</option><option>私信</option></select></div>
     <div class="filter-item"><label>执行状态</label><select class="control"><option value="">全部</option><option>未开始</option><option>执行中</option><option>已完成</option></select></div>
     <div class="filter-item"><label>发送时间</label><div class="range-wrap"><input type="date"><span class="range-mid">至</span><input type="date"></div></div>`;
   const typeEl = document.getElementById('recordsFilterType');
@@ -2665,7 +2694,277 @@ function renderSettings(){
   else if(sub==='activityPriority') renderActivityPriority();
   else if(sub==='scenarioPriority') renderScenarioPriority();
   else if(sub==='opTypePriority') renderOpTypePriority();
+  else if(sub==='marketPushRule') renderMarketPushRules();
   else if(sub==='priority') renderPriorityRules();
+}
+function marketRuleSwitch(on, action){
+  return settingsEnableSwitch(!!on, action);
+}
+function clampMarketRuleNumber(value, min, max, fallback){
+  const n = Number(value);
+  if(!Number.isFinite(n)) return fallback;
+  return Math.min(max, Math.max(min, Math.round(n)));
+}
+const MARKET_TIER_DELAY_OPTIONS = [0, 1, 5, 10, 30, 60];
+function marketTierDelayLabel(minutes){
+  return minutes === 0 ? '立即发送' : minutes + '分钟';
+}
+function normalizeMarketTierDelay(value){
+  const n = Number(value);
+  if(!Number.isFinite(n)) return 0;
+  if(MARKET_TIER_DELAY_OPTIONS.includes(n)) return n;
+  return MARKET_TIER_DELAY_OPTIONS.reduce((best, opt) =>
+    Math.abs(opt - n) < Math.abs(best - n) ? opt : best
+  );
+}
+function marketTierDelayOptions(selected){
+  const normalized = normalizeMarketTierDelay(selected);
+  return MARKET_TIER_DELAY_OPTIONS.map(min =>
+    `<option value="${min}" ${normalized===min?'selected':''}>${marketTierDelayLabel(min)}</option>`
+  ).join('');
+}
+function setMarketEligibilityValue(index, value){
+  const row = state.marketPushRules.eligibility.businessConditions[index];
+  if(!row) return;
+  row.value = clampMarketRuleNumber(value, 1, row.key==='recentActive' ? 365 : 5, row.value);
+}
+function toggleMarketEligibility(group, index){
+  const list = group==='business'
+    ? state.marketPushRules.eligibility.businessConditions
+    : state.marketPushRules.eligibility.reachability;
+  if(!list[index]) return;
+  list[index].enabled = !list[index].enabled;
+  renderMarketPushRules();
+}
+function setMarketTierDelay(index, value){
+  const row = state.marketPushRules.audiencePriority.tiers[index];
+  if(!row) return;
+  row.delayMinutes = normalizeMarketTierDelay(value);
+}
+function toggleMarketTier(index){
+  const row = state.marketPushRules.audiencePriority.tiers[index];
+  if(!row) return;
+  row.enabled = !row.enabled;
+  renderMarketPushRules();
+}
+function setMarketTierVipLevel(index, value){
+  const row = state.marketPushRules.audiencePriority.tiers[index];
+  if(!row) return;
+  row.vipLevel = clampMarketRuleNumber(value, 1, 5, row.vipLevel || 2);
+}
+function moveMarketTier(index, direction){
+  const tiers = state.marketPushRules.audiencePriority.tiers;
+  const target = index + direction;
+  if(target < 0 || target >= tiers.length) return;
+  const moved = tiers.splice(index, 1)[0];
+  tiers.splice(target, 0, moved);
+  tiers.forEach((tier, i)=>tier.level = i + 1);
+  renderMarketPushRules();
+}
+let marketTierDragFrom = null;
+function enableMarketTierDrag(handle){
+  const row = handle.closest('tr');
+  if(row) row.setAttribute('draggable','true');
+}
+function disableMarketTierDrag(handle){
+  const row = handle.closest('tr');
+  if(row) row.removeAttribute('draggable');
+}
+function clearMarketTierDropMarks(){
+  document.querySelectorAll('#marketPushRuleBody tr[data-tier-index]').forEach(row=>{
+    row.classList.remove('tier-drop-before','tier-drop-after');
+  });
+}
+function onMarketTierDragStart(event, index){
+  marketTierDragFrom = index;
+  if(event.dataTransfer){
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', String(index));
+  }
+  event.currentTarget.classList.add('tier-row-dragging');
+}
+function onMarketTierDragOver(event, index){
+  if(marketTierDragFrom === null) return;
+  event.preventDefault();
+  if(event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+  const row = event.currentTarget;
+  const rect = row.getBoundingClientRect();
+  const after = event.clientY > rect.top + rect.height / 2;
+  clearMarketTierDropMarks();
+  if(index === marketTierDragFrom) return;
+  row.classList.add(after ? 'tier-drop-after' : 'tier-drop-before');
+}
+function onMarketTierDragLeave(event){
+  const row = event.currentTarget;
+  if(event.relatedTarget && row.contains(event.relatedTarget)) return;
+  row.classList.remove('tier-drop-before','tier-drop-after');
+}
+function onMarketTierDrop(event, index){
+  event.preventDefault();
+  const from = marketTierDragFrom;
+  const rect = event.currentTarget.getBoundingClientRect();
+  const after = event.clientY > rect.top + rect.height / 2;
+  clearMarketTierDropMarks();
+  marketTierDragFrom = null;
+  if(from === null) return;
+  const tiers = state.marketPushRules.audiencePriority.tiers;
+  let to = after ? index + 1 : index;
+  if(to > from) to--;
+  if(to === from || to < 0 || to >= tiers.length) return;
+  const moved = tiers.splice(from, 1)[0];
+  tiers.splice(to, 0, moved);
+  tiers.forEach((tier, i)=>tier.level = i + 1);
+  renderMarketPushRules();
+}
+function onMarketTierDragEnd(event){
+  marketTierDragFrom = null;
+  clearMarketTierDropMarks();
+  event.currentTarget.classList.remove('tier-row-dragging');
+  event.currentTarget.removeAttribute('draggable');
+}
+function onMarketTierHandleKeydown(event, index){
+  if(event.key === 'ArrowUp'){ event.preventDefault(); moveMarketTier(index, -1); }
+  if(event.key === 'ArrowDown'){ event.preventDefault(); moveMarketTier(index, 1); }
+}
+function setMarketShavingMode(mode){
+  state.marketPushRules.audiencePriority.throttle.mode = mode==='manual' ? 'manual' : 'auto';
+  renderMarketPushRules();
+}
+function setMarketShardInterval(value){
+  state.marketPushRules.audiencePriority.throttle.shardIntervalMinutes =
+    clampMarketRuleNumber(value, 1, 5, 1);
+}
+function setMarketThrottle(key, value){
+  const rules = state.marketPushRules.throttle;
+  if(key==='cooldownMinutes') rules.cooldownMinutes = clampMarketRuleNumber(value, 1, 1440, rules.cooldownMinutes);
+  if(key==='maxCount') rules.maxCount = clampMarketRuleNumber(value, 1, 99, rules.maxCount);
+}
+function toggleMarketRuleFlag(path){
+  const parts = path.split('.');
+  let target = state.marketPushRules;
+  for(let i=0;i<parts.length-1;i++) target = target[parts[i]];
+  const key = parts[parts.length-1];
+  target[key] = !target[key];
+  renderMarketPushRules();
+}
+function renderMarketPushRules(){
+  const body = document.getElementById('marketPushRuleBody');
+  if(!body) return;
+  const rules = state.marketPushRules;
+  const eligibility = rules.eligibility;
+  const priority = rules.audiencePriority;
+  const throttle = rules.throttle;
+  const duplicate = rules.duplicateControl;
+  const vipOptions = selected=>[1,2,3,4,5].map(level=>
+    `<option value="${level}" ${Number(selected)===level?'selected':''}>V${level}</option>`
+  ).join('');
+  const businessRows = eligibility.businessConditions.map((r,i)=>`<tr>
+    <td>${escHtml(r.label)}</td>
+    <td>${r.key==='vipLevel'
+      ? `<div class="market-rule-inline"><span>≥</span><select class="control" onchange="setMarketEligibilityValue(${i},this.value)">${vipOptions(r.value)}</select></div>`
+      : `<div class="market-rule-inline"><input class="control" type="number" min="1" max="365" value="${r.value}" oninput="setMarketEligibilityValue(${i},this.value)"><span>天</span></div>`}</td>
+    <td>${marketRuleSwitch(r.enabled,`toggleMarketEligibility('business',${i})`)}</td>
+  </tr>`).join('');
+  const reachRows = eligibility.reachability.map((r,i)=>`<tr>
+    <td>${escHtml(r.label)}</td>
+    <td>${marketRuleSwitch(r.enabled,`toggleMarketEligibility('reachability',${i})`)}</td>
+  </tr>`).join('');
+  const tierRows = priority.tiers.map((r,i)=>`<tr data-tier-index="${i}"
+    ondragstart="onMarketTierDragStart(event,${i})"
+    ondragover="onMarketTierDragOver(event,${i})"
+    ondragleave="onMarketTierDragLeave(event)"
+    ondrop="onMarketTierDrop(event,${i})"
+    ondragend="onMarketTierDragEnd(event)">
+    <td>第${i+1}层</td>
+    <td>${r.vipLevel
+      ? `<div class="market-rule-inline"><span>VIP 等级 ≥</span><select class="control" onchange="setMarketTierVipLevel(${i},this.value)">${vipOptions(r.vipLevel)}</select></div>`
+      : escHtml(r.audience)}</td>
+    <td><select class="control" onchange="setMarketTierDelay(${i},this.value)">${marketTierDelayOptions(r.delayMinutes)}</select></td>
+    <td>${marketRuleSwitch(r.enabled,`toggleMarketTier(${i})`)}</td>
+    <td><div class="icon-actions">
+      <span class="tier-drag-handle" title="拖拽调整层级顺序" aria-label="拖拽调整层级顺序" role="button" tabindex="0"
+        onmousedown="enableMarketTierDrag(this)" onmouseup="disableMarketTierDrag(this)"
+        onkeydown="onMarketTierHandleKeydown(event,${i})">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="3" r="1.4"></circle><circle cx="10" cy="3" r="1.4"></circle><circle cx="6" cy="8" r="1.4"></circle><circle cx="10" cy="8" r="1.4"></circle><circle cx="6" cy="13" r="1.4"></circle><circle cx="10" cy="13" r="1.4"></circle></svg>
+      </span>
+    </div></td>
+  </tr>`).join('');
+  body.innerHTML =
+    `<div class="market-rule-sec"><div class="market-rule-sec-hd">A. 推送对象规则</div>
+      <div class="market-rule-label">业务条件（满足任一）</div>
+      <div class="table-wrap settings-table-wrap market-rule-table"><table class="data-table">
+        <thead><tr><th>条件</th><th style="width:220px">参数</th><th style="width:90px">状态</th></tr></thead>
+        <tbody>${businessRows}</tbody>
+      </table></div>
+      <div class="market-rule-label">可达条件（全部满足）</div>
+      <div class="table-wrap settings-table-wrap market-rule-table"><table class="data-table">
+        <thead><tr><th>条件</th><th style="width:90px">状态</th></tr></thead>
+        <tbody>${reachRows}</tbody>
+      </table></div>
+    </div>` +
+    `<div class="market-rule-sec"><div class="market-rule-sec-hd">B. 人群优先级与分批发送</div>
+      <div class="table-wrap settings-table-wrap market-rule-table"><table class="data-table">
+        <thead><tr><th style="width:90px">层级</th><th>用户分层</th><th style="width:260px">发送延迟</th><th style="width:90px">状态</th><th style="width:96px">排序</th></tr></thead>
+        <tbody>${tierRows}</tbody>
+      </table></div>
+    </div>` +
+    `<div class="market-rule-sec"><div class="market-rule-sec-hd">C. 行情频控与重复触发抑制</div>
+      <div class="table-wrap settings-table-wrap market-rule-table"><table class="data-table">
+        <thead><tr><th>规则</th><th>参数</th><th style="width:90px">状态</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>冷却时间配置</td>
+            <td><div class="market-rule-inline"><span>同一用户 · 同一品种 · 同一提醒：</span><input class="control" type="number" min="1" max="1440" value="${throttle.cooldownMinutes}" oninput="setMarketThrottle('cooldownMinutes',this.value)"><span>分钟内最多推送</span><input class="control" type="number" min="1" max="99" value="${throttle.maxCount}" oninput="setMarketThrottle('maxCount',this.value)"><span>次</span></div></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>持续满足不重复推送</td>
+            <td>—</td>
+            <td>${marketRuleSwitch(duplicate.suppressWhileConditionMet,`toggleMarketRuleFlag('duplicateControl.suppressWhileConditionMet')`)}</td>
+          </tr>
+          <tr>
+            <td>恢复后允许再发</td>
+            <td>—</td>
+            <td>${marketRuleSwitch(duplicate.allowAfterRecovery,`toggleMarketRuleFlag('duplicateControl.allowAfterRecovery')`)}</td>
+          </tr>
+        </tbody>
+      </table></div>
+    </div>`;
+}
+function saveMarketPushRules(){
+  document.querySelectorAll('#marketPushRuleBody input[type=number]').forEach(input=>input.blur());
+  toast('行情推送规则已保存');
+}
+function marketRuleSummaryItems(){
+  const rules = state.marketPushRules;
+  const tiers = rules.audiencePriority.tiers.filter(t=>t.enabled);
+  const first = tiers[0];
+  const last = tiers[tiers.length-1];
+  const delays = tiers.map(t=>t.delayMinutes);
+  const delayText = delays.length
+    ? `${Math.min(...delays)===0?'立即发送':Math.min(...delays)+' 分钟'}至 ${Math.max(...delays)} 分钟分层发送`
+    : '暂无启用的发送层级';
+  return [
+    `人群：${tiers.length} 个人群层级，命中多层时仅进入最高层级`,
+    `发送：${first?first.audience:'—'}优先，${delayText}`,
+    `重复：同一用户 · 品种 · 提醒 ${rules.throttle.cooldownMinutes} 分钟内最多 ${rules.throttle.maxCount} 次`
+  ];
+}
+function marketPushPolicyBlock(){
+  return '<div class="info-card">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
+      '<strong>使用全局行情推送规则</strong>' +
+      '<button type="button" class="link-btn" onclick="openMarketPushRuleFromForm()">查看行情推送规则</button>' +
+    '</div>' +
+    '<ul class="market-policy-list">' + marketRuleSummaryItems().map(t=>'<li>'+escHtml(t)+'</li>').join('') + '</ul>' +
+    '<div class="hint" style="margin-top:8px">当前版本不支持按提醒任务单独覆盖规则。</div>' +
+  '</div>';
+}
+function openMarketPushRuleFromForm(){
+  closeCreatePage();
+  switchTab('settings');
+  switchSettingsSub('marketPushRule');
+  window.scrollTo(0,0);
 }
 function settingsAppIosLabel(app){
   if(app.iosSupported===false) return '不支持';
@@ -3220,18 +3519,17 @@ function jumpRecords(srcId, opts){
 /* ========== Confirm ========== */
 function isDeleteConfirmAction(action){
   return action==='deleteTemplate' || action==='deleteBizRef' || action==='deleteOpType'
-    || action==='deletePushTask'
     || action==='removeOpSid' || action==='removeOpImage' || action==='removeCond';
 }
 function isToggleConfirmAction(action){
-  return action==='pause' || action==='resume' || action==='enableSettings' || action==='disableSettings' || action==='loopStop';
+  return action==='enableSettings' || action==='disableSettings';
 }
 function askConfirm(action, type, id, msg, opts){
   opts = opts || {};
   state.pendingConfirm = {action, type, id};
   const isDelete = isDeleteConfirmAction(action);
   const isToggle = isToggleConfirmAction(action);
-  const isDanger = action==='stop'||action==='disable'||action==='pause'||action==='disableSettings'||isDelete;
+  const isDanger = action==='stop'||action==='disable'||action==='disableSettings'||isDelete;
   const defaultTitle = action==='sendNow' ? '立即发送确认'
     : (isDelete ? '删除确认'
     : (action==='disableSettings' ? '停用确认'
@@ -3258,7 +3556,6 @@ function askConfirm(action, type, id, msg, opts){
     if(action==='deleteTemplate'){ deleteTemplate(id); return; }
     if(action==='deleteBizRef'){ deleteBizRef(type, id); return; }
     if(action==='deleteOpType'){ deleteOpType(id); return; }
-    if(action==='deletePushTask'){ deletePushTask(type, id); return; }
     if(action==='removeOpSid'){ removeOpSid(id, true); return; }
     if(action==='removeOpImage'){ removeOpImage(Number(id), true); return; }
     if(action==='removeCond'){
@@ -3270,71 +3567,20 @@ function askConfirm(action, type, id, msg, opts){
       else if(type==='opType') toggleOpTypeStatus(id);
       return;
     }
-    const map = {pause:'已停用', resume:'已启用', stop:'已终止', disable:'已禁用', retry:'已提交失败重试', retryBatch:'已提交批量重试'};
+    const map = {stop:'已终止', disable:'已禁用', retry:'已提交失败重试', retryBatch:'已提交批量重试'};
     toast((map[action]||'操作成功') + '：' + id);
     // mock status update
     if(type==='business'){
       const row = DATA.business.find(x=>x.id===id);
-      if(row){ if(action==='pause') row.status='已暂停'; if(action==='resume') row.status='运行中'; if(action==='stop') row.status='已终止'; }
+      if(row && action==='stop') row.status='已终止';
     }
     if(type==='operation'){
       const row = DATA.operation.find(x=>x.id===id);
-      if(row){ if(action==='pause') row.status='已暂停'; if(action==='resume') row.status='运行中'; if(action==='stop') row.status='已终止'; }
-    }
-    if(type==='market'){
-      const row = DATA.market.find(x=>x.id===id);
-      if(row){ if(action==='pause') row.status='已暂停'; if(action==='resume') row.status='监听中'; }
+      if(row && action==='stop') row.status='已终止';
     }
     renderCurrent();
   };
   document.getElementById('confirmModal').classList.add('show');
-}
-/** 循环推送停用：可选停止当前 / 停止未来（至少一项） */
-function askLoopStopConfirm(type, id){
-  const row = (DATA.operation||[]).find(x=>x.id===id);
-  if(!row) return;
-  const name = escHtml(row.name || id);
-  state.pendingConfirm = {action:'loopStop', type, id};
-  document.getElementById('confirmTitle').textContent = '停止循环推送';
-  document.getElementById('confirmBody').innerHTML =
-    `<p style="margin:0">确认停止循环推送「${name}」？请选择要停止的范围（至少选一项）：</p>` +
-    `<div class="confirm-opts">` +
-      `<label class="confirm-opt"><input type="checkbox" id="loopStopCurrent" checked onchange="syncLoopStopConfirmOk()">` +
-        `<span><div class="t">停止当前推送</div><div class="d">终止正在执行中的本次推送批次，不影响后续循环计划。</div></span></label>` +
-      `<label class="confirm-opt"><input type="checkbox" id="loopStopFuture" checked onchange="syncLoopStopConfirmOk()">` +
-        `<span><div class="t">停止未来推送</div><div class="d">取消后续循环计划并停用该任务，不再按计划自动发送。</div></span></label>` +
-    `</div>`;
-  const ok = document.getElementById('confirmOk');
-  ok.disabled = false;
-  ok.className = 'btn danger';
-  ok.textContent = '确认';
-  ok.onclick = applyLoopStopConfirm;
-  document.getElementById('confirmModal').classList.add('show');
-}
-function syncLoopStopConfirmOk(){
-  const ok = document.getElementById('confirmOk');
-  if(!ok) return;
-  const a = !!document.getElementById('loopStopCurrent')?.checked;
-  const b = !!document.getElementById('loopStopFuture')?.checked;
-  ok.disabled = !(a || b);
-}
-function applyLoopStopConfirm(){
-  const stopCurrent = !!document.getElementById('loopStopCurrent')?.checked;
-  const stopFuture = !!document.getElementById('loopStopFuture')?.checked;
-  if(!stopCurrent && !stopFuture){ toast('请至少选择一项'); return; }
-  const pending = state.pendingConfirm || {};
-  const id = pending.id;
-  closeConfirm();
-  const row = (DATA.operation||[]).find(x=>x.id===id);
-  if(!row) return;
-  const parts = [];
-  if(stopCurrent) parts.push('已停止当前推送');
-  if(stopFuture){
-    row.status = '已暂停';
-    parts.push('已停止未来推送');
-  }
-  toast(parts.join('；') + '：' + id);
-  renderCurrent();
 }
 function closeConfirm(){
   document.getElementById('confirmModal').classList.remove('show');
@@ -4335,6 +4581,7 @@ function openEditDrawer(type, id){
     contentDraft: emptyContentDraft(['push']), lang:'en', templateId:''
   };
   if(type==='business'){
+    state.drawer.asPage = true;
     state.drawer.emsOpen = { bizAppEms:false };
     const typeKey = bizTypeKeyFromLabel(row?.bizType);
     state.drawer.bizType = typeKey;
@@ -4351,6 +4598,20 @@ function openEditDrawer(type, id){
       ensureProfitConfig(row);
       applyProfitScenarioDefaults({ resetContent: false });
     }
+    const cfg = DRAWER_CFG.business;
+    document.getElementById('listView').classList.add('hidden');
+    document.getElementById('createView').classList.add('show');
+    document.getElementById('createTitle').textContent = cfg.titleEdit;
+    document.getElementById('createCrumb').textContent = '工作台 / 推送管理 / 业务通知 / ' + cfg.titleEdit;
+    const url = new URL(location.href);
+    url.searchParams.set('tab', 'business');
+    url.searchParams.set('page', 'create');
+    history.replaceState(null, '', url);
+    window.scrollTo(0, 0);
+    renderFormSteps();
+    renderFormBody();
+    renderFormFoot();
+    return;
   }
   if(type==='operation'){
     state.drawer.project = state.drawer.project || row?.project || 'Dana';
@@ -4737,6 +4998,11 @@ const CHANNEL_META = {
   mail: { n:'邮件', bodyLabel:'正文' },
   wa: { n:'WhatsApp', bodyLabel:'正文' }
 };
+const SELECTABLE_CHANNEL_KEYS = ['push','msg'];
+const SELECTABLE_CHANNELS = [
+  {k:'push', n:'APP Push'},
+  {k:'msg', n:'私信'}
+];
 /* 系统变量：按钮展示中文，输入框插入英文参数，悬停展示解释 */
 const VAR_LABELS = {
   userName:'用户名', verifyTime:'认证时间', verifyLevel:'认证等级',
@@ -5100,7 +5366,7 @@ function toggleCreateChannel(ch, checked){
     if(set.size <= 1){ toast('至少保留一个渠道'); renderFormBody(); return; }
     set.delete(ch);
   }
-  draft.channels = ['push','msg','mail','wa'].filter(k=>set.has(k));
+  draft.channels = SELECTABLE_CHANNEL_KEYS.filter(k=>set.has(k));
   draft.dirty = true;
   state.drawer.focusChannel = draft.channels[0];
   renderFormBody();
@@ -5736,19 +6002,15 @@ function renderContentLeft(type){
   const project = state.drawer.project || '';
   if(!state.drawer.contentDraft) state.drawer.contentDraft = emptyContentDraft(['push']);
   const draft = state.drawer.contentDraft || emptyContentDraft(['push']);
-  const allChannels = [
-    {k:'push', n:'APP Push'},
-    {k:'msg', n:'私信'},
-    {k:'mail', n:'邮件'},
-    {k:'wa', n:'WhatsApp'}
-  ];
-  const selected = new Set(draft.channels||[]);
+  const allChannels = SELECTABLE_CHANNELS;
+  const draftChannels = (draft.channels||[]).filter(ch=>SELECTABLE_CHANNEL_KEYS.includes(ch));
+  const selected = new Set(draftChannels.length ? draftChannels : ['push']);
   const curL = state.drawer.lang || 'en';
   ensureDraftByLang();
   const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   const vars = type==='business' ? varsForCurrentBizForm() : SYSTEM_VAR_KEYS.map(k=>'{'+k+'}');
   const editors = sharedTitleField(draft, esc) +
-    ((draft.channels||[]).map(ch=>
+    ((draftChannels.length ? draftChannels : ['push']).map(ch=>
       channelEditorBlock(ch, draft.byChannel[ch] || defaultChannelContent(ch), vars, esc)
     ).join('') || '<div class="warn-card">请至少勾选一个通知渠道</div>');
 
@@ -6330,7 +6592,8 @@ function renderConfigRight(type){
     mods =
       configMod('基础信息', marketBaseConfigBlock()) +
       configMod('行情条件', marketConditionConfigBlock()) +
-      configMod('选择对象', marketAudienceConfigBlock());
+      configMod('选择对象', marketAudienceConfigBlock()) +
+      configMod('推送策略', marketPushPolicyBlock());
   }
 
   return '<div class="split-right">' +
