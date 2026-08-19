@@ -1314,7 +1314,7 @@ const state = {
   mktFilter: { priority:'', symbol:'' },
   page: { business:1, operation:1, market:1, template:1, records:1 },
   pageSize: { business:20, operation:20, market:20, template:20, records:20 },
-  drawer: { open:false, type:null, mode:'create', step:0, detail:null, ui:'drawer', project:'', apps:[], regions:[], msgJump:'无跳转', msgGroup:'', msgAppPage:'', msgUrl:'', mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'', jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'', pushIntervalMin:30, bizType:'business', bizRefId:'', bizPriority:'P1' },
+  drawer: { open:false, type:null, mode:'create', step:0, detail:null, ui:'drawer', project:'', apps:[], regions:[], msgSendMode:'supplementPush', msgJump:'无跳转', msgGroup:'', msgAppPage:'', msgUrl:'', mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'', jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'', pushIntervalMin:30, bizType:'business', bizRefId:'', bizPriority:'P1' },
   bizRefEditor: { kind:null, mode:'create', id:null },
   pendingConfirm: null,
   recordsKeyword: '',
@@ -1416,9 +1416,9 @@ const DATA = {
   ],
   recordsBatch: [
     /* 业务推送场景批次仍保留在 DATA，推送记录列表按规则过滤不展示 */
-    {id:'RB22081',type:'业务通知',srcId:'BN0018',srcName:'实名认证成功通知',project:'Dana',apps:['DANA App','GoCap'],priority:'P1',reason:'用户完成实名认证',channels:['Push','私信','邮件'],plan:'2026-07-24 09:12:03',start:'2026-07-24 09:12:03',end:'2026-07-24 09:12:08',target:1,ok:1,fail:0,reach:1,click:0,status:'已完成',operator:'王敏'},
-    {id:'RB22082',type:'业务通知',srcId:'BN0016',srcName:'模拟大赛交易提醒三',project:'Dana',apps:['DANA App','ForexDana'],priority:'P2',reason:'活动推送触发 · 模拟大赛交易提醒三',channels:['Push','私信'],plan:'2026-07-24 10:00:12',start:'2026-07-24 10:00:12',end:'2026-07-24 10:02:40',target:3260,ok:3188,fail:72,reach:2740,click:486,status:'已完成',operator:'王敏'},
-    {id:'RB22080',type:'运营推送',srcId:'OP0091',srcName:'印尼斋月活动召回',project:'Dana',apps:['Dana App'],priority:'P1',reason:'每周一 10:00 定时执行',channels:['Push','私信'],plan:'2026-07-21 10:00:00',start:'2026-07-21 10:00:02',end:'2026-07-21 10:08:41',target:128420,ok:126880,fail:1540,reach:110204,click:18220,status:'已完成',operator:'amy.li'},
+    {id:'RB22081',type:'业务通知',srcId:'BN0018',srcName:'实名认证成功通知',project:'Dana',apps:['DANA App','GoCap'],priority:'P1',reason:'用户完成实名认证',channels:['Push','私信','邮件'],plan:'2026-07-24 09:12:03',start:'2026-07-24 09:12:03',end:'2026-07-24 09:12:08',target:1,ok:1,fail:0,reach:1,click:0,msgRead:1,status:'已完成',operator:'王敏'},
+    {id:'RB22082',type:'业务通知',srcId:'BN0016',srcName:'模拟大赛交易提醒三',project:'Dana',apps:['DANA App','ForexDana'],priority:'P2',reason:'活动推送触发 · 模拟大赛交易提醒三',channels:['Push','私信'],plan:'2026-07-24 10:00:12',start:'2026-07-24 10:00:12',end:'2026-07-24 10:02:40',target:3260,ok:3188,fail:72,reach:2740,click:486,msgRead:2388,status:'已完成',operator:'王敏'},
+    {id:'RB22080',type:'运营推送',srcId:'OP0091',srcName:'印尼斋月活动召回',project:'Dana',apps:['Dana App'],priority:'P1',reason:'每周一 10:00 定时执行',channels:['Push','私信'],plan:'2026-07-21 10:00:00',start:'2026-07-21 10:00:02',end:'2026-07-21 10:08:41',target:128420,ok:126880,fail:1540,reach:110204,click:18220,msgRead:89204,status:'已完成',operator:'amy.li'},
     {id:'RB22079',type:'行情提醒',srcId:'MK0042',srcName:'BTC 短时暴涨提醒',project:'TW',apps:['TW Trade'],priority:'P2',reason:'BTCUSD 5 分钟涨幅达到 3.18%',channels:['Push'],plan:'2026-07-24 10:18:22',start:'2026-07-24 10:18:22',end:'2026-07-24 10:18:55',target:8420,ok:8390,fail:30,reach:7102,click:1204,status:'已完成',operator:'林涛'},
     {id:'RB22076',type:'行情提醒',srcId:'MK0042',srcName:'BTC 短时暴涨提醒',project:'TW',apps:['TW Trade'],priority:'P2',reason:'BTCUSD 5 分钟涨幅达到 3.05%',channels:['Push'],plan:'2026-07-24 08:42:10',start:'2026-07-24 08:42:10',end:'2026-07-24 08:42:40',target:8210,ok:8188,fail:22,reach:6901,click:980,status:'已完成',operator:'林涛'},
     {id:'RB22075',type:'行情提醒',srcId:'MK0041',srcName:'贵金属跌破关口提醒',project:'Dana',apps:['Dana App'],priority:'P2',reason:'XAUUSD 价格跌破 2320',channels:['Push'],plan:'2026-07-24 07:02:11',start:'2026-07-24 07:02:11',end:'2026-07-24 07:02:35',target:3260,ok:3244,fail:16,reach:2810,click:412,status:'已完成',operator:'孙琦'},
@@ -1427,8 +1427,8 @@ const DATA = {
     {id:'RB22074',type:'行情提醒',srcId:'MK0039',srcName:'USOIL 成交量异常',project:'TW',apps:['TW Lite'],priority:'P2',reason:'USOIL 成交量增长达到 86%',channels:['Push'],plan:'2026-07-23 16:30:00',start:'2026-07-23 16:30:01',end:'2026-07-23 16:30:28',target:1520,ok:1508,fail:12,reach:1290,click:188,status:'已完成',operator:'孙琦'},
     {id:'RB22072',type:'行情提醒',srcId:'MK0040',srcName:'ETH 剧烈波动',project:'TW',apps:['TW Trade','TW Lite'],priority:'P2',reason:'ETHUSD 15 分钟振幅达到 5.42%',channels:['Push'],plan:'2026-07-20 21:44:00',start:'2026-07-20 21:44:00',end:'2026-07-20 21:44:28',target:5640,ok:5520,fail:120,reach:4102,click:688,status:'已完成',operator:'林涛'},
     {id:'RB22071',type:'行情提醒',srcId:'MK0040',srcName:'ETH 剧烈波动',project:'TW',apps:['TW Trade','TW Lite'],priority:'P2',reason:'BTCUSD 15 分钟振幅达到 5.11%',channels:['Push'],plan:'2026-07-19 14:12:33',start:'2026-07-19 14:12:33',end:'2026-07-19 14:13:02',target:6120,ok:6010,fail:110,reach:4488,click:720,status:'已完成',operator:'林涛'},
-    {id:'RB22078',type:'运营推送',srcId:'OP0089',srcName:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',priority:'P0',reason:'运营人员手动立即发送',channels:['Push','私信'],plan:'2026-07-24 22:00:00',start:'2026-07-24 22:00:01',end:'--',target:2136,ok:860,fail:12,reach:0,click:0,status:'执行中',operator:'ops.admin'},
-    {id:'RB22077',type:'业务通知',srcId:'BN0017',srcName:'大额充值成功提醒',project:'Dana',apps:['DANA App','GoCap','Partner App'],priority:'P1',reason:'用户完成充值',channels:['Push','私信'],plan:'2026-07-24 08:55:41',start:'2026-07-24 08:55:41',end:'2026-07-24 08:55:42',target:1,ok:0,fail:1,reach:0,click:0,status:'已完成',operator:'李晨'},
+    {id:'RB22078',type:'运营推送',srcId:'OP0089',srcName:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',priority:'P0',reason:'运营人员手动立即发送',channels:['Push','私信'],plan:'2026-07-24 22:00:00',start:'2026-07-24 22:00:01',end:'--',target:2136,ok:860,fail:12,reach:0,click:0,msgRead:620,status:'执行中',operator:'ops.admin'},
+    {id:'RB22077',type:'业务通知',srcId:'BN0017',srcName:'大额充值成功提醒',project:'Dana',apps:['DANA App','GoCap','Partner App'],priority:'P1',reason:'用户完成充值',channels:['Push','私信'],plan:'2026-07-24 08:55:41',start:'2026-07-24 08:55:41',end:'2026-07-24 08:55:42',target:1,ok:0,fail:1,reach:0,click:0,msgRead:0,status:'已完成',operator:'李晨'},
     {id:'RB22066',type:'业务通知',srcId:'BN0012',srcName:'模拟大赛对手匹配',project:'Dana',apps:['DANA App','FDTrek'],priority:'P2',reason:'活动推送触发 · 模拟大赛对手匹配',channels:['Push'],plan:'2026-07-15 09:30:00',start:'2026-07-15 09:30:00',end:'2026-07-15 09:31:18',target:1840,ok:1792,fail:48,reach:1510,click:220,status:'已完成',operator:'王敏'},
     {id:'RB22073',type:'运营推送',srcId:'OP0087',srcName:'订阅黄金行情用户活动',project:'TW',apps:['TW Trade'],priority:'P2',reason:'单次定时待发送',channels:['Push','WhatsApp'],plan:'2026-07-28 14:00:00',start:'--',end:'--',target:18640,ok:0,fail:0,reach:0,click:0,status:'未开始',operator:'张三',title:'黄金行情专属活动',body:'订阅黄金行情的用户专属福利即将开启，记得准时参与。'},
     {id:'RB22070',type:'运营推送',srcId:'OP0090',srcName:'VIP3 及以上周末福利',project:'TW',apps:['TW Trade'],priority:'P2',reason:'单次定时待发送',channels:['Push'],plan:'2026-07-30 09:00:00',start:'--',end:'--',target:42880,ok:0,fail:0,reach:0,click:0,status:'未开始',operator:'李晨',title:'VIP 周末福利提醒',body:'尊敬的 VIP 用户，本周末专属福利即将发放，请留意站内消息。'},
@@ -1550,6 +1550,17 @@ function operationChannelTags(arr){
 }
 function recordChannelTags(batch){
   return batch && batch.type==='运营推送' ? operationChannelTags(batch.channels) : channelTags(batch.channels);
+}
+function batchHasMsgChannel(batch){
+  return (batch?.channels || []).some(c => c === '私信');
+}
+function batchPushPeopleCell(batch){
+  if(!batchHasMsgChannel(batch)) return '—';
+  return Number(batch.target || 0).toLocaleString();
+}
+function batchMsgReadCell(batch){
+  if(!batchHasMsgChannel(batch)) return '—';
+  return Number(batch.msgRead != null ? batch.msgRead : 0).toLocaleString();
 }
 function appList(app){
   const arr = Array.isArray(app) ? app : (app ? [app] : []);
@@ -1787,6 +1798,7 @@ function saveCurrentAsTemplate(){
     else row.scenarioId = state.drawer.bizRefId || '';
   }
   if(channels.includes('私信')){
+    row.msgSendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels(createFormChannels());
     row.msgJump = state.drawer.msgJump || '无跳转';
     row.msgGroup = state.drawer.msgGroup || '';
     row.msgAppPage = state.drawer.msgAppPage || '';
@@ -2735,7 +2747,7 @@ function renderRecords(){
   table.querySelector('thead').innerHTML = `<tr>
     <th>推送记录 ID</th><th>推送类型</th><th>推送名称</th><th>项目</th><th>APP</th><th>优先级</th><th>触发原因</th>
     <th>通知渠道</th><th>发送时间</th>
-    <th>打开推送</th>
+    <th>推送人数</th><th>私信已读</th><th>打开推送</th>
     <th>状态</th><th class="ops">操作</th>
   </tr>`;
   table.querySelector('tbody').innerHTML = pageRows.map(r=>{
@@ -2752,6 +2764,8 @@ function renderRecords(){
     <td><div class="cell-2line" title="${r.reason}">${r.reason}</div></td>
     <td>${recordChannelTags(r)}</td>
     <td>${r.plan}</td>
+    <td>${batchPushPeopleCell(r)}</td>
+    <td>${batchMsgReadCell(r)}</td>
     <td>${Number(r.click||0).toLocaleString()}</td>
     <td>${statusPill(r.status)}</td>
     <td class="ops"><div class="icon-actions">${opsRecords(r)}</div></td>
@@ -4459,7 +4473,7 @@ function openCreatePage(type){
     open:true, type, mode:'create', step:0,
     detail:null, asPage:true, ui:'drawer', lang:'en', contentDraft:null,
     audienceMode:'add', focusChannel:'push', project:'', apps:[], regions:[],
-    msgJump:'无跳转', msgGroup:'', msgAppPage:'', msgUrl:'',
+    msgSendMode:'supplementPush', msgJump:'无跳转', msgGroup:'', msgAppPage:'', msgUrl:'',
     mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'',
     jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'',
     templateId:''
@@ -4578,7 +4592,7 @@ function openEditDrawer(type, id){
     open:true, type, mode:'edit', step:0,
     detail:row, asPage:false, ui:'drawer',
     project: row?.project || '', apps, regions:[],
-    msgJump:'无跳转',
+    msgSendMode:'supplementPush', msgJump:'无跳转',
     msgGroup:'', msgAppPage:'', msgUrl:'',
     mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'',
     jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'',
@@ -4635,10 +4649,11 @@ function openEditDrawer(type, id){
     state.drawer.msgGroup = row?.msgGroup || (row?.project==='TW' ? '【TW】系统通知' : '【DANA】资金变更');
     state.drawer.msgAppPage = row?.msgAppPage || '';
     state.drawer.msgUrl = row?.msgUrl || '';
+    state.drawer.contentDraft = emptyContentDraft(channelKeysFromLabels(row?.channels));
+    state.drawer.msgSendMode = row?.msgSendMode || inferMsgSendModeFromChannels(state.drawer.contentDraft.channels);
     hydrateOpAudienceFromRow(row);
     hydrateOpPlanFromRow(row);
     ensureJumpConfigState(true);
-    state.drawer.contentDraft = emptyContentDraft(channelKeysFromLabels(row?.channels));
     ensureDraftByLang();
     const cfg = DRAWER_CFG.operation;
     document.getElementById('listView').classList.add('hidden');
@@ -4740,6 +4755,7 @@ function openTemplateEditor(mode, row){
     tplProjects: isEdit ? tplProjectsForForm(row) : TPL_PROJECT_OPTS.slice(),
     tplChannels: normalizeTemplateChannelKeys(channelKeysFromLabels(row?.channels), tplType),
     tplDesc: '',
+    msgSendMode: isEdit ? (row?.msgSendMode || inferMsgSendModeFromChannels(channelKeysFromLabels(row?.channels))) : 'supplementPush',
     msgJump: isEdit ? (row?.msgJump || '无跳转') : '无跳转',
     msgGroup: isEdit ? (row?.msgGroup || '【DANA】资金变更') : '【DANA】资金变更',
     msgAppPage: isEdit ? (row?.msgAppPage || '') : '',
@@ -5393,6 +5409,7 @@ function saveWithEnglishCheck(successMsg, thenClose){
     applyOpAudienceToRow(row);
     const draft = state.drawer.contentDraft;
     row.channels = channelLabelsFromKeys((draft && draft.channels) || ['push']);
+    row.msgSendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels((draft && draft.channels) || []);
     row.msgJump = state.drawer.msgJump || '无跳转';
     row.msgGroup = state.drawer.msgGroup || '';
     row.msgAppPage = state.drawer.msgAppPage || '';
@@ -5447,6 +5464,7 @@ function setCreateLang(lang){
 function toggleCreateChannel(ch, checked){
   syncDraftFromInputs();
   const draft = state.drawer.contentDraft || ensureContentDraft();
+  const prevChannels = (draft.channels || []).slice();
   const set = new Set(draft.channels || []);
   if(checked){
     set.add(ch);
@@ -5459,6 +5477,7 @@ function toggleCreateChannel(ch, checked){
     set.delete(ch);
   }
   draft.channels = formChannelKeys().filter(k=>set.has(k));
+  syncMsgSendModeWithChannels(prevChannels);
   draft.dirty = true;
   state.drawer.focusChannel = draft.channels[0];
   renderFormBody();
@@ -5486,6 +5505,7 @@ function ensureContentDraft(){
 }
 function syncDraftFromInputs(){
   const draft = state.drawer.contentDraft;
+  const sendModeEl = document.getElementById('msgSendMode');
   const jumpEl = document.getElementById('msgJump');
   const groupEl = document.getElementById('msgGroup');
   const msgAppEl = document.getElementById('msgAppPage');
@@ -5493,6 +5513,7 @@ function syncDraftFromInputs(){
   const mailChEl = document.getElementById('mailChannel');
   const mailJumpEl = document.getElementById('mailJump');
   const mailFreqEl = document.getElementById('mailFreq');
+  if(sendModeEl) state.drawer.msgSendMode = sendModeEl.value;
   if(jumpEl) state.drawer.msgJump = jumpEl.value;
   if(groupEl) state.drawer.msgGroup = groupEl.value;
   if(msgAppEl) state.drawer.msgAppPage = msgAppEl.value;
@@ -5609,6 +5630,42 @@ function insertDraftVar(v){
   insertTextAtCaret(bodyEl, token);
   markDraftDirty();
 }
+function createFormChannels(){
+  if(isTemplateForm()){
+    const tplType = state.drawer.tplType || '业务通知';
+    const tplChannels = normalizeTemplateChannelKeys(state.drawer.tplChannels, tplType);
+    return tplChannels.length ? tplChannels.slice() : ['push'];
+  }
+  const draft = state.drawer.contentDraft;
+  return (draft && draft.channels) ? draft.channels.slice() : ['push'];
+}
+function inferMsgSendModeFromChannels(channels){
+  const chs = channels || [];
+  if(chs.includes('msg') && !chs.includes('push')) return 'direct';
+  if(chs.includes('push') && chs.includes('msg')) return 'supplementPush';
+  return 'supplementPush';
+}
+function msgSendModeLabel(mode){
+  return mode === 'direct' ? '直接发送' : '补充Push';
+}
+function syncMsgSendModeWithChannels(prevChannels){
+  const chs = createFormChannels();
+  if(!chs.includes('msg')) return;
+  const hadPush = (prevChannels || []).includes('push');
+  const hasPush = chs.includes('push');
+  if(!hasPush){
+    state.drawer.msgSendMode = 'direct';
+  } else if(!hadPush || !state.drawer.msgSendMode){
+    state.drawer.msgSendMode = 'supplementPush';
+  }
+}
+function setMsgSendMode(mode){
+  syncDraftFromInputs();
+  const chs = createFormChannels();
+  if(!chs.includes('push') && mode === 'supplementPush') return;
+  state.drawer.msgSendMode = mode || 'direct';
+  markDraftDirty();
+}
 function setMsgJump(mode){
   syncDraftFromInputs();
   state.drawer.msgJump = mode || '无跳转';
@@ -5622,11 +5679,22 @@ function msgJumpGroupFields(){
   const groups = project==='TW'
     ? ['【TW】系统通知','【TW】账户安全','【TW】资金变更','【TW】活动消息']
     : ['【DANA】资金变更','【DANA】账户安全','【DANA】系统通知','【DANA】活动消息'];
+  const chs = createFormChannels();
+  const canSupplementPush = chs.includes('push');
+  let sendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels(chs);
+  if(!canSupplementPush) sendMode = 'direct';
+  state.drawer.msgSendMode = sendMode;
   const jump = state.drawer.msgJump || '无跳转';
   const group = state.drawer.msgGroup || groups[0];
   const appPage = state.drawer.msgAppPage || '';
   const msgUrl = state.drawer.msgUrl || '';
-  // 私信组别：仅业务通知 + 勾选私信渠道时，放在私信渠道卡片内（左）
+  const sendModeField = showGroup
+    ? ('<div class="field"><label class="label"><span class="req">*</span>私信发送方式</label>' +
+        '<select class="control" id="msgSendMode" onchange="setMsgSendMode(this.value)">' +
+          '<option value="supplementPush"' + (sendMode==='supplementPush'?' selected':'') + (canSupplementPush?'':' disabled') + '>补充Push</option>' +
+          '<option value="direct"' + (sendMode==='direct'?' selected':'') + '>直接发送</option>' +
+        '</select></div>')
+    : '';
   const groupField = showGroup
     ? ('<div class="field"><label class="label"><span class="req">*</span>私信组别</label>' +
         '<select class="control" id="msgGroup" onchange="state.drawer.msgGroup=this.value">' +
@@ -5640,10 +5708,10 @@ function msgJumpGroupFields(){
           '<option' + (o===jump?' selected':'') + '>' + o + '</option>'
         ).join('') +
       '</select></div>';
-  let extra = '';
+  let targetField = '';
   if(jump === 'APP 内部跳转'){
-    extra =
-      '<div class="field" style="margin-bottom:12px"><label class="label"><span class="req">*</span>APP 跳转页面</label>' +
+    targetField =
+      '<div class="field"><label class="label"><span class="req">*</span>跳转地址</label>' +
         '<select class="control" id="msgAppPage" onchange="state.drawer.msgAppPage=this.value">' +
           '<option value="">请选择</option>' +
           JUMP_INTERNAL_ADDR_OPTS.map(o=>
@@ -5651,15 +5719,20 @@ function msgJumpGroupFields(){
           ).join('') +
         '</select></div>';
   } else if(jump === 'URL 跳转'){
-    extra =
-      '<div class="field" style="margin-bottom:12px"><label class="label"><span class="req">*</span>URL 跳转链接</label>' +
+    targetField =
+      '<div class="field"><label class="label"><span class="req">*</span>跳转地址</label>' +
         '<input class="control" id="msgUrl" value="' + (msgUrl||'').replace(/"/g,'&quot;') + '"' +
           ' placeholder="请输入跳转链接" oninput="state.drawer.msgUrl=this.value"></div>';
+  } else {
+    targetField =
+      '<div class="field"><label class="label">跳转地址</label>' +
+        '<input class="control" disabled placeholder="—"></div>';
   }
   if(showGroup){
-    return '<div class="grid2" style="margin-bottom:12px">' + groupField + jumpField + '</div>' + extra;
+    return '<div class="grid2" style="margin-bottom:12px">' + sendModeField + groupField + '</div>' +
+      '<div class="grid2" style="margin-bottom:12px">' + jumpField + targetField + '</div>';
   }
-  return '<div style="margin-bottom:12px">' + jumpField + '</div>' + extra;
+  return '<div style="margin-bottom:12px">' + jumpField + '</div>' + targetField;
 }
 function mailChannelFields(){
   const channel = state.drawer.mailChannel || 'EMAIL-SES';
@@ -5676,7 +5749,7 @@ function channelEditorBlock(ch, content, vars, esc){
   const isMsg = ch==='msg';
   const isPush = ch==='push';
   const inPushForm = ['business','operation'].includes(state.drawer.type);
-  // 私信跳转：业务/运营共用编辑器；私信组别仅业务（msgJumpGroupFields 内 type==='business'）
+  // 私信配置：发送方式、组别、跳转（msgJumpGroupFields）
   const showMsgSettings = isMsg && (inPushForm || state.drawer.type==='template');
   const showPushSettings = isPush && (
     state.drawer.type==='business' ||
@@ -5813,6 +5886,7 @@ function applyTemplateContentToDraft(tplId){
   const cur = state.drawer.lang || 'en';
   const curPack = draft.byLang[cur] || draft.byLang.en;
   if(activeChannels.includes('msg')){
+    state.drawer.msgSendMode = tpl.msgSendMode || inferMsgSendModeFromChannels(activeChannels);
     state.drawer.msgJump = tpl.msgJump || '无跳转';
     state.drawer.msgGroup = tpl.msgGroup || state.drawer.msgGroup || '【DANA】资金变更';
     state.drawer.msgAppPage = tpl.msgAppPage || '';
@@ -5907,6 +5981,7 @@ function onTplTypeChange(){
 }
 function onTplChannelChange(){
   syncDraftFromInputs();
+  const prevChannels = createFormChannels();
   const vals = [...document.querySelectorAll('#tplChannelMs input[type=checkbox]:checked')].map(i=>i.value);
   const type = state.drawer.tplType || '业务通知';
   if(!vals.length){
@@ -5918,10 +5993,13 @@ function onTplChannelChange(){
     } else {
       state.drawer.tplChannels = normalizeTemplateChannelKeys([], type);
     }
+    syncMsgSendModeWithChannels(prevChannels);
     renderFormBody();
     return;
   }
   state.drawer.tplChannels = normalizeTemplateChannelKeys(vals, type);
+  if(state.drawer.contentDraft) state.drawer.contentDraft.channels = state.drawer.tplChannels.slice();
+  syncMsgSendModeWithChannels(prevChannels);
   renderFormBody();
 }
 function ensureTplBizRefSelection(){
@@ -6098,6 +6176,7 @@ function saveTemplateForm(){
       row.scope = scope;
       row.projects = saveProjects;
       row.channels = type === '行情提醒' ? [] : channelLabelsFromKeys(channels);
+      row.msgSendMode = channels.includes('msg') ? (state.drawer.msgSendMode || inferMsgSendModeFromChannels(channels)) : '';
       row.msgJump = channels.includes('msg') ? (state.drawer.msgJump || '无跳转') : '';
       row.msgGroup = channels.includes('msg') ? (state.drawer.msgGroup || '') : '';
       row.msgAppPage = channels.includes('msg') ? (state.drawer.msgAppPage || '') : '';
@@ -6128,6 +6207,7 @@ function saveTemplateForm(){
       name,
       type,
       channels: type === '行情提醒' ? [] : channelLabelsFromKeys(channels),
+      msgSendMode: channels.includes('msg') ? (state.drawer.msgSendMode || inferMsgSendModeFromChannels(channels)) : '',
       msgJump: channels.includes('msg') ? (state.drawer.msgJump || '无跳转') : '',
       msgGroup: channels.includes('msg') ? (state.drawer.msgGroup || '') : '',
       msgAppPage: channels.includes('msg') ? (state.drawer.msgAppPage || '') : '',
@@ -7218,6 +7298,8 @@ function renderRecordsBatchDetail(d){
     ['发送时间', d.plan||'—'],
     ['实际发送时间', d.start||'—'],
     ['结束时间', d.end||'—'],
+    ['推送人数', batchPushPeopleCell(d)],
+    ['私信已读', batchMsgReadCell(d)],
     ['打开推送', n(d.click)],
   ])}</div>`;
   const audiencePairs = [
