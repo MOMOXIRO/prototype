@@ -1765,7 +1765,11 @@ function saveCurrentAsTemplate(){
     const pack = draft.byLang[k] || {};
     const title = (pack.title || '').trim();
     const body = (pack.body || pack.byChannel?.push?.body || '').trim();
-    if(title || body) byLang[k] = { title: pack.title||'', body: pack.body || pack.byChannel?.push?.body || '' };
+    if(title || body || pack.pushImage) byLang[k] = {
+      title: pack.title||'',
+      body: pack.body || pack.byChannel?.push?.body || '',
+      ...(pack.pushImage ? { pushImage: { name: pack.pushImage.name || '', url: pack.pushImage.url || '' } } : {})
+    };
   });
   const typeMap = { business:'业务通知', operation:'运营推送', market:'行情提醒' };
   const tplType = typeMap[state.drawer.type];
@@ -3530,7 +3534,7 @@ function jumpRecords(srcId, opts){
 /* ========== Confirm ========== */
 function isDeleteConfirmAction(action){
   return action==='deleteTemplate' || action==='deleteBizRef' || action==='deleteOpType'
-    || action==='removeOpSid' || action==='removeOpImage' || action==='removeCond';
+    || action==='removeOpSid' || action==='removePushImage' || action==='removeOpImage' || action==='removeCond';
 }
 function isToggleConfirmAction(action){
   return action==='enableSettings' || action==='disableSettings';
@@ -3568,7 +3572,7 @@ function askConfirm(action, type, id, msg, opts){
     if(action==='deleteBizRef'){ deleteBizRef(type, id); return; }
     if(action==='deleteOpType'){ deleteOpType(id); return; }
     if(action==='removeOpSid'){ removeOpSid(id, true); return; }
-    if(action==='removeOpImage'){ removeOpImage(Number(id), true); return; }
+    if(action==='removePushImage' || action==='removeOpImage'){ removePushImage(true); return; }
     if(action==='removeCond'){
       if(pendingRow && pendingRow.parentElement) pendingRow.remove();
       return;
@@ -4504,7 +4508,6 @@ function openCreatePage(type){
     state.drawer.name = '';
     state.drawer.opType = selectableOpTypes()[0]?.name || '活动通知';
     ensureOpTypeSelection();
-    state.drawer.opImages = [];
     state.drawer.lang = 'en';
     state.drawer.msgJump = '无跳转';
     state.drawer.msgGroup = '【DANA】资金变更';
@@ -4643,7 +4646,6 @@ function openEditDrawer(type, id){
     state.drawer.name = row?.name || '';
     state.drawer.opType = row?.opType || row?.category || selectableOpTypes()[0]?.name || '活动通知';
     ensureOpTypeSelection();
-    state.drawer.opImages = state.drawer.opImages || [];
     state.drawer.lang = 'en';
     state.drawer.msgJump = row?.msgJump || '无跳转';
     state.drawer.msgGroup = row?.msgGroup || (row?.project==='TW' ? '【TW】系统通知' : '【DANA】资金变更');
@@ -4772,7 +4774,8 @@ function openTemplateEditor(mode, row){
         title: pack.title||'',
         body: pack.body||'',
         channels: ['push'],
-        byChannel: { push: { title: pack.title||'', body: pack.body||'' } }
+        byChannel: { push: { title: pack.title||'', body: pack.body||'' } },
+        pushImage: pack.pushImage ? { name: pack.pushImage.name || '', url: pack.pushImage.url || '' } : null
       };
     });
     const en = draft.byLang.en || Object.values(draft.byLang)[0];
@@ -5328,7 +5331,8 @@ function snapshotCurrentLangPack(){
     title: draft.title || '',
     body: draft.body || pushBody || '',
     channels: (draft.channels || []).slice(),
-    byChannel: JSON.parse(JSON.stringify(draft.byChannel || {}))
+    byChannel: JSON.parse(JSON.stringify(draft.byChannel || {})),
+    pushImage: draft.pushImage ? { name: draft.pushImage.name || '', url: draft.pushImage.url || '' } : null
   };
 }
 function applyLangPack(pack){
@@ -5337,6 +5341,7 @@ function applyLangPack(pack){
   draft.title = pack.title || '';
   draft.body = pack.body || (pack.byChannel && pack.byChannel.push && pack.byChannel.push.body) || '';
   draft.channels = (pack.channels && pack.channels.length) ? pack.channels.slice() : (draft.channels || ['push']);
+  draft.pushImage = pack.pushImage ? { name: pack.pushImage.name || '', url: pack.pushImage.url || '' } : null;
   if(pack.byChannel){
     draft.byChannel = JSON.parse(JSON.stringify(pack.byChannel));
   } else if(isTemplateForm()){
@@ -5348,6 +5353,71 @@ function applyLangPack(pack){
   Object.keys(draft.byChannel).forEach(ch=>{
     if(draft.byChannel[ch]) draft.byChannel[ch].title = draft.title;
   });
+}
+function currentPushImage(){
+  const draft = state.drawer.contentDraft;
+  return (draft && draft.pushImage && draft.pushImage.url) ? draft.pushImage : null;
+}
+function pushImageLangCount(){
+  const draft = state.drawer.contentDraft;
+  if(!draft) return 0;
+  ensureDraftByLang();
+  return Object.keys(draft.byLang || {}).filter(k=>draft.byLang[k]?.pushImage?.url).length;
+}
+function pushImageFieldHtml(esc){
+  const img = currentPushImage();
+  const canAdd = !img;
+  return '<div class="field" style="margin-bottom:12px">' +
+    '<label class="label">图片</label>' +
+    '<div class="op-img-list" id="pushImageList">' +
+      (img
+        ? ('<div class="op-img-item"><img src="' + esc(img.url) + '" alt="' + esc(img.name) + '">' +
+            '<button type="button" class="rm icon-btn danger" title="删除" onclick="askRemovePushImage()">' + I.trash + '</button></div>')
+        : '') +
+      (canAdd
+        ? ('<label class="op-img-add"><input type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" onchange="onPushImageChange(this)">' +
+            '<span style="font-size:20px;line-height:1">＋</span><span>添加图片</span></label>')
+        : '') +
+    '</div>' +
+    '<div style="margin-top:8px;font-size:12px;color:var(--muted)">支持 jpg / png，每个语言最多 1 张</div>' +
+  '</div>';
+}
+function onPushImageChange(input){
+  const files = [...(input.files || [])];
+  if(!files.length) return;
+  const draft = ensureContentDraft();
+  const f = files[0];
+  const name = (f.name || '').toLowerCase();
+  const type = (f.type || '').toLowerCase();
+  const okExt = /\.(jpe?g|png)$/.test(name);
+  const okType = type === 'image/jpeg' || type === 'image/png' || (!type && okExt);
+  if(type === 'image/gif' || /\.gif$/.test(name) || !okType){
+    toast('仅支持 jpg / png，不支持 gif');
+    input.value = '';
+    return;
+  }
+  if(draft.pushImage && draft.pushImage.url && String(draft.pushImage.url).startsWith('blob:')){
+    URL.revokeObjectURL(draft.pushImage.url);
+  }
+  draft.pushImage = { name: f.name, url: URL.createObjectURL(f) };
+  draft.dirty = true;
+  ensureDraftByLang();
+  input.value = '';
+  renderFormBody();
+}
+function askRemovePushImage(){
+  askConfirm('removePushImage', state.drawer.type || 'operation', '', '确认删除该图片吗？');
+}
+function removePushImage(confirmed){
+  if(!confirmed){ askRemovePushImage(); return; }
+  const draft = state.drawer.contentDraft;
+  if(!draft) return;
+  const img = draft.pushImage;
+  if(img && img.url && String(img.url).startsWith('blob:')) URL.revokeObjectURL(img.url);
+  draft.pushImage = null;
+  draft.dirty = true;
+  ensureDraftByLang();
+  renderFormBody();
 }
 function ensureDraftByLang(){
   const draft = state.drawer.contentDraft;
@@ -5749,12 +5819,14 @@ function channelEditorBlock(ch, content, vars, esc){
   const isMsg = ch==='msg';
   const isPush = ch==='push';
   const inPushForm = ['business','operation'].includes(state.drawer.type);
-  // 私信配置：发送方式、组别、跳转（msgJumpGroupFields）
   const showMsgSettings = isMsg && (inPushForm || state.drawer.type==='template');
   const showPushSettings = isPush && (
     state.drawer.type==='business' ||
     state.drawer.type==='operation' ||
     (state.drawer.type==='template' && state.drawer.tplType!=='行情提醒')
+  );
+  const showPushImage = showPushSettings && (
+    inPushForm || (state.drawer.type==='template' && state.drawer.tplType!=='行情提醒')
   );
   const showMailSettings = isMail && inPushForm;
   const bodyHtml = bodyTextToHtml(content.body || '');
@@ -5762,6 +5834,7 @@ function channelEditorBlock(ch, content, vars, esc){
     '<div class="ch-block-hd">' + meta.n + '</div>' +
     '<div class="ch-block-bd">' +
       (showPushSettings ? jumpConfigBlock() : '') +
+      (showPushImage ? pushImageFieldHtml(esc) : '') +
       (showMsgSettings ? msgJumpGroupFields() : '') +
       (showMailSettings ? mailChannelFields() : '') +
       '<div class="field" style="margin-bottom:12px"><label class="label"><span class="req">*</span>' + meta.bodyLabel + '</label>' +
@@ -5880,7 +5953,8 @@ function applyTemplateContentToDraft(tplId){
       title: pack.title||'',
       body: pack.body||'',
       channels: activeChannels.slice(),
-      byChannel
+      byChannel,
+      pushImage: pack.pushImage ? { name: pack.pushImage.name || '', url: pack.pushImage.url || '' } : null
     };
   });
   const cur = state.drawer.lang || 'en';
@@ -6163,7 +6237,11 @@ function saveTemplateForm(){
     const pack = draft.byLang[k] || {};
     const title = (pack.title||'').trim();
     const body = (pack.body || pack.byChannel?.push?.body || '').trim();
-    if(title || body) byLang[k] = { title: pack.title||'', body: pack.body || pack.byChannel?.push?.body || '' };
+    if(title || body || pack.pushImage) byLang[k] = {
+      title: pack.title||'',
+      body: pack.body || pack.byChannel?.push?.body || '',
+      ...(pack.pushImage ? { pushImage: { name: pack.pushImage.name || '', url: pack.pushImage.url || '' } } : {})
+    };
   });
   const bizFields = type === '业务通知'
     ? { bizType: bizTypeLabel, scenarioId, activityId }
@@ -6997,7 +7075,6 @@ function renderOperationContentLeft(){
   if(!state.drawer.contentDraft){
     state.drawer.contentDraft = emptyContentDraft(['push']);
   }
-  if(!state.drawer.opImages) state.drawer.opImages = [];
   if(!state.drawer.lang) state.drawer.lang = 'en';
   const draft = state.drawer.contentDraft;
   ensureDraftByLang();
@@ -7013,8 +7090,6 @@ function renderOperationContentLeft(){
   }
   const selected = new Set(draft.channels);
   const editorChannels = draft.channels.filter(ch=>CONTENT_EDITOR_CHANNEL_KEYS.includes(ch));
-  const imgs = state.drawer.opImages || [];
-  const canAddImg = imgs.length < 1;
   const editors = sharedTitleField(draft, esc) +
     (editorChannels.map(ch=>
       channelEditorBlock(ch, draft.byChannel[ch] || defaultChannelContent(ch), [], esc)
@@ -7042,20 +7117,6 @@ function renderOperationContentLeft(){
       renderLangTabsBar(curL) +
       '<div class="editor-body">' + editors + '</div>' +
     '</div>' +
-    '<div class="field" style="margin-top:14px">' +
-      '<label class="label">图片</label>' +
-      '<div class="op-img-list" id="opImageList">' +
-        imgs.map((img,i)=>
-          '<div class="op-img-item"><img src="' + esc(img.url) + '" alt="' + esc(img.name) + '">' +
-          '<button type="button" class="rm icon-btn danger" title="删除" onclick="askRemoveOpImage(' + i + ')">' + I.trash + '</button></div>'
-        ).join('') +
-        (canAddImg
-          ? ('<label class="op-img-add"><input type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" onchange="onOpImagesChange(this)">' +
-              '<span style="font-size:20px;line-height:1">＋</span><span>添加图片</span></label>')
-          : '') +
-      '</div>' +
-      '<div style="margin-top:8px;font-size:12px;color:var(--muted)">支持 jpg / png，最多 1 张</div>' +
-    '</div>' +
   '</div>';
 }
 function setOpContentTitle(v){
@@ -7077,46 +7138,6 @@ function setOpContentBody(v){
   draft.dirty = true;
   if(!draft.byChannel.push) draft.byChannel.push = { title: draft.title || '', body:v };
   else draft.byChannel.push.body = v;
-}
-function onOpImagesChange(input){
-  const files = [...(input.files || [])];
-  if(!files.length) return;
-  if(!state.drawer.opImages) state.drawer.opImages = [];
-  if(state.drawer.opImages.length >= 1){
-    toast('最多上传 1 张图片');
-    input.value = '';
-    return;
-  }
-  const f = files[0];
-  const name = (f.name || '').toLowerCase();
-  const type = (f.type || '').toLowerCase();
-  const okExt = /\.(jpe?g|png)$/.test(name);
-  const okType = type === 'image/jpeg' || type === 'image/png' || (!type && okExt);
-  if(type === 'image/gif' || /\.gif$/.test(name) || !okType){
-    toast('仅支持 jpg / png，不支持 gif');
-    input.value = '';
-    return;
-  }
-  // 替换为最多 1 张
-  (state.drawer.opImages || []).forEach(item=>{
-    if(item && item.url && String(item.url).startsWith('blob:')) URL.revokeObjectURL(item.url);
-  });
-  const url = URL.createObjectURL(f);
-  state.drawer.opImages = [{ name: f.name, url }];
-  input.value = '';
-  renderFormBody();
-}
-function askRemoveOpImage(idx){
-  askConfirm('removeOpImage','operation', String(idx), '确认删除该图片吗？');
-}
-function removeOpImage(idx, confirmed){
-  if(!confirmed){ askRemoveOpImage(idx); return; }
-  const list = state.drawer.opImages || [];
-  const item = list[idx];
-  if(item && item.url && String(item.url).startsWith('blob:')) URL.revokeObjectURL(item.url);
-  list.splice(idx, 1);
-  state.drawer.opImages = list;
-  renderFormBody();
 }
 function renderPushCreateSplit(){
   const type = state.drawer.type;
@@ -7743,7 +7764,7 @@ function operationStep(step){
         <div class="row"><div class="k">选择对象</div><div class="v">${opAudienceSummary()}</div></div>
         <div class="row"><div class="k">标题</div><div class="v">${draft.title||'-'}</div></div>
         <div class="row"><div class="k">正文</div><div class="v">${(draft.body||'-').slice(0,80)}${(draft.body||'').length>80?'…':''}</div></div>
-        <div class="row"><div class="k">图片</div><div class="v">${(state.drawer.opImages||[]).length} 张</div></div>
+        <div class="row"><div class="k">图片</div><div class="v">${pushImageLangCount()} 张（按语言）</div></div>
         <div class="row"><div class="k">发送计划</div><div class="v">${opSendPlanSummary()}</div></div>
       </div>
     </div>`;
