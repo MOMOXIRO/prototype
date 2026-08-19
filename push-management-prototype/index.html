@@ -63,15 +63,15 @@ a:hover{text-decoration:underline}
 .create-steps{display:flex;gap:0;padding:0 20px;border-bottom:1px solid var(--line);background:#fbfcff;overflow-x:auto;flex-shrink:0}
 .create-body{flex:1;overflow:auto;padding:0;max-width:none}
 .create-body.is-wizard{padding:20px 24px;max-width:1080px;margin:0 auto;width:100%;box-sizing:border-box}
-.create-body.is-wizard.is-tpl-form{max-width:720px}
 .create-foot{padding:12px 20px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;flex-shrink:0;position:sticky;bottom:0}
 .create-foot .left,.create-foot .right{display:flex;gap:8px;align-items:center}
 
 /* Create split: left content / right config */
-.split-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);min-height:560px;height:100%}
+.split-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);min-height:560px;height:100%}
 .split-left,.split-right{min-width:0;overflow:auto}
 .split-left{padding:18px 20px 24px;border-right:1px solid var(--line);background:#fff}
 .split-right{padding:18px 18px 24px;background:#f8fafc}
+.split-right .grid2,.split-right .grid3{grid-template-columns:1fr}
 .split-panel-title{font-size:14px;font-weight:600;margin:0 0 12px;color:#1f2430}
 .split-panel-title .hint{font-weight:400;font-size:12px;color:var(--muted);margin-left:8px}
 .content-mode{display:flex;gap:0;margin-bottom:14px;border:1px solid var(--field-line);border-radius:8px;overflow:hidden;width:fit-content;background:#fff}
@@ -556,19 +556,17 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
 .pri-badge.p1{background:#ffedd5;color:#c2410c}
 .pri-badge.p2{background:#dbeafe;color:#1d4ed8}
 .pri-badge.p3{background:#eef2f7;color:#64748b}
-.market-rule-stack{display:flex;flex-direction:column;gap:20px}
+.market-rule-stack{display:flex;flex-direction:column;align-items:flex-start;gap:20px}
+.market-rule-sec{width:100%;max-width:680px}
 .market-rule-sec-hd{font-size:16px;font-weight:700;margin:0 0 12px;color:var(--text);letter-spacing:.02em}
 .market-rule-label{font-size:12px;color:#64748b;margin:12px 0 8px}
 .market-rule-label:first-child{margin-top:0}
 .market-shaving-compact{margin-top:12px;padding-top:12px;border-top:1px solid #edf1f7}
-.market-rule-table .control{height:32px;min-width:84px}
-.tier-drag-handle{width:30px;height:30px;border:1px solid var(--field-line);border-radius:7px;background:#fff;color:#94a3b8;display:inline-flex;align-items:center;justify-content:center;cursor:grab;user-select:none}
-.tier-drag-handle:hover{color:var(--pri);border-color:#bfd0ff;background:#f5f8ff}
-.tier-drag-handle:active{cursor:grabbing}
-.tier-drag-handle svg{width:14px;height:14px;fill:currentColor;stroke:none}
-tr.tier-row-dragging{opacity:.45}
-tr.tier-drop-before>td{box-shadow:inset 0 2px 0 var(--pri)}
-tr.tier-drop-after>td{box-shadow:inset 0 -2px 0 var(--pri)}
+.market-rule-table{width:100%;max-width:680px;margin-top:0}
+.market-rule-table .data-table{width:100%;min-width:0;table-layout:fixed}
+.market-rule-table .data-table thead th,.market-rule-table .data-table tbody td{padding:0 10px}
+.market-rule-table .data-table tbody td{height:44px}
+.market-rule-table .control{height:32px;min-width:72px}
 .market-rule-summary{margin-top:12px;padding:10px 12px;border:1px solid #dbe4ff;background:#f5f8ff;border-radius:8px;font-size:12px;color:#334155;line-height:1.65}
 .market-rule-inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .market-rule-inline .control{width:88px;height:34px}
@@ -959,7 +957,6 @@ tr.tier-drop-after>td{box-shadow:inset 0 -2px 0 var(--pri)}
                 <div>
                   <h2>行情推送规则</h2>
                 </div>
-                <button class="btn" type="button" onclick="saveMarketPushRules()">保存</button>
               </div>
               <div class="market-rule-stack" id="marketPushRuleBody"></div>
             </div>
@@ -1199,6 +1196,26 @@ tr.tier-drop-after>td{box-shadow:inset 0 -2px 0 var(--pri)}
   </div>
 </div>
 
+<!-- 创建任务 · 保存为模板 -->
+<div class="modal" id="saveAsTemplateModal" onclick="if(event.target===this)closeSaveAsTemplateModal()">
+  <div class="modal-card" style="width:min(480px,96vw)">
+    <div class="modal-head">
+      <h3>保存为模板</h3>
+      <button class="drawer-close" onclick="closeSaveAsTemplateModal()" title="关闭">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label class="label"><span class="req">*</span>模板名称</label>
+        <input class="control" id="saveAsTemplateName" maxlength="50" placeholder="请输入模板名称">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeSaveAsTemplateModal()">取消</button>
+      <button class="btn" onclick="saveCurrentAsTemplate()">保存</button>
+    </div>
+  </div>
+</div>
+
 <!-- 运营推送类型 新增编辑 -->
 <div class="modal" id="opTypeEditorModal" onclick="if(event.target===this)closeOpTypeEditor()">
   <div class="modal-card" style="width:min(480px,96vw)">
@@ -1310,18 +1327,12 @@ const state = {
   marketChartRowId: null,
   tplFilter: { q:'', type:'', scope:'' },
   mktCreateTemplateId: '',
-  marketPushRules: {
+  batchPushRules: {
     eligibility: {
       businessRelation: 'OR',
       businessConditions: [
         { key:'recentActive', label:'最近活跃', value:30, unit:'天', enabled:true },
         { key:'vipLevel', label:'VIP 等级', value:3, prefix:'≥', enabled:true }
-      ],
-      reachabilityRelation: 'AND',
-      reachability: [
-        { key:'validToken', label:'APP 未卸载 / Push Token 有效', enabled:true },
-        { key:'systemPermission', label:'系统通知权限开启', enabled:true },
-        { key:'marketPermission', label:'APP 内「行情通知」开关开启', enabled:true }
       ]
     },
     audiencePriority: {
@@ -1330,20 +1341,18 @@ const state = {
         { level:2, audience:'VIP 等级', vipLevel:2, delayMinutes:1, enabled:true },
         { level:3, audience:'已转化用户 且 最近30天活跃', delayMinutes:5, enabled:true },
         { level:4, audience:'注册未转化 且 最近30天活跃', delayMinutes:30, enabled:true }
-      ],
-      throttle: { enabled:true, mode:'auto', shardIntervalMinutes:1 }
+      ]
     },
     throttle: {
-      dimension: ['用户','品种','行情提醒任务'],
+      dimensionLabel: '同一用户 · 同一品种 · 同一提醒',
       cooldownMinutes:60,
       maxCount:1
-    },
-    duplicateControl: {
-      suppressWhileConditionMet:true,
-      allowAfterRecovery:true
     }
   },
 };
+function currentBatchPushRules(){
+  return state.batchPushRules;
+}
 
 const TAB_LABEL = { business:'业务通知', operation:'运营推送', market:'行情提醒', records:'推送记录', template:'模板中心', settings:'推送设置' };
 const ROLE_TABS = {
@@ -1393,8 +1402,8 @@ const DATA = {
   ],
   operation: [
     {id:'OP0091',name:'印尼斋月活动召回',project:'Dana',apps:['DANA App'],opType:'用户召回',category:'用户召回',priority:'P2',audience:'地区：+62 [ID]',audienceMode:'region',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'动态计算',channels:['Push','私信'],plan:'循环发送',loopType:'weekly',weekdays:['周一'],sendTime:'10:00',next:'2026-07-25 10:00:00',batches:12,sent:386200,status:'运行中',operator:'amy.li',creator:'amy.li',created:'2026-07-01 10:00:00',updated:'2026-07-23 15:20:00'},
-    {id:'OP0090',name:'VIP3 及以上周末福利',project:'TW',apps:['TW Trade'],opType:'福利通知',category:'福利通知',priority:'P2',audience:'VIP3 及以上',audienceMode:'tagverse',tagVerse:'VIP3 及以上',region:'',regions:[],crowd:'每次执行重新计算',channels:['Push','邮件'],plan:'循环发送',loopType:'weekly',weekdays:['周六','周日'],sendTime:'09:00',next:'2026-07-26 09:00:00',batches:4,sent:42880,status:'运行中',operator:'kevin.w',creator:'kevin.w',created:'2026-07-10 09:00:00',updated:'2026-07-22 11:11:11'},
-    {id:'OP0089',name:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',opType:'系统维护',category:'系统维护',priority:'P0',audience:'导入 SID：2,136 人',audienceMode:'import',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'固定名单',channels:['Push','私信','邮件'],plan:'单次定时',next:'2026-07-24 22:00:00',batches:0,sent:0,status:'待生效',operator:'ops.admin',creator:'ops.admin',created:'2026-07-24 10:05:00',updated:'2026-07-24 10:05:00'},
+    {id:'OP0090',name:'VIP3 及以上周末福利',project:'TW',apps:['TW Trade'],opType:'福利通知',category:'福利通知',priority:'P2',audience:'VIP3 及以上',audienceMode:'tagverse',tagVerse:'VIP3 及以上',region:'',regions:[],crowd:'每次执行重新计算',channels:['Push'],plan:'循环发送',loopType:'weekly',weekdays:['周六','周日'],sendTime:'09:00',next:'2026-07-26 09:00:00',batches:4,sent:42880,status:'运行中',operator:'kevin.w',creator:'kevin.w',created:'2026-07-10 09:00:00',updated:'2026-07-22 11:11:11'},
+    {id:'OP0089',name:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',opType:'系统维护',category:'系统维护',priority:'P0',audience:'导入 SID：2,136 人',audienceMode:'import',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'固定名单',channels:['Push','私信'],plan:'单次定时',next:'2026-07-24 22:00:00',batches:0,sent:0,status:'待生效',operator:'ops.admin',creator:'ops.admin',created:'2026-07-24 10:05:00',updated:'2026-07-24 10:05:00'},
     {id:'OP0088',name:'全量用户节假日问候',project:'TW',apps:[],opType:'活动通知',category:'活动通知',priority:'P1',audience:'全量用户',audienceMode:'add',region:'',regions:[],crowd:'动态计算',channels:['Push'],plan:'立即发送',next:'--',batches:1,sent:920114,status:'已完成',operator:'mia.chen',creator:'mia.chen',created:'2026-06-28 08:00:00',updated:'2026-07-01 08:30:00'},
     {id:'OP0087',name:'订阅黄金行情用户活动',project:'TW',apps:['TW Trade','TW Lite'],opType:'活动通知',category:'活动通知',priority:'P1',audience:'订阅：黄金主题 / +62 [ID]',audienceMode:'add',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'动态计算',channels:['Push','WhatsApp'],plan:'单次定时',next:'2026-07-28 14:00:00',batches:0,sent:0,status:'待生效',operator:'amy.li',creator:'amy.li',created:'2026-07-20 16:40:00',updated:'2026-07-20 16:40:00'},
     {id:'OP0085',name:'TW 项目地区推广',project:'TW',apps:['TW Trade'],opType:'其他',category:'其他',priority:'P3',audience:'地区：+84 [VN]、+66 [TH]',audienceMode:'region',region:'+84 [VN]、+66 [TH]',regions:['+84 [VN]','+66 [TH]'],crowd:'固定快照',channels:['Push','私信'],plan:'立即发送',next:'--',batches:1,sent:55620,status:'已暂停',operator:'ops.admin',creator:'ops.admin',created:'2026-07-15 13:00:00',updated:'2026-07-18 13:00:00'},
@@ -1418,11 +1427,11 @@ const DATA = {
     {id:'RB22074',type:'行情提醒',srcId:'MK0039',srcName:'USOIL 成交量异常',project:'TW',apps:['TW Lite'],priority:'P2',reason:'USOIL 成交量增长达到 86%',channels:['Push'],plan:'2026-07-23 16:30:00',start:'2026-07-23 16:30:01',end:'2026-07-23 16:30:28',target:1520,ok:1508,fail:12,reach:1290,click:188,status:'已完成',operator:'孙琦'},
     {id:'RB22072',type:'行情提醒',srcId:'MK0040',srcName:'ETH 剧烈波动',project:'TW',apps:['TW Trade','TW Lite'],priority:'P2',reason:'ETHUSD 15 分钟振幅达到 5.42%',channels:['Push'],plan:'2026-07-20 21:44:00',start:'2026-07-20 21:44:00',end:'2026-07-20 21:44:28',target:5640,ok:5520,fail:120,reach:4102,click:688,status:'已完成',operator:'林涛'},
     {id:'RB22071',type:'行情提醒',srcId:'MK0040',srcName:'ETH 剧烈波动',project:'TW',apps:['TW Trade','TW Lite'],priority:'P2',reason:'BTCUSD 15 分钟振幅达到 5.11%',channels:['Push'],plan:'2026-07-19 14:12:33',start:'2026-07-19 14:12:33',end:'2026-07-19 14:13:02',target:6120,ok:6010,fail:110,reach:4488,click:720,status:'已完成',operator:'林涛'},
-    {id:'RB22078',type:'运营推送',srcId:'OP0089',srcName:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',priority:'P0',reason:'运营人员手动立即发送',channels:['Push','私信','邮件'],plan:'2026-07-24 22:00:00',start:'2026-07-24 22:00:01',end:'--',target:2136,ok:860,fail:12,reach:0,click:0,status:'执行中',operator:'ops.admin'},
+    {id:'RB22078',type:'运营推送',srcId:'OP0089',srcName:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',priority:'P0',reason:'运营人员手动立即发送',channels:['Push','私信'],plan:'2026-07-24 22:00:00',start:'2026-07-24 22:00:01',end:'--',target:2136,ok:860,fail:12,reach:0,click:0,status:'执行中',operator:'ops.admin'},
     {id:'RB22077',type:'业务通知',srcId:'BN0017',srcName:'大额充值成功提醒',project:'Dana',apps:['DANA App','GoCap','Partner App'],priority:'P1',reason:'用户完成充值',channels:['Push','私信'],plan:'2026-07-24 08:55:41',start:'2026-07-24 08:55:41',end:'2026-07-24 08:55:42',target:1,ok:0,fail:1,reach:0,click:0,status:'已完成',operator:'李晨'},
     {id:'RB22066',type:'业务通知',srcId:'BN0012',srcName:'模拟大赛对手匹配',project:'Dana',apps:['DANA App','FDTrek'],priority:'P2',reason:'活动推送触发 · 模拟大赛对手匹配',channels:['Push'],plan:'2026-07-15 09:30:00',start:'2026-07-15 09:30:00',end:'2026-07-15 09:31:18',target:1840,ok:1792,fail:48,reach:1510,click:220,status:'已完成',operator:'王敏'},
     {id:'RB22073',type:'运营推送',srcId:'OP0087',srcName:'订阅黄金行情用户活动',project:'TW',apps:['TW Trade'],priority:'P2',reason:'单次定时待发送',channels:['Push','WhatsApp'],plan:'2026-07-28 14:00:00',start:'--',end:'--',target:18640,ok:0,fail:0,reach:0,click:0,status:'未开始',operator:'张三',title:'黄金行情专属活动',body:'订阅黄金行情的用户专属福利即将开启，记得准时参与。'},
-    {id:'RB22070',type:'运营推送',srcId:'OP0090',srcName:'VIP3 及以上周末福利',project:'TW',apps:['TW Trade'],priority:'P2',reason:'单次定时待发送',channels:['Push','邮件'],plan:'2026-07-30 09:00:00',start:'--',end:'--',target:42880,ok:0,fail:0,reach:0,click:0,status:'未开始',operator:'李晨',title:'VIP 周末福利提醒',body:'尊敬的 VIP 用户，本周末专属福利即将发放，请留意站内消息。'},
+    {id:'RB22070',type:'运营推送',srcId:'OP0090',srcName:'VIP3 及以上周末福利',project:'TW',apps:['TW Trade'],priority:'P2',reason:'单次定时待发送',channels:['Push'],plan:'2026-07-30 09:00:00',start:'--',end:'--',target:42880,ok:0,fail:0,reach:0,click:0,status:'未开始',operator:'李晨',title:'VIP 周末福利提醒',body:'尊敬的 VIP 用户，本周末专属福利即将发放，请留意站内消息。'},
   ],
   recordsUser: [
     {id:'RB22082',sid:'10086231',project:'Dana',app:'Dana App',region:'+62 [ID]',lang:'印尼语',channel:'Push',title:'模拟大赛交易提醒',body:'Hi Budi, BTCUSD 现价有变动，活动截止前记得交易…',vars:'{userName}=Budi,{activityName}=模拟大赛交易提醒三',plan:'2026-07-24 10:00:12',sent:'2026-07-24 10:00:13',reach:'2026-07-24 10:00:16',click:'2026-07-24 10:01:02',status:'成功',fail:'--',retry:0},
@@ -1529,11 +1538,18 @@ function issueTypePill(type){
   return `<span class="pill ${cls[type]||'draft'}">${type}</span>`;
 }
 function channelTags(arr){
-  const hidden = new Set(['邮件','WhatsApp','Email','WA']);
+  const hidden = new Set(['WhatsApp','WA']);
   const list = (arr||[]).filter(c=>!hidden.has(c));
-  const cls = {Push:'push','私信':'msg','APP Push':'push'};
+  const cls = {Push:'push','私信':'msg','APP Push':'push','邮件':'mail'};
   if(!list.length) return '<span class="muted">--</span>';
   return `<div class="tags">${list.map(c=>`<span class="tag ${cls[c]||''}">${c}</span>`).join('')}</div>`;
+}
+function operationChannelTags(arr){
+  const allowed = new Set(['Push','私信','APP Push']);
+  return channelTags((arr||[]).filter(c=>allowed.has(c)));
+}
+function recordChannelTags(batch){
+  return batch && batch.type==='运营推送' ? operationChannelTags(batch.channels) : channelTags(batch.channels);
 }
 function appList(app){
   const arr = Array.isArray(app) ? app : (app ? [app] : []);
@@ -1701,6 +1717,84 @@ function saveRecordEdit(){
     return;
   }
   applyRecordEditSave(id, plan, title, body);
+}
+function suggestedTemplateName(){
+  if(state.drawer.type==='business'){
+    const typeKey = state.drawer.bizType === 'activity' ? 'activity' : 'business';
+    const refId = state.drawer.bizRefId || '';
+    return bizRefNameById(typeKey, refId) || '业务通知模板';
+  }
+  if(state.drawer.type==='operation') return (state.drawer.name || '').trim() || '运营推送模板';
+  if(state.drawer.type==='market') return (state.drawer.name || '').trim() || '行情提醒模板';
+  return '新模板';
+}
+function openSaveAsTemplateModal(){
+  syncDraftFromInputs();
+  const input = document.getElementById('saveAsTemplateName');
+  if(input){
+    input.value = suggestedTemplateName();
+    setTimeout(()=>{ input.focus(); input.select(); }, 0);
+  }
+  document.getElementById('saveAsTemplateModal').classList.add('show');
+}
+function closeSaveAsTemplateModal(){
+  const el = document.getElementById('saveAsTemplateModal');
+  if(el) el.classList.remove('show');
+}
+function saveCurrentAsTemplate(){
+  const input = document.getElementById('saveAsTemplateName');
+  const name = (input?.value || '').trim();
+  if(!name){ toast('请输入模板名称'); return; }
+  if(!validateEnglishContent()) return;
+  syncDraftFromInputs();
+  ensureDraftByLang();
+  const draft = state.drawer.contentDraft || {};
+  const byLang = {};
+  Object.keys(draft.byLang||{}).forEach(k=>{
+    const pack = draft.byLang[k] || {};
+    const title = (pack.title || '').trim();
+    const body = (pack.body || pack.byChannel?.push?.body || '').trim();
+    if(title || body) byLang[k] = { title: pack.title||'', body: pack.body || pack.byChannel?.push?.body || '' };
+  });
+  const typeMap = { business:'业务通知', operation:'运营推送', market:'行情提醒' };
+  const tplType = typeMap[state.drawer.type];
+  if(!tplType){ toast('当前页面不支持保存为模板'); return; }
+  const maxNum = DATA.templates.reduce((m,r)=>{
+    const n = parseInt(String(r.id).replace(/\D/g,''),10);
+    return Number.isFinite(n) ? Math.max(m,n) : m;
+  }, 0);
+  const nextId = 'TP' + String(maxNum + 1).padStart(4,'0');
+  const channels = state.drawer.type==='market'
+    ? []
+    : channelLabelsFromKeys((draft.channels && draft.channels.length) ? draft.channels : ['push']);
+  const project = state.drawer.project || '';
+  const row = {
+    id: nextId,
+    name,
+    type: tplType,
+    channels,
+    scope: project ? '指定项目' : '公用',
+    projects: project ? [project] : [],
+    desc: '',
+    creator: '当前用户',
+    updated: formatNow(),
+    byLang
+  };
+  if(state.drawer.type==='business'){
+    const typeKey = state.drawer.bizType === 'activity' ? 'activity' : 'business';
+    row.bizType = bizTypeLabelFromKey(typeKey);
+    if(typeKey==='activity') row.activityId = state.drawer.bizRefId || '';
+    else row.scenarioId = state.drawer.bizRefId || '';
+  }
+  if(channels.includes('私信')){
+    row.msgJump = state.drawer.msgJump || '无跳转';
+    row.msgGroup = state.drawer.msgGroup || '';
+    row.msgAppPage = state.drawer.msgAppPage || '';
+    row.msgUrl = state.drawer.msgUrl || '';
+  }
+  DATA.templates.unshift(row);
+  closeSaveAsTemplateModal();
+  toast('已保存为模板：' + nextId);
 }
 function emptyContentDraft(channels){
   const chs = channels && channels.length ? channels.slice() : ['push'];
@@ -1968,8 +2062,11 @@ function opsBusiness(row){
          logBtnForRow('business', row);
 }
 function opsOperation(row){
-  // 操作：查看详情 → 复制 → 记录 → 日志；运营推送不可删除；启停见独立「启停」列
-  return iconBtn(I.view,'查看详情',`openDetail('operation','${row.id}')`) +
+  // 循环发送可编辑；其余查看详情。不可删除；启停见独立「启停」列
+  const first = canEditOperation(row)
+    ? iconBtn(I.edit,'编辑',`openEditDrawer('operation','${row.id}')`)
+    : iconBtn(I.view,'查看详情',`openDetail('operation','${row.id}')`);
+  return first +
          iconBtn(I.copy,'复制',`toast('已复制推送 ${row.id}')`) +
          iconBtn(I.list,'查看记录',`jumpRecords('${row.id}')`) +
          logBtnForRow('operation', row);
@@ -2257,10 +2354,20 @@ function formatOpSendTime(row){
   if(row.plan==='单次定时' || row.plan==='预约发送'){
     return (row.next && row.next!=='--') ? row.next : '--';
   }
-  if(row.plan==='循环发送' || row.loopType || (row.opCycle && row.opCycle!=='none')){
+  if(isLoopOpPush(row)){
     return formatOpLoopSendTime(row) || '--';
   }
   return (row.next && row.next!=='--') ? row.next : '--';
+}
+function isLoopOpPush(row){
+  if(!row) return false;
+  if(row.plan==='循环发送') return true;
+  if(row.loopType && row.loopType!=='none') return true;
+  if(row.opCycle && row.opCycle!=='none') return true;
+  return false;
+}
+function canEditOperation(row){
+  return isLoopOpPush(row);
 }
 const TAGVERSE_OPTS = ['VIP3 及以上','VIP3+','沉默 30 天','近7日活跃','印尼新注册','高净值用户','Recharge_Q2'];
 const TV_FILTER_TAGS_DEFAULT = ['自动提现黑名单','用户提现黑名单','代理提现黑名单','绿色名单','禁止登录','限制充值','禁止充值','限制交易','禁止交易'];
@@ -2408,7 +2515,7 @@ function renderOperation(){
     <td><div class="cell-2line" title="${appCell}">${appCell}</div></td>
     <td><div class="cell-2line" title="${escHtml(regionCell)}">${escHtml(regionCell)}</div></td>
     <td>${formatAudienceCell(r)}</td>
-    <td>${channelTags(r.channels)}</td>
+    <td>${operationChannelTags(r.channels)}</td>
     <td><span class="pill info">${r.plan}</span></td>
     <td>${formatOpSendTime(r)}</td>
     <td class="col-status">${statusPill(r.status)}</td>
@@ -2493,9 +2600,9 @@ function renderRecordsFilter(){
   const appOpts = recordsAppFilterOptions(proj);
   const appOptsHtml = appOpts.map(a=>`<option value="${a}">${a}</option>`).join('');
   box.innerHTML = `
-    <div class="filter-item"><label>批次 ID</label><input class="control" id="recordsFilterBatch" placeholder="批次 ID" value="${batchKw}"></div>
-    <div class="filter-item"><label>来源类型</label><select class="control" id="recordsFilterType" onchange="onRecordsFilterChange()"><option value="">全部</option><option value="活动通知">活动通知</option><option value="运营推送">运营推送</option><option value="行情提醒">行情提醒</option></select></div>
-    <div class="filter-item"><label>来源 ID / 名称</label><input class="control" id="recordsFilterSrc" placeholder="来源 ID / 名称" value="${kw}"></div>
+    <div class="filter-item"><label>推送记录 ID</label><input class="control" id="recordsFilterBatch" placeholder="支持模糊搜索" value="${batchKw}"></div>
+    <div class="filter-item"><label>推送类型</label><select class="control" id="recordsFilterType" onchange="onRecordsFilterChange()"><option value="">全部</option><option value="活动通知">活动通知</option><option value="运营推送">运营推送</option><option value="行情提醒">行情提醒</option></select></div>
+    <div class="filter-item"><label>推送名称</label><input class="control" id="recordsFilterSrc" placeholder="推送名称" value="${kw}"></div>
     <div class="filter-item"><label>优先级</label>
       <select class="control" id="records-priority-filter" onchange="onRecordsFilterChange()">
         <option value="">全部</option>
@@ -2608,12 +2715,14 @@ function filterRecords(rows){
   if(proj) list = list.filter(r=>r.project===proj);
   if(app) list = list.filter(r=>recordMatchesAppFilter(r, app));
   if(kw){
+    list = list.filter(r=>String(r.srcName||'').toLowerCase().includes(kw));
+  }
+  if(batchKw){
     list = list.filter(r=>
-      String(r.srcId||'').toLowerCase().includes(kw) ||
-      String(r.srcName||'').toLowerCase().includes(kw)
+      String(batchDisplayId(r)||'').toLowerCase().includes(batchKw) ||
+      String(r.id||'').toLowerCase().includes(batchKw)
     );
   }
-  if(batchKw) list = list.filter(r=>String(r.id||'').toLowerCase().includes(batchKw));
   const reasonKw = (state.recordsReasonKeyword || '').trim();
   if(reasonKw) list = list.filter(r=>String(r.reason||'').includes(reasonKw));
   return list;
@@ -2624,27 +2733,25 @@ function renderRecords(){
   const rows = filterRecords(DATA.recordsBatch);
   const pageRows = slicePage('records', rows);
   table.querySelector('thead').innerHTML = `<tr>
-    <th>批次 ID</th><th>来源类型</th><th>来源 ID</th><th>来源名称</th><th>项目</th><th>APP</th><th>优先级</th><th>触发原因</th>
+    <th>推送记录 ID</th><th>推送类型</th><th>推送名称</th><th>项目</th><th>APP</th><th>优先级</th><th>触发原因</th>
     <th>通知渠道</th><th>发送时间</th>
-    <th>推送总数</th><th>推送成功</th><th>推送失败</th><th>打开推送</th>
+    <th>打开推送</th>
     <th>状态</th><th class="ops">操作</th>
   </tr>`;
   table.querySelector('tbody').innerHTML = pageRows.map(r=>{
     const appLabel = formatAppCell(r.project, rowAppsValue(r));
     const srcType = recordSourceTypeLabel(r);
+    const displayId = batchDisplayId(r);
     return `<tr>
-    <td><span class="id-link" onclick="openDetail('records','${r.id}')">${r.id}</span></td>
+    <td><span class="id-link" onclick="openDetail('records','${r.id}')">${displayId}</span></td>
     <td><span class="pill info">${srcType}</span></td>
-    <td>${r.srcId}</td><td><div class="cell-2line" title="${r.srcName}">${r.srcName}</div></td>
+    <td><div class="cell-2line" title="${r.srcName}">${r.srcName}</div></td>
     <td>${r.project||'—'}</td>
     <td><div class="cell-2line" title="${appLabel}">${appLabel}</div></td>
     <td>${priBadge(normalizeBizPriority(r.priority, 'P2'))}</td>
     <td><div class="cell-2line" title="${r.reason}">${r.reason}</div></td>
-    <td>${channelTags(r.channels)}</td>
+    <td>${recordChannelTags(r)}</td>
     <td>${r.plan}</td>
-    <td>${Number(r.target||0).toLocaleString()}</td>
-    <td>${Number(r.ok||0).toLocaleString()}</td>
-    <td>${Number(r.fail||0).toLocaleString()}</td>
     <td>${Number(r.click||0).toLocaleString()}</td>
     <td>${statusPill(r.status)}</td>
     <td class="ops"><div class="icon-actions">${opsRecords(r)}</div></td>
@@ -2724,137 +2831,42 @@ function marketTierDelayOptions(selected){
   ).join('');
 }
 function setMarketEligibilityValue(index, value){
-  const row = state.marketPushRules.eligibility.businessConditions[index];
+  const row = currentBatchPushRules().eligibility.businessConditions[index];
   if(!row) return;
   row.value = clampMarketRuleNumber(value, 1, row.key==='recentActive' ? 365 : 5, row.value);
 }
-function toggleMarketEligibility(group, index){
-  const list = group==='business'
-    ? state.marketPushRules.eligibility.businessConditions
-    : state.marketPushRules.eligibility.reachability;
+function toggleMarketEligibility(index){
+  const list = currentBatchPushRules().eligibility.businessConditions;
   if(!list[index]) return;
   list[index].enabled = !list[index].enabled;
   renderMarketPushRules();
 }
 function setMarketTierDelay(index, value){
-  const row = state.marketPushRules.audiencePriority.tiers[index];
+  const row = currentBatchPushRules().audiencePriority.tiers[index];
   if(!row) return;
   row.delayMinutes = normalizeMarketTierDelay(value);
 }
 function toggleMarketTier(index){
-  const row = state.marketPushRules.audiencePriority.tiers[index];
+  const row = currentBatchPushRules().audiencePriority.tiers[index];
   if(!row) return;
   row.enabled = !row.enabled;
   renderMarketPushRules();
 }
 function setMarketTierVipLevel(index, value){
-  const row = state.marketPushRules.audiencePriority.tiers[index];
+  const row = currentBatchPushRules().audiencePriority.tiers[index];
   if(!row) return;
   row.vipLevel = clampMarketRuleNumber(value, 1, 5, row.vipLevel || 2);
 }
-function moveMarketTier(index, direction){
-  const tiers = state.marketPushRules.audiencePriority.tiers;
-  const target = index + direction;
-  if(target < 0 || target >= tiers.length) return;
-  const moved = tiers.splice(index, 1)[0];
-  tiers.splice(target, 0, moved);
-  tiers.forEach((tier, i)=>tier.level = i + 1);
-  renderMarketPushRules();
-}
-let marketTierDragFrom = null;
-function enableMarketTierDrag(handle){
-  const row = handle.closest('tr');
-  if(row) row.setAttribute('draggable','true');
-}
-function disableMarketTierDrag(handle){
-  const row = handle.closest('tr');
-  if(row) row.removeAttribute('draggable');
-}
-function clearMarketTierDropMarks(){
-  document.querySelectorAll('#marketPushRuleBody tr[data-tier-index]').forEach(row=>{
-    row.classList.remove('tier-drop-before','tier-drop-after');
-  });
-}
-function onMarketTierDragStart(event, index){
-  marketTierDragFrom = index;
-  if(event.dataTransfer){
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', String(index));
-  }
-  event.currentTarget.classList.add('tier-row-dragging');
-}
-function onMarketTierDragOver(event, index){
-  if(marketTierDragFrom === null) return;
-  event.preventDefault();
-  if(event.dataTransfer) event.dataTransfer.dropEffect = 'move';
-  const row = event.currentTarget;
-  const rect = row.getBoundingClientRect();
-  const after = event.clientY > rect.top + rect.height / 2;
-  clearMarketTierDropMarks();
-  if(index === marketTierDragFrom) return;
-  row.classList.add(after ? 'tier-drop-after' : 'tier-drop-before');
-}
-function onMarketTierDragLeave(event){
-  const row = event.currentTarget;
-  if(event.relatedTarget && row.contains(event.relatedTarget)) return;
-  row.classList.remove('tier-drop-before','tier-drop-after');
-}
-function onMarketTierDrop(event, index){
-  event.preventDefault();
-  const from = marketTierDragFrom;
-  const rect = event.currentTarget.getBoundingClientRect();
-  const after = event.clientY > rect.top + rect.height / 2;
-  clearMarketTierDropMarks();
-  marketTierDragFrom = null;
-  if(from === null) return;
-  const tiers = state.marketPushRules.audiencePriority.tiers;
-  let to = after ? index + 1 : index;
-  if(to > from) to--;
-  if(to === from || to < 0 || to >= tiers.length) return;
-  const moved = tiers.splice(from, 1)[0];
-  tiers.splice(to, 0, moved);
-  tiers.forEach((tier, i)=>tier.level = i + 1);
-  renderMarketPushRules();
-}
-function onMarketTierDragEnd(event){
-  marketTierDragFrom = null;
-  clearMarketTierDropMarks();
-  event.currentTarget.classList.remove('tier-row-dragging');
-  event.currentTarget.removeAttribute('draggable');
-}
-function onMarketTierHandleKeydown(event, index){
-  if(event.key === 'ArrowUp'){ event.preventDefault(); moveMarketTier(index, -1); }
-  if(event.key === 'ArrowDown'){ event.preventDefault(); moveMarketTier(index, 1); }
-}
-function setMarketShavingMode(mode){
-  state.marketPushRules.audiencePriority.throttle.mode = mode==='manual' ? 'manual' : 'auto';
-  renderMarketPushRules();
-}
-function setMarketShardInterval(value){
-  state.marketPushRules.audiencePriority.throttle.shardIntervalMinutes =
-    clampMarketRuleNumber(value, 1, 5, 1);
-}
 function setMarketThrottle(key, value){
-  const rules = state.marketPushRules.throttle;
+  const rules = currentBatchPushRules().throttle;
   if(key==='cooldownMinutes') rules.cooldownMinutes = clampMarketRuleNumber(value, 1, 1440, rules.cooldownMinutes);
   if(key==='maxCount') rules.maxCount = clampMarketRuleNumber(value, 1, 99, rules.maxCount);
 }
-function toggleMarketRuleFlag(path){
-  const parts = path.split('.');
-  let target = state.marketPushRules;
-  for(let i=0;i<parts.length-1;i++) target = target[parts[i]];
-  const key = parts[parts.length-1];
-  target[key] = !target[key];
-  renderMarketPushRules();
-}
-function renderMarketPushRules(){
-  const body = document.getElementById('marketPushRuleBody');
-  if(!body) return;
-  const rules = state.marketPushRules;
+function batchPushRulesFormHtml(){
+  const rules = state.batchPushRules;
   const eligibility = rules.eligibility;
   const priority = rules.audiencePriority;
   const throttle = rules.throttle;
-  const duplicate = rules.duplicateControl;
   const vipOptions = selected=>[1,2,3,4,5].map(level=>
     `<option value="${level}" ${Number(selected)===level?'selected':''}>V${level}</option>`
   ).join('');
@@ -2863,83 +2875,50 @@ function renderMarketPushRules(){
     <td>${r.key==='vipLevel'
       ? `<div class="market-rule-inline"><span>≥</span><select class="control" onchange="setMarketEligibilityValue(${i},this.value)">${vipOptions(r.value)}</select></div>`
       : `<div class="market-rule-inline"><input class="control" type="number" min="1" max="365" value="${r.value}" oninput="setMarketEligibilityValue(${i},this.value)"><span>天</span></div>`}</td>
-    <td>${marketRuleSwitch(r.enabled,`toggleMarketEligibility('business',${i})`)}</td>
+    <td>${marketRuleSwitch(r.enabled,`toggleMarketEligibility(${i})`)}</td>
   </tr>`).join('');
-  const reachRows = eligibility.reachability.map((r,i)=>`<tr>
-    <td>${escHtml(r.label)}</td>
-    <td>${marketRuleSwitch(r.enabled,`toggleMarketEligibility('reachability',${i})`)}</td>
-  </tr>`).join('');
-  const tierRows = priority.tiers.map((r,i)=>`<tr data-tier-index="${i}"
-    ondragstart="onMarketTierDragStart(event,${i})"
-    ondragover="onMarketTierDragOver(event,${i})"
-    ondragleave="onMarketTierDragLeave(event)"
-    ondrop="onMarketTierDrop(event,${i})"
-    ondragend="onMarketTierDragEnd(event)">
+  const tierRows = priority.tiers.map((r,i)=>`<tr>
     <td>第${i+1}层</td>
     <td>${r.vipLevel
       ? `<div class="market-rule-inline"><span>VIP 等级 ≥</span><select class="control" onchange="setMarketTierVipLevel(${i},this.value)">${vipOptions(r.vipLevel)}</select></div>`
       : escHtml(r.audience)}</td>
     <td><select class="control" onchange="setMarketTierDelay(${i},this.value)">${marketTierDelayOptions(r.delayMinutes)}</select></td>
     <td>${marketRuleSwitch(r.enabled,`toggleMarketTier(${i})`)}</td>
-    <td><div class="icon-actions">
-      <span class="tier-drag-handle" title="拖拽调整层级顺序" aria-label="拖拽调整层级顺序" role="button" tabindex="0"
-        onmousedown="enableMarketTierDrag(this)" onmouseup="disableMarketTierDrag(this)"
-        onkeydown="onMarketTierHandleKeydown(event,${i})">
-        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="3" r="1.4"></circle><circle cx="10" cy="3" r="1.4"></circle><circle cx="6" cy="8" r="1.4"></circle><circle cx="10" cy="8" r="1.4"></circle><circle cx="6" cy="13" r="1.4"></circle><circle cx="10" cy="13" r="1.4"></circle></svg>
-      </span>
-    </div></td>
   </tr>`).join('');
-  body.innerHTML =
-    `<div class="market-rule-sec"><div class="market-rule-sec-hd">A. 推送对象规则</div>
+  return `<div class="market-rule-sec"><div class="market-rule-sec-hd">A. 推送对象规则</div>
       <div class="market-rule-label">业务条件（满足任一）</div>
       <div class="table-wrap settings-table-wrap market-rule-table"><table class="data-table">
-        <thead><tr><th>条件</th><th style="width:220px">参数</th><th style="width:90px">状态</th></tr></thead>
+        <thead><tr><th style="width:140px">条件</th><th style="width:180px">参数</th><th style="width:72px">状态</th></tr></thead>
         <tbody>${businessRows}</tbody>
       </table></div>
-      <div class="market-rule-label">可达条件（全部满足）</div>
+    </div>
+    <div class="market-rule-sec"><div class="market-rule-sec-hd">B. 人群优先级与分批发送</div>
       <div class="table-wrap settings-table-wrap market-rule-table"><table class="data-table">
-        <thead><tr><th>条件</th><th style="width:90px">状态</th></tr></thead>
-        <tbody>${reachRows}</tbody>
-      </table></div>
-    </div>` +
-    `<div class="market-rule-sec"><div class="market-rule-sec-hd">B. 人群优先级与分批发送</div>
-      <div class="table-wrap settings-table-wrap market-rule-table"><table class="data-table">
-        <thead><tr><th style="width:90px">层级</th><th>用户分层</th><th style="width:260px">发送延迟</th><th style="width:90px">状态</th><th style="width:96px">排序</th></tr></thead>
+        <thead><tr><th style="width:72px">层级</th><th>用户分层</th><th style="width:160px">发送延迟</th><th style="width:72px">状态</th></tr></thead>
         <tbody>${tierRows}</tbody>
       </table></div>
-    </div>` +
-    `<div class="market-rule-sec"><div class="market-rule-sec-hd">C. 行情频控与重复触发抑制</div>
+    </div>
+    <div class="market-rule-sec"><div class="market-rule-sec-hd">C. 频控与重复触发抑制</div>
       <div class="table-wrap settings-table-wrap market-rule-table"><table class="data-table">
-        <thead><tr><th>规则</th><th>参数</th><th style="width:90px">状态</th></tr></thead>
+        <thead><tr><th style="width:140px">规则</th><th>参数</th></tr></thead>
         <tbody>
           <tr>
             <td>冷却时间配置</td>
-            <td><div class="market-rule-inline"><span>同一用户 · 同一品种 · 同一提醒：</span><input class="control" type="number" min="1" max="1440" value="${throttle.cooldownMinutes}" oninput="setMarketThrottle('cooldownMinutes',this.value)"><span>分钟内最多推送</span><input class="control" type="number" min="1" max="99" value="${throttle.maxCount}" oninput="setMarketThrottle('maxCount',this.value)"><span>次</span></div></td>
-            <td>—</td>
-          </tr>
-          <tr>
-            <td>持续满足不重复推送</td>
-            <td>—</td>
-            <td>${marketRuleSwitch(duplicate.suppressWhileConditionMet,`toggleMarketRuleFlag('duplicateControl.suppressWhileConditionMet')`)}</td>
-          </tr>
-          <tr>
-            <td>恢复后允许再发</td>
-            <td>—</td>
-            <td>${marketRuleSwitch(duplicate.allowAfterRecovery,`toggleMarketRuleFlag('duplicateControl.allowAfterRecovery')`)}</td>
+            <td><div class="market-rule-inline"><span>${escHtml(throttle.dimensionLabel || '同一用户')}：</span><input class="control" type="number" min="1" max="1440" value="${throttle.cooldownMinutes}" oninput="setMarketThrottle('cooldownMinutes',this.value)"><span>分钟内最多推送</span><input class="control" type="number" min="1" max="99" value="${throttle.maxCount}" oninput="setMarketThrottle('maxCount',this.value)"><span>次</span></div></td>
           </tr>
         </tbody>
       </table></div>
     </div>`;
 }
-function saveMarketPushRules(){
-  document.querySelectorAll('#marketPushRuleBody input[type=number]').forEach(input=>input.blur());
-  toast('行情推送规则已保存');
+function renderMarketPushRules(){
+  const body = document.getElementById('marketPushRuleBody');
+  if(!body) return;
+  body.innerHTML = batchPushRulesFormHtml();
 }
 function marketRuleSummaryItems(){
-  const rules = state.marketPushRules;
+  const rules = state.batchPushRules;
   const tiers = rules.audiencePriority.tiers.filter(t=>t.enabled);
   const first = tiers[0];
-  const last = tiers[tiers.length-1];
   const delays = tiers.map(t=>t.delayMinutes);
   const delayText = delays.length
     ? `${Math.min(...delays)===0?'立即发送':Math.min(...delays)+' 分钟'}至 ${Math.max(...delays)} 分钟分层发送`
@@ -2947,7 +2926,7 @@ function marketRuleSummaryItems(){
   return [
     `人群：${tiers.length} 个人群层级，命中多层时仅进入最高层级`,
     `发送：${first?first.audience:'—'}优先，${delayText}`,
-    `重复：同一用户 · 品种 · 提醒 ${rules.throttle.cooldownMinutes} 分钟内最多 ${rules.throttle.maxCount} 次`
+    `重复：${rules.throttle.dimensionLabel || '同一用户 · 品种 · 提醒'} ${rules.throttle.cooldownMinutes} 分钟内最多 ${rules.throttle.maxCount} 次`
   ];
 }
 function marketPushPolicyBlock(){
@@ -3487,6 +3466,24 @@ function inferRecordsType(srcId){
   if(s.startsWith('OP')) return '运营推送';
   if(s.startsWith('MK')) return '行情提醒';
   return '';
+}
+function recordsBatchSortValue(batch){
+  const raw = batch?.start && batch.start !== '--' ? batch.start : (batch?.plan || '');
+  const ms = Date.parse(String(raw).replace(' ', 'T'));
+  return Number.isFinite(ms) ? ms : 0;
+}
+function batchCycleIndex(batch){
+  if(!batch || !batch.srcId) return 1;
+  const peers = (DATA.recordsBatch || [])
+    .filter(x=>x.srcId===batch.srcId)
+    .slice()
+    .sort((a,b)=>recordsBatchSortValue(a) - recordsBatchSortValue(b) || String(a.id||'').localeCompare(String(b.id||'')));
+  const idx = peers.findIndex(x=>x.id===batch.id);
+  return idx >= 0 ? (idx + 1) : 1;
+}
+function batchDisplayId(batch){
+  if(!batch) return '--';
+  return batch.srcId ? (batch.srcId + '-' + batchCycleIndex(batch)) : (batch.id || '--');
 }
 function jumpRecords(srcId, opts){
   opts = opts || {};
@@ -4495,6 +4492,8 @@ function openCreatePage(type){
     ensureOpTypeSelection();
     state.drawer.opImages = [];
     state.drawer.lang = 'en';
+    state.drawer.msgJump = '无跳转';
+    state.drawer.msgGroup = '【DANA】资金变更';
     ensureOpAudienceState(true);
     ensureOpPlanState(true);
     ensureJumpConfigState(true);
@@ -4507,7 +4506,12 @@ function openCreatePage(type){
     state.drawer.tplBizRefId = selectableScenarios()[0]?.id || '';
     state.drawer.tplScope = '公用';
     state.drawer.tplProjects = TPL_PROJECT_OPTS.slice();
+    state.drawer.tplChannels = normalizeTemplateChannelKeys([], '业务通知');
     state.drawer.tplDesc = '';
+    state.drawer.msgJump = '无跳转';
+    state.drawer.msgGroup = '【DANA】资金变更';
+    state.drawer.msgAppPage = '';
+    state.drawer.msgUrl = '';
     state.drawer.contentDraft = emptyContentDraft(['push']);
     state.drawer.lang = 'en';
     ensureDraftByLang();
@@ -4614,17 +4618,42 @@ function openEditDrawer(type, id){
     return;
   }
   if(type==='operation'){
+    if(!canEditOperation(row)){
+      toast('仅循环发送的运营推送支持编辑');
+      return;
+    }
+    state.drawer.asPage = true;
     state.drawer.project = state.drawer.project || row?.project || 'Dana';
     state.drawer.apps = apps.length ? apps : bizAppOptions(state.drawer.project).slice();
-    state.drawer.emsOpen = { bizAppEms:false };
+    state.drawer.emsOpen = { bizAppEms:false, opRegionEms:false };
     state.drawer.name = row?.name || '';
     state.drawer.opType = row?.opType || row?.category || selectableOpTypes()[0]?.name || '活动通知';
     ensureOpTypeSelection();
     state.drawer.opImages = state.drawer.opImages || [];
     state.drawer.lang = 'en';
-    ensureOpPlanState(true);
+    state.drawer.msgJump = row?.msgJump || '无跳转';
+    state.drawer.msgGroup = row?.msgGroup || (row?.project==='TW' ? '【TW】系统通知' : '【DANA】资金变更');
+    state.drawer.msgAppPage = row?.msgAppPage || '';
+    state.drawer.msgUrl = row?.msgUrl || '';
+    hydrateOpAudienceFromRow(row);
+    hydrateOpPlanFromRow(row);
     ensureJumpConfigState(true);
+    state.drawer.contentDraft = emptyContentDraft(channelKeysFromLabels(row?.channels));
     ensureDraftByLang();
+    const cfg = DRAWER_CFG.operation;
+    document.getElementById('listView').classList.add('hidden');
+    document.getElementById('createView').classList.add('show');
+    document.getElementById('createTitle').textContent = cfg.titleEdit;
+    document.getElementById('createCrumb').textContent = '工作台 / 推送管理 / 运营推送 / ' + cfg.titleEdit;
+    const url = new URL(location.href);
+    url.searchParams.set('tab', 'operation');
+    url.searchParams.set('page', 'create');
+    history.replaceState(null, '', url);
+    window.scrollTo(0, 0);
+    renderFormSteps();
+    renderFormBody();
+    renderFormFoot();
+    return;
   }
   if(type==='market'){
     state.drawer.asPage = true;
@@ -4678,6 +4707,10 @@ function openDetail(type, id){
 function beginEditFromDetail(){
   const type = state.drawer.type;
   const id = state.drawer.detail?.id;
+  if(type==='operation' && !canEditOperation(state.drawer.detail)){
+    toast('仅循环发送的运营推送支持编辑');
+    return;
+  }
   closeDetailModal();
   if(['business','operation','market','template'].includes(type) && id) openEditDrawer(type, id);
 }
@@ -4705,7 +4738,12 @@ function openTemplateEditor(mode, row){
     tplBizRefId,
     tplScope: isEdit ? ((row.scope==='指定项目' || (row.projects||[]).length) ? '指定项目' : '公用') : '公用',
     tplProjects: isEdit ? tplProjectsForForm(row) : TPL_PROJECT_OPTS.slice(),
+    tplChannels: normalizeTemplateChannelKeys(channelKeysFromLabels(row?.channels), tplType),
     tplDesc: '',
+    msgJump: isEdit ? (row?.msgJump || '无跳转') : '无跳转',
+    msgGroup: isEdit ? (row?.msgGroup || '【DANA】资金变更') : '【DANA】资金变更',
+    msgAppPage: isEdit ? (row?.msgAppPage || '') : '',
+    msgUrl: isEdit ? (row?.msgUrl || '') : '',
     contentDraft: emptyContentDraft(['push']),
     templateId:''
   };
@@ -4899,9 +4937,12 @@ function renderFormFoot(){
       right += '<button class="btn soft" onclick="beginEditFromDetail()">编辑</button>';
       if(tid) right += `<button class="btn" onclick="copyTemplate('${tid}')">复制</button>`;
       if(tid && canDeleteTemplate()) right += iconBtn(I.trash,'删除',`askDeleteTemplate('${tid}')`,true);
-    } else if(['business','operation','market'].includes(state.drawer.type)){
+    } else if(['business','market'].includes(state.drawer.type)){
       right += `<button class="btn soft" onclick="jumpRecords('${tid}')">查看记录</button>`;
       right += '<button class="btn soft" onclick="beginEditFromDetail()">编辑</button>';
+    } else if(state.drawer.type==='operation'){
+      right += `<button class="btn soft" onclick="jumpRecords('${tid}')">查看记录</button>`;
+      if(canEditOperation(d)) right += '<button class="btn soft" onclick="beginEditFromDetail()">编辑</button>';
     }
     foot.innerHTML = '<div class="left"></div><div class="right">' + right + '</div>';
     return;
@@ -4950,22 +4991,32 @@ function renderFormFoot(){
 
   // Create split page: single-page actions, no step nav
   if(isCreateSplit()){
+    let left = '';
     let right = '';
+    if(state.drawer.mode==='create' && ['business','operation','market'].includes(type)){
+      left = '<button class="btn soft" onclick="openSaveAsTemplateModal()">保存为模板</button>';
+    }
     if(type==='business'){
       right = '<button class="btn ghost" onclick="' + cancelFn + '">取消</button>' +
         '<button class="btn soft" onclick="openTestPush()">测试推送</button>' +
         '<button class="btn" onclick="saveWithEnglishCheck(\'已保存并启用\', true)">保存并启用</button>';
     } else if(type==='operation'){
-      right = '<button class="btn ghost" onclick="' + cancelFn + '">取消</button>' +
-        '<button class="btn soft" onclick="openTestPush()">测试推送</button>' +
-        '<button class="btn soft" onclick="if(validateEnglishContent()){toast(\'已保存并等待执行\');' + doneFn + '}">保存并等待执行</button>' +
-        '<button class="btn" onclick="if(validateEnglishContent())askConfirm(\'sendNow\',\'operation\',\'NEW\',\'预计向 128,420 名用户发送，确认立即执行吗？\')">立即发送</button>';
+      if(state.drawer.mode==='edit'){
+        right = '<button class="btn ghost" onclick="' + cancelFn + '">取消</button>' +
+          '<button class="btn soft" onclick="openTestPush()">测试推送</button>' +
+          '<button class="btn" onclick="saveWithEnglishCheck(\'已保存\', true)">保存</button>';
+      } else {
+        right = '<button class="btn ghost" onclick="' + cancelFn + '">取消</button>' +
+          '<button class="btn soft" onclick="openTestPush()">测试推送</button>' +
+          '<button class="btn soft" onclick="if(validateEnglishContent()){toast(\'已保存并等待执行\');' + doneFn + '}">保存并等待执行</button>' +
+          '<button class="btn" onclick="if(validateEnglishContent())askConfirm(\'sendNow\',\'operation\',\'NEW\',\'预计向 128,420 名用户发送，确认立即执行吗？\')">立即发送</button>';
+      }
     } else if(type==='market'){
       right = '<button class="btn ghost" onclick="' + cancelFn + '">取消</button>' +
         '<button class="btn soft" onclick="openTestPush()">测试推送</button>' +
         '<button class="btn" onclick="saveMarketForm()">保存并启用</button>';
     }
-    foot.innerHTML = '<div class="left"></div><div class="right">' + right + '</div>';
+    foot.innerHTML = '<div class="left">' + left + '</div><div class="right">' + right + '</div>';
     return;
   }
 
@@ -4998,11 +5049,43 @@ const CHANNEL_META = {
   mail: { n:'邮件', bodyLabel:'正文' },
   wa: { n:'WhatsApp', bodyLabel:'正文' }
 };
-const SELECTABLE_CHANNEL_KEYS = ['push','msg'];
+const SELECTABLE_CHANNEL_KEYS = ['push','msg','mail'];
 const SELECTABLE_CHANNELS = [
+  {k:'push', n:'APP Push'},
+  {k:'msg', n:'私信'},
+  {k:'mail', n:'邮件'}
+];
+const OP_SELECTABLE_CHANNELS = [
   {k:'push', n:'APP Push'},
   {k:'msg', n:'私信'}
 ];
+const CONTENT_EDITOR_CHANNEL_KEYS = ['push','msg'];
+function templateChannelOptions(type){
+  if(type==='业务通知') return SELECTABLE_CHANNELS;
+  if(type==='运营推送') return OP_SELECTABLE_CHANNELS;
+  return [];
+}
+function normalizeTemplateChannelKeys(keys, type){
+  const allowed = templateChannelOptions(type).map(c=>c.k);
+  if(!allowed.length) return [];
+  const picked = new Set((keys||[]).filter(k=>allowed.includes(k)));
+  return picked.size ? allowed.filter(k=>picked.has(k)) : allowed.slice();
+}
+function templateChannelLabels(row){
+  return channelLabelsFromKeys(normalizeTemplateChannelKeys(channelKeysFromLabels(row?.channels), row?.type || '业务通知'));
+}
+function formChannelKeys(){
+  return state.drawer && state.drawer.type==='operation'
+    ? OP_SELECTABLE_CHANNELS.map(c=>c.k)
+    : SELECTABLE_CHANNEL_KEYS;
+}
+function formChannelOptions(){
+  return state.drawer && state.drawer.type==='operation' ? OP_SELECTABLE_CHANNELS : SELECTABLE_CHANNELS;
+}
+function channelLabelsFromKeys(keys){
+  const map = {push:'Push', msg:'私信', mail:'邮件'};
+  return (keys||[]).map(k=>map[k]).filter(Boolean);
+}
 /* 系统变量：按钮展示中文，输入框插入英文参数，悬停展示解释 */
 const VAR_LABELS = {
   userName:'用户名', verifyTime:'认证时间', verifyLevel:'认证等级',
@@ -5063,7 +5146,7 @@ const BIZ_EVENT_VARS = {
   '新用户迎新礼': ['userName','activityName','endTime']
 };
 function varsForTemplateType(type){
-  if(type === '运营推送') return OP_PUSH_VARS.slice();
+  if(type === '运营推送') return [];
   if(type === '行情提醒') return MARKET_ALERT_VARS.slice();
   const set = new Set(SYSTEM_VAR_KEYS);
   Object.values(BIZ_EVENT_VARS).forEach(arr => (arr || []).forEach(k => set.add(k)));
@@ -5300,12 +5383,21 @@ function saveWithEnglishCheck(successMsg, thenClose){
     }
   }
   if(state.drawer.type==='operation' && state.drawer.mode==='edit' && state.drawer.detail){
-    state.drawer.detail.name = (state.drawer.name || '').trim() || state.drawer.detail.name;
+    const row = state.drawer.detail;
+    row.name = (state.drawer.name || '').trim() || row.name;
     ensureOpTypeSelection();
-    state.drawer.detail.opType = state.drawer.opType;
-    state.drawer.detail.category = state.drawer.opType;
-    state.drawer.detail.priority = state.drawer.opPriority;
-    state.drawer.detail.updated = formatNow();
+    row.opType = state.drawer.opType;
+    row.category = state.drawer.opType;
+    row.priority = state.drawer.opPriority;
+    applyOpPlanToRow(row);
+    applyOpAudienceToRow(row);
+    const draft = state.drawer.contentDraft;
+    row.channels = channelLabelsFromKeys((draft && draft.channels) || ['push']);
+    row.msgJump = state.drawer.msgJump || '无跳转';
+    row.msgGroup = state.drawer.msgGroup || '';
+    row.msgAppPage = state.drawer.msgAppPage || '';
+    row.msgUrl = state.drawer.msgUrl || '';
+    row.updated = formatNow();
   }
   toast(successMsg);
   if(thenClose){ closeForm(); renderCurrent(); }
@@ -5366,21 +5458,24 @@ function toggleCreateChannel(ch, checked){
     if(set.size <= 1){ toast('至少保留一个渠道'); renderFormBody(); return; }
     set.delete(ch);
   }
-  draft.channels = SELECTABLE_CHANNEL_KEYS.filter(k=>set.has(k));
+  draft.channels = formChannelKeys().filter(k=>set.has(k));
   draft.dirty = true;
   state.drawer.focusChannel = draft.channels[0];
   renderFormBody();
 }
 function defaultChannelContent(ch){
   const isMkt = state.drawer && state.drawer.type === 'market';
-  const baseTitle = isMkt ? '{symbol} {period} surge {changeRate}' : 'Your verification is approved';
+  const isOp = state.drawer && state.drawer.type === 'operation';
+  const baseTitle = isMkt ? '{symbol} {period} surge {changeRate}' : (isOp ? '' : 'Your verification is approved');
   let baseBody;
   if(isMkt){
     baseBody = '{symbol} moved {changeRate} in {period}. Current price {currentPrice}.';
+  } else if(isOp){
+    baseBody = '';
   } else {
     baseBody = 'Hi {userName}, please check your account details.';
   }
-  if(ch==='msg') return { title: baseTitle, body: 'Verification Information Successfully Changed\n\n' + baseBody };
+  if(ch==='msg') return { title: baseTitle, body: baseBody };
   if(ch==='mail') return { title: baseTitle, body: baseBody };
   if(ch==='wa') return { title: 'WhatsApp notice', body: baseBody };
   return { title: baseTitle, body: baseBody };
@@ -5460,8 +5555,7 @@ function insertDraftVar(v){
   if(state.drawer.focusField === 'title'){
     const titleEl = document.getElementById('draftTitle');
     if(titleEl && insertTextAtCaret(titleEl, token)){
-      if(isTemplateForm()) onTplContentInput();
-      else markDraftDirty();
+      markDraftDirty();
       return;
     }
   }
@@ -5509,13 +5603,11 @@ function insertDraftVar(v){
     afterRange.collapse(true);
     sel.removeAllRanges();
     sel.addRange(afterRange);
-    if(isTemplateForm()) onTplContentInput();
-    else markDraftDirty();
+    markDraftDirty();
     return;
   }
   insertTextAtCaret(bodyEl, token);
-  if(isTemplateForm()) onTplContentInput();
-  else markDraftDirty();
+  markDraftDirty();
 }
 function setMsgJump(mode){
   syncDraftFromInputs();
@@ -5523,8 +5615,10 @@ function setMsgJump(mode){
   renderFormBody();
 }
 function msgJumpGroupFields(){
-  const isBiz = state.drawer.type==='business';
-  const project = state.drawer.project || 'Dana';
+  const showGroup = state.drawer.type==='business' || state.drawer.type==='operation' || state.drawer.type==='template';
+  const project = state.drawer.type==='template'
+    ? ((state.drawer.tplProjects && state.drawer.tplProjects[0]) || 'Dana')
+    : (state.drawer.project || 'Dana');
   const groups = project==='TW'
     ? ['【TW】系统通知','【TW】账户安全','【TW】资金变更','【TW】活动消息']
     : ['【DANA】资金变更','【DANA】账户安全','【DANA】系统通知','【DANA】活动消息'];
@@ -5533,7 +5627,7 @@ function msgJumpGroupFields(){
   const appPage = state.drawer.msgAppPage || '';
   const msgUrl = state.drawer.msgUrl || '';
   // 私信组别：仅业务通知 + 勾选私信渠道时，放在私信渠道卡片内（左）
-  const groupField = isBiz
+  const groupField = showGroup
     ? ('<div class="field"><label class="label"><span class="req">*</span>私信组别</label>' +
         '<select class="control" id="msgGroup" onchange="state.drawer.msgGroup=this.value">' +
           groups.map(o=>'<option' + (o===group?' selected':'') + '>' + o + '</option>').join('') +
@@ -5562,7 +5656,7 @@ function msgJumpGroupFields(){
         '<input class="control" id="msgUrl" value="' + (msgUrl||'').replace(/"/g,'&quot;') + '"' +
           ' placeholder="请输入跳转链接" oninput="state.drawer.msgUrl=this.value"></div>';
   }
-  if(isBiz){
+  if(showGroup){
     return '<div class="grid2" style="margin-bottom:12px">' + groupField + jumpField + '</div>' + extra;
   }
   return '<div style="margin-bottom:12px">' + jumpField + '</div>' + extra;
@@ -5580,14 +5674,21 @@ function channelEditorBlock(ch, content, vars, esc){
   const meta = CHANNEL_META[ch] || { n:ch, bodyLabel:'正文' };
   const isMail = ch==='mail';
   const isMsg = ch==='msg';
+  const isPush = ch==='push';
   const inPushForm = ['business','operation'].includes(state.drawer.type);
   // 私信跳转：业务/运营共用编辑器；私信组别仅业务（msgJumpGroupFields 内 type==='business'）
-  const showMsgSettings = isMsg && inPushForm;
+  const showMsgSettings = isMsg && (inPushForm || state.drawer.type==='template');
+  const showPushSettings = isPush && (
+    state.drawer.type==='business' ||
+    state.drawer.type==='operation' ||
+    (state.drawer.type==='template' && state.drawer.tplType!=='行情提醒')
+  );
   const showMailSettings = isMail && inPushForm;
   const bodyHtml = bodyTextToHtml(content.body || '');
   return '<div class="ch-block">' +
     '<div class="ch-block-hd">' + meta.n + '</div>' +
     '<div class="ch-block-bd">' +
+      (showPushSettings ? jumpConfigBlock() : '') +
       (showMsgSettings ? msgJumpGroupFields() : '') +
       (showMailSettings ? mailChannelFields() : '') +
       '<div class="field" style="margin-bottom:12px"><label class="label"><span class="req">*</span>' + meta.bodyLabel + '</label>' +
@@ -5597,9 +5698,11 @@ function channelEditorBlock(ch, content, vars, esc){
           ' oninput="markDraftDirty()"' +
           ' onblur="retokenizeVarBody(\'' + ch + '\');markDraftDirty()"' +
           ' onkeydown="onVarBodyKeydown(event,\'' + ch + '\')">' + bodyHtml + '</div></div>' +
-      '<div class="field"><label class="label">插入变量</label><div class="chip-group" id="varChips_' + ch + '" style="margin-top:6px">' +
-        varChipButtons(vars, ch) +
-      '</div></div>' +
+      ((vars && vars.length)
+        ? '<div class="field"><label class="label">插入变量</label><div class="chip-group" id="varChips_' + ch + '" style="margin-top:6px">' +
+            varChipButtons(vars, ch) +
+          '</div></div>'
+        : '') +
     '</div></div>';
 }
 function onVarBodyKeydown(ev, ch){
@@ -5691,20 +5794,30 @@ function applyTemplateContentToDraft(tplId){
   state.drawer.templateId = tplId;
   const draft = ensureContentDraft();
   if(!draft.byLang) draft.byLang = {};
-  const channels = (draft.channels && draft.channels.length) ? draft.channels.slice() : ['push'];
+  const templateKeys = channelKeysFromLabels(tpl.channels);
+  const allowed = formChannelKeys();
+  const channels = templateKeys.length ? allowed.filter(ch=>templateKeys.includes(ch)) : [];
+  const activeChannels = channels.length ? channels : ((draft.channels && draft.channels.length) ? draft.channels.slice() : ['push']);
+  draft.channels = activeChannels.slice();
   Object.keys(tpl.byLang||{}).forEach(k=>{
     const pack = tpl.byLang[k] || {};
     const byChannel = {};
-    channels.forEach(ch=>{ byChannel[ch] = { title: pack.title||'', body: pack.body||'' }; });
+    activeChannels.forEach(ch=>{ byChannel[ch] = { title: pack.title||'', body: pack.body||'' }; });
     draft.byLang[k] = {
       title: pack.title||'',
       body: pack.body||'',
-      channels: channels.slice(),
+      channels: activeChannels.slice(),
       byChannel
     };
   });
   const cur = state.drawer.lang || 'en';
   const curPack = draft.byLang[cur] || draft.byLang.en;
+  if(activeChannels.includes('msg')){
+    state.drawer.msgJump = tpl.msgJump || '无跳转';
+    state.drawer.msgGroup = tpl.msgGroup || state.drawer.msgGroup || '【DANA】资金变更';
+    state.drawer.msgAppPage = tpl.msgAppPage || '';
+    state.drawer.msgUrl = tpl.msgUrl || '';
+  }
   if(curPack) applyLangPack(curPack);
   else {
     draft.title = '';
@@ -5731,8 +5844,13 @@ function syncTemplateFormMeta(){
   if(boxes.length){
     state.drawer.tplProjects = [...boxes].filter(i=>i.checked).map(i=>i.value);
   }
+  const channelBoxes = document.querySelectorAll('#tplChannelMs input[type=checkbox]');
+  if(channelBoxes.length){
+    state.drawer.tplChannels = [...channelBoxes].filter(i=>i.checked).map(i=>i.value);
+  }
   const projects = state.drawer.tplProjects || [];
   state.drawer.tplScope = projects.length >= TPL_PROJECT_OPTS.length ? '公用' : '指定项目';
+  state.drawer.tplChannels = normalizeTemplateChannelKeys(state.drawer.tplChannels, state.drawer.tplType || '业务通知');
   syncDraftFromInputs();
   const bodyEl = document.getElementById('draftBody_push') || document.getElementById('tplBody');
   if(bodyEl && state.drawer.contentDraft){
@@ -5757,6 +5875,7 @@ function onTplProjectChange(){
   }
   state.drawer.tplProjects = vals;
   state.drawer.tplScope = vals.length >= TPL_PROJECT_OPTS.length ? '公用' : '指定项目';
+  if(isTemplateForm()) renderFormBody();
 }
 function onTplContentInput(){
   if(state.drawer.contentDraft) state.drawer.contentDraft.dirty = true;
@@ -5783,6 +5902,26 @@ function onTplTypeChange(){
     state.drawer.tplBizType = '';
     state.drawer.tplBizRefId = '';
   }
+  state.drawer.tplChannels = normalizeTemplateChannelKeys(state.drawer.tplChannels, type);
+  renderFormBody();
+}
+function onTplChannelChange(){
+  syncDraftFromInputs();
+  const vals = [...document.querySelectorAll('#tplChannelMs input[type=checkbox]:checked')].map(i=>i.value);
+  const type = state.drawer.tplType || '业务通知';
+  if(!vals.length){
+    toast('至少选择一个推送渠道');
+    const first = document.querySelector('#tplChannelMs input[type=checkbox]');
+    if(first){
+      first.checked = true;
+      state.drawer.tplChannels = [first.value];
+    } else {
+      state.drawer.tplChannels = normalizeTemplateChannelKeys([], type);
+    }
+    renderFormBody();
+    return;
+  }
+  state.drawer.tplChannels = normalizeTemplateChannelKeys(vals, type);
   renderFormBody();
 }
 function ensureTplBizRefSelection(){
@@ -5864,13 +6003,29 @@ function renderTemplateForm(){
     : TPL_PROJECT_OPTS.slice();
   const tplType = state.drawer.tplType || '业务通知';
   const isBizTpl = tplType === '业务通知';
+  const tplChannelOpts = templateChannelOptions(tplType);
+  const tplChannels = normalizeTemplateChannelKeys(state.drawer.tplChannels, tplType);
+  const contentChannels = tplChannels.length ? tplChannels.slice() : ['push'];
+  const editorChannels = contentChannels.filter(ch=>ch!=='mail');
+  state.drawer.tplChannels = tplChannels;
   if(isBizTpl) ensureTplBizRefSelection();
   const tplVars = varsForTemplateForm();
-  if(!state.drawer.contentDraft.channels || !state.drawer.contentDraft.channels.length){
-    state.drawer.contentDraft.channels = ['push'];
-  }
+  draft.channels = contentChannels.slice();
+  draft.byChannel = draft.byChannel || {};
+  contentChannels.forEach(ch=>{
+    if(!draft.byChannel[ch]) draft.byChannel[ch] = defaultChannelContent(ch);
+  });
   if(!state.drawer.focusChannel) state.drawer.focusChannel = 'push';
-  const bodyHtml = bodyTextToHtml(body);
+  const scopeField = '<div class="field" id="tplProjectMs" style="margin-bottom:14px"><label class="label"><span class="req">*</span>可用范围</label>' +
+      '<div class="check-row">' +
+        TPL_PROJECT_OPTS.map(p=>'<label><input type="checkbox" value="'+p+'"'+(projects.includes(p)?' checked':'')+' onchange="onTplProjectChange()"> '+p+'</label>').join('') +
+      '</div></div>';
+  const channelField = tplChannelOpts.length
+    ? ('<div class="field" id="tplChannelMs" style="margin-bottom:14px"><label class="label"><span class="req">*</span>推送渠道</label>' +
+        '<div class="check-row">' +
+          tplChannelOpts.map(c=>'<label><input type="checkbox" value="'+c.k+'"'+(tplChannels.includes(c.k)?' checked':'')+' onchange="onTplChannelChange()"> '+c.n+'</label>').join('') +
+        '</div></div>')
+    : '';
   const basic = '<div class="form-section"><h3>模板信息</h3>' +
     '<div class="field" style="margin-bottom:14px"><label class="label"><span class="req">*</span>模板名称</label>' +
       '<input class="control" id="tplName" maxlength="50" placeholder="最多 50 字符" value="' + esc(state.drawer.tplName||'') + '"></div>' +
@@ -5879,35 +6034,22 @@ function renderTemplateForm(){
         TPL_TYPE_OPTS.map(t=>'<option value="'+t+'"'+(tplType===t?' selected':'')+'>'+t+'</option>').join('') +
       '</select></div>' +
     (isBizTpl ? ('<div style="margin-bottom:14px">' + tplBizBindFieldsHtml() + '</div>') : '') +
-    '<div class="field" id="tplProjectMs"><label class="label"><span class="req">*</span>可用范围</label>' +
-      '<div class="check-row">' +
-        TPL_PROJECT_OPTS.map(p=>'<label><input type="checkbox" value="'+p+'"'+(projects.includes(p)?' checked':'')+' onchange="onTplProjectChange()"> '+p+'</label>').join('') +
-      '</div></div></div>';
+    channelField +
+    scopeField +
+    '</div>';
+  const editorBlocks = sharedTitleField(draft, esc) +
+    editorChannels.map(ch=>
+      channelEditorBlock(ch, draft.byChannel[ch] || defaultChannelContent(ch), tplVars, esc)
+    ).join('');
   const editor = '<div class="form-section" style="margin-bottom:0"><h3>多语言内容</h3>' +
-      '<p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.55">模板仅维护标题与正文；英文标题必填。业务通知模板的插入变量随所选业务类型 / 业务场景（或活动）变化。</p>' +
       '<div class="lang-editor">' +
         renderLangTabsBar(curL) +
-        '<div class="editor-body">' +
-          '<div class="field" style="margin-bottom:14px">' +
-            '<label class="label">'+(titleReq?'<span class="req">*</span>':'')+'标题'+(titleReq?'':'<span style="font-weight:400;color:var(--muted);margin-left:6px">选填</span>')+'</label>' +
-            '<input class="control" id="draftTitle" value="'+esc(title)+'" placeholder="请输入标题" onfocus="state.drawer.focusField=\'title\'" oninput="onTplContentInput()">' +
-          '</div>' +
-          '<div class="field" style="margin-bottom:14px">' +
-            '<label class="label">正文</label>' +
-            '<div class="control var-body" id="draftBody_push" contenteditable="true" role="textbox" data-channel="push" style="min-height:160px"' +
-              ' onfocus="state.drawer.focusField=\'body\';state.drawer.focusChannel=\'push\'"' +
-              ' oninput="onTplContentInput()"' +
-              ' onblur="retokenizeVarBody(\'push\');onTplContentInput()"' +
-              ' onkeydown="onVarBodyKeydown(event,\'push\')"' +
-              ' data-placeholder="请输入正文，可点击下方变量按钮插入参数">' + bodyHtml + '</div>' +
-          '</div>' +
-          '<div class="field">' +
-            '<label class="label">插入变量</label>' +
-            '<div class="chip-group" id="varChips_push" style="margin-top:6px">' + varChipButtons(tplVars, 'push') + '</div>' +
-          '</div>' +
-        '</div>' +
+        '<div class="editor-body">' + editorBlocks + '</div>' +
       '</div></div>';
-  return basic + '<div class="form-section"><div class="tpl-form-layout">' + editor + '</div></div>';
+  return '<div class="split-layout">' +
+    '<div class="split-left">' + editor + '</div>' +
+    '<div class="split-right">' + basic + '</div>' +
+  '</div>';
 }
 function saveTemplateForm(){
   syncTemplateFormMeta();
@@ -5917,6 +6059,8 @@ function saveTemplateForm(){
   if(!name){ toast('请填写模板名称'); return; }
   if(!TPL_TYPE_OPTS.includes(type)){ toast('请选择模板类型'); return; }
   if(!projects.length){ toast('请选择可用范围'); return; }
+  const channels = normalizeTemplateChannelKeys(state.drawer.tplChannels, type);
+  if(type !== '行情提醒' && !channels.length){ toast('请选择推送渠道'); return; }
   let bizTypeLabel = '';
   let scenarioId = '';
   let activityId = '';
@@ -5953,6 +6097,11 @@ function saveTemplateForm(){
       row.type = type;
       row.scope = scope;
       row.projects = saveProjects;
+      row.channels = type === '行情提醒' ? [] : channelLabelsFromKeys(channels);
+      row.msgJump = channels.includes('msg') ? (state.drawer.msgJump || '无跳转') : '';
+      row.msgGroup = channels.includes('msg') ? (state.drawer.msgGroup || '') : '';
+      row.msgAppPage = channels.includes('msg') ? (state.drawer.msgAppPage || '') : '';
+      row.msgUrl = channels.includes('msg') ? (state.drawer.msgUrl || '') : '';
       row.desc = '';
       row.byLang = byLang;
       row.updated = formatNow();
@@ -5978,6 +6127,11 @@ function saveTemplateForm(){
       id: nextId,
       name,
       type,
+      channels: type === '行情提醒' ? [] : channelLabelsFromKeys(channels),
+      msgJump: channels.includes('msg') ? (state.drawer.msgJump || '无跳转') : '',
+      msgGroup: channels.includes('msg') ? (state.drawer.msgGroup || '') : '',
+      msgAppPage: channels.includes('msg') ? (state.drawer.msgAppPage || '') : '',
+      msgUrl: channels.includes('msg') ? (state.drawer.msgUrl || '') : '',
       scope,
       projects: saveProjects,
       desc: '',
@@ -6009,13 +6163,14 @@ function renderContentLeft(type){
   ensureDraftByLang();
   const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   const vars = type==='business' ? varsForCurrentBizForm() : SYSTEM_VAR_KEYS.map(k=>'{'+k+'}');
+  const editorChannels = (draftChannels.length ? draftChannels : ['push']).filter(ch=>CONTENT_EDITOR_CHANNEL_KEYS.includes(ch));
   const editors = sharedTitleField(draft, esc) +
-    ((draftChannels.length ? draftChannels : ['push']).map(ch=>
+    (editorChannels.map(ch=>
       channelEditorBlock(ch, draft.byChannel[ch] || defaultChannelContent(ch), vars, esc)
-    ).join('') || '<div class="warn-card">请至少勾选一个通知渠道</div>');
+    ).join('') || (draftChannels.length ? '' : '<div class="warn-card">请至少勾选一个通知渠道</div>'));
 
   const projectField = type==='business'
-    ? ('<div class="field" style="margin-bottom:12px"><label class="label"><span class="req">*</span>项目</label>' +
+    ? ('<div class="field"><label class="label"><span class="req">*</span>项目</label>' +
           '<select class="control" id="bizCreateProject" onchange="onBizProjectChange(this.value)">' +
             '<option value="">请选择项目</option>' +
             '<option value="Dana"' + (project==='Dana'?' selected':'') + '>Dana</option>' +
@@ -6023,11 +6178,10 @@ function renderContentLeft(type){
           '</select></div>')
     : '';
 
-  const tplSelect = (type==='business') ? pushTemplateSelectHtml('业务通知') : '';
+  const tplSelect = (type==='business') ? pushTemplateSelectHtml('业务通知').replace(' style="margin-bottom:14px"','') : '';
   return '<div class="split-left">' +
     '<div class="split-panel-title">推送内容</div>' +
-    projectField +
-    tplSelect +
+    (type==='business' ? ('<div class="grid2" style="margin-bottom:12px">' + projectField + tplSelect + '</div>') : '') +
     '<div class="field" style="margin-bottom:14px">' +
       '<label class="label"><span class="req">*</span>渠道</label>' +
       '<div class="channel-bar" style="border:1px solid var(--field-line);border-radius:7px;padding:8px 12px">' +
@@ -6310,6 +6464,73 @@ function ensureOpPlanState(reset){
   if(reset || !d.opPublishAt) d.opPublishAt = defaultBizPublishAt();
   return d;
 }
+function nextToDatetimeLocal(next, sendTime){
+  const s = String(next||'').trim();
+  const m = s.match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2})(?::(\d{2}))?/);
+  if(m) return m[1] + 'T' + m[2] + ':' + (m[3] || '00');
+  const hm = String(sendTime||'').slice(0,5);
+  const fallback = defaultBizPublishAt();
+  if(/^\d{2}:\d{2}$/.test(hm)) return fallback.replace(/T\d{2}:\d{2}(:\d{2})?/, 'T' + hm + ':00');
+  return fallback;
+}
+function channelKeysFromLabels(list){
+  const map = {Push:'push','APP Push':'push','私信':'msg','邮件':'mail'};
+  const allowed = formChannelKeys();
+  const keys = (list||[]).map(c=>map[c]||'').filter(k=>allowed.includes(k));
+  return keys.length ? keys : ['push'];
+}
+function hydrateOpPlanFromRow(row){
+  const d = state.drawer;
+  const loop = isLoopOpPush(row);
+  const scheduled = row?.plan==='单次定时' || row?.plan==='预约发送' || loop;
+  d.opSendMode = scheduled ? 'schedule' : 'now';
+  d.opCycle = loop ? (row.loopType || row.opCycle || 'weekly') : 'none';
+  d.opWeekdays = normalizeOpWeekdays(row?.weekdays || row?.opWeekdays);
+  d.opMonthDays = normalizeOpMonthDays(row?.monthDays || row?.opMonthDays);
+  d.opTimezone = row?.timezone || 'UTC+8';
+  d.opPublishAt = nextToDatetimeLocal(row?.next, row?.sendTime);
+  ensureOpPlanState();
+}
+function hydrateOpAudienceFromRow(row){
+  ensureOpAudienceState(true);
+  const mode = ['add','tagverse','import','region'].includes(row?.audienceMode) ? row.audienceMode : 'add';
+  state.drawer.audienceMode = mode;
+  state.drawer.opTagVerse = row?.tagVerse || '';
+  state.drawer.regions = regionCodes(row?.regions || (row?.region ? [row.region] : []));
+}
+function applyOpPlanToRow(row){
+  const d = ensureOpPlanState();
+  const when = formatBizPublishAt(d.opPublishAt);
+  const hm = (when.match(/\b(\d{2}:\d{2})\b/) || [])[1] || '';
+  if(d.opSendMode!=='schedule'){
+    row.plan = '立即发送';
+    row.loopType = '';
+    row.weekdays = [];
+    row.sendTime = '';
+    return;
+  }
+  if(d.opCycle && d.opCycle!=='none'){
+    row.plan = '循环发送';
+    row.loopType = d.opCycle;
+    row.weekdays = d.opCycle==='weekly' ? (d.opWeekdays||[]).slice() : [];
+    row.monthDays = d.opCycle==='monthly' ? (d.opMonthDays||[]).slice() : [];
+    row.sendTime = hm;
+    row.next = when || row.next;
+    return;
+  }
+  row.plan = '单次定时';
+  row.loopType = '';
+  row.weekdays = [];
+  row.sendTime = hm;
+  row.next = when || row.next;
+}
+function applyOpAudienceToRow(row){
+  ensureOpAudienceState();
+  row.audienceMode = state.drawer.audienceMode || 'add';
+  row.tagVerse = state.drawer.opTagVerse || '';
+  row.regions = regionCodes(state.drawer.regions);
+  row.region = (row.regions||[]).join('、');
+}
 function setOpSendMode(mode){
   ensureOpPlanState();
   state.drawer.opSendMode = mode;
@@ -6469,14 +6690,15 @@ function setJumpMode(mode){
 function jumpConfigBlock(){
   const d = ensureJumpConfigState();
   const isApp = d.jumpMode !== 'URL跳转';
-  let html =
+  const modeField =
     '<div class="field"><label class="label"><span class="req">*</span>跳转方式</label>' +
       '<select class="control" id="jumpMode" onchange="setJumpMode(this.value)">' +
         '<option value="APP内部跳转"' + (isApp?' selected':'') + '>APP内部跳转</option>' +
         '<option value="URL跳转"' + (!isApp?' selected':'') + '>URL跳转</option>' +
       '</select></div>';
+  let targetField = '';
   if(isApp){
-    html +=
+    targetField =
       '<div class="field"><label class="label">内部跳转地址</label>' +
         '<select class="control" id="jumpInternalAddr" onchange="state.drawer.jumpInternalAddr=this.value">' +
           '<option value="">请选择</option>' +
@@ -6485,12 +6707,12 @@ function jumpConfigBlock(){
           ).join('') +
         '</select></div>';
   } else {
-    html +=
+    targetField =
       '<div class="field"><label class="label">H5连接地址</label>' +
         '<input class="control" id="jumpH5" value="' + (d.jumpH5||'') + '"' +
           ' oninput="state.drawer.jumpH5=this.value"></div>';
   }
-  return html;
+  return '<div class="grid2" style="margin-bottom:12px">' + modeField + targetField + '</div>';
 }
 
 function opSendPlanBlock(){
@@ -6543,7 +6765,7 @@ function opSendPlanBlock(){
       html += '<div class="grid3" style="margin-bottom:12px">' + cycleSelect + '</div>';
     }
   } else {
-    html = '<div style="margin-bottom:12px;max-width:33.333%">' + sendModeField + '</div>';
+    html = '<div style="margin-bottom:12px">' + sendModeField + '</div>';
   }
   return html;
 }
@@ -6562,11 +6784,10 @@ function renderConfigRight(type){
           multiSelectHtml('bizRegionMs','地区', OP_REGION_OPTS, regions, true).replace('class="field" style="margin-bottom:12px"','class="field"') +
           expandMultiSelectHtml('bizAppEms','投放 APP', appOptions, apps, !!emsOpen.bizAppEms) +
           pushIntervalMinField() +
-          '<div class="field full"><label class="label">任务说明</label><textarea class="control" placeholder="非必填" style="height:64px"></textarea></div>' +
+          '<div class="field full"><label class="label">任务说明</label><textarea class="control" style="height:64px"></textarea></div>' +
         '</div>'
       ) +
-      configMod('业务类型', bizEventCondBlock()) +
-      configMod('跳转配置', jumpConfigBlock());
+      configMod('业务类型', bizEventCondBlock());
   } else if(type==='operation'){
     const appOptions = bizAppOptions(state.drawer.project);
     let apps = (state.drawer.apps || []).filter(a=>appOptions.includes(a));
@@ -6586,18 +6807,15 @@ function renderConfigRight(type){
         '</div>'
       ) +
       configMod('选择对象', audienceConfigBlock()) +
-      configMod('发送计划', opSendPlanBlock()) +
-      configMod('跳转配置', jumpConfigBlock());
+      configMod('发送计划', opSendPlanBlock());
   } else if(type==='market'){
     mods =
       configMod('基础信息', marketBaseConfigBlock()) +
-      configMod('行情条件', marketConditionConfigBlock()) +
-      configMod('选择对象', marketAudienceConfigBlock()) +
-      configMod('推送策略', marketPushPolicyBlock());
+      configMod('行情条件', marketConditionConfigBlock());
   }
 
   return '<div class="split-right">' +
-    '<div class="split-panel-title">推送配置<span class="hint">右侧配置触发、对象与策略</span></div>' +
+    '<div class="split-panel-title">推送配置</div>' +
     mods +
   '</div>';
 }
@@ -6607,6 +6825,13 @@ function onOpProjectChange(project){
   state.drawer.project = project || '';
   const nextApps = bizAppOptions(project);
   state.drawer.apps = nextApps.slice();
+  if(project==='Dana'){
+    state.drawer.msgGroup = '【DANA】资金变更';
+  } else if(project==='TW'){
+    state.drawer.msgGroup = '【TW】系统通知';
+  } else {
+    state.drawer.msgGroup = '';
+  }
   if(state.drawer.templateId){
     const stillOk = templatesForPush('运营推送', project).some(t=>t.id===state.drawer.templateId);
     if(!stillOk) state.drawer.templateId = '';
@@ -6645,9 +6870,11 @@ function opMarketBodyEditorHtml(body, vars){
         ' onblur="retokenizeVarBody(\'push\');markDraftDirty()"' +
         ' onkeydown="onVarBodyKeydown(event,\'push\')">' + bodyHtml + '</div>' +
     '</div>' +
-    '<div class="field"><label class="label">插入变量</label><div class="chip-group" id="varChips_push" style="margin-top:6px">' +
-      varChipButtons(vars, 'push') +
-    '</div></div>';
+    (vars && vars.length
+      ? '<div class="field"><label class="label">插入变量</label><div class="chip-group" id="varChips_push" style="margin-top:6px">' +
+          varChipButtons(vars, 'push') +
+        '</div></div>'
+      : '');
 }
 function renderMarketContentLeft(){
   const project = state.drawer.project || '';
@@ -6663,14 +6890,15 @@ function renderMarketContentLeft(){
 
   return '<div class="split-left">' +
     '<div class="split-panel-title">提醒内容</div>' +
-    '<div class="field" style="margin-bottom:12px">' +
-      '<label class="label"><span class="req">*</span>项目</label>' +
+    '<div class="grid2" style="margin-bottom:12px">' +
+      '<div class="field"><label class="label"><span class="req">*</span>项目</label>' +
         '<select class="control" id="mktCreateProject" onchange="onMarketProjectChange(this.value)">' +
           '<option value="">请选择项目</option>' +
           '<option value="Dana"' + (project==='Dana'?' selected':'') + '>Dana</option>' +
           '<option value="TW"' + (project==='TW'?' selected':'') + '>TW</option>' +
         '</select></div>' +
-    pushTemplateSelectHtml('行情提醒') +
+      pushTemplateSelectHtml('行情提醒').replace(' style="margin-bottom:14px"','') +
+    '</div>' +
     '<div class="lang-editor">' +
       renderLangTabsBar(curL) +
       '<div class="editor-body">' +
@@ -6695,35 +6923,47 @@ function renderOperationContentLeft(){
   ensureDraftByLang();
   const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   const curL = state.drawer.lang || 'en';
-  const titleReq = curL === 'en';
-  const title = draft.title || '';
-  const body = draft.body != null ? draft.body : ((draft.byChannel?.push||{}).body || '');
+  const allowed = formChannelKeys();
+  const allChannels = formChannelOptions();
+  const draftChannels = (draft.channels||[]).filter(ch=>allowed.includes(ch));
+  if(!draftChannels.length){
+    draft.channels = ['push'];
+  } else {
+    draft.channels = draftChannels;
+  }
+  const selected = new Set(draft.channels);
+  const editorChannels = draft.channels.filter(ch=>CONTENT_EDITOR_CHANNEL_KEYS.includes(ch));
   const imgs = state.drawer.opImages || [];
   const canAddImg = imgs.length < 1;
+  const editors = sharedTitleField(draft, esc) +
+    (editorChannels.map(ch=>
+      channelEditorBlock(ch, draft.byChannel[ch] || defaultChannelContent(ch), [], esc)
+    ).join('') || '<div class="warn-card">请至少勾选一个通知渠道</div>');
+  const projectField = '<div class="field"><label class="label"><span class="req">*</span>项目</label>' +
+      '<select class="control" id="opCreateProject" onchange="onOpProjectChange(this.value)">' +
+        '<option value="">请选择项目</option>' +
+        '<option value="Dana"' + (project==='Dana'?' selected':'') + '>Dana</option>' +
+        '<option value="TW"' + (project==='TW'?' selected':'') + '>TW</option>' +
+      '</select></div>';
+  const tplSelect = pushTemplateSelectHtml('运营推送').replace(' style="margin-bottom:14px"','');
 
   return '<div class="split-left">' +
     '<div class="split-panel-title">推送内容</div>' +
-    '<div class="field" style="margin-bottom:12px">' +
-      '<label class="label"><span class="req">*</span>项目</label>' +
-        '<select class="control" id="opCreateProject" onchange="onOpProjectChange(this.value)">' +
-          '<option value="">请选择项目</option>' +
-          '<option value="Dana"' + (project==='Dana'?' selected':'') + '>Dana</option>' +
-          '<option value="TW"' + (project==='TW'?' selected':'') + '>TW</option>' +
-        '</select></div>' +
-    pushTemplateSelectHtml('运营推送') +
+    '<div class="grid2" style="margin-bottom:12px">' + projectField + tplSelect + '</div>' +
+    '<div class="field" style="margin-bottom:14px">' +
+      '<label class="label"><span class="req">*</span>渠道</label>' +
+      '<div class="channel-bar" style="border:1px solid var(--field-line);border-radius:7px;padding:8px 12px">' +
+        allChannels.map(c=>
+          '<label><input type="checkbox" ' + (selected.has(c.k)?'checked':'') +
+          ' onchange="toggleCreateChannel(\'' + c.k + '\', this.checked)"> ' + c.n + '</label>'
+        ).join('') +
+      '</div></div>' +
     '<div class="lang-editor">' +
       renderLangTabsBar(curL) +
-      '<div class="editor-body">' +
-        '<div class="field" style="margin-bottom:14px">' +
-          '<label class="label">' + (titleReq?'<span class="req">*</span>':'') + '标题' +
-            (titleReq?'':'<span style="font-weight:400;color:var(--muted);margin-left:6px">选填</span>') + '</label>' +
-          '<input class="control" id="draftTitle" value="' + esc(title) + '" placeholder="请输入推送标题" oninput="setOpContentTitle(this.value);markDraftDirty()">' +
-        '</div>' +
-        opMarketBodyEditorHtml(body, OP_PUSH_VARS) +
-      '</div>' +
+      '<div class="editor-body">' + editors + '</div>' +
     '</div>' +
     '<div class="field" style="margin-top:14px">' +
-      '<label class="label">图片<span style="font-weight:400;color:var(--muted);margin-left:6px">各语言共用</span></label>' +
+      '<label class="label">图片</label>' +
       '<div class="op-img-list" id="opImageList">' +
         imgs.map((img,i)=>
           '<div class="op-img-item"><img src="' + esc(img.url) + '" alt="' + esc(img.name) + '">' +
@@ -6744,8 +6984,10 @@ function setOpContentTitle(v){
   if(!draft.byChannel) draft.byChannel = {};
   draft.title = v;
   draft.dirty = true;
-  if(!draft.byChannel.push) draft.byChannel.push = { title:v, body: draft.body || '' };
-  else draft.byChannel.push.title = v;
+  (draft.channels || Object.keys(draft.byChannel)).forEach(ch=>{
+    if(!draft.byChannel[ch]) draft.byChannel[ch] = defaultChannelContent(ch);
+    draft.byChannel[ch].title = v;
+  });
 }
 function setOpContentBody(v){
   if(!state.drawer.contentDraft) state.drawer.contentDraft = emptyContentDraft(['push']);
@@ -6813,8 +7055,8 @@ function renderFormBody(){
     return;
   }
   if(isTemplateForm()){
-    body.classList.add('is-wizard');
-    body.classList.add('is-tpl-form');
+    body.classList.remove('is-wizard');
+    body.classList.remove('is-tpl-form');
     body.innerHTML = renderTemplateForm();
     return;
   }
@@ -6959,12 +7201,12 @@ function renderRecordsBatchDetail(d){
   const jumpText = batchJumpSummary(d, src);
   const content = batchContentPreview(d);
   const n = v => Number(v||0).toLocaleString();
-  const summaryFull = ['来源', '触发原因'];
+  const summaryFull = ['推送信息', '触发原因'];
   const srcTypeLabel = recordSourceTypeLabel(d) || d.type || '—';
   const summaryBlock = `<div class="detail-block compact"><h4>批次摘要</h4>${kv2colHtml([
-    ['批次 ID', d.id],
+    ['推送记录 ID', batchDisplayId(d)],
     ['状态', statusPill(d.status)],
-    ['来源', `${srcTypeLabel} · ${d.srcId} · ${escHtml(d.srcName||'')}`],
+    ['推送信息', `${srcTypeLabel} · ${escHtml(d.srcName||'')}`],
     ['项目', d.project||'—'],
     ['APP', appLabel],
     ['优先级', priBadge(normalizeBizPriority(d.priority, 'P2'))],
@@ -6972,19 +7214,14 @@ function renderRecordsBatchDetail(d){
     ['触发原因', escHtml(d.reason||'')],
   ], summaryFull)}</div>`;
   const sendBlock = `<div class="detail-block compact"><h4>发送数据</h4>${kv2colHtml([
-    ['通知渠道', channelTags(d.channels||[])],
+    ['通知渠道', recordChannelTags(d)],
     ['发送时间', d.plan||'—'],
     ['实际发送时间', d.start||'—'],
     ['结束时间', d.end||'—'],
-    ['推送总数', n(d.target)],
-    ['推送成功', n(d.ok)],
-    ['推送失败', n(d.fail)],
-    ['送达', n(d.reach)],
     ['打开推送', n(d.click)],
   ])}</div>`;
   const audiencePairs = [
     ['受众摘要', audienceHtml],
-    ['计划触达', n(d.target) + ' 人'],
   ];
   if(src && src.crowd) audiencePairs.push(['人群策略', escHtml(src.crowd)]);
   const audienceBlock = `<div class="detail-block compact"><h4>选择对象</h4>${kv2colHtml(audiencePairs, ['受众摘要'])}</div>`;
@@ -7031,12 +7268,14 @@ function renderDetailView(){
     const bizRefName = isBizTpl
       ? bizRefDisplayById(bizTypeKey, bizTypeKey === 'activity' ? d.activityId : d.scenarioId)
       : '';
+    const tplChannels = templateChannelLabels(d);
     return `<div class="detail-block"><h4>基础信息</h4><div class="kv">
       <div class="k">模板 ID</div><div class="v">${d.id||'-'}</div>
       <div class="k">名称</div><div class="v">${escHtml(d.name||'-')}</div>
       <div class="k">模板类型</div><div class="v"><span class="pill info">${d.type||'-'}</span></div>
       ${isBizTpl ? `<div class="k">业务类型</div><div class="v">${escHtml(d.bizType||'-')}</div>
       <div class="k">${bizRefLabel}</div><div class="v">${escHtml(bizRefName)}</div>` : ''}
+      ${tplChannels.length ? `<div class="k">推送渠道</div><div class="v">${channelTags(tplChannels)}</div>` : ''}
       <div class="k">可用范围</div><div class="v">${tplScopeText(d)}</div>
       <div class="k">创建人</div><div class="v">${escHtml(d.creator||'-')}</div>
       <div class="k">更新时间</div><div class="v">${d.updated||'--'}</div>
@@ -7086,7 +7325,7 @@ function renderDetailView(){
       <div class="k">项目</div><div class="v">${d.project||'-'}</div>
       <div class="k">APP</div><div class="v">${formatAppCell(d.project, rowAppsValue(d))}</div>
       <div class="k">选择对象</div><div class="v">${formatAudienceCell(d)}</div>
-      <div class="k">通知渠道</div><div class="v">${channelTags(d.channels||[])}</div>
+      <div class="k">通知渠道</div><div class="v">${operationChannelTags(d.channels||[])}</div>
       <div class="k">状态</div><div class="v">${statusPill(d.status)}</div>
     </div></div>
     <div class="detail-block"><h4>发送计划</h4><div class="kv">
@@ -7250,11 +7489,8 @@ function businessStep(step){
           </select>
         </div>
         ${pushIntervalMinField()}
-        <div class="field full"><label class="label">任务说明</label><textarea class="control" placeholder="非必填"></textarea></div>
+        <div class="field full"><label class="label">任务说明</label><textarea class="control"></textarea></div>
       </div>
-    </div>
-    <div class="form-section"><h3>跳转配置</h3>
-      ${jumpConfigBlock()}
     </div>`;
   if(step===1){
     return '<div class="form-section"><h3>推送内容</h3>' +
@@ -7402,7 +7638,7 @@ function operationStep(step){
         </div>
         ${expandMultiSelectHtml('bizAppEms','APP', appOptions, apps, !!emsOpen.bizAppEms)}
       </div>
-      <div class="field"><label class="label">推送说明</label><textarea class="control" placeholder="非必填"></textarea></div>
+      <div class="field"><label class="label">推送说明</label><textarea class="control"></textarea></div>
     </div>`;
   }
   if(step===1) return `
@@ -7413,9 +7649,6 @@ function operationStep(step){
   if(step===3) return `
     <div class="form-section"><h3>发送计划</h3>
       ${opSendPlanBlock()}
-    </div>
-    <div class="form-section"><h3>跳转配置</h3>
-      ${jumpConfigBlock()}
     </div>`;
   const draft = state.drawer.contentDraft || {};
   return `
@@ -7738,7 +7971,6 @@ function syncMarketFormFromInputs(){
   const typeEl = document.getElementById('mktFormType');
   const unitEl = document.getElementById('mktFormUnit');
   const changeEl = document.getElementById('mktFormChange');
-  const statusEl = document.getElementById('mktFormStatus');
   const presetEl = document.getElementById('mktFormPeriodPreset');
   const minEl = document.getElementById('mktFormPeriodMin');
   const gateEl = document.getElementById('mktFormGate');
@@ -7746,7 +7978,6 @@ function syncMarketFormFromInputs(){
   if(typeEl) d.mktType = typeEl.value;
   if(unitEl) d.mktUnit = unitEl.value;
   if(changeEl) d.mktChange = changeEl.value;
-  if(statusEl) d.mktStatus = statusEl.value;
   if(presetEl) d.mktPeriodPreset = presetEl.value;
   if(minEl) d.mktPeriodMin = minEl.value;
   if(gateEl) d.mktGate = gateEl.value;
@@ -7801,13 +8032,7 @@ function marketBaseConfigBlock(){
     '<div class="field"><label class="label">优先级</label>' +
       '<div class="control" style="display:flex;align-items:center;gap:8px;background:#f8fafc">' +
         priBadge(marketPriority()) +
-        '<span class="muted" style="font-size:12px">行情提醒固定为 P2</span>' +
       '</div></div>' +
-    '<div class="field"><label class="label"><span class="req">*</span>状态</label>' +
-      '<select class="control" id="mktFormStatus" onchange="state.drawer.mktStatus=this.value">' +
-        '<option value="启用"'+(d.mktStatus==='启用'?' selected':'')+'>启用</option>' +
-        '<option value="禁用"'+(d.mktStatus==='禁用'?' selected':'')+'>禁用</option>' +
-      '</select></div>' +
     expandMultiSelectHtml('bizAppEms','APP', appOptions, apps, !!emsOpen.bizAppEms) +
   '</div>';
 }
@@ -7831,8 +8056,6 @@ function marketConditionConfigBlock(){
         typeOpts.map(o=>'<option value="'+o+'"'+(type===o?' selected':'')+'>'+o+'</option>').join('') +
       '</select></div>' +
   '</div>';
-  /* 2. 补充条件 */
-  html += '<div class="field" style="margin-bottom:8px"><label class="label">补充条件</label></div>';
   if(mode === 'barrier'){
     html += '<div class="grid2">' +
       '<div class="field"><label class="label"><span class="req">*</span>关口值</label>' +
@@ -7870,7 +8093,6 @@ function validateMarketFormFields(){
   if(!selApps.length){ toast('请选择 APP'); return false; }
   state.drawer.apps = selApps;
   if(!(d.mktUnit||'').trim()){ toast('请填写报价单位'); return false; }
-  if(!(d.mktStatus||'').trim()){ toast('请选择状态'); return false; }
   if(d.marketCondMode !== 'barrier' && d.marketCondMode !== 'period'){ toast('请选择条件方式'); return false; }
   if(!(d.mktType||'').trim()){ toast('请选择行情类型'); return false; }
   if(!marketTypesForMode(d.marketCondMode).includes(d.mktType)){ toast('请选择与条件方式匹配的行情类型'); return false; }
@@ -7882,13 +8104,6 @@ function validateMarketFormFields(){
     if(d.mktPeriodPreset !== 'custom') d.mktPeriodMin = d.mktPeriodPreset;
     if(!(d.mktPeriodMin||'').trim()){ toast('请填写多少时间内'); return false; }
     if(!(d.mktChange||'').trim()){ toast('请填写涨跌幅变化'); return false; }
-  }
-  ensureMarketAudienceState();
-  if(state.drawer.audienceMode === 'tagverse'){
-    if(!(state.drawer.marketTagVerse||'').trim()){ toast('请选择 TagVerse'); return false; }
-  } else if(!(state.drawer.regions||[]).length){
-    toast('请选择地区');
-    return false;
   }
   return true;
 }
@@ -7926,31 +8141,28 @@ function saveMarketForm(){
   const draft = state.drawer.contentDraft || {};
   const enTitle = (draft.byLang && draft.byLang.en && draft.byLang.en.title) || draft.title || '';
   const name = (enTitle || ((symbols[0] || '') + ' ' + d.mktType)).trim();
-  const audience = marketAudienceSummary();
-  const finalStatus = (d.mktStatus === '禁用') ? '已暂停' : '监听中';
+  const existing = state.drawer.mode === 'edit' ? (state.drawer.detail || {}) : {};
   const payload = {
     name,
     project,
     apps: apps.length ? apps.slice() : appOpts.slice(),
     app: (apps[0] || appOpts[0] || project),
     mktType: d.mktType,
-    source: 'MT5',
+    source: existing.source || 'MT5',
     symbols: symbols.slice(),
     symbol: symbols[0] || '',
     change: d.marketCondMode === 'barrier' ? (d.mktGate || d.mktChange || '') : (d.mktChange || ''),
     cond,
-    audience: state.drawer.audienceMode === 'tagverse'
-      ? (state.drawer.marketTagVerse || audience)
-      : audience,
-    audienceMode: state.drawer.audienceMode === 'tagverse' ? 'tagverse' : 'region',
-    regions: regionCodes(state.drawer.regions),
-    marketTagVerse: state.drawer.marketTagVerse || '',
-    tagVerse: state.drawer.audienceMode === 'tagverse' ? (state.drawer.marketTagVerse || '') : '',
-    listen: '全天',
+    audience: existing.audience || '--',
+    audienceMode: existing.audienceMode || 'region',
+    regions: Array.isArray(existing.regions) ? existing.regions.slice() : [],
+    marketTagVerse: existing.marketTagVerse || '',
+    tagVerse: existing.tagVerse || '',
+    listen: existing.listen || '全天',
     freq,
-    cool: '30 分钟',
+    cool: existing.cool || '30 分钟',
     priority: marketPriority(),
-    status: finalStatus
+    status: existing.status || '监听中'
   };
   if(state.drawer.mode === 'edit' && state.drawer.detail){
     Object.assign(state.drawer.detail, payload);
@@ -8060,17 +8272,13 @@ function marketStep(step){
     <div class="form-section"><h3>行情条件</h3>
       ${marketConditionConfigBlock()}
     </div>`;
-  if(step===1) return `
-    <div class="form-section"><h3>选择对象</h3>
-      ${marketAudienceConfigBlock()}
-    </div>`;
-  if(step===2){
+  if(step===1){
     if(!state.drawer.contentDraft) state.drawer.contentDraft = emptyContentDraft(['push']);
     return '<div class="form-section"><h3>提醒内容</h3>' +
       renderContentLeft('market').replace(/^<div class="split-left">/,'').replace(/<\/div>$/,'').replace('<div class="split-panel-title">推送内容</div>','') +
     '</div>';
   }
-  if(step===3) return `
+  if(step===2) return `
     <div class="form-section"><h3>监听日期与时段</h3>
       <div class="grid2">
         <div class="field"><label class="label">监听日期</label>
@@ -8101,7 +8309,6 @@ function marketStep(step){
         <div class="row"><div class="k">提醒名称</div><div class="v">${state.drawer.detail?.name||'BTC 短时暴涨提醒'}</div></div>
         <div class="row"><div class="k">优先级</div><div class="v">${priBadge(marketPriority())}</div></div>
         <div class="row"><div class="k">品种 / 条件</div><div class="v">BTCUSD · 5 分钟涨幅 ≥ 3% 且成交量增长 ≥ 50%</div></div>
-        <div class="row"><div class="k">选择对象</div><div class="v">${marketAudienceSummary()}</div></div>
         <div class="row"><div class="k">内容标题</div><div class="v">${(state.drawer.contentDraft&&state.drawer.contentDraft.title)||'{symbol} {period} surge {changeRate}'}</div></div>
         <div class="row"><div class="k">监听</div><div class="v">交易时段 · 每 1 分钟检测</div></div>
         <div class="row"><div class="k">冷却 / 上限</div><div class="v">30 分钟冷却 · 每日最多 5 次</div></div>
@@ -8447,19 +8654,16 @@ function renderMarketTriggerList(data, activeId){
     return;
   }
   box.innerHTML = `<table class="mkt-trigger-table"><thead><tr>
-    <th>#</th><th>触发时间</th><th>价格</th><th>批次 ID</th><th>通知渠道</th><th>发送时间</th>
-    <th>推送总数</th><th>成功</th><th>失败</th><th>打开</th><th>状态</th><th></th>
+    <th>#</th><th>触发时间</th><th>价格</th><th>推送记录 ID</th><th>通知渠道</th><th>发送时间</th>
+    <th>打开</th><th>状态</th><th></th>
   </tr></thead><tbody>${data.triggers.map(tr=>`
     <tr class="mkt-trigger-row ${tr.id===activeId?'active':''}" data-tr="${tr.id}" onclick="onMarketChartTriggerClick('${tr.id}')">
       <td><span class="idx">${tr.no}</span></td>
       <td>${tr.time}</td>
       <td class="price">${tr.priceText}</td>
-      <td class="batch">${tr.batchId}</td>
+      <td class="batch">${tr.hasBatch ? batchDisplayId({ id: tr.batchId, srcId: tr.srcId || data.id, start: tr.time, plan: tr.plan }) : tr.batchId}</td>
       <td>${channelTags(tr.channels||[])}</td>
       <td>${tr.plan||tr.time}</td>
-      <td class="stats">${Number(tr.target||0).toLocaleString()}</td>
-      <td class="stats">${Number(tr.ok||0).toLocaleString()}</td>
-      <td class="stats">${Number(tr.fail||0).toLocaleString()}</td>
       <td class="stats">${Number(tr.click||0).toLocaleString()}</td>
       <td>${statusPill(tr.status||'已完成')}</td>
       <td>${iconBtn(I.view, '查看详情', `openMarketChartTriggerDetail('${tr.id}', event)`)}</td>
