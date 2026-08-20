@@ -176,22 +176,25 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
 .range-wrap input{width:0;min-width:0;flex:1;border:none;outline:none;background:transparent;font-size:13px;box-shadow:none!important}
 .range-mid{color:#9aa5b6;flex:0 0 auto}
 
-.table-wrap{border:1px solid #dfe5f0;border-radius:10px;background:#fff;box-shadow:0 6px 18px rgba(15,23,42,.05);overflow:auto;margin-top:10px}
-.data-table{width:100%;border-collapse:collapse;min-width:1080px}
-.data-table th,.data-table td{padding:0 12px;text-align:left}
+.table-wrap{border:1px solid #dfe5f0;border-radius:10px;background:#fff;box-shadow:0 6px 18px rgba(15,23,42,.05);overflow:auto;margin-top:10px;-webkit-overflow-scrolling:touch}
+.data-table{width:max-content;min-width:100%;border-collapse:collapse;table-layout:auto}
+.data-table th,.data-table td{padding:0 14px;text-align:left;white-space:nowrap}
 .data-table thead th{height:40px;background:var(--head-bg);color:#334155;font-weight:600;font-size:13px;white-space:nowrap;position:sticky;top:0;z-index:1}
 .data-table tbody td{height:52px;color:#1f2937;font-size:13px;border-top:1px solid #edf1f7;vertical-align:middle}
 .data-table tbody tr:hover{background:#fafcff}
-.data-table .col-status{white-space:nowrap;position:sticky;right:166px;background:#fff;z-index:1;min-width:72px}
+.data-table .col-status{white-space:nowrap;position:sticky;right:230px;background:#fff;box-shadow:-6px 0 10px rgba(15,23,42,.04);z-index:1;min-width:88px}
 .data-table thead th.col-status{background:var(--head-bg);z-index:2}
 .data-table tbody tr:hover .col-status{background:#fafcff}
-.data-table .col-toggle{white-space:nowrap;position:sticky;right:110px;background:#fff;box-shadow:-6px 0 10px rgba(15,23,42,.04);z-index:1;min-width:56px}
+.data-table .col-toggle{white-space:nowrap;position:sticky;right:166px;background:#fff;z-index:1;min-width:64px}
 .data-table thead th.col-toggle{background:var(--head-bg);z-index:2}
 .data-table tbody tr:hover .col-toggle{background:#fafcff}
-.data-table .ops{white-space:nowrap;position:sticky;right:0;background:#fff;box-shadow:-6px 0 10px rgba(15,23,42,.04);z-index:1;min-width:110px}
+.data-table .ops{white-space:nowrap;position:sticky;right:0;background:#fff;z-index:1;min-width:166px}
 .data-table thead th.ops{background:var(--head-bg);z-index:2}
 .data-table tbody tr:hover .ops{background:#fafcff}
-.cell-2line{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;line-height:1.4;max-width:180px}
+#table-market .ops{min-width:202px}
+#table-market .col-toggle{right:202px}
+#table-market .col-status{right:266px}
+.cell-2line{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;line-height:1.4;max-width:220px;min-width:120px}
 .id-link{color:var(--pri);font-weight:600;cursor:pointer}
 .id-link:hover{text-decoration:underline}
 .muted{color:var(--muted)}
@@ -310,14 +313,15 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
 .op-aud-add-row{display:flex;gap:8px;align-items:center}
 .op-aud-add-row .control{flex:1}
 .op-sid-table{border:1px solid var(--field-line);border-radius:8px;overflow:hidden;background:#fff}
-.op-sid-hd,.op-sid-row{display:grid;grid-template-columns:1.1fr 1.4fr 1fr 1fr 72px;gap:8px;align-items:center;padding:10px 14px;font-size:13px}
+.op-sid-hd,.op-sid-row{display:grid;grid-template-columns:1fr 56px;gap:8px;align-items:center;padding:10px 14px;font-size:13px}
 .op-sid-hd{background:#f5f7fb;font-weight:600;color:#334155}
 .op-sid-body{min-height:120px;padding:24px 14px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#94a3b8}
 .op-sid-body.has-rows{display:block;padding:0;min-height:0}
 .op-sid-row{border-top:1px solid #edf1f7;color:#1f2937}
 .op-sid-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.op-sid-row .op-sid-actions{text-align:right}
-.op-sid-row button{border:none;background:transparent;color:var(--pri);cursor:pointer;font-size:13px;padding:0}
+.op-sid-hd > span:last-child,
+.op-sid-row .op-sid-actions{text-align:center}
+.op-sid-row .op-sid-actions .link-btn{display:inline}
 .op-aud-tv-row,.op-aud-import-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .op-aud-tv-row .control{flex:1;min-width:200px}
 .op-aud-import-row .file-name{flex:1;min-width:180px;height:34px;border:1px solid var(--field-line);border-radius:7px;padding:0 12px;display:flex;align-items:center;background:#f8fafc;font-size:13px;color:#334155}
@@ -543,7 +547,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
 .settings-pane-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
 .settings-pane-hd h2{margin:0;font-size:16px;font-weight:700}
 .settings-pane-hd p{margin:4px 0 0;font-size:12px;color:var(--muted);line-height:1.5}
-.settings-table-wrap .data-table{min-width:640px}
+.settings-table-wrap .data-table{min-width:720px;width:max-content}
 .priority-table-wrap{width:fit-content;max-width:100%}
 .priority-table-wrap .data-table{width:auto;min-width:0;table-layout:fixed}
 #table-priority th:nth-child(1),#table-priority td:nth-child(1){width:100px}
@@ -758,7 +762,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
             <div class="filter-item"><label>提醒 ID / 名称</label><input class="control" placeholder="ID / 名称"></div>
             <div class="filter-item"><label>项目</label><select class="control"><option value="">全部</option><option>Dana</option><option>TW</option></select></div>
             <div class="filter-item"><label>品种</label><input class="control" id="mkt-symbol-filter" placeholder="如 BTCUSD"></div>
-            <div class="filter-item"><label>状态</label><select class="control"><option value="">全部</option><option>监听中</option><option>已暂停</option><option>已终止</option></select></div>
+            <div class="filter-item"><label>状态</label><select class="control"><option value="">全部</option><option>运行中</option><option>已暂停</option><option>已终止</option></select></div>
             <div class="filter-item"><label>优先级</label>
               <select class="control" id="mkt-priority-filter" onchange="onMarketFilterChange()">
                 <option value="">全部</option>
@@ -871,7 +875,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
                 </div>
               </div>
               <div class="table-wrap settings-table-wrap">
-                <table class="data-table" id="table-appPush" style="min-width:860px">
+                <table class="data-table" id="table-appPush">
                   <thead>
                     <tr>
                       <th>APP名称</th>
@@ -1409,10 +1413,10 @@ const DATA = {
     {id:'OP0085',name:'TW 项目地区推广',project:'TW',apps:['TW Trade'],opType:'其他',category:'其他',priority:'P3',audience:'地区：+84 [VN]、+66 [TH]',audienceMode:'region',region:'+84 [VN]、+66 [TH]',regions:['+84 [VN]','+66 [TH]'],crowd:'固定快照',channels:['Push','私信'],plan:'立即发送',next:'--',batches:1,sent:55620,status:'已暂停',operator:'ops.admin',creator:'ops.admin',created:'2026-07-15 13:00:00',updated:'2026-07-18 13:00:00'},
   ],
   market: [
-    {id:'MK0042',name:'BTC 短时暴涨提醒',project:'TW',apps:['TW App','TW Trade','TW Lite','GoTrading'],app:'TW Trade',mktType:'短时上涨',source:'MT5',symbols:['BTCUSD','ETHUSD'],symbol:'BTCUSD',change:'3%',cond:'5 分钟涨幅 ≥ 3%',audience:'按地区 · +62 [ID]、+84 [VN]',audienceMode:'region',regions:['+62 [ID]','+84 [VN]'],marketTagVerse:'',listen:'交易时段',freq:'每 1 分钟',cool:'30 分钟',today:3,last:'2026-07-24 10:18:22',status:'监听中',priority:'P2',created:'2026-07-18 10:00:00'},
-    {id:'MK0041',name:'贵金属跌破关口提醒',project:'Dana',apps:['DANA App','GoCap'],app:'Dana App',mktType:'价格跌破',source:'内部行情',symbols:['XAUUSD','XAGUSD'],symbol:'XAUUSD',change:'2320',cond:'价格跌破关口',audience:'VIP3+',audienceMode:'tagverse',regions:[],marketTagVerse:'VIP3+',tagVerse:'VIP3+',listen:'全天',freq:'实时',cool:'60 分钟',today:2,last:'2026-07-24 07:02:11',status:'监听中',priority:'P2',created:'2026-07-16 09:00:00'},
+    {id:'MK0042',name:'BTC 短时暴涨提醒',project:'TW',apps:['TW App','TW Trade','TW Lite','GoTrading'],app:'TW Trade',mktType:'短时上涨',source:'MT5',symbols:['BTCUSD','ETHUSD'],symbol:'BTCUSD',change:'3%',cond:'5 分钟涨幅 ≥ 3%',audience:'按地区 · +62 [ID]、+84 [VN]',audienceMode:'region',regions:['+62 [ID]','+84 [VN]'],marketTagVerse:'',listen:'交易时段',freq:'每 1 分钟',cool:'30 分钟',today:3,last:'2026-07-24 10:18:22',status:'运行中',priority:'P2',created:'2026-07-18 10:00:00'},
+    {id:'MK0041',name:'贵金属跌破关口提醒',project:'Dana',apps:['DANA App','GoCap'],app:'Dana App',mktType:'价格跌破',source:'内部行情',symbols:['XAUUSD','XAGUSD'],symbol:'XAUUSD',change:'2320',cond:'价格跌破关口',audience:'VIP3+',audienceMode:'tagverse',regions:[],marketTagVerse:'VIP3+',tagVerse:'VIP3+',listen:'全天',freq:'实时',cool:'60 分钟',today:2,last:'2026-07-24 07:02:11',status:'运行中',priority:'P2',created:'2026-07-16 09:00:00'},
     {id:'MK0040',name:'ETH 剧烈波动',project:'TW',apps:['TW Trade','TW Lite'],app:'TW Trade',mktType:'剧烈波动',source:'MT5',symbols:['ETHUSD','BTCUSD'],symbol:'ETHUSD',change:'5%',cond:'15 分钟振幅 ≥ 5%',audience:'按地区 · +66 [TH]、+60 [MY]',audienceMode:'region',regions:['+66 [TH]','+60 [MY]'],marketTagVerse:'',listen:'自定义',freq:'每 5 分钟',cool:'45 分钟',today:0,last:'2026-07-20 21:44:00',status:'已暂停',priority:'P2',created:'2026-07-12 14:00:00'},
-    {id:'MK0039',name:'USOIL 成交量异常',project:'TW',apps:['TW Lite'],app:'TW Lite',mktType:'成交量异常',source:'MT5',symbols:['USOIL'],symbol:'USOIL',change:'80%',cond:'成交量增长 ≥ 80%',audience:'近7日活跃',audienceMode:'tagverse',regions:[],marketTagVerse:'近7日活跃',tagVerse:'近7日活跃',listen:'交易时段',freq:'每 15 分钟',cool:'120 分钟',today:2,last:'2026-07-23 16:30:00',status:'监听中',priority:'P2',created:'2026-07-10 11:00:00'},
+    {id:'MK0039',name:'USOIL 成交量异常',project:'TW',apps:['TW Lite'],app:'TW Lite',mktType:'成交量异常',source:'MT5',symbols:['USOIL'],symbol:'USOIL',change:'80%',cond:'成交量增长 ≥ 80%',audience:'近7日活跃',audienceMode:'tagverse',regions:[],marketTagVerse:'近7日活跃',tagVerse:'近7日活跃',listen:'交易时段',freq:'每 15 分钟',cool:'120 分钟',today:2,last:'2026-07-23 16:30:00',status:'运行中',priority:'P2',created:'2026-07-10 11:00:00'},
   ],
   recordsBatch: [
     /* 业务推送场景批次仍保留在 DATA，推送记录列表按规则过滤不展示 */
@@ -1589,15 +1593,12 @@ function formatAppCell(project, apps){
   if(full.length && list.length >= full.length && full.every(a=>list.includes(a))) return 'ALL';
   return list.join('、');
 }
-/** 启停列：开关；仅运行中/已暂停（行情为监听中/已暂停）展示 */
+/** 启停列：开关；仅运行中/已暂停展示 */
 function opsToggle(type, row){
   const st = row.status;
   let on = false;
-  if(type==='business' || type==='operation'){
+  if(type==='business' || type==='operation' || type==='market'){
     if(st==='运行中') on = true;
-    else if(st!=='已暂停') return '';
-  } else if(type==='market'){
-    if(st==='监听中') on = true;
     else if(st!=='已暂停') return '';
   } else return '';
   const label = on ? '停用' : '启用';
@@ -1608,20 +1609,12 @@ function askExecToggle(type, id){
   const list = type==='business' ? DATA.business : type==='operation' ? DATA.operation : DATA.market;
   const row = (list||[]).find(x=>x.id===id);
   if(!row) return;
-  const isOn = row.status==='运行中' || row.status==='监听中';
+  const isOn = row.status==='运行中';
   const action = isOn ? 'pause' : 'resume';
   const map = {pause:'已停用', resume:'已启用'};
   toast((map[action]||'操作成功') + '：' + id);
-  if(type==='business'){
-    if(action==='pause') row.status='已暂停';
-    else row.status='运行中';
-  } else if(type==='operation'){
-    if(action==='pause') row.status='已暂停';
-    else row.status='运行中';
-  } else if(type==='market'){
-    if(action==='pause') row.status='已暂停';
-    else row.status='监听中';
-  }
+  if(action==='pause') row.status='已暂停';
+  else row.status='运行中';
   renderCurrent();
 }
 function iconBtn(icon, title, onclick, danger, disabled){
@@ -2515,8 +2508,8 @@ function renderOperation(){
   const pageRows = slicePage('operation', rows);
   const thead = `<tr>
     <th>推送 ID</th><th>任务名称</th><th>推送类型</th><th>优先级</th><th>项目</th><th>APP</th><th>地区</th><th>选择对象</th>
-    <th>通知渠道</th><th>发送计划</th><th>发送时间</th>
-    <th class="col-status">任务状态</th><th class="col-toggle">启停</th><th>操作人</th><th class="ops">操作</th>
+    <th>通知渠道</th><th>发送计划</th><th>发送时间</th><th>操作人</th>
+    <th class="col-status">任务状态</th><th class="col-toggle">启停</th><th class="ops">操作</th>
   </tr>`;
   const tbody = pageRows.map(r=>{
     const appCell = formatAppCell(r.project, rowAppsValue(r));
@@ -2534,9 +2527,9 @@ function renderOperation(){
     <td>${operationChannelTags(r.channels)}</td>
     <td><span class="pill info">${r.plan}</span></td>
     <td>${formatOpSendTime(r)}</td>
+    <td>${escHtml(operatorCell)}</td>
     <td class="col-status">${statusPill(r.status)}</td>
     <td class="col-toggle">${opsToggle('operation', r)}</td>
-    <td>${escHtml(operatorCell)}</td>
     <td class="ops"><div class="icon-actions">${opsOperation(r)}</div></td>
   </tr>`;
   }).join('');
@@ -4394,7 +4387,7 @@ function buildDiagSections(app, opts){
       name:'运营推送 / 行情提醒',
       status: (app.opRunning||0)+(app.marketListening||0) > 0 ? '成功' : '警告',
       desc: (app.opRunning||0)+(app.marketListening||0) > 0
-        ? `运营运行中 ${app.opRunning||0} · 行情监听中 ${app.marketListening||0}`
+        ? `运营运行中 ${app.opRunning||0} · 行情运行中 ${app.marketListening||0}`
         : '暂无运行中的运营推送或行情提醒',
       action: ''
     }
@@ -5825,8 +5818,9 @@ function channelEditorBlock(ch, content, vars, esc){
     state.drawer.type==='operation' ||
     (state.drawer.type==='template' && state.drawer.tplType!=='行情提醒')
   );
-  const showPushImage = showPushSettings && (
-    inPushForm || (state.drawer.type==='template' && state.drawer.tplType!=='行情提醒')
+  const showPushImage = isPush && (
+    state.drawer.type==='operation' ||
+    (state.drawer.type==='template' && state.drawer.tplType==='运营推送')
   );
   const showMailSettings = isMail && inPushForm;
   const bodyHtml = bodyTextToHtml(content.body || '');
@@ -5834,7 +5828,6 @@ function channelEditorBlock(ch, content, vars, esc){
     '<div class="ch-block-hd">' + meta.n + '</div>' +
     '<div class="ch-block-bd">' +
       (showPushSettings ? jumpConfigBlock() : '') +
-      (showPushImage ? pushImageFieldHtml(esc) : '') +
       (showMsgSettings ? msgJumpGroupFields() : '') +
       (showMailSettings ? mailChannelFields() : '') +
       '<div class="field" style="margin-bottom:12px"><label class="label"><span class="req">*</span>' + meta.bodyLabel + '</label>' +
@@ -5844,6 +5837,7 @@ function channelEditorBlock(ch, content, vars, esc){
           ' oninput="markDraftDirty()"' +
           ' onblur="retokenizeVarBody(\'' + ch + '\');markDraftDirty()"' +
           ' onkeydown="onVarBodyKeydown(event,\'' + ch + '\')">' + bodyHtml + '</div></div>' +
+      (showPushImage ? pushImageFieldHtml(esc) : '') +
       ((vars && vars.length)
         ? '<div class="field"><label class="label">插入变量</label><div class="chip-group" id="varChips_' + ch + '" style="margin-top:6px">' +
             varChipButtons(vars, ch) +
@@ -7794,10 +7788,7 @@ function opSidKey(item){
   return item && typeof item === 'object' ? String(item.sid || '') : String(item || '');
 }
 function mockOpSidFields(sid){
-  const n = Number(String(sid).slice(-2)) || 0;
-  const account = 'user_' + String(sid).slice(-6).padStart(6,'0');
-  const project = state.drawer.project || (n % 2 ? 'TW' : 'Dana');
-  return { sid:String(sid), account, region: OP_REGION_OPTS[n % OP_REGION_OPTS.length], project };
+  return { sid:String(sid) };
 }
 function addOpSid(){
   ensureOpAudienceState();
@@ -7957,10 +7948,7 @@ function opAudiencePanelHtml(mode){
         const sid = opSidKey(row);
         return '<div class="op-sid-row">' +
           '<span title="'+sid+'">'+sid+'</span>' +
-          '<span title="'+(row.account||'')+'">'+(row.account||'-')+'</span>' +
-          '<span>'+(row.region||'-')+'</span>' +
-          '<span>'+(row.project||'-')+'</span>' +
-          '<span class="op-sid-actions">' + iconBtn(I.trash,'删除',`askRemoveOpSid('${sid}')`,true) + '</span>' +
+          '<span class="op-sid-actions"><button type="button" class="link-btn" onclick="askRemoveOpSid(\''+sid+'\')">删除</button></span>' +
         '</div>';
       }).join('') + '</div>')
     : '<div class="op-sid-body">暂未添加SID</div>';
@@ -7969,7 +7957,7 @@ function opAudiencePanelHtml(mode){
       '<button class="btn" type="button" onclick="addOpSid()">添加SID</button>' +
     '</div>' +
     '<div class="op-sid-table" style="margin-top:12px">' +
-      '<div class="op-sid-hd"><span>SID</span><span>账号</span><span>注册地区</span><span>项目</span><span>操作</span></div>' +
+      '<div class="op-sid-hd"><span>SID</span><span>操作</span></div>' +
       rows +
     '</div>';
 }
@@ -8055,7 +8043,7 @@ function hydrateMarketFormFromRow(row){
   state.drawer.mktChange = row.change || '';
   state.drawer.mktUnit = '';
   const st = row.status;
-  state.drawer.mktStatus = (st==='监听中' || st==='启用') ? '启用' : ((st==='已暂停' || st==='禁用') ? '禁用' : '启用');
+  state.drawer.mktStatus = (st==='运行中' || st==='监听中' || st==='启用') ? '启用' : ((st==='已暂停' || st==='禁用') ? '禁用' : '启用');
   const cond = String(row.cond || '');
   const minMatch = cond.match(/(\d+)\s*分钟/);
   if(minMatch){
@@ -8265,7 +8253,7 @@ function saveMarketForm(){
     freq,
     cool: existing.cool || '30 分钟',
     priority: marketPriority(),
-    status: existing.status || '监听中'
+    status: existing.status === '已暂停' ? '已暂停' : '运行中'
   };
   if(state.drawer.mode === 'edit' && state.drawer.detail){
     Object.assign(state.drawer.detail, payload);
