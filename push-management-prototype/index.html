@@ -347,8 +347,17 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
 .lang-tabs-scroll::-webkit-scrollbar{display:none}
 .lang-tabs-bar .lang-tab{height:40px;padding:0 14px;border:none;border-radius:0;background:transparent;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;flex-shrink:0}
 .lang-tabs-bar .lang-tab.active{background:transparent;border-bottom-color:var(--pri);color:var(--pri);font-weight:600}
+.lang-tabs-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;padding:0 4px 0 8px}
 .lang-nav{width:28px;height:28px;border:1px solid var(--field-line);border-radius:6px;background:#fff;color:#64748b;cursor:pointer;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;padding:0;box-shadow:none}
 .lang-nav:hover{border-color:var(--pri);color:var(--pri)}
+.lang-sync-hint{font-size:13px;color:#64748b;line-height:1.7;margin-bottom:14px}
+.lang-sync-all{margin-bottom:14px}
+.lang-sync-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 14px}
+.lang-sync-item{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#334155;cursor:pointer;user-select:none}
+.lang-sync-item.is-current{color:#94a3b8;cursor:default}
+.lang-sync-item input{width:16px;height:16px;accent-color:var(--pri);cursor:pointer}
+.lang-sync-item input:disabled{cursor:not-allowed;opacity:.7}
+@media (max-width:720px){.lang-sync-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .lang-hint{font-size:12px;color:var(--muted);margin:8px 0 0}
 
 /* Modal */
@@ -1196,6 +1205,21 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
     <div class="modal-foot">
       <button class="btn ghost" onclick="closeRecordEditModal()">取消</button>
       <button class="btn" onclick="saveRecordEdit()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 多语言内容 · 同步 -->
+<div class="modal" id="langSyncModal" onclick="if(event.target===this)closeLangSyncModal()">
+  <div class="modal-card" style="width:min(720px,96vw)">
+    <div class="modal-head">
+      <h3>选择要同步的语言</h3>
+      <button class="drawer-close" onclick="closeLangSyncModal()" title="关闭">×</button>
+    </div>
+    <div class="modal-body" id="langSyncBody"></div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeLangSyncModal()">取消</button>
+      <button class="btn" onclick="confirmLangSync()">保存</button>
     </div>
   </div>
 </div>
@@ -5310,11 +5334,65 @@ function renderLangTabsBar(curL){
       }).join('') +
     '</div>' +
     '<button type="button" class="lang-nav" onclick="scrollLangTabs(120)" title="下一页">›</button>' +
+    '<div class="lang-tabs-actions">' +
+      '<button type="button" class="btn ghost sm" onclick="openLangSyncModal()">同步</button>' +
+    '</div>' +
   '</div>';
 }
 function scrollLangTabs(delta){
   const el = document.getElementById('langTabsScroll');
   if(el) el.scrollBy({ left: delta, behavior: 'smooth' });
+}
+function notifyLangName(key){
+  return (NOTIFY_LANGS.find(l=>l.k===key) || {}).n || key;
+}
+function openLangSyncModal(){
+  syncDraftFromInputs();
+  ensureDraftByLang();
+  const current = state.drawer.lang || 'en';
+  const currentName = notifyLangName(current);
+  const hint = '将当前语言「' + currentName + '」下的推送标题、正文同步到选中的其他语言。';
+  const items = NOTIFY_LANGS.map(l=>{
+    const isCurrent = l.k === current;
+    return '<label class="lang-sync-item' + (isCurrent?' is-current':'') + '">' +
+      '<input type="checkbox" class="lang-sync-check" value="' + l.k + '"' + (isCurrent?' checked disabled':'') + ' onchange="refreshLangSyncSelectAll()">' +
+      '<span>' + l.n + (isCurrent?'（当前）':'') + '</span>' +
+    '</label>';
+  }).join('');
+  document.getElementById('langSyncBody').innerHTML =
+    '<div class="lang-sync-hint">' + hint + '</div>' +
+    '<label class="check-row lang-sync-all"><input id="langSyncSelectAll" type="checkbox" onchange="toggleLangSyncSelectAll(this.checked)">全选其他语言</label>' +
+    '<div class="lang-sync-grid">' + items + '</div>';
+  document.getElementById('langSyncModal').classList.add('show');
+}
+function closeLangSyncModal(){
+  document.getElementById('langSyncModal').classList.remove('show');
+}
+function toggleLangSyncSelectAll(checked){
+  document.querySelectorAll('#langSyncModal .lang-sync-check:not([disabled])').forEach(el=>{ el.checked = !!checked; });
+}
+function refreshLangSyncSelectAll(){
+  const boxes = [...document.querySelectorAll('#langSyncModal .lang-sync-check:not([disabled])')];
+  const all = document.getElementById('langSyncSelectAll');
+  if(all) all.checked = boxes.length > 0 && boxes.every(b=>b.checked);
+}
+function confirmLangSync(){
+  syncDraftFromInputs();
+  ensureDraftByLang();
+  const draft = state.drawer.contentDraft;
+  if(!draft){ toast('请先填写当前语言内容'); return; }
+  const current = state.drawer.lang || 'en';
+  const targets = [...document.querySelectorAll('#langSyncModal .lang-sync-check:checked:not([disabled])')].map(el=>el.value);
+  if(!targets.length){ toast('请选择要同步的语言'); return; }
+  const src = snapshotCurrentLangPack();
+  if(!draft.byLang) draft.byLang = {};
+  targets.forEach(k=>{
+    draft.byLang[k] = JSON.parse(JSON.stringify(src));
+  });
+  draft.dirty = true;
+  closeLangSyncModal();
+  renderFormBody();
+  toast('已同步到：' + targets.map(notifyLangName).join('、'));
 }
 function snapshotCurrentLangPack(){
   const draft = state.drawer.contentDraft;
