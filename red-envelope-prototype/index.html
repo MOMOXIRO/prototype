@@ -4184,6 +4184,7 @@
           <button id="btnBatchDetailSearch" class="${btnClass(true,true)}">查询</button>
           <button id="btnBatchDetailExport" class="${btnClass(false,true)} ml-auto" title="导出超过1w条将被阻断">导出</button>
         </div>
+        ${detailFilter.status === "未兑换" ? `<div class="mt-2 text-[12px] text-[#94a3b8]">未兑换明细仅保留近 7 天，超期数据将自动清除</div>` : ""}
         </div>
         <div class="table-scroll-wrap border border-line rounded">
           <table class="w-full data-table table-fill text-[12px]">
