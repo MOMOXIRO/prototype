@@ -981,7 +981,7 @@
     function badge(status) {
       const cls =
         /启用|通过|执行中|完成|自动审核|已激活|已使用|成功/.test(status) ? "badge-ok" :
-        /待审核|待执行|待领取|未兑换|人工审核/.test(status) ? "badge-warn" :
+        /待审核|待执行|待领取|未兑换|人工审核|激活中/.test(status) ? "badge-warn" :
         /禁用|拒绝|撤销|失败|注销|失效/.test(status) ? "badge-danger" :
         "badge-neutral";
       return `<span class="badge ${cls}">${status}</span>`;
@@ -4112,9 +4112,10 @@
       }
       const detailCouponIds = couponOptions.length ? couponOptions : String(row.coupon || "").split(/[、,]/).filter(Boolean);
       const successDetails = [
-        { sid: "U1001", vip: "V2", couponId: detailCouponIds[0] || "--", sent: "25-06-2026 10:25", status: "已领取", receive: "25-06-2026 10:26", order: "ORD26061001", useTime: "25-06-2026 11:05" },
+        { sid: "U1001", vip: "V2", couponId: detailCouponIds[0] || "--", sent: "25-06-2026 10:25", status: "已激活", receive: "25-06-2026 10:26", order: "ORD26061001", useTime: "--" },
         { sid: "U1003", vip: "V3", couponId: detailCouponIds[1] || detailCouponIds[0] || "--", sent: "25-06-2026 10:28", status: "已使用", receive: "25-06-2026 10:30", order: "ORD26061003", useTime: "25-06-2026 12:40" },
-        { sid: "U1005", vip: "V1", couponId: detailCouponIds[0] || "--", sent: "25-06-2026 10:32", status: "已激活", receive: "25-06-2026 10:33", order: "--", useTime: "--" }
+        { sid: "U1005", vip: "V1", couponId: detailCouponIds[0] || "--", sent: "25-06-2026 10:32", status: "激活中", receive: "25-06-2026 10:33", order: "--", useTime: "--" },
+        { sid: "U1009", vip: "V2", couponId: detailCouponIds[0] || "--", sent: "25-06-2026 10:36", status: "已失效", receive: "25-06-2026 10:37", order: "--", useTime: "--" }
       ];
       const unredeemedDetails = [
         { sid: "U1006", vip: "V2", couponId: detailCouponIds[0] || "--", sent: "25-06-2026 10:35", status: "未兑换", receive: "--" },
