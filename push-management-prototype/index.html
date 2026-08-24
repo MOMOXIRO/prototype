@@ -323,7 +323,18 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
 .op-sid-row .op-sid-actions{text-align:center}
 .op-sid-row .op-sid-actions .link-btn{display:inline}
 .op-aud-tv-row,.op-aud-import-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.op-aud-tv-row .control{flex:1;min-width:200px}
+.op-aud-tv-row .control{flex:1;min-width:200px;max-width:320px}
+.tv-create-hist{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center;margin-bottom:14px}
+.tv-create-sec{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:12px}
+.tv-create-sec-hd{padding:10px 14px;background:#dbeafe;font-size:14px;font-weight:600;color:#1e3a8a}
+.tv-create-sec-bd{padding:14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.tv-create-checks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;padding:0 14px 14px}
+.tv-create-checks label{height:34px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:6px;background:#fff;font-size:13px;margin:-1px 0 0 -1px}
+.tv-create-filters{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:12px}
+.tv-create-filters .lab{color:var(--muted);margin-right:4px}
+@media (max-width:720px){
+  .tv-create-sec-bd,.tv-create-checks{grid-template-columns:1fr}
+}
 .op-aud-import-row .file-name{flex:1;min-width:180px;height:34px;border:1px solid var(--field-line);border-radius:7px;padding:0 12px;display:flex;align-items:center;background:#f8fafc;font-size:13px;color:#334155}
 .var-body.control{min-height:110px;height:auto;white-space:pre-wrap;word-break:break-word;line-height:1.7;overflow:auto;cursor:text}
 .var-body.control.rich-body{min-height:160px}
@@ -1049,6 +1060,21 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
   </div>
 </div>
 
+<!-- 创建 TagVerse -->
+<div class="modal" id="tagVerseCreateModal" onclick="if(event.target===this)closeTagVerseCreateModal()">
+  <div class="modal-card lg">
+    <div class="modal-head">
+      <h3>创建TagVerse</h3>
+      <button class="drawer-close" onclick="closeTagVerseCreateModal()" title="关闭">×</button>
+    </div>
+    <div class="modal-body" id="tagVerseCreateBody"></div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeTagVerseCreateModal()">取消</button>
+      <button class="btn" onclick="confirmTagVerseCreate()">确定</button>
+    </div>
+  </div>
+</div>
+
 <!-- Confirm Modal -->
 <div class="modal" id="confirmModal">
   <div class="modal-card">
@@ -1430,7 +1456,7 @@ const DATA = {
   ],
   operation: [
     {id:'OP0091',name:'印尼斋月活动召回',project:'Dana',apps:['DANA App'],opType:'用户召回',category:'用户召回',priority:'P2',audience:'地区：+62 [ID]',audienceMode:'region',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'动态计算',channels:['Push','私信'],plan:'循环发送',loopType:'weekly',weekdays:['周一'],sendTime:'10:00',next:'2026-07-25 10:00:00',batches:12,sent:386200,status:'运行中',operator:'amy.li',creator:'amy.li',created:'2026-07-01 10:00:00',updated:'2026-07-23 15:20:00'},
-    {id:'OP0090',name:'VIP3 及以上周末福利',project:'TW',apps:['TW Trade'],opType:'福利通知',category:'福利通知',priority:'P2',audience:'VIP3 及以上',audienceMode:'tagverse',tagVerse:'VIP3 及以上',region:'',regions:[],crowd:'每次执行重新计算',channels:['Push'],plan:'循环发送',loopType:'weekly',weekdays:['周六','周日'],sendTime:'09:00',next:'2026-07-26 09:00:00',batches:4,sent:42880,status:'运行中',operator:'kevin.w',creator:'kevin.w',created:'2026-07-10 09:00:00',updated:'2026-07-22 11:11:11'},
+    {id:'OP0090',name:'VIP3 及以上周末福利',project:'TW',apps:['TW Trade'],opType:'福利通知',category:'福利通知',priority:'P2',audience:'VIP3 及以上',audienceMode:'select',tagVerse:'VIP3 及以上',region:'',regions:[],crowd:'每次执行重新计算',channels:['Push'],plan:'循环发送',loopType:'weekly',weekdays:['周六','周日'],sendTime:'09:00',next:'2026-07-26 09:00:00',batches:4,sent:42880,status:'运行中',operator:'kevin.w',creator:'kevin.w',created:'2026-07-10 09:00:00',updated:'2026-07-22 11:11:11'},
     {id:'OP0089',name:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',opType:'系统维护',category:'系统维护',priority:'P0',audience:'导入 SID：2,136 人',audienceMode:'import',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'固定名单',channels:['Push','私信'],plan:'单次定时',next:'2026-07-24 22:00:00',batches:0,sent:0,status:'待生效',operator:'ops.admin',creator:'ops.admin',created:'2026-07-24 10:05:00',updated:'2026-07-24 10:05:00'},
     {id:'OP0088',name:'全量用户节假日问候',project:'TW',apps:[],opType:'活动通知',category:'活动通知',priority:'P1',audience:'全量用户',audienceMode:'add',region:'',regions:[],crowd:'动态计算',channels:['Push'],plan:'立即发送',next:'--',batches:1,sent:920114,status:'已完成',operator:'mia.chen',creator:'mia.chen',created:'2026-06-28 08:00:00',updated:'2026-07-01 08:30:00'},
     {id:'OP0087',name:'订阅黄金行情用户活动',project:'TW',apps:['TW Trade','TW Lite'],opType:'活动通知',category:'活动通知',priority:'P1',audience:'订阅：黄金主题 / +62 [ID]',audienceMode:'add',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'动态计算',channels:['Push','WhatsApp'],plan:'单次定时',next:'2026-07-28 14:00:00',batches:0,sent:0,status:'待生效',operator:'amy.li',creator:'amy.li',created:'2026-07-20 16:40:00',updated:'2026-07-20 16:40:00'},
@@ -1438,9 +1464,9 @@ const DATA = {
   ],
   market: [
     {id:'MK0042',name:'BTC 短时暴涨提醒',project:'TW',apps:['TW App','TW Trade','TW Lite','GoTrading'],app:'TW Trade',mktType:'短时上涨',source:'MT5',symbols:['BTCUSD','ETHUSD'],symbol:'BTCUSD',change:'3%',cond:'5 分钟涨幅 ≥ 3%',audience:'按地区 · +62 [ID]、+84 [VN]',audienceMode:'region',regions:['+62 [ID]','+84 [VN]'],marketTagVerse:'',listen:'交易时段',freq:'每 1 分钟',cool:'30 分钟',today:3,last:'2026-07-24 10:18:22',status:'运行中',priority:'P2',created:'2026-07-18 10:00:00'},
-    {id:'MK0041',name:'贵金属跌破关口提醒',project:'Dana',apps:['DANA App','GoCap'],app:'Dana App',mktType:'价格跌破',source:'内部行情',symbols:['XAUUSD','XAGUSD'],symbol:'XAUUSD',change:'2320',cond:'价格跌破关口',audience:'VIP3+',audienceMode:'tagverse',regions:[],marketTagVerse:'VIP3+',tagVerse:'VIP3+',listen:'全天',freq:'实时',cool:'60 分钟',today:2,last:'2026-07-24 07:02:11',status:'运行中',priority:'P2',created:'2026-07-16 09:00:00'},
+    {id:'MK0041',name:'贵金属跌破关口提醒',project:'Dana',apps:['DANA App','GoCap'],app:'Dana App',mktType:'价格跌破',source:'内部行情',symbols:['XAUUSD','XAGUSD'],symbol:'XAUUSD',change:'2320',cond:'价格跌破关口',audience:'VIP3+',audienceMode:'select',regions:[],marketTagVerse:'VIP3+',tagVerse:'VIP3+',listen:'全天',freq:'实时',cool:'60 分钟',today:2,last:'2026-07-24 07:02:11',status:'运行中',priority:'P2',created:'2026-07-16 09:00:00'},
     {id:'MK0040',name:'ETH 剧烈波动',project:'TW',apps:['TW Trade','TW Lite'],app:'TW Trade',mktType:'剧烈波动',source:'MT5',symbols:['ETHUSD','BTCUSD'],symbol:'ETHUSD',change:'5%',cond:'15 分钟振幅 ≥ 5%',audience:'按地区 · +66 [TH]、+60 [MY]',audienceMode:'region',regions:['+66 [TH]','+60 [MY]'],marketTagVerse:'',listen:'自定义',freq:'每 5 分钟',cool:'45 分钟',today:0,last:'2026-07-20 21:44:00',status:'已暂停',priority:'P2',created:'2026-07-12 14:00:00'},
-    {id:'MK0039',name:'USOIL 成交量异常',project:'TW',apps:['TW Lite'],app:'TW Lite',mktType:'成交量异常',source:'MT5',symbols:['USOIL'],symbol:'USOIL',change:'80%',cond:'成交量增长 ≥ 80%',audience:'近7日活跃',audienceMode:'tagverse',regions:[],marketTagVerse:'近7日活跃',tagVerse:'近7日活跃',listen:'交易时段',freq:'每 15 分钟',cool:'120 分钟',today:2,last:'2026-07-23 16:30:00',status:'运行中',priority:'P2',created:'2026-07-10 11:00:00'},
+    {id:'MK0039',name:'USOIL 成交量异常',project:'TW',apps:['TW Lite'],app:'TW Lite',mktType:'成交量异常',source:'MT5',symbols:['USOIL'],symbol:'USOIL',change:'80%',cond:'成交量增长 ≥ 80%',audience:'近7日活跃',audienceMode:'select',regions:[],marketTagVerse:'近7日活跃',tagVerse:'近7日活跃',listen:'交易时段',freq:'每 15 分钟',cool:'120 分钟',today:2,last:'2026-07-23 16:30:00',status:'运行中',priority:'P2',created:'2026-07-10 11:00:00'},
   ],
   recordsBatch: [
     /* 业务推送场景批次仍保留在 DATA，推送记录列表按规则过滤不展示 */
@@ -2454,14 +2480,14 @@ function resolveTagVerseName(row){
   const aud = String(row.audience || '');
   const m = aud.match(/(?:TagVerse|分群)\s*[·:：]\s*(.+)$/);
   if(m) return m[1].trim();
-  if(row.audienceMode === 'tagverse' && aud) return aud.trim();
+  if(row.audienceMode === 'tagverse' || row.audienceMode === 'select') return aud.trim();
   return '';
 }
 function isTagVerseAudience(row){
   if(!row) return false;
-  if(row.audienceMode === 'tagverse') return true;
+  if(row.audienceMode === 'tagverse' || row.audienceMode === 'select') return true;
   if(row.tagVerse || row.marketTagVerse) return true;
-  return /^(TagVerse|分群)\s*[·:：]/.test(String(row.audience || ''));
+  return /^(TagVerse|分群|选择)\s*[·:：]/.test(String(row.audience || ''));
 }
 /** 列表 / 详情「选择对象」单元格：TagVerse 仅展示可点击名称 */
 function formatAudienceCell(row){
@@ -3577,8 +3603,17 @@ function askConfirm(action, type, id, msg, opts){
   ok.onclick = ()=>{
     const pendingRow = state.pendingCondRow;
     const recordEditDraft = state.pendingRecordEdit;
+    const newTvName = (document.getElementById('newTagVerseName')||{}).value;
     closeConfirm();
     if(action==='sendNow'){ toast('已开始立即发送'); closeForm(); return; }
+    if(action==='createTagVerseRename'){
+      const name = String(newTvName || '').trim();
+      if(!name){ toast('请填写TagVerse名称'); return; }
+      applyCreatedTagVerse(name, type);
+      closeTagVerseCreateModal();
+      toast('新的TagVerse创建成功，并已反显到当前页面');
+      return;
+    }
     if(action==='editRecordPlan'){
       if(recordEditDraft && recordEditDraft.id === id){
         applyRecordEditSave(recordEditDraft.id, recordEditDraft.plan, recordEditDraft.title, recordEditDraft.body);
@@ -6723,7 +6758,12 @@ function hydrateOpPlanFromRow(row){
 }
 function hydrateOpAudienceFromRow(row){
   ensureOpAudienceState(true);
-  const mode = ['add','tagverse','import','region'].includes(row?.audienceMode) ? row.audienceMode : 'add';
+  let mode = row?.audienceMode || 'add';
+  if(mode === 'tagverse' && (row?.tagVerse || '').trim()){
+    // 历史数据：旧「TagVerse」合并项中已选包 → 归入「选择」
+    mode = 'select';
+  }
+  if(!['add','select','tagverse','import','region'].includes(mode)) mode = 'add';
   state.drawer.audienceMode = mode;
   state.drawer.opTagVerse = row?.tagVerse || '';
   state.drawer.regions = regionCodes(row?.regions || (row?.region ? [row.region] : []));
@@ -6756,10 +6796,16 @@ function applyOpPlanToRow(row){
 }
 function applyOpAudienceToRow(row){
   ensureOpAudienceState();
-  row.audienceMode = state.drawer.audienceMode || 'add';
-  row.tagVerse = state.drawer.opTagVerse || '';
+  const mode = state.drawer.audienceMode || 'add';
+  row.audienceMode = mode;
+  row.tagVerse = (mode==='select' || mode==='tagverse') ? (state.drawer.opTagVerse || '') : '';
   row.regions = regionCodes(state.drawer.regions);
   row.region = (row.regions||[]).join('、');
+  if(mode==='select') row.audience = row.tagVerse || '选择 · 未选择';
+  else if(mode==='tagverse') row.audience = row.tagVerse || 'TagVerse · 未创建';
+  else if(mode==='import') row.audience = '导入 SID' + ((state.drawer.opSids||[]).length ? ('：' + state.drawer.opSids.length + ' 人') : '');
+  else if(mode==='region') row.audience = '地区：' + (row.region || '未选择');
+  else row.audience = (state.drawer.opSids||[]).length ? ('添加 SID：' + state.drawer.opSids.length + ' 人') : '添加 · 未添加';
 }
 function setOpSendMode(mode){
   ensureOpPlanState();
@@ -7846,7 +7892,7 @@ function selectChip(el, groupId){
   el.classList.add('on');
 }
 function ensureOpAudienceState(reset){
-  if(reset || !['add','tagverse','import','region'].includes(state.drawer.audienceMode))
+  if(reset || !['add','select','tagverse','import','region'].includes(state.drawer.audienceMode))
     state.drawer.audienceMode = 'add';
   if(reset || !Array.isArray(state.drawer.opSids)) state.drawer.opSids = [];
   if(reset || state.drawer.opImportFile == null) state.drawer.opImportFile = '';
@@ -7896,7 +7942,111 @@ function setOpTagVerse(v){
   ensureOpAudienceState();
   state.drawer.opTagVerse = v;
   const panel = document.getElementById('audPanel');
-  if(panel) panel.innerHTML = opAudiencePanelHtml('tagverse');
+  if(panel) panel.innerHTML = opAudiencePanelHtml(state.drawer.audienceMode || 'select');
+}
+function applyCreatedTagVerse(name, source){
+  const n = String(name || '').trim();
+  if(!n) return;
+  if(!TAGVERSE_OPTS.includes(n)) TAGVERSE_OPTS.unshift(n);
+  if(source === 'market'){
+    ensureMarketAudienceState();
+    state.drawer.marketTagVerse = n;
+    state.drawer.audienceMode = 'tagverse';
+    document.querySelectorAll('input[name="mktAudMode"]').forEach(r=>{ r.checked = r.value === 'tagverse'; });
+    const panel = document.getElementById('mktAudPanel');
+    if(panel) panel.innerHTML = marketAudiencePanelHtml('tagverse');
+  } else {
+    ensureOpAudienceState();
+    state.drawer.opTagVerse = n;
+    state.drawer.audienceMode = 'tagverse';
+    document.querySelectorAll('input[name="opAudMode"]').forEach(r=>{ r.checked = r.value === 'tagverse'; });
+    const panel = document.getElementById('audPanel');
+    if(panel) panel.innerHTML = opAudiencePanelHtml('tagverse');
+  }
+}
+function openTagVerseCreateModal(source){
+  state.tagVerseCreateSource = source === 'market' ? 'market' : 'operation';
+  const history = TAGVERSE_OPTS.slice();
+  const selected = state.tagVerseCreateSource === 'market'
+    ? (state.drawer.marketTagVerse || history[0] || '')
+    : (state.drawer.opTagVerse || history[0] || '');
+  state.tagVerseCreateBase = selected;
+  const project = state.drawer.project || 'Dana';
+  const field = (label, req)=>{
+    return '<div class="field"><label class="label">' + (req?'<span class="req">*</span>':'') + label + '</label>' +
+      '<select class="control" data-tv-field>' +
+        '<option value="">' + label + '</option><option>是</option><option>否</option>' +
+      '</select></div>';
+  };
+  document.getElementById('tagVerseCreateBody').innerHTML =
+    '<div class="tv-create-hist">' +
+      '<label class="label" style="margin:0">历史TagVerse</label>' +
+      '<select class="control" id="tagVerseHistorySelect" onchange="onTagVerseHistoryChange(this.value)">' +
+        history.map(o=>'<option value="'+escHtml(o)+'"'+(o===selected?' selected':'')+'>'+escHtml(o)+'</option>').join('') +
+      '</select>' +
+    '</div>' +
+    '<div class="tv-create-sec">' +
+      '<div class="tv-create-sec-hd">基本属性</div>' +
+      '<div class="tv-create-sec-bd">' +
+        '<div class="field"><label class="label"><span class="req">*</span>项目</label>' +
+          '<select class="control" data-tv-field><option>'+escHtml(project)+'</option><option>Dana</option><option>TW</option></select></div>' +
+        field('地区', true) +
+        field('vip等级', false) +
+        field('是否分配销售', false) +
+        field('是否激活', true) +
+        field('销售', false) +
+        field('是否分配客服', false) +
+        field('客服', false) +
+        field('sid尾号', false) +
+        field('是否分配IB经理', false) +
+        field('IB经理', false) +
+        field('注册APP', false) +
+        field('最后登录APP', false) +
+        field('是否绑定手机号', false) +
+      '</div>' +
+      '<div class="tv-create-checks">' +
+        ['已实名','已激活邮箱','重复注册'].map(t=>
+          '<label><input type="checkbox" data-tv-check> '+t+'</label>'
+        ).join('') +
+      '</div>' +
+    '</div>' +
+    '<div class="tv-create-sec">' +
+      '<div class="tv-create-sec-hd">用户身份关联的属性</div>' +
+      '<div class="tv-create-sec-bd" style="padding-bottom:14px"><span class="muted" style="grid-column:1/-1">可继续配置身份关联条件（原型占位）</span></div>' +
+    '</div>' +
+    '<div class="tv-create-filters">' +
+      '<span class="lab">过滤数据</span>' +
+      ['自动提现黑名单','用户提现黑名单','代理提现黑名单','绿色名单','禁止登录','限制充值','禁止充值','限制交易','禁止交易'].map(t=>
+        '<label><input type="checkbox" checked data-tv-filter> '+t+'</label>'
+      ).join('') +
+    '</div>';
+  document.getElementById('tagVerseCreateModal').classList.add('show');
+}
+function onTagVerseHistoryChange(v){
+  state.tagVerseCreateBase = v;
+  toast('已反显历史TagVerse：' + v);
+}
+function closeTagVerseCreateModal(){
+  document.getElementById('tagVerseCreateModal').classList.remove('show');
+}
+function confirmTagVerseCreate(){
+  const base = state.tagVerseCreateBase || (document.getElementById('tagVerseHistorySelect')||{}).value || '';
+  const fields = [...document.querySelectorAll('#tagVerseCreateModal [data-tv-field]')];
+  const dirty = fields.some(el => el.value && el.value !== el.options[0]?.value && el.value !== (state.drawer.project||'Dana'));
+  const source = state.tagVerseCreateSource || 'operation';
+  if(!dirty){
+    applyCreatedTagVerse(base, source);
+    closeTagVerseCreateModal();
+    toast('已选择历史TagVerse并反显到当前页面');
+    return;
+  }
+  const defaultName = 'TG_' + formatNow().slice(0,7).replace('-','') + '_推送人群';
+  askConfirm('createTagVerseRename', source, base || defaultName,
+    '<div style="margin-bottom:12px;color:#64748b;line-height:1.6">当前配置基于历史 TagVerse「' + escHtml(base||'—') + '」进行了修改，系统将按新增人群包保存。请重新命名后确认。</div>' +
+    '<div class="field"><label class="label"><span class="req">*</span>TagVerse名称</label>' +
+      '<input class="control" id="newTagVerseName" placeholder="TG_202606_老客激活" value="' + escHtml(defaultName) + '"></div>',
+    { title:'确认创建新的TagVerse？', html:true }
+  );
 }
 function importOpAudienceList(){
   ensureOpAudienceState();
@@ -7994,15 +8144,21 @@ function onMultiSelectChange(id){
 }
 function opAudiencePanelHtml(mode){
   ensureOpAudienceState();
-  if(mode==='tagverse'){
+  if(mode==='select'){
     const tv = state.drawer.opTagVerse || '';
     return '<div class="op-aud-tv-row">' +
       '<select class="control" onchange="setOpTagVerse(this.value)">' +
         '<option value="">选择已有TagVerse</option>' +
-        TAGVERSE_OPTS.map(o=>'<option value="'+o+'"'+(tv===o?' selected':'')+'>'+o+'</option>').join('') +
+        TAGVERSE_OPTS.map(o=>'<option value="'+o+'"'+(o===tv?' selected':'')+'>'+o+'</option>').join('') +
       '</select>' +
-      '<button class="btn soft" type="button" onclick="toast(\'打开创建 TagVerse\')">创建TagVerse</button>' +
       (tv ? ' <button class="btn ghost sm" type="button" onclick="openTagVerseDetail(state.drawer.opTagVerse)">查看详情</button>' : '') +
+    '</div>';
+  }
+  if(mode==='tagverse'){
+    const tv = state.drawer.opTagVerse || '';
+    return '<div class="op-aud-tv-row">' +
+      '<button class="btn soft" type="button" onclick="openTagVerseCreateModal(\'operation\')">创建TagVerse</button>' +
+      (tv ? ('<span class="muted" style="font-size:13px">已选：</span><button class="link-btn" type="button" onclick="openTagVerseDetail(state.drawer.opTagVerse)">' + escHtml(tv) + '</button>') : '') +
     '</div>';
   }
   if(mode==='import'){
@@ -8042,7 +8198,8 @@ function opAudiencePanelHtml(mode){
 function opAudienceSummary(){
   ensureOpAudienceState();
   const mode = state.drawer.audienceMode || 'add';
-  if(mode==='tagverse') return 'TagVerse · ' + (state.drawer.opTagVerse || '未选择');
+  if(mode==='select') return '选择 · ' + (state.drawer.opTagVerse || '未选择');
+  if(mode==='tagverse') return 'TagVerse · ' + (state.drawer.opTagVerse || '未创建');
   if(mode==='import') return '导入 · ' + (state.drawer.opImportFile || '未导入');
   if(mode==='region'){
     const regions = regionCodes(state.drawer.regions);
@@ -8056,6 +8213,7 @@ function audienceConfigBlock(){
   const mode = state.drawer.audienceMode || 'add';
   const items = [
     {k:'add', n:'添加'},
+    {k:'select', n:'选择'},
     {k:'tagverse', n:'TagVerse'},
     {k:'import', n:'导入'},
     {k:'region', n:'按地区'}
@@ -8311,6 +8469,9 @@ function saveMarketForm(){
   const enTitle = (draft.byLang && draft.byLang.en && draft.byLang.en.title) || draft.title || '';
   const name = (enTitle || ((symbols[0] || '') + ' ' + d.mktType)).trim();
   const existing = state.drawer.mode === 'edit' ? (state.drawer.detail || {}) : {};
+  const audMode = ['select','tagverse'].includes(state.drawer.audienceMode) ? state.drawer.audienceMode : 'region';
+  const mktTv = state.drawer.marketTagVerse || '';
+  const mktRegions = regionCodes(state.drawer.regions);
   const payload = {
     name,
     project,
@@ -8322,11 +8483,13 @@ function saveMarketForm(){
     symbol: symbols[0] || '',
     change: d.marketCondMode === 'barrier' ? (d.mktGate || d.mktChange || '') : (d.mktChange || ''),
     cond,
-    audience: existing.audience || '--',
-    audienceMode: existing.audienceMode || 'region',
-    regions: Array.isArray(existing.regions) ? existing.regions.slice() : [],
-    marketTagVerse: existing.marketTagVerse || '',
-    tagVerse: existing.tagVerse || '',
+    audience: audMode==='select' ? (mktTv || '选择 · 未选择')
+      : (audMode==='tagverse' ? (mktTv || 'TagVerse · 未创建')
+      : ('按地区 · ' + (mktRegions.length ? mktRegions.join('、') : '未选择'))),
+    audienceMode: audMode,
+    regions: mktRegions.slice(),
+    marketTagVerse: (audMode==='select' || audMode==='tagverse') ? mktTv : '',
+    tagVerse: (audMode==='select' || audMode==='tagverse') ? mktTv : '',
     listen: existing.listen || '全天',
     freq,
     cool: existing.cool || '30 分钟',
@@ -8356,7 +8519,7 @@ function saveMarketForm(){
 }
 /** 行情推送选择对象：仅 按地区 / TagVerse */
 function ensureMarketAudienceState(reset){
-  if(reset || !['region','tagverse'].includes(state.drawer.audienceMode))
+  if(reset || !['region','select','tagverse'].includes(state.drawer.audienceMode))
     state.drawer.audienceMode = 'region';
   if(reset || state.drawer.marketTagVerse == null) state.drawer.marketTagVerse = '';
   if(reset || !Array.isArray(state.drawer.regions)) state.drawer.regions = [];
@@ -8366,13 +8529,16 @@ function ensureMarketAudienceState(reset){
 function hydrateMarketAudienceFromRow(row){
   ensureMarketAudienceState(true);
   if(!row) return;
-  const mode = row.audienceMode === 'tagverse' ? 'tagverse' : 'region';
+  let mode = row.audienceMode || 'region';
+  if(mode === 'tagverse' && (row.marketTagVerse || row.tagVerse || '').trim()) mode = 'select';
+  if(!['region','select','tagverse'].includes(mode)) mode = 'region';
   state.drawer.audienceMode = mode;
   if(Array.isArray(row.regions)) state.drawer.regions = regionCodes(row.regions);
-  state.drawer.marketTagVerse = row.marketTagVerse || '';
-  if(!state.drawer.marketTagVerse && mode==='tagverse' && row.audience){
-    const m = String(row.audience).match(/TagVerse\s*[·:：]\s*(.+)/);
+  state.drawer.marketTagVerse = row.marketTagVerse || row.tagVerse || '';
+  if(!state.drawer.marketTagVerse && (mode==='select' || mode==='tagverse') && row.audience){
+    const m = String(row.audience).match(/(?:TagVerse|分群|选择)\s*[·:：]\s*(.+)/);
     if(m) state.drawer.marketTagVerse = m[1].trim();
+    else if(!/按地区/.test(row.audience)) state.drawer.marketTagVerse = String(row.audience).trim();
   }
   if(mode==='region' && !state.drawer.regions.length && row.audience){
     const m = String(row.audience).match(/按地区\s*[·:：]\s*(.+)/);
@@ -8381,7 +8547,7 @@ function hydrateMarketAudienceFromRow(row){
 }
 function setMarketAudienceMode(mode){
   ensureMarketAudienceState();
-  state.drawer.audienceMode = mode === 'tagverse' ? 'tagverse' : 'region';
+  state.drawer.audienceMode = ['select','tagverse'].includes(mode) ? mode : 'region';
   document.querySelectorAll('input[name="mktAudMode"]').forEach(r=>{ r.checked = r.value === state.drawer.audienceMode; });
   const panel = document.getElementById('mktAudPanel');
   if(panel) panel.innerHTML = marketAudiencePanelHtml(state.drawer.audienceMode);
@@ -8390,19 +8556,25 @@ function setMarketTagVerse(v){
   ensureMarketAudienceState();
   state.drawer.marketTagVerse = v;
   const panel = document.getElementById('mktAudPanel');
-  if(panel) panel.innerHTML = marketAudiencePanelHtml('tagverse');
+  if(panel) panel.innerHTML = marketAudiencePanelHtml(state.drawer.audienceMode || 'select');
 }
 function marketAudiencePanelHtml(mode){
   ensureMarketAudienceState();
-  if(mode==='tagverse'){
+  if(mode==='select'){
     const tv = state.drawer.marketTagVerse || '';
     return '<div class="op-aud-tv-row">' +
       '<select class="control" onchange="setMarketTagVerse(this.value)">' +
         '<option value="">选择已有TagVerse</option>' +
-        TAGVERSE_OPTS.map(o=>'<option value="'+o+'"'+(tv===o?' selected':'')+'>'+o+'</option>').join('') +
+        TAGVERSE_OPTS.map(o=>'<option value="'+o+'"'+(o===tv?' selected':'')+'>'+o+'</option>').join('') +
       '</select>' +
-      '<button class="btn soft" type="button" onclick="toast(\'打开创建 TagVerse\')">创建TagVerse</button>' +
       (tv ? ' <button class="btn ghost sm" type="button" onclick="openTagVerseDetail(state.drawer.marketTagVerse)">查看详情</button>' : '') +
+    '</div>';
+  }
+  if(mode==='tagverse'){
+    const tv = state.drawer.marketTagVerse || '';
+    return '<div class="op-aud-tv-row">' +
+      '<button class="btn soft" type="button" onclick="openTagVerseCreateModal(\'market\')">创建TagVerse</button>' +
+      (tv ? ('<span class="muted" style="font-size:13px">已选：</span><button class="link-btn" type="button" onclick="openTagVerseDetail(state.drawer.marketTagVerse)">' + escHtml(tv) + '</button>') : '') +
     '</div>';
   }
   const regions = regionCodes(state.drawer.regions);
@@ -8411,16 +8583,18 @@ function marketAudiencePanelHtml(mode){
 }
 function marketAudienceSummary(){
   ensureMarketAudienceState();
-  const mode = state.drawer.audienceMode === 'tagverse' ? 'tagverse' : 'region';
-  if(mode==='tagverse') return 'TagVerse · ' + (state.drawer.marketTagVerse || '未选择');
+  const mode = state.drawer.audienceMode || 'region';
+  if(mode==='select') return '选择 · ' + (state.drawer.marketTagVerse || '未选择');
+  if(mode==='tagverse') return 'TagVerse · ' + (state.drawer.marketTagVerse || '未创建');
   const regions = regionCodes(state.drawer.regions);
   return '按地区 · ' + (regions.length ? regions.join('、') : '未选择');
 }
 function marketAudienceConfigBlock(){
   ensureMarketAudienceState();
-  const mode = state.drawer.audienceMode === 'tagverse' ? 'tagverse' : 'region';
+  const mode = ['select','tagverse'].includes(state.drawer.audienceMode) ? state.drawer.audienceMode : 'region';
   const items = [
     {k:'region', n:'按地区'},
+    {k:'select', n:'选择'},
     {k:'tagverse', n:'TagVerse'}
   ];
   return '<div class="op-aud">' +
