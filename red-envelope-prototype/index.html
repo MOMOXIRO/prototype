@@ -857,7 +857,9 @@
           { id:"8", name:"8月定时激活活动", audience:"Recharge_Q2", audienceType:"TagVerse", audienceCount:8200, mode:"普通活动 / 定时发放", deliverTime:"2026-08-05 10:00", task:"T1", tasks:["T1"], batch:"--", project:"Dana", coupons:["1001"], status:"待执行", statuses:["待执行"], createdAt:"2026-07-06 15:00", revokeReason:"--",
             logs:[{ operator:"Jenny", time:"2026-07-06 15:00", content:"活动审核通过" }] },
           { id:"14", name:"自定义现金补发", audience:"添加3人", audienceType:"添加", audienceCount:3, mode:"普通活动 / 立即发放", deliverTime:"2026-07-06 14:00", task:"T0", tasks:["T0"], batch:"14-T0-1", project:"Dana", coupons:[], status:"完成", statuses:["完成"], createdAt:"2026-07-06 14:00", revokeReason:"--",
-            logs:[{ operator:"Jenny", time:"2026-07-06 14:00", content:"创建活动" }] }
+            logs:[{ operator:"Jenny", time:"2026-07-06 14:00", content:"创建活动" }] },
+          { id:"15", name:"定时特批超时活动", audience:"导入120人", audienceType:"导入", audienceCount:120, importFile:"15_import.xlsx", mode:"特批活动 / 定时发放", deliverTime:"2026-08-01 10:00", task:"T1", tasks:["T1"], batch:"--", project:"Dana", coupons:["1001"], status:"待审核", statuses:["待审核"], createdAt:"2026-07-28 09:00", revokeReason:"--", approvalReason:"定时特批需在发放前完成审批。",
+            logs:[{ operator:"Jenny", time:"2026-07-28 09:00", content:"创建活动" }] }
         ],
         batches: [
           { id:"1-T1-1", campaign:"1", task:"T1", taskType:"充值", coupon:"1001,1002", couponType:"现金红包", issue:"126/200", status:"完成", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-06 11:45", reason:"--", loopRound:1,
@@ -900,8 +902,9 @@
           { rid:"R3", type:"特批活动", object:"7", activity:"7", activityName:"补偿活动", activityKind:"特批活动", audience:"导入名单", batchCount:2, expectedUsers:268, expectedAmount:"$80,000", approvalReason:"高价值客户补偿，需要人工审核确认。", batch:"7-T2-1", batches:["7-T1-1","7-T2-1"], project:"Dana", couponId:"1001", coupon:"10元首充红包", couponType:"现金红包", users:268, amount:"$80,000", trigger:"特批活动创建后进入人工审核", status:"待审核", apply:"25-06-2026 11:05", reviewer:"--", reviewTime:"--", operator:"--" },
           { rid:"R4", type:"红包发放", sid:"26070002", object:"26070002", activity:"8", batch:"8-T5-1", project:"Dana", couponId:"2001", coupon:"5元红包", couponType:"手续费抵扣红包", redPacketCount:12, dailyCustomCount:1, users:45, amount:"$5", trigger:"单个用户当日已领自定义红包 >= 1张", status:"审核通过", apply:"25-06-2026 09:45", reviewer:"Jenny", reviewTime:"25-06-2026 09:52", operator:"Jenny" },
           { rid:"R5", type:"红包发放", sid:"26070003", object:"26070003", activity:"9", batch:"9-T5-1", project:"TW", couponId:"1002", coupon:"8元红包", couponType:"盈亏抵扣红包", redPacketCount:21, dailyCustomCount:0, users:33, amount:"$8", trigger:"用户红包拥有数量超过20", status:"审核拒绝", apply:"25-06-2026 09:20", reviewer:"Tom", reviewTime:"25-06-2026 09:25", auditOpinion:"用户持有红包数量已超过发放限制，暂不允许继续发放。", operator:"Tom" },
-          { rid:"R6", type:"特批活动", object:"5", activity:"5", activityName:"高风险特批活动", activityKind:"特批活动", audience:"导入名单", batchCount:1, expectedUsers:268, expectedAmount:"$1,340", approvalReason:"高风险名单特批，需人工复核。", batch:"5-T2-1", batches:["5-T2-1"], project:"TW", couponId:"2001", coupon:"实盘手续费抵扣红包", couponType:"手续费抵扣红包", users:268, amount:"$1,340", trigger:"特批活动创建后进入人工审核", status:"审核拒绝", apply:"25-06-2026 11:30", reviewer:"Admin", reviewTime:"25-06-2026 11:45", auditOpinion:"特批活动人工审核拒绝", operator:"Admin" },
+          { rid:"R6", type:"特批活动", object:"5", activity:"5", activityName:"高风险特批活动", activityKind:"特批活动", audience:"导入名单", batchCount:1, expectedUsers:268, expectedAmount:"$1,340", approvalReason:"高风险名单特批，需人工复核。", batch:"5-T2-1", batches:["5-T2-1"], project:"TW", couponId:"2001", coupon:"实盘手续费抵扣红包", couponType:"手续费抵扣红包", users:268, amount:"$1,340", trigger:"特批活动创建后进入人工审核", status:"审核拒绝", apply:"25-06-2026 11:30", reviewer:"系统", reviewTime:"25-06-2026 11:45", auditOpinion:"特批活动人工审核拒绝", operator:"系统" },
           { rid:"R7", type:"自定义红包", object:"0", activity:"0", activityName:"临时补发活动", batch:"0-T1-1", batches:["0-T1-1"], project:"Dana", couponId:"1001", coupon:"临时补发红包", couponType:"现金红包", singleAmount:"$150", dailyAmount:"$150", dailyCount:1, users:1, amount:"$150", trigger:"单个自定义红包金额 > $100", status:"已撤销", apply:"24-06-2026 16:10", reviewer:"Jenny", reviewTime:"24-06-2026 16:40", auditOpinion:"活动撤销：运营手动撤销待审核记录", operator:"Jenny" },
+          { rid:"R8", type:"特批活动", object:"15", activity:"15", activityName:"定时特批超时活动", activityKind:"特批活动", audience:"导入名单", batchCount:1, expectedUsers:120, expectedAmount:"$1,800", approvalReason:"定时特批需在发放前完成审批。", batch:"--", batches:[], project:"Dana", couponId:"1001", coupon:"新人户现金红包", couponType:"现金红包", users:120, amount:"$1,800", trigger:"特批活动创建后进入人工审核", status:"待审核", apply:"28-07-2026 09:00", reviewer:"--", reviewTime:"--", operator:"--" },
           { rid:"U1", type:"使用审核", id:"15057045", sid:"10018709722", object:"10018709722", project:"Dana", region:"+62 [ID]", couponId:"1075", coupon:"现金红包折扣2", couponType:"手续费抵扣红包", depositOrder:"HCZ1020260714494921", faceValue:"10.0000", deduct:"2.25", order:"188295251", useTime:"14-07-2026 15:03", auditMethod:"--", status:"待审核", reviewer:"--", reviewTime:"--", remark:"--", trigger:"当天使用红包数量超过10个" },
           { rid:"U2", type:"使用审核", id:"15057044", sid:"10018709680", object:"10018709680", project:"Dana", region:"+62 [ID]", couponId:"1075", coupon:"现金红包折扣2", couponType:"盈亏抵扣红包", depositOrder:"HCZ1020260714494915", faceValue:"10.0000", deduct:"0.63", order:"188295206", useTime:"14-07-2026 15:02", auditMethod:"--", status:"待审核", reviewer:"--", reviewTime:"--", remark:"--", trigger:"当天使用红包数量超过10个" },
           { rid:"U3", type:"使用审核", id:"15057043", sid:"10018709722", object:"10018709722", project:"Dana", region:"+62 [ID]", couponId:"1075", coupon:"现金红包折扣2", couponType:"手续费抵扣红包", depositOrder:"HCZ1020260714494914", faceValue:"10.0000", deduct:"1.13", order:"188295205", useTime:"14-07-2026 15:02", auditMethod:"--", status:"待审核", reviewer:"--", reviewTime:"--", remark:"--", trigger:"黑名单" },
@@ -1032,12 +1035,12 @@
       });
     }
 
-    function affectedCampaignsHtml(campaigns) {
+    function affectedCampaignsHtml(campaigns, { title = "受影响的关联活动（未发放完成）", emptyText = "当前无进行中的关联活动" } = {}) {
       if (!campaigns.length) {
-        return `<div class="mt-3 text-[13px] text-[#94a3b8]">当前无进行中的关联活动</div>`;
+        return emptyText ? `<div class="mt-3 text-[13px] text-[#94a3b8]">${emptyText}</div>` : "";
       }
       return `<div class="mt-3">
-        <div class="text-[13px] font-medium text-[#475569] mb-2">受影响的关联活动（未发放完成）</div>
+        <div class="text-[13px] font-medium text-[#475569] mb-2">${title}</div>
         <div class="max-h-[200px] overflow-y-auto border border-line rounded">
           ${campaigns.map(c => `<div class="px-3 py-2 border-b border-line/70 last:border-b-0 text-[13px] text-[#1f2430]">${c.id} · ${c.name}</div>`).join("")}
         </div>
@@ -1919,11 +1922,12 @@
       { key: "select", label: "选择", fixed: true, width: 3.5 },
       { key: "project", label: "项目", fixed: true, width: 6 },
       { key: "activityId", label: "活动ID", fixed: true, width: 7 },
-      { key: "activityName", label: "活动名称", fixed: false, width: 14, defaultOn: true },
+      { key: "activityName", label: "活动名称", fixed: false, width: 12, defaultOn: true },
       { key: "auditStatus", label: "审核状态", fixed: true, width: 8 },
-      { key: "applyTime", label: "申请时间", fixed: false, width: 15, defaultOn: true },
-      { key: "reviewTime", label: "审核时间", fixed: false, width: 15, defaultOn: true },
-      { key: "auditOpinion", label: "审核意见", fixed: false, width: 22.5, defaultOn: true },
+      { key: "applyTime", label: "申请时间", fixed: false, width: 12, defaultOn: true },
+      { key: "reviewTime", label: "审核时间", fixed: false, width: 12, defaultOn: true },
+      { key: "reviewer", label: "审核人", fixed: false, width: 7, defaultOn: true },
+      { key: "auditOpinion", label: "审核意见", fixed: false, width: 18.5, defaultOn: true },
       { key: "ops", label: "操作", fixed: true, width: 9 }
     ];
 
@@ -2107,6 +2111,41 @@
           remark: a.auditMethod === "自动审核" ? "--" : (a.remark || "--"),
           region: a.region || "--"
         };
+      });
+    }
+
+    function parseScheduleDateTime(value) {
+      const text = String(value || "").trim();
+      if (!text || text === "--") return null;
+      let m = text.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+      if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4] || 0), Number(m[5] || 0), Number(m[6] || 0));
+      m = text.match(/^(\d{2})-(\d{2})-(\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?/);
+      if (m) return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]), Number(m[4] || 0), Number(m[5] || 0), Number(m[6] || 0));
+      return null;
+    }
+
+    function isSpecialScheduledCampaign(campaign) {
+      const mode = String(campaign?.mode || "");
+      return mode.includes("特批") && mode.includes("定时");
+    }
+
+    /** 特批活动 + 定时发放：到达发放时间仍未审批 → 系统自动审核拒绝 */
+    function ensureSpecialScheduledAuditTimeouts() {
+      const now = new Date();
+      (state.data.audits || []).forEach(audit => {
+        if (audit.type !== "特批活动" || !isAuditPending(audit.status)) return;
+        const campaign = (state.data.campaigns || []).find(c => String(c.id) === String(audit.activity || audit.object));
+        if (!campaign || !isSpecialScheduledCampaign(campaign)) return;
+        const deliverAt = parseScheduleDateTime(campaign.deliverTime);
+        if (!deliverAt || !(deliverAt.getTime() < now.getTime())) return;
+        audit.status = "审核拒绝";
+        audit.auditOpinion = "审核超时";
+        audit.reviewer = "系统";
+        audit.operator = "系统";
+        audit.reviewTime = nowStamp();
+        campaign.status = "审核拒绝";
+        campaign.statuses = ["审核拒绝"];
+        pushCampaignLog(campaign, LOG_TEXT.campaign.auditReject, "系统");
       });
     }
 
@@ -3818,15 +3857,22 @@
           <table class="w-full text-[12px]"><thead class="bg-[#f3f6fb]"><tr><th class="text-left px-3 py-2">SID</th><th class="text-left px-3 py-2">操作</th></tr></thead><tbody>${(d.sidList || []).map((sid, idx) => `<tr class="border-t border-line"><td class="px-3 py-2">${sid}</td><td class="px-3 py-2"><button class="text-danger hover:underline" data-remove-campaign-sid="${idx}">删除</button></td></tr>`).join("") || `<tr><td class="px-3 py-4 text-muted" colspan="2">暂未添加SID</td></tr>`}</tbody></table>
         </div>
       `;
+      const deliverHint = d.deliverType === "定时发放"
+        ? `<div class="shrink-0 whitespace-nowrap text-[#64748b]">请在发放时间前完成审核，超时将自动拒绝</div>`
+        : d.deliverType === "循环发放"
+          ? `<div class="shrink-0 whitespace-nowrap text-[#64748b]">审核通过后，按设定的循环时间发放</div>`
+          : (d.activityType === "特批活动" ? `<div class="shrink-0 whitespace-nowrap text-[#64748b]">审核通过后立即发放</div>` : "");
       const deliverExtra = d.deliverType === "定时发放" ? `
-        <select id="fTimezone" class="border border-line rounded px-2 py-2"><option ${d.timezone==="GMT+08:00"?"selected":""}>GMT+08:00</option><option ${d.timezone==="GMT+07:00"?"selected":""}>GMT+07:00</option></select>
-        <input id="fDeliverAt" class="border border-line rounded px-2 py-2" placeholder="发放时间 2026-07-08 10:00:00" value="${d.deliverAt}">
+        <select id="fTimezone" class="w-[140px] shrink-0 border border-line rounded px-2 py-2"><option ${d.timezone==="GMT+08:00"?"selected":""}>GMT+08:00</option><option ${d.timezone==="GMT+07:00"?"selected":""}>GMT+07:00</option></select>
+        <input id="fDeliverAt" class="w-[220px] shrink-0 border border-line rounded px-2 py-2" placeholder="发放时间 2026-07-08 10:00:00" value="${d.deliverAt}">
+        ${deliverHint}
       ` : d.deliverType === "循环发放" ? `
-        <select id="fLoopFreq" class="border border-line rounded px-2 py-2"><option ${d.loopFreq==="每日"?"selected":""}>每日</option><option ${d.loopFreq==="每周"?"selected":""}>每周</option><option ${d.loopFreq==="每月"?"selected":""}>每月</option></select>
-        <select id="fLoopPoint" class="border border-line rounded px-2 py-2 ${d.loopFreq==="每日" ? "hidden" : ""}"><option value="">${d.loopFreq==="每月" ? "选择每月几号" : "选择每周几"}</option>${(d.loopFreq==="每月" ? Array.from({length:31},(_,i)=>`${i+1}号`) : ["周一","周二","周三","周四","周五","周六","周日"]).map(x => `<option value="${x}" ${d.loopPoint===x?"selected":""}>${x}</option>`).join("")}</select>
-        <select id="fTimezone" class="border border-line rounded px-2 py-2"><option ${d.timezone==="GMT+08:00"?"selected":""}>GMT+08:00</option><option ${d.timezone==="GMT+07:00"?"selected":""}>GMT+07:00</option></select>
-        <input id="fLoopTime" class="border border-line rounded px-2 py-2" placeholder="10:00:00" value="${d.loopTime}">
-      ` : `<div class="self-center text-[#64748b]">立即发放将提交后进入审核与发放流程。</div>`;
+        <select id="fLoopFreq" class="w-[100px] shrink-0 border border-line rounded px-2 py-2"><option ${d.loopFreq==="每日"?"selected":""}>每日</option><option ${d.loopFreq==="每周"?"selected":""}>每周</option><option ${d.loopFreq==="每月"?"selected":""}>每月</option></select>
+        <select id="fLoopPoint" class="w-[140px] shrink-0 border border-line rounded px-2 py-2 ${d.loopFreq==="每日" ? "hidden" : ""}"><option value="">${d.loopFreq==="每月" ? "选择每月几号" : "选择每周几"}</option>${(d.loopFreq==="每月" ? Array.from({length:31},(_,i)=>`${i+1}号`) : ["周一","周二","周三","周四","周五","周六","周日"]).map(x => `<option value="${x}" ${d.loopPoint===x?"selected":""}>${x}</option>`).join("")}</select>
+        <select id="fTimezone" class="w-[140px] shrink-0 border border-line rounded px-2 py-2"><option ${d.timezone==="GMT+08:00"?"selected":""}>GMT+08:00</option><option ${d.timezone==="GMT+07:00"?"selected":""}>GMT+07:00</option></select>
+        <input id="fLoopTime" class="w-[120px] shrink-0 border border-line rounded px-2 py-2" placeholder="10:00:00" value="${d.loopTime}">
+        ${deliverHint}
+      ` : deliverHint;
       el.table.innerHTML = `
         <div class="border border-line rounded bg-white">
           <div class="px-4 py-3 border-b border-line font-semibold text-[13px]">1. 基础信息</div>
@@ -3889,10 +3935,10 @@
           </div>
           <div class="px-4 py-3 border-y border-line font-semibold text-[13px]">4. 发放方式与通知</div>
           <div class="p-4 space-y-3 text-[12px]">
-            <div class="grid grid-cols-5 gap-3">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3 flex-nowrap overflow-x-auto">
+            <div class="flex items-center gap-2 shrink-0">
               <span class="shrink-0 text-[#475569] font-medium">发放方式</span>
-              <select id="fDeliverType" class="flex-1 border border-line rounded px-2 py-2">
+              <select id="fDeliverType" class="w-[140px] border border-line rounded px-2 py-2">
                 <option ${d.deliverType==="立即发放"?"selected":""}>立即发放</option>
                 <option ${d.deliverType==="定时发放"?"selected":""}>定时发放</option>
                 <option ${d.deliverType==="循环发放"?"selected":""}>循环发放</option>
@@ -4184,7 +4230,7 @@
           <button id="btnBatchDetailSearch" class="${btnClass(true,true)}">查询</button>
           <button id="btnBatchDetailExport" class="${btnClass(false,true)} ml-auto" title="导出超过1w条将被阻断">导出</button>
         </div>
-        ${detailFilter.status === "未兑换" ? `<div class="mt-2 text-[12px] text-[#94a3b8]">未兑换明细仅保留 7 天，超期数据将自动清除</div>` : ""}
+        ${detailFilter.status === "未兑换" ? `<div class="mt-2 text-[12px] text-[#94a3b8]">未兑换明细仅保留近 7 天，超期数据将自动清除</div>` : ""}
         </div>
         <div class="table-scroll-wrap border border-line rounded">
           <table class="w-full data-table table-fill text-[12px]">
@@ -4582,6 +4628,7 @@
     }
 
     function renderAuditList() {
+      ensureSpecialScheduledAuditTimeouts();
       const f = state.filters.audit;
       const isUsage = state.auditTab === "usage";
       const isIssue = state.auditTab === "issue";
@@ -4653,6 +4700,7 @@
             auditStatus: r.status,
             applyTime: r.apply,
             reviewTime: r.reviewTime,
+            reviewer: r.reviewer || "--",
             auditOpinion: r.status === "审核拒绝"
               ? (r.auditOpinion || "人工审核拒绝")
               : (r.status === "已撤销" ? (r.auditOpinion || "活动撤销") : (r.auditOpinion || ""))
@@ -5004,15 +5052,23 @@
         });
       } else if (pageId === "task-toggle-modal") {
         const currentTask = state.data.tasks.find(r => r.id === state.selectedTaskId) || state.data.tasks[0];
-        const actionText = currentTask?.enabled ? "禁用" : "启用";
-        const affectedListHtml = currentTask?.enabled
-          ? affectedCampaignsHtml(getAffectedIncompleteCampaigns({ taskId: currentTask.id }))
-          : "";
-        openModal({
-          title: `${actionText}任务操作确认`,
-          body: `<div class="flex gap-3 items-start"><div class="w-9 h-9 rounded-full border border-[#f59e0b] text-[#f59e0b] flex items-center justify-center text-xl shrink-0">!</div><div class="min-w-0 flex-1"><div class="text-[24px] font-semibold mb-2">确认${actionText}该任务？</div><div class="text-[16px] text-[#64748b]">${currentTask?.enabled ? "禁用后，该任务不能被新活动引用。" : "启用后，该任务可以被新活动引用。"}</div><div class="text-[14px] text-[#94a3b8] mt-2">注：该开关仅控制后续新活动引用，不影响已经生成的活动和任务批次。</div>${affectedListHtml}</div></div>`,
-          footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button class="h-9 px-4 rounded ${currentTask?.enabled ? "bg-[#ef4444]" : "bg-primary"} text-white font-semibold whitespace-nowrap shrink-0">确认${actionText}</button>`
-        });
+        const isDisable = !!currentTask?.enabled;
+        const actionText = isDisable ? "禁用" : "启用";
+        const affected = isDisable ? getAffectedIncompleteCampaigns({ taskId: currentTask.id }) : [];
+        const blocked = isDisable && affected.length > 0;
+        if (blocked) {
+          openModal({
+            title: "无法禁用任务",
+            body: `<div class="flex gap-3 items-start"><div class="w-9 h-9 rounded-full border border-[#f59e0b] text-[#f59e0b] flex items-center justify-center text-xl shrink-0">!</div><div class="min-w-0 flex-1"><div class="text-[24px] font-semibold mb-2">当前任务不可禁用</div><div class="text-[16px] text-[#64748b]">存在未发放完成的关联活动，请先完成或撤销相关活动后再禁用。</div>${affectedCampaignsHtml(affected, { title: "未发放完成的关联活动", emptyText: "" })}</div></div>`,
+            footer: ""
+          });
+        } else {
+          openModal({
+            title: `${actionText}任务操作确认`,
+            body: `<div class="flex gap-3 items-start"><div class="w-9 h-9 rounded-full border border-[#f59e0b] text-[#f59e0b] flex items-center justify-center text-xl shrink-0">!</div><div class="min-w-0 flex-1"><div class="text-[24px] font-semibold mb-2">确认${actionText}该任务？</div><div class="text-[16px] text-[#64748b]">${isDisable ? "禁用后，该任务不可被新活动引用。" : "启用后，该任务可被新活动引用。"}</div><div class="text-[14px] text-[#94a3b8] mt-2">注：仅影响后续新活动引用，已生成的活动和任务批次不受影响。</div></div></div>`,
+            footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button class="h-9 px-4 rounded ${isDisable ? "bg-[#ef4444]" : "bg-primary"} text-white font-semibold whitespace-nowrap shrink-0">确认${actionText}</button>`
+          });
+        }
       } else if (pageId === "task-detail-modal") {
         const t = state.data.tasks.find(r => r.id === state.selectedTaskId) || state.data.tasks[0];
         const d = normalizeTaskDraft(taskDraftFromTask(t));
@@ -5071,7 +5127,7 @@
         const pendingHint = isCampaignPendingAudit(row)
           ? "当前活动处于待审核，撤销后将同步把对应发放审核记录标记为已撤销，且不会生成任务批次。"
           : "若为循环活动，将同时撤销当前任务批次并终止整个循环，后续任务批次将不再生成。已发放且已激活的红包不会被回收。";
-        openModal({ title: "撤销活动确认", body: `<div class="flex gap-4 items-start text-[14px]"><div class="w-12 h-12 rounded-full border border-[#f59e0b] text-[#f59e0b] flex items-center justify-center text-2xl shrink-0">!</div><div class="space-y-3 flex-1"><div class="text-[22px] font-semibold">确认撤销该活动吗？</div><p class="text-[#64748b]">${pendingHint}</p><div class="grid grid-cols-2 gap-3 text-[13px] pt-2"><div>活动ID：<span class="font-semibold">${row?.id || "--"}</span></div><div>活动名称：<span class="font-semibold">${row?.name || "--"}</span></div></div><textarea id="revokeReason" class="w-full border border-line rounded px-3 py-2" rows="3" placeholder="请填写撤销原因"></textarea></div></div>`, footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button id="confirmCampaignRevoke" class="h-9 px-5 rounded bg-[#dc2626] text-white font-semibold whitespace-nowrap shrink-0">确认撤销</button>` });
+        openModal({ title: "撤销活动确认", body: `<div class="flex gap-4 items-start text-[14px]"><div class="w-12 h-12 rounded-full border border-[#f59e0b] text-[#f59e0b] flex items-center justify-center text-2xl shrink-0">!</div><div class="space-y-3 flex-1"><div class="text-[22px] font-semibold">确认撤销该活动吗？</div><p class="text-[#64748b]">${pendingHint}</p><div class="grid grid-cols-2 gap-3 text-[13px] pt-2"><div>活动ID：<span class="font-semibold">${row?.id || "--"}</span></div><div>活动名称：<span class="font-semibold">${row?.name || "--"}</span></div></div><div><label class="form-label required mb-1">撤销原因</label><textarea id="revokeReason" class="w-full border border-line rounded px-3 py-2" rows="3" placeholder="请填写撤销原因"></textarea></div></div></div>`, footer: `<button class="${btnClass(false,true)}" data-close-modal>取消</button><button id="confirmCampaignRevoke" class="h-9 px-5 rounded bg-[#dc2626] text-white font-semibold whitespace-nowrap shrink-0">确认撤销</button>` });
       } else if (pageId === "campaign-tagverse-modal") {
         const row = state.data.campaigns.find(x => x.id === state.selectedCampaignId);
         const history = ["Recharge_Q2","VIP_v4","TG_202606_老客激活","流失召回人群"];
@@ -6411,7 +6467,8 @@
         let revokedPendingAudit = false;
         if (row) {
           const reason = document.getElementById("revokeReason")?.value.trim();
-          const revokeReason = reason ? `撤销原因：${reason}` : "撤销原因：运营手动撤销";
+          if (!reason) return notify("error", "请填写撤销原因");
+          const revokeReason = `撤销原因：${reason}`;
           const pendingAudit = isCampaignPendingAudit(row);
           revokedPendingAudit = pendingAudit;
           const loopRoot = String(row.id || "").replace(/-\d+$/, "");
@@ -6434,7 +6491,7 @@
               a.status = "已撤销";
               a.reviewer = "Jenny";
               a.reviewTime = nowStamp();
-              a.auditOpinion = reason ? `活动撤销：${reason}` : "活动撤销：运营手动撤销待审核记录";
+              a.auditOpinion = `活动撤销：${reason}`;
               a.operator = "Jenny";
             });
           state.data.batches
