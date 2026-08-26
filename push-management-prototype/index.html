@@ -90,7 +90,7 @@ a:hover{text-decoration:underline}
 .lang-editor .channel-bar label{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#334155;cursor:pointer;user-select:none}
 .lang-editor .channel-bar input{accent-color:var(--pri);width:15px;height:15px}
 .lang-editor .editor-body{padding:14px}
-.ch-block{border:1px solid var(--line);border-radius:10px;margin-bottom:12px;overflow:hidden;background:#fff}
+.ch-block{border:1px solid var(--line);border-radius:10px;margin-bottom:12px;overflow:visible;background:#fff}
 .ch-block:last-child{margin-bottom:0}
 .ch-block-hd{padding:8px 12px;background:#f5f8ff;border-bottom:1px solid var(--line);font-size:13px;font-weight:600;color:var(--pri)}
 .ch-block-bd{padding:12px}
@@ -291,6 +291,9 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
 .field.full{grid-column:1/-1}
 .label{font-size:13px;font-weight:500;color:#334155}
 .label .req{color:#ef4444;margin-right:2px}
+.help-q{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;margin-left:4px;border:1px solid #94a3b8;border-radius:50%;color:#64748b;font-size:10px;font-weight:700;line-height:1;cursor:help;vertical-align:-1px;background:#fff}
+.help-q:hover,.help-q:focus{color:var(--pri);border-color:var(--pri)}
+.help-q-float{position:fixed;width:268px;padding:8px 10px;background:#1f2937;color:#fff;font-size:12px;font-weight:400;line-height:1.55;border-radius:6px;box-shadow:var(--shadow-pop);z-index:2400;pointer-events:none}
 .radio-row,.check-row{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;min-height:34px}
 .radio-row label,.check-row label{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#334155;cursor:pointer}
 .radio-row input,.check-row input{accent-color:var(--pri)}
@@ -882,7 +885,6 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
             <button type="button" class="settings-nav-btn" data-settings="appPush" onclick="switchSettingsSub('appPush')">APP推送能力</button>
             <button type="button" class="settings-nav-btn" data-settings="activityPriority" onclick="switchSettingsSub('activityPriority')">活动优先级</button>
             <button type="button" class="settings-nav-btn" data-settings="scenarioPriority" onclick="switchSettingsSub('scenarioPriority')">业务场景优先级</button>
-            <button type="button" class="settings-nav-btn" data-settings="opTypePriority" onclick="switchSettingsSub('opTypePriority')">运营推送类型</button>
             <button type="button" class="settings-nav-btn" data-settings="marketPushRule" onclick="switchSettingsSub('marketPushRule')">行情推送规则</button>
             <button type="button" class="settings-nav-btn active" data-settings="priority" onclick="switchSettingsSub('priority')">优先级管理</button>
           </nav>
@@ -951,28 +953,6 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
                     </tr>
                   </thead>
                   <tbody id="scenarioPriorityBody"></tbody>
-                </table>
-              </div>
-            </div>
-            <div class="settings-pane hidden" id="settings-pane-opTypePriority">
-              <div class="settings-pane-hd">
-                <div>
-                  <h2>运营推送类型</h2>
-                  <p>配置运营推送类型及其固定优先级（P0–P3）；创建/编辑运营推送时优先级跟随所选类型。</p>
-                </div>
-                <button class="btn soft" type="button" onclick="openOpTypeEditor()">+ 新增类型</button>
-              </div>
-              <div class="table-wrap settings-table-wrap">
-                <table class="data-table" id="table-opTypePriority">
-                  <thead>
-                    <tr>
-                      <th>类型名称</th>
-                      <th style="width:120px">优先级</th>
-                      <th style="width:80px">启停</th>
-                      <th class="ops">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody id="opTypePriorityBody"></tbody>
                 </table>
               </div>
             </div>
@@ -1270,35 +1250,6 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
   </div>
 </div>
 
-<!-- 运营推送类型 新增编辑 -->
-<div class="modal" id="opTypeEditorModal" onclick="if(event.target===this)closeOpTypeEditor()">
-  <div class="modal-card" style="width:min(480px,96vw)">
-    <div class="modal-head">
-      <h3 id="opTypeEditorTitle">新增运营推送类型</h3>
-      <button class="drawer-close" onclick="closeOpTypeEditor()">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="field" style="margin-bottom:14px">
-        <label class="label"><span class="req">*</span>类型名称</label>
-        <input class="control" id="opTypeName" maxlength="30" placeholder="请输入类型名称">
-      </div>
-      <div class="field" style="margin-bottom:14px">
-        <label class="label"><span class="req">*</span>优先级</label>
-        <select class="control" id="opTypePrioritySelect">
-          <option value="P0">P0</option>
-          <option value="P1">P1</option>
-          <option value="P2">P2</option>
-          <option value="P3">P3</option>
-        </select>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn ghost" onclick="closeOpTypeEditor()">取消</button>
-      <button class="btn" onclick="saveOpTypeEditor()">保存</button>
-    </div>
-  </div>
-</div>
-
 <!-- 行情变动图 -->
 <div class="modal" id="marketChartModal">
   <div class="modal-card">
@@ -1368,7 +1319,7 @@ const state = {
   mktFilter: { priority:'', symbol:'' },
   page: { business:1, operation:1, market:1, template:1, records:1 },
   pageSize: { business:20, operation:20, market:20, template:20, records:20 },
-  drawer: { open:false, type:null, mode:'create', step:0, detail:null, ui:'drawer', project:'', apps:[], regions:[], msgSendMode:'supplementPush', msgJump:'无跳转', msgGroup:'', msgAppPage:'', msgUrl:'', mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'', jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'', pushIntervalMin:30, bizType:'business', bizRefId:'', bizPriority:'P1' },
+  drawer: { open:false, type:null, mode:'create', step:0, detail:null, ui:'drawer', project:'', apps:[], regions:[], msgSendMode:'supplementPush', msgJump:'无跳转', msgGroup:'', msgAppPage:'', msgUrl:'', mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'', jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'', pushIntervalMin:30, bizType:'business', bizRefId:'', bizPriority:'P1', opPriority:'P2' },
   bizRefEditor: { kind:null, mode:'create', id:null },
   pendingConfirm: null,
   recordsKeyword: '',
@@ -1420,8 +1371,8 @@ function defaultTabForRole(){ return roleAllowedTabs()[0] || 'operation'; }
 function clampTabForRole(tab){ return canAccessTab(tab) ? tab : defaultTabForRole(); }
 const TPL_TYPE_OPTS = ['业务通知','运营推送','行情提醒'];
 const TPL_PROJECT_OPTS = ['Dana','TW'];
-const SETTINGS_SUB_LABEL = { appPush:'APP推送能力', activityPriority:'活动优先级', scenarioPriority:'业务场景优先级', opTypePriority:'运营推送类型', marketPushRule:'行情推送规则', priority:'优先级管理' };
-const SETTINGS_SUB_KEYS = ['appPush','activityPriority','scenarioPriority','opTypePriority','marketPushRule','priority'];
+const SETTINGS_SUB_LABEL = { appPush:'APP推送能力', activityPriority:'活动优先级', scenarioPriority:'业务场景优先级', marketPushRule:'行情推送规则', priority:'优先级管理' };
+const SETTINGS_SUB_KEYS = ['appPush','activityPriority','scenarioPriority','marketPushRule','priority'];
 
 /* ========== Region codes（与 CRM / 运营推送筛选一致） ========== */
 const REGION_CODE = {
@@ -1551,14 +1502,6 @@ const DATA = {
     {id:'SCN007', name:'绑定银行卡成功', priority:'P1', status:'启用'},
     {id:'SCN008', name:'账户变更', priority:'P1', status:'启用'},
     {id:'SCN009', name:'客户盈利', priority:'P2', status:'启用'},
-  ],
-  /** 运营推送类型 → 固定优先级（可在推送设置中修改） */
-  opTypePriority: [
-    {id:'OPT001', name:'活动通知', priority:'P1', status:'启用'},
-    {id:'OPT002', name:'用户召回', priority:'P2', status:'启用'},
-    {id:'OPT003', name:'系统维护', priority:'P0', status:'启用'},
-    {id:'OPT004', name:'福利通知', priority:'P2', status:'启用'},
-    {id:'OPT005', name:'其他', priority:'P3', status:'启用'},
   ],
 };
 
@@ -2557,7 +2500,7 @@ function renderOperation(){
   const rows = filterOperation(DATA.operation);
   const pageRows = slicePage('operation', rows);
   const thead = `<tr>
-    <th>推送 ID</th><th>任务名称</th><th>推送类型</th><th>优先级</th><th>项目</th><th>APP</th><th>地区</th><th>选择对象</th>
+    <th>推送 ID</th><th>任务名称</th><th>优先级</th><th>项目</th><th>APP</th><th>地区</th><th>选择对象</th>
     <th>通知渠道</th><th>发送计划</th><th>发送时间</th><th>操作人</th>
     <th class="col-status">任务状态</th><th class="col-toggle">启停</th><th class="ops">操作</th>
   </tr>`;
@@ -2568,7 +2511,6 @@ function renderOperation(){
     return `<tr>
     <td><span class="id-link" onclick="openDetail('operation','${r.id}')">${r.id}</span></td>
     <td><div class="cell-2line" title="${r.name}">${r.name}</div></td>
-    <td>${escHtml(opTypeLabel(r))}</td>
     <td>${priBadge(resolveOpRowPriority(r))}</td>
     <td>${r.project}</td>
     <td><div class="cell-2line" title="${appCell}">${appCell}</div></td>
@@ -2839,6 +2781,7 @@ function priBadge(level){
 /** 行情提醒统一固定 P2，不跟随活动/业务场景优先级 */
 function marketPriority(){ return 'P2'; }
 function switchSettingsSub(sub){
+  if(!SETTINGS_SUB_KEYS.includes(sub)) sub = 'priority';
   state.sub.settings = sub;
   document.querySelectorAll('#settingsNav .settings-nav-btn').forEach(b=>{
     b.classList.toggle('active', b.dataset.settings===sub);
@@ -2850,7 +2793,8 @@ function switchSettingsSub(sub){
   renderSettings();
 }
 function renderSettings(){
-  const sub = state.sub.settings || 'priority';
+  let sub = state.sub.settings || 'priority';
+  if(!SETTINGS_SUB_KEYS.includes(sub)) sub = state.sub.settings = 'priority';
   document.querySelectorAll('#settingsNav .settings-nav-btn').forEach(b=>{
     b.classList.toggle('active', b.dataset.settings===sub);
   });
@@ -2861,7 +2805,6 @@ function renderSettings(){
   if(sub==='appPush') renderAppPushSettings();
   else if(sub==='activityPriority') renderActivityPriority();
   else if(sub==='scenarioPriority') renderScenarioPriority();
-  else if(sub==='opTypePriority') renderOpTypePriority();
   else if(sub==='marketPushRule') renderMarketPushRules();
   else if(sub==='priority') renderPriorityRules();
 }
@@ -3044,6 +2987,7 @@ function renderAppPushSettings(){
   </tr>`).join('') || `<tr><td colspan="6" class="muted" style="text-align:center;height:64px">暂无 APP，请从项目侧同步后配置</td></tr>`;
 }
 const BIZ_PRIORITY_OPTS = ['P0','P1','P2','P3'];
+const OP_SELECTABLE_PRIORITY = ['P1','P2','P3'];
 function bizTypeKeyFromLabel(label){
   if(label==='活动推送' || label==='activity') return 'activity';
   return 'business';
@@ -3138,19 +3082,14 @@ function getSettingsToggleRefs(kind, id, row){
   if(kind==='scenario'){
     return (DATA.business||[]).filter(r=>r.scenarioId===id && active(r.status));
   }
-  if(kind==='opType' && row?.name){
-    return (DATA.operation||[]).filter(r=>(r.opType===row.name || r.category===row.name) && active(r.status));
-  }
   return [];
 }
 function buildSettingsToggleConfirm(kind, row, enabling){
   const name = escHtml(row?.name || '');
   const namePart = name ? `「${name}」` : '';
-  const entity = kind==='activity' ? '活动' : kind==='scenario' ? '业务场景' : '运营推送类型';
+  const entity = kind==='activity' ? '活动' : '业务场景';
   if(enabling){
-    const note = kind==='opType'
-      ? '启用后该类型可被运营推送引用。'
-      : `启用后该${entity}可被业务通知引用。`;
+    const note = `启用后该${entity}可被业务通知引用。`;
     return {
       title: '启用确认',
       html: `<p class="confirm-q">确认启用该${entity}${namePart}？</p><p class="confirm-note">${note}</p>`
@@ -3158,9 +3097,7 @@ function buildSettingsToggleConfirm(kind, row, enabling){
   }
   const note = kind==='activity'
     ? '停用后该活动不再能被业务通知引用，不影响已经发送的推送。'
-    : kind==='scenario'
-    ? '停用后该业务场景不再能被业务通知引用，不影响已经发送的推送。'
-    : '停用后该类型不再能被运营推送引用，不影响已经发送的推送。';
+    : '停用后该业务场景不再能被业务通知引用，不影响已经发送的推送。';
   const refs = getSettingsToggleRefs(kind, row?.id, row);
   let refsHtml = '';
   if(refs.length){
@@ -3181,13 +3118,6 @@ function askToggleBizRefStatus(kind, id){
   const msg = buildSettingsToggleConfirm(kind, row, enabling);
   askConfirm(enabling ? 'enableSettings' : 'disableSettings', kind, id, msg.html, { html:true, title: msg.title });
 }
-function askToggleOpTypeStatus(id){
-  const row = getOpTypeById(id);
-  if(!row) return;
-  const enabling = row.status !== '启用';
-  const msg = buildSettingsToggleConfirm('opType', row, enabling);
-  askConfirm(enabling ? 'enableSettings' : 'disableSettings', 'opType', id, msg.html, { html:true, title: msg.title });
-}
 function toggleBizRefStatus(kind, id){
   const list = kind==='activity' ? DATA.activities : DATA.bizScenarios;
   const row = (list||[]).find(x=>x.id===id);
@@ -3196,17 +3126,6 @@ function toggleBizRefStatus(kind, id){
   toast(row.status === '启用' ? '已启用' : '已停用');
   if(kind==='activity') renderActivityPriority();
   else renderScenarioPriority();
-}
-function toggleOpTypeStatus(id){
-  const row = getOpTypeById(id);
-  if(!row) return;
-  row.status = row.status === '启用' ? '停用' : '启用';
-  toast(row.status === '启用' ? '已启用' : '已停用');
-  renderOpTypePriority();
-  if(state.drawer.open && state.drawer.type==='operation'){
-    ensureOpTypeSelection();
-    if(state.drawer.asPage || isCreateSplit()) renderFormBody();
-  }
 }
 function renderActivityPriority(){
   const body = document.getElementById('activityPriorityBody');
@@ -3317,166 +3236,23 @@ function deleteBizRef(kind, id){
   else renderScenarioPriority();
 }
 
-/* ========== 运营推送类型优先级 ========== */
-function getOpTypeByName(name){
-  return (DATA.opTypePriority||[]).find(t=>t.name===name);
-}
-function getOpTypeById(id){
-  return (DATA.opTypePriority||[]).find(t=>t.id===id);
-}
-function selectableOpTypes(includeName){
-  return (DATA.opTypePriority||[]).filter(t=>t.status==='启用' || t.name===includeName);
-}
-function priorityFromOpType(name){
-  const t = getOpTypeByName(name);
-  return normalizeBizPriority(t?.priority, 'P3');
-}
 function resolveOpRowPriority(row){
-  if(!row) return 'P3';
-  return priorityFromOpType(row.opType || row.category);
+  if(!row) return 'P2';
+  return row.priority || 'P2';
 }
-function opTypeLabel(row){
-  return row?.opType || row?.category || '其他';
+function normalizeOpPriority(v, fallback){
+  const fb = OP_SELECTABLE_PRIORITY.includes(fallback) ? fallback : 'P2';
+  return OP_SELECTABLE_PRIORITY.includes(v) ? v : fb;
 }
-function syncOpPriorityFromType(){
-  state.drawer.opPriority = priorityFromOpType(state.drawer.opType);
-  return state.drawer.opPriority;
+function setOpPriority(v){
+  state.drawer.opPriority = normalizeOpPriority(v, 'P2');
 }
-function ensureOpTypeSelection(){
-  const list = selectableOpTypes(state.drawer.opType);
-  if(!list.some(t=>t.name===state.drawer.opType)){
-    state.drawer.opType = list[0]?.name || (DATA.opTypePriority||[])[0]?.name || '其他';
-  }
-  syncOpPriorityFromType();
-}
-function nextOpTypeId(){
-  let max = 0;
-  (DATA.opTypePriority||[]).forEach(r=>{
-    const n = Number(String(r.id||'').replace('OPT',''));
-    if(Number.isFinite(n) && n>max) max = n;
-  });
-  return 'OPT' + String(max+1).padStart(3,'0');
-}
-function syncOperationRowsFromOpTypes(){
-  (DATA.operation||[]).forEach(r=>{
-    const name = r.opType || r.category;
-    r.opType = name;
-    r.category = name;
-    r.priority = priorityFromOpType(name);
-  });
-}
-function renderOpTypePriority(){
-  const body = document.getElementById('opTypePriorityBody');
-  if(!body) return;
-  const rows = DATA.opTypePriority || [];
-  body.innerHTML = rows.map(r=>`<tr>
-    <td>${escHtml(r.name)}</td>
-    <td>${priBadge(normalizeBizPriority(r.priority))}</td>
-    <td>${settingsEnableSwitch(r.status==='启用', `askToggleOpTypeStatus('${r.id}')`)}</td>
-    <td class="ops"><div class="icon-actions">
-      ${iconBtn(I.edit,'编辑',`openOpTypeEditor('${r.id}')`)}
-      ${iconBtn(I.trash,'删除',`askDeleteOpType('${r.id}')`,true)}
-    </div></td>
-  </tr>`).join('') || `<tr><td colspan="4" class="muted" style="text-align:center;height:64px">暂无类型，请点击「新增类型」</td></tr>`;
-}
-function openOpTypeEditor(id){
-  const row = id ? getOpTypeById(id) : null;
-  state.opTypeEditor = { mode: row ? 'edit' : 'create', id: row?.id || null };
-  document.getElementById('opTypeEditorTitle').textContent = row ? '编辑运营推送类型' : '新增运营推送类型';
-  document.getElementById('opTypeName').value = row?.name || '';
-  document.getElementById('opTypePrioritySelect').value = normalizeBizPriority(row?.priority, 'P2');
-  document.getElementById('opTypeEditorModal').classList.add('show');
-}
-function closeOpTypeEditor(){
-  document.getElementById('opTypeEditorModal').classList.remove('show');
-  state.opTypeEditor = { mode:'create', id:null };
-}
-function saveOpTypeEditor(){
-  const ed = state.opTypeEditor || {};
-  const name = (document.getElementById('opTypeName')?.value || '').trim();
-  const priority = normalizeBizPriority(document.getElementById('opTypePrioritySelect')?.value, 'P2');
-  if(!name){ toast('请填写类型名称'); return; }
-  const list = DATA.opTypePriority || (DATA.opTypePriority = []);
-  if(ed.mode==='edit' && ed.id){
-    const row = getOpTypeById(ed.id);
-    if(!row){ toast('记录不存在'); return; }
-    if(list.some(x=>x.id!==ed.id && x.name===name)){ toast('类型名称已存在'); return; }
-    const oldName = row.name;
-    row.name = name;
-    row.priority = priority;
-    if(oldName!==name){
-      (DATA.operation||[]).forEach(r=>{
-        if((r.opType||r.category)===oldName){
-          r.opType = name;
-          r.category = name;
-        }
-      });
-    }
-  } else {
-    if(list.some(x=>x.name===name)){ toast('类型名称已存在'); return; }
-    list.push({ id: nextOpTypeId(), name, priority, status: '启用' });
-  }
-  syncOperationRowsFromOpTypes();
-  closeOpTypeEditor();
-  toast('运营推送类型已保存');
-  renderOpTypePriority();
-  if(state.tab==='operation') renderOperation();
-  if(state.drawer.open && state.drawer.type==='operation'){
-    ensureOpTypeSelection();
-    if(state.drawer.asPage || isCreateSplit()) renderFormBody();
-  }
-}
-function askDeleteOpType(id){
-  const row = getOpTypeById(id);
-  if(!row) return;
-  const linked = (DATA.operation||[]).some(r=>(r.opType||r.category)===row.name);
-  if(linked){
-    toast('该类型已被运营推送引用，无法删除');
-    return;
-  }
-  askConfirm('deleteOpType','operation', id, `确认删除运营推送类型「${row.name}」吗？删除后不可恢复。`);
-}
-function deleteOpType(id){
-  const row = getOpTypeById(id);
-  if(!row) return;
-  const linked = (DATA.operation||[]).some(r=>(r.opType||r.category)===row.name);
-  if(linked){
-    toast('该类型已被运营推送引用，无法删除');
-    return;
-  }
-  const idx = (DATA.opTypePriority||[]).findIndex(x=>x.id===id);
-  if(idx>=0) DATA.opTypePriority.splice(idx,1);
-  toast('已删除');
-  renderOpTypePriority();
-}
-function setOpType(name){
-  syncDraftFromInputs();
-  state.drawer.opType = name || '';
-  syncOpPriorityFromType();
-  const badge = document.getElementById('opPriorityBadge');
-  if(badge){
-    badge.innerHTML = priBadge(state.drawer.opPriority) +
-      '<span class="muted" style="font-size:12px;margin-left:8px">跟随推送类型</span>';
-  } else {
-    renderFormBody();
-  }
-}
-function opTypePriorityFieldHtml(){
-  ensureOpTypeSelection();
-  const opts = selectableOpTypes(state.drawer.opType);
-  const typeSelect = opts.length
-    ? ('<select class="control" id="opTypeSelect" onchange="setOpType(this.value)">' +
-        opts.map(t=>'<option value="' + escHtml(t.name) + '"' + (t.name===state.drawer.opType?' selected':'') + '>' + escHtml(t.name) + '</option>').join('') +
-      '</select>')
-    : '<div class="control" style="display:flex;align-items:center;color:var(--muted);background:#f8fafc">暂无可用类型，请先在推送设置中配置</div>';
-  return typeSelect;
-}
-function opPriorityReadonlyHtml(){
-  syncOpPriorityFromType();
-  return '<div class="control" id="opPriorityBadge" style="display:flex;align-items:center;gap:8px;background:#f8fafc">' +
-    priBadge(state.drawer.opPriority) +
-    '<span class="muted" style="font-size:12px">跟随推送类型</span>' +
-  '</div>';
+function opPrioritySelectHtml(){
+  const cur = normalizeOpPriority(state.drawer.opPriority, 'P2');
+  state.drawer.opPriority = cur;
+  return '<select class="control" id="opPrioritySelect" onchange="setOpPriority(this.value)">' +
+    OP_SELECTABLE_PRIORITY.map(p=>'<option value="' + p + '"' + (p===cur?' selected':'') + '>' + p + '</option>').join('') +
+  '</select>';
 }
 function renderPriorityRules(){
   const body = document.getElementById('priorityRulesBody');
@@ -3576,7 +3352,7 @@ function jumpRecords(srcId, opts){
 
 /* ========== Confirm ========== */
 function isDeleteConfirmAction(action){
-  return action==='deleteTemplate' || action==='deleteBizRef' || action==='deleteOpType'
+  return action==='deleteTemplate' || action==='deleteBizRef'
     || action==='removeOpSid' || action==='removePushImage' || action==='removeOpImage' || action==='removeCond';
 }
 function isToggleConfirmAction(action){
@@ -3622,7 +3398,6 @@ function askConfirm(action, type, id, msg, opts){
     }
     if(action==='deleteTemplate'){ deleteTemplate(id); return; }
     if(action==='deleteBizRef'){ deleteBizRef(type, id); return; }
-    if(action==='deleteOpType'){ deleteOpType(id); return; }
     if(action==='removeOpSid'){ removeOpSid(id, true); return; }
     if(action==='removePushImage' || action==='removeOpImage'){ removePushImage(true); return; }
     if(action==='removeCond'){
@@ -3631,7 +3406,6 @@ function askConfirm(action, type, id, msg, opts){
     }
     if(action==='enableSettings' || action==='disableSettings'){
       if(type==='activity' || type==='scenario') toggleBizRefStatus(type, id);
-      else if(type==='opType') toggleOpTypeStatus(id);
       return;
     }
     const map = {stop:'已终止', disable:'已禁用', retry:'已提交失败重试', retryBatch:'已提交批量重试'};
@@ -4558,8 +4332,7 @@ function openCreatePage(type){
     state.drawer.regions = [];
     state.drawer.emsOpen = { bizAppEms:false, opRegionEms:false };
     state.drawer.name = '';
-    state.drawer.opType = selectableOpTypes()[0]?.name || '活动通知';
-    ensureOpTypeSelection();
+    state.drawer.opPriority = 'P2';
     state.drawer.lang = 'en';
     state.drawer.msgJump = '无跳转';
     state.drawer.msgGroup = '【DANA】资金变更';
@@ -4696,8 +4469,7 @@ function openEditDrawer(type, id){
     state.drawer.apps = apps.length ? apps : bizAppOptions(state.drawer.project).slice();
     state.drawer.emsOpen = { bizAppEms:false, opRegionEms:false };
     state.drawer.name = row?.name || '';
-    state.drawer.opType = row?.opType || row?.category || selectableOpTypes()[0]?.name || '活动通知';
-    ensureOpTypeSelection();
+    state.drawer.opPriority = normalizeOpPriority(row?.priority, 'P2');
     state.drawer.lang = 'en';
     state.drawer.msgJump = row?.msgJump || '无跳转';
     state.drawer.msgGroup = row?.msgGroup || (row?.project==='TW' ? '【TW】系统通知' : '【DANA】资金变更');
@@ -5577,10 +5349,7 @@ function saveWithEnglishCheck(successMsg, thenClose){
   if(state.drawer.type==='operation' && state.drawer.mode==='edit' && state.drawer.detail){
     const row = state.drawer.detail;
     row.name = (state.drawer.name || '').trim() || row.name;
-    ensureOpTypeSelection();
-    row.opType = state.drawer.opType;
-    row.category = state.drawer.opType;
-    row.priority = state.drawer.opPriority;
+    row.priority = normalizeOpPriority(state.drawer.opPriority, 'P2');
     applyOpPlanToRow(row);
     applyOpAudienceToRow(row);
     const draft = state.drawer.contentDraft;
@@ -5815,6 +5584,29 @@ function createFormChannels(){
   const draft = state.drawer.contentDraft;
   return (draft && draft.channels) ? draft.channels.slice() : ['push'];
 }
+function showHelpTip(el){
+  hideHelpTip();
+  const html = el && el.getAttribute('data-tip');
+  if(!html) return;
+  const pop = document.createElement('div');
+  pop.id = 'helpTipFloat';
+  pop.className = 'help-q-float';
+  pop.innerHTML = html;
+  document.body.appendChild(pop);
+  const r = el.getBoundingClientRect();
+  const w = pop.offsetWidth;
+  const h = pop.offsetHeight;
+  let left = r.left;
+  if(left + w > window.innerWidth - 12) left = Math.max(12, window.innerWidth - w - 12);
+  let top = r.bottom + 8;
+  if(top + h > window.innerHeight - 12) top = Math.max(12, r.top - h - 8);
+  pop.style.left = left + 'px';
+  pop.style.top = top + 'px';
+}
+function hideHelpTip(){
+  const pop = document.getElementById('helpTipFloat');
+  if(pop) pop.remove();
+}
 function inferMsgSendModeFromChannels(channels){
   const chs = channels || [];
   if(chs.includes('msg') && !chs.includes('push')) return 'direct';
@@ -5865,7 +5657,8 @@ function msgJumpGroupFields(){
   const appPage = state.drawer.msgAppPage || '';
   const msgUrl = state.drawer.msgUrl || '';
   const sendModeField = showGroup
-    ? ('<div class="field"><label class="label"><span class="req">*</span>私信发送方式</label>' +
+    ? ('<div class="field"><label class="label"><span class="req">*</span>私信发送方式' +
+        '<span class="help-q" tabindex="0" aria-label="私信发送方式说明" data-tip="【补充Push】仅向 APP Push 未成功触达的用户补发私信，不会对全员再发一遍。<br>【直接发送】对目标用户全员发送私信。" onmouseenter="showHelpTip(this)" onmouseleave="hideHelpTip()" onfocus="showHelpTip(this)" onblur="hideHelpTip()">?</span></label>' +
         '<select class="control" id="msgSendMode" onchange="setMsgSendMode(this.value)">' +
           '<option value="supplementPush"' + (sendMode==='supplementPush'?' selected':'') + (canSupplementPush?'':' disabled') + '>补充Push</option>' +
           '<option value="direct"' + (sendMode==='direct'?' selected':'') + '>直接发送</option>' +
@@ -7075,10 +6868,8 @@ function renderConfigRight(type){
         '<div class="grid2">' +
           '<div class="field"><label class="label"><span class="req">*</span>任务名称</label>' +
             '<input class="control" placeholder="请输入任务名称" value="' + opName + '" oninput="state.drawer.name=this.value"></div>' +
-          '<div class="field"><label class="label"><span class="req">*</span>推送类型</label>' +
-            opTypePriorityFieldHtml() + '</div>' +
-          '<div class="field"><label class="label">优先级</label>' +
-            opPriorityReadonlyHtml() + '</div>' +
+          '<div class="field"><label class="label"><span class="req">*</span>优先级</label>' +
+            opPrioritySelectHtml() + '</div>' +
           expandMultiSelectHtml('bizAppEms','APP', appOptions, apps, !!emsOpen.bizAppEms) +
         '</div>'
       ) +
@@ -7541,7 +7332,6 @@ function renderDetailView(){
     return `<div class="detail-block"><h4>基础信息</h4><div class="kv">
       <div class="k">推送 ID</div><div class="v">${d.id}</div>
       <div class="k">任务名称</div><div class="v">${d.name}</div>
-      <div class="k">推送类型</div><div class="v">${escHtml(opTypeLabel(d))}</div>
       <div class="k">优先级</div><div class="v">${priBadge(resolveOpRowPriority(d))}</div>
       <div class="k">项目</div><div class="v">${d.project||'-'}</div>
       <div class="k">APP</div><div class="v">${formatAppCell(d.project, rowAppsValue(d))}</div>
@@ -7849,13 +7639,8 @@ function operationStep(step){
         <div class="field"><label class="label"><span class="req">*</span>任务名称</label>
           <input class="control" placeholder="请输入任务名称" value="${opName}" oninput="state.drawer.name=this.value">
         </div>
-        <div class="field"><label class="label"><span class="req">*</span>推送类型</label>
-          ${opTypePriorityFieldHtml()}
-        </div>
-      </div>
-      <div class="grid2" style="margin-bottom:14px">
-        <div class="field"><label class="label">优先级</label>
-          ${opPriorityReadonlyHtml()}
+        <div class="field"><label class="label"><span class="req">*</span>优先级</label>
+          ${opPrioritySelectHtml()}
         </div>
         ${expandMultiSelectHtml('bizAppEms','APP', appOptions, apps, !!emsOpen.bizAppEms)}
       </div>
@@ -7877,8 +7662,7 @@ function operationStep(step){
       <div class="summary-card">
         <div class="row"><div class="k">任务名称</div><div class="v">${state.drawer.name||'-'}</div></div>
         <div class="row"><div class="k">项目</div><div class="v">${state.drawer.project||'-'}</div></div>
-        <div class="row"><div class="k">推送类型</div><div class="v">${escHtml(state.drawer.opType||'-')}</div></div>
-        <div class="row"><div class="k">优先级</div><div class="v">${priBadge(syncOpPriorityFromType())}</div></div>
+        <div class="row"><div class="k">优先级</div><div class="v">${priBadge(normalizeOpPriority(state.drawer.opPriority, 'P2'))}</div></div>
         <div class="row"><div class="k">选择对象</div><div class="v">${opAudienceSummary()}</div></div>
         <div class="row"><div class="k">标题</div><div class="v">${draft.title||'-'}</div></div>
         <div class="row"><div class="k">正文</div><div class="v">${(draft.body||'-').slice(0,80)}${(draft.body||'').length>80?'…':''}</div></div>
