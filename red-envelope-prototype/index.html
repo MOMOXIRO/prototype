@@ -617,12 +617,31 @@
 
     function emptyReceiveFilters() {
       const { start, end } = lastNDaysRange(7);
-      return { sid: "", couponId: "", couponTitle: "", taskName: "", campaignName: "", batchId: "", vip: "", couponType: "", couponStatus: "", taskType: "", receiveType: "", auditType: "", project: "", region: "", start, end };
+      return {
+        sid: "",
+        couponId: "",
+        couponLabel: "",
+        taskId: "",
+        taskLabel: "",
+        campaignId: "",
+        campaignLabel: "",
+        batchId: "",
+        vip: "",
+        couponType: "",
+        couponStatus: "",
+        taskType: "",
+        receiveType: "",
+        auditType: "",
+        project: "",
+        region: "",
+        start,
+        end
+      };
     }
 
     function emptyUsageFilters() {
       const { start, end } = lastNDaysRange(7);
-      return { sid: "", vip: "", depositOrder: "", couponId: "", couponTitle: "", taskName: "", campaignName: "", couponType: "", batchId: "", taskType: "", project: "", region: "", start, end };
+      return { sid: "", vip: "", depositOrder: "", couponId: "", couponType: "", batchId: "", taskType: "", project: "", region: "", start, end };
     }
 
     /** 样例领取/使用日期对齐到最近 N 天，避免默认日期筛选导致列表为空 */
@@ -3266,6 +3285,99 @@
         .slice(0, 8);
     }
 
+    /** 领取记录筛选：红包 ID/标题模糊候选项 */
+    function searchReceiveFilterCoupons(keyword) {
+      const text = String(keyword || "").trim().toLowerCase();
+      if (!text) return [];
+      const map = new Map();
+      state.data.coupons.forEach(c => {
+        const title = couponTitle(c) || c.name || "--";
+        const label = `${c.id} / ${title}`;
+        const hay = `${c.id} ${title} ${c.name || ""} ${couponTemplateTitle(c)}`.toLowerCase();
+        if (hay.includes(text)) map.set(String(c.id), { id: String(c.id), title, label });
+      });
+      state.data.receives.forEach(r => {
+        const id = String(r.couponId || "");
+        if (!id || id === "--" || map.has(id)) return;
+        const title = couponTitleFromRecord(r) || r.coupon || "--";
+        const hay = `${id} ${title}`.toLowerCase();
+        if (hay.includes(text)) map.set(id, { id, title, label: `${id} / ${title}` });
+      });
+      return [...map.values()].slice(0, 8);
+    }
+
+    /** 领取记录筛选：任务 ID/名称模糊候选项 */
+    function searchReceiveFilterTasks(keyword) {
+      const text = String(keyword || "").trim().toLowerCase();
+      if (!text) return [];
+      const map = new Map();
+      state.data.tasks.filter(t => isVisibleTaskRow(t)).forEach(t => {
+        const id = String(t.id);
+        const name = t.name || "--";
+        const hay = `${id} ${name}`.toLowerCase();
+        if (hay.includes(text)) map.set(id, { id, name, label: `${id} / ${name}` });
+      });
+      state.data.receives.forEach(r => {
+        const id = taskIdByDisplayName(r.task, r.batch) || extractTaskIdFromText(r.batch) || "";
+        if (!id || map.has(id)) return;
+        const name = r.task || "--";
+        const hay = `${id} ${name}`.toLowerCase();
+        if (hay.includes(text)) map.set(id, { id, name, label: `${id} / ${name}` });
+      });
+      return [...map.values()].slice(0, 8);
+    }
+
+    /** 领取记录筛选：活动 ID/名称模糊候选项 */
+    function searchReceiveFilterCampaigns(keyword) {
+      const text = String(keyword || "").trim().toLowerCase();
+      if (!text) return [];
+      const map = new Map();
+      state.data.campaigns.forEach(c => {
+        const id = String(c.id);
+        const name = c.name || "--";
+        const hay = `${id} ${name}`.toLowerCase();
+        if (hay.includes(text)) map.set(id, { id, name, label: `${id} / ${name}` });
+      });
+      state.data.receives.forEach(r => {
+        const name = r.campaign || "";
+        if (!name || name === "--") return;
+        const hit = state.data.campaigns.find(c => c.name === name);
+        const id = hit ? String(hit.id) : name;
+        if (map.has(id)) return;
+        const hay = `${id} ${name}`.toLowerCase();
+        if (hay.includes(text)) map.set(id, { id, name, label: hit ? `${id} / ${name}` : name });
+      });
+      return [...map.values()].slice(0, 8);
+    }
+
+    function matchReceiveCouponFilter(r, f) {
+      if (f.couponId) return String(r.couponId || "") === String(f.couponId);
+      const kw = String(f.couponLabel || "").trim();
+      if (!kw) return true;
+      const title = String(couponTitleFromRecord(r) || r.coupon || "");
+      return String(r.couponId || "").includes(kw) || title.includes(kw);
+    }
+
+    function matchReceiveTaskFilter(r, f) {
+      const tid = taskIdByDisplayName(r.task, r.batch) || extractTaskIdFromText(r.batch) || "";
+      if (f.taskId) return tid === f.taskId || String(r.batch || "").includes(f.taskId);
+      const kw = String(f.taskLabel || "").trim();
+      if (!kw) return true;
+      return String(r.task || "").includes(kw) || String(tid).includes(kw);
+    }
+
+    function matchReceiveCampaignFilter(r, f) {
+      if (f.campaignId) {
+        const camp = state.data.campaigns.find(c => String(c.id) === String(f.campaignId));
+        if (camp) return r.campaign === camp.name;
+        return String(r.campaign || "").includes(f.campaignId);
+      }
+      const kw = String(f.campaignLabel || "").trim();
+      if (!kw) return true;
+      const camp = state.data.campaigns.find(c => c.name === r.campaign);
+      return String(r.campaign || "").includes(kw) || String(camp?.id || "").includes(kw);
+    }
+
     function syncCampaignTasksByProject(project) {
       const draft = state.campaignDraft;
       if (!project) {
@@ -4309,7 +4421,7 @@
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
             ${tableColgroup([8, 6, 8, 6, 8, 6, 6, 8, 8, 6, 6, 6, 6, 6, 6])}
-            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">批次</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">发放人群</th><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">红包有效期</th><th class="text-left px-3 py-2">发放时间</th><th class="text-left px-3 py-2">发放总量</th><th class="text-left px-3 py-2">成功发放</th><th class="text-left px-3 py-2">激活数量</th><th class="text-left px-3 py-2">使用数量</th><th class="text-left px-3 py-2">实际抵扣金额</th><th class="text-left px-3 py-2">操作人</th></tr></thead>
+            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">批次号</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">发放人群</th><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">红包有效期</th><th class="text-left px-3 py-2">发放时间</th><th class="text-left px-3 py-2">发放总量</th><th class="text-left px-3 py-2">成功发放</th><th class="text-left px-3 py-2">激活数量</th><th class="text-left px-3 py-2">使用数量</th><th class="text-left px-3 py-2">实际抵扣金额</th><th class="text-left px-3 py-2">操作人</th></tr></thead>
             <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.batchId}</td><td class="px-3 py-2">${r.couponId}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${r.tagVerse || "--"}</td><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2">${r.region || "--"}</td><td class="px-3 py-2">${r.validUntil}</td><td class="px-3 py-2">${r.issueTime}</td><td class="px-3 py-2">${r.totalIssue}</td><td class="px-3 py-2">${r.successIssue}</td><td class="px-3 py-2">${r.activated}</td><td class="px-3 py-2">${r.used}</td><td class="px-3 py-2">${formatDeduct(r.deduct)}</td><td class="px-3 py-2">${r.operator || "--"}</td></tr>`).join("")}</tbody>
           </table>
         </div>
@@ -4427,9 +4539,11 @@
       state.filters.receive = {
         sid: domVal("qReceiveSid"),
         couponId: domVal("qReceiveCouponId"),
-        couponTitle: domVal("qReceiveCouponTitle"),
-        taskName: domVal("qReceiveTaskName"),
-        campaignName: domVal("qReceiveCampaignName"),
+        couponLabel: domVal("qReceiveCouponPick"),
+        taskId: domVal("qReceiveTaskId"),
+        taskLabel: domVal("qReceiveTaskPick"),
+        campaignId: domVal("qReceiveCampaignId"),
+        campaignLabel: domVal("qReceiveCampaignPick"),
         batchId: domVal("qReceiveBatch"),
         vip: document.getElementById("qReceiveVip")?.value || "",
         couponStatus: document.getElementById("qReceiveStatus")?.value || "",
@@ -4451,9 +4565,6 @@
         vip: document.getElementById("qUsageVip")?.value || "",
         depositOrder: domVal("qUsageDepositOrder"),
         couponId: domVal("qUsageCouponId"),
-        couponTitle: domVal("qUsageCouponTitle"),
-        taskName: domVal("qUsageTaskName"),
-        campaignName: domVal("qUsageCampaignName"),
         couponType: document.getElementById("qUsageCouponType")?.value || "",
         batchId: domVal("qUsageBatch"),
         taskType: document.getElementById("qUsageTaskType")?.value || "",
@@ -4484,10 +4595,9 @@
       let rows = state.data.receives.filter(r =>
         isVisibleTaskRow(r) &&
         (!f.sid || r.sid.includes(f.sid)) &&
-        (!f.couponId || String(r.couponId || "").includes(f.couponId)) &&
-        (!f.couponTitle || String(couponTitleFromRecord(r) || r.coupon || "").includes(f.couponTitle)) &&
-        (!f.taskName || String(r.task || "").includes(f.taskName)) &&
-        (!f.campaignName || String(r.campaign || "").includes(f.campaignName)) &&
+        matchReceiveCouponFilter(r, f) &&
+        matchReceiveTaskFilter(r, f) &&
+        matchReceiveCampaignFilter(r, f) &&
         (!f.batchId || r.batch.includes(f.batchId)) &&
         (!f.vip || r.vip === f.vip) &&
         (!f.project || r.project === f.project) &&
@@ -4508,11 +4618,22 @@
           <div class="grid grid-cols-6 gap-3 text-[12px] filter-panel ${expanded ? "" : "is-collapsed"}">
             <select id="qReceiveProject" class="coupon-input"><option value="">项目</option><option ${f.project==="Dana"?"selected":""}>Dana</option><option ${f.project==="TW"?"selected":""}>TW</option></select>
             <input id="qReceiveSid" class="coupon-input" placeholder="SID" value="${f.sid}">
-            <input id="qReceiveCouponId" class="coupon-input" placeholder="红包ID" value="${f.couponId}">
-            <input id="qReceiveCouponTitle" class="coupon-input" placeholder="红包标题" value="${f.couponTitle || ""}">
-            <input id="qReceiveTaskName" class="coupon-input" placeholder="任务名称" value="${f.taskName || ""}">
-            <input id="qReceiveCampaignName" class="coupon-input" placeholder="活动名称" value="${f.campaignName || ""}">
-            <input id="qReceiveBatch" class="coupon-input" placeholder="任务批次" value="${f.batchId}">
+            <div class="relative">
+              <input id="qReceiveCouponPick" class="coupon-input" placeholder="红包ID/标题" value="${f.couponLabel || ""}" autocomplete="off">
+              <input type="hidden" id="qReceiveCouponId" value="${f.couponId || ""}">
+              <div id="qReceiveCouponDropdown" class="hidden absolute left-0 right-0 top-[34px] z-[80] max-h-[220px] overflow-auto rounded border border-line bg-white shadow-pop"></div>
+            </div>
+            <div class="relative">
+              <input id="qReceiveTaskPick" class="coupon-input" placeholder="任务ID/名称" value="${f.taskLabel || ""}" autocomplete="off">
+              <input type="hidden" id="qReceiveTaskId" value="${f.taskId || ""}">
+              <div id="qReceiveTaskDropdown" class="hidden absolute left-0 right-0 top-[34px] z-[80] max-h-[220px] overflow-auto rounded border border-line bg-white shadow-pop"></div>
+            </div>
+            <div class="relative">
+              <input id="qReceiveCampaignPick" class="coupon-input" placeholder="活动ID/名称" value="${f.campaignLabel || ""}" autocomplete="off">
+              <input type="hidden" id="qReceiveCampaignId" value="${f.campaignId || ""}">
+              <div id="qReceiveCampaignDropdown" class="hidden absolute left-0 right-0 top-[34px] z-[80] max-h-[220px] overflow-auto rounded border border-line bg-white shadow-pop"></div>
+            </div>
+            <input id="qReceiveBatch" class="coupon-input" placeholder="批次号" value="${f.batchId}">
             <select id="qReceiveVip" class="coupon-input"><option value="">VIP</option><option ${f.vip==="V1"?"selected":""}>V1</option><option ${f.vip==="V2"?"selected":""}>V2</option><option ${f.vip==="V3"?"selected":""}>V3</option><option ${f.vip==="V4"?"selected":""}>V4</option><option ${f.vip==="V5"?"selected":""}>V5</option></select>
             <select id="qReceiveCouponType" class="coupon-input"><option value="">红包类型</option><option ${f.couponType==="现金红包"?"selected":""}>现金红包</option><option ${f.couponType==="手续费抵扣红包"?"selected":""}>手续费抵扣红包</option><option ${f.couponType==="盈亏抵扣红包"?"selected":""}>盈亏抵扣红包</option><option ${f.couponType==="提现免佣券"?"selected":""}>提现免佣券</option><option ${f.couponType==="自定义红包"?"selected":""}>自定义红包</option><option ${f.couponType==="--"?"selected":""}>--</option></select>
             <select id="qReceiveStatus" class="coupon-input"><option value="">红包状态</option><option ${f.couponStatus==="激活中"?"selected":""}>激活中</option><option ${f.couponStatus==="已激活"?"selected":""}>已激活</option><option ${f.couponStatus==="已使用"?"selected":""}>已使用</option><option ${f.couponStatus==="已失效"?"selected":""}>已失效</option></select>
@@ -4522,8 +4643,8 @@
               <span class="range-mid">~</span>
               <input id="qReceiveEnd" placeholder="领取结束日期" value="${f.end}">
             </div>
+            <select id="qReceiveType" class="coupon-input"><option value="">领取方式</option><option ${f.receiveType==="系统发放"?"selected":""}>系统发放</option><option ${f.receiveType==="客户领取"?"selected":""}>客户领取</option></select>
             <div class="filter-more">
-              <select id="qReceiveType" class="coupon-input"><option value="">领取方式</option><option ${f.receiveType==="系统发放"?"selected":""}>系统发放</option><option ${f.receiveType==="客户领取"?"selected":""}>客户领取</option></select>
               <select id="qReceiveAudit" class="coupon-input"><option value="">审核方式</option><option ${f.auditType==="人工审核"?"selected":""}>人工审核</option><option ${f.auditType==="自动审核"?"selected":""}>自动审核</option></select>
               <select id="qReceiveRegion" class="coupon-input"><option value="">地区</option><option ${f.region==="+880 [BD]"?"selected":""}>+880 [BD]</option><option ${f.region==="+234 [NG]"?"selected":""}>+234 [NG]</option><option ${f.region==="+95 [MM]"?"selected":""}>+95 [MM]</option><option ${f.region==="+92 [PK]"?"selected":""}>+92 [PK]</option><option ${f.region==="+91 [IN]"?"selected":""}>+91 [IN]</option><option ${f.region==="+86 [CN]"?"selected":""}>+86 [CN]</option><option ${f.region==="+84 [VN]"?"selected":""}>+84 [VN]</option><option ${f.region==="+62 [ID]"?"selected":""}>+62 [ID]</option></select>
             </div>
@@ -4548,7 +4669,7 @@
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
             ${tableColgroup([5, 6, 4, 6, 8, 5, 7, 6, 5, 7, 6, 7, 5, 5, 6, 5, 4, 6])}
-            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">SID</th><th class="text-left px-3 py-2">VIP</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">任务配置</th><th class="text-left px-3 py-2">红包状态</th><th class="text-left px-3 py-2">领取方式</th><th class="text-left px-3 py-2">领取时间</th><th class="text-left px-3 py-2">审核方式</th><th class="text-left px-3 py-2">审核人</th><th class="text-left px-3 py-2">使用时间</th></tr></thead>
+            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">SID</th><th class="text-left px-3 py-2">VIP</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">批次号</th><th class="text-left px-3 py-2">任务配置</th><th class="text-left px-3 py-2">红包状态</th><th class="text-left px-3 py-2">领取方式</th><th class="text-left px-3 py-2">领取时间</th><th class="text-left px-3 py-2">审核方式</th><th class="text-left px-3 py-2">审核人</th><th class="text-left px-3 py-2">使用时间</th></tr></thead>
             <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("receive","user-coupon-detail","user","sid",r.sid)}">${r.sid}</a></td><td class="px-3 py-2">${r.vip}</td><td class="px-3 py-2">${r.region}</td><td class="px-3 py-2" title="${r.campaign}">${r.campaign}</td><td class="px-3 py-2">${r.couponId || "--"}</td><td class="px-3 py-2" title="${couponTitleFromRecord(r)}">${couponTitleFromRecord(r)}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${linkedTaskName(r.task, r.batch)}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("batch","batch-detail","batch","id",r.batch)}">${r.batch}</a></td><td class="px-3 py-2" title="${r.condition}">${r.condition}</td><td class="px-3 py-2">${badge(r.status)}</td><td class="px-3 py-2">${r.receiveType}</td><td class="px-3 py-2">${formatDisplayTime(r.receive)}</td><td class="px-3 py-2">${r.auditType}</td><td class="px-3 py-2">${r.reviewer}</td><td class="px-3 py-2">${formatDisplayTime(r.useTime)}</td></tr>`).join("")}</tbody>
           </table>
         </div>
@@ -4569,9 +4690,6 @@
         (!f.couponType || r.couponType === f.couponType) &&
         (!f.batchId || String(r.batch || "").includes(f.batchId)) &&
         (!f.taskType || r.taskType === f.taskType) &&
-        (!f.couponTitle || String(couponTitleFromRecord(r) || r.coupon || "").includes(f.couponTitle)) &&
-        (!f.taskName || String(r.task || "").includes(f.taskName)) &&
-        (!f.campaignName || String(r.campaign || "").includes(f.campaignName)) &&
         (!f.project || r.project === f.project) &&
         (!f.region || r.region === f.region) &&
         (!f.start || String(r.useDate || "") >= f.start) &&
@@ -4588,12 +4706,9 @@
             <select id="qUsageVip" class="coupon-input"><option value="">VIP</option><option ${f.vip==="V1"?"selected":""}>V1</option><option ${f.vip==="V2"?"selected":""}>V2</option><option ${f.vip==="V3"?"selected":""}>V3</option><option ${f.vip==="V4"?"selected":""}>V4</option><option ${f.vip==="V5"?"selected":""}>V5</option></select>
             <input id="qUsageDepositOrder" class="coupon-input" placeholder="入金订单" value="${f.depositOrder || ""}">
             <input id="qUsageCouponId" class="coupon-input" placeholder="红包ID" value="${f.couponId}">
-            <input id="qUsageBatch" class="coupon-input" placeholder="任务ID/活动ID/任务批次" value="${f.batchId}">
+            <input id="qUsageBatch" class="coupon-input" placeholder="批次号" value="${f.batchId}">
             <select id="qUsageCouponType" class="coupon-input"><option value="">红包类型</option><option ${f.couponType==="现金红包"?"selected":""}>现金红包</option><option ${f.couponType==="手续费抵扣红包"?"selected":""}>手续费抵扣红包</option><option ${f.couponType==="盈亏抵扣红包"?"selected":""}>盈亏抵扣红包</option><option ${f.couponType==="提现免佣券"?"selected":""}>提现免佣券</option><option ${f.couponType==="自定义红包"?"selected":""}>自定义红包</option><option ${f.couponType==="--"?"selected":""}>--</option></select>
             <select id="qUsageTaskType" class="coupon-input"><option value="">任务类型</option>${taskTypeFilterOptionsHtml(f.taskType)}</select>
-            <input id="qUsageCouponTitle" class="coupon-input" placeholder="红包标题" value="${f.couponTitle || ""}">
-            <input id="qUsageTaskName" class="coupon-input" placeholder="任务名称" value="${f.taskName || ""}">
-            <input id="qUsageCampaignName" class="coupon-input" placeholder="活动名称" value="${f.campaignName || ""}">
             <div class="range-wrap grid-range">
               <input id="qUsageStart" placeholder="使用开始日期" value="${f.start}">
               <span class="range-mid">~</span>
@@ -4620,7 +4735,7 @@
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
             ${tableColgroup([5, 6, 4, 5, 7, 5, 6, 7, 7, 6, 6, 8, 5, 5, 6, 6, 6])}
-            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">SID</th><th class="text-left px-3 py-2">VIP</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">任务批次</th><th class="text-left px-3 py-2">任务配置</th><th class="text-left px-3 py-2">入金订单</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">实际抵扣金额</th><th class="text-left px-3 py-2">红包抵扣方式</th><th class="text-left px-3 py-2">领取时间</th><th class="text-left px-3 py-2">使用时间</th></tr></thead>
+            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">SID</th><th class="text-left px-3 py-2">VIP</th><th class="text-left px-3 py-2">地区</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">红包ID</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包标题</th><th class="text-left px-3 py-2">任务名称</th><th class="text-left px-3 py-2">批次号</th><th class="text-left px-3 py-2">任务配置</th><th class="text-left px-3 py-2">入金订单</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">实际抵扣金额</th><th class="text-left px-3 py-2">红包抵扣方式</th><th class="text-left px-3 py-2">领取时间</th><th class="text-left px-3 py-2">使用时间</th></tr></thead>
             <tbody>${rows.map(r => `<tr class="border-b border-line/60 hover:bg-[#f8fbff]"><td class="px-3 py-2">${r.project}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("receive","user-coupon-detail","user","sid",r.sid)}">${r.sid}</a></td><td class="px-3 py-2">${r.vip}</td><td class="px-3 py-2">${r.region}</td><td class="px-3 py-2" title="${r.campaign}">${r.campaign}</td><td class="px-3 py-2">${r.couponId || "--"}</td><td class="px-3 py-2">${r.couponType}</td><td class="px-3 py-2" title="${couponTitleFromRecord(r)}">${couponTitleFromRecord(r)}</td><td class="px-3 py-2">${linkedTaskName(r.task, r.batch)}</td><td class="px-3 py-2"><a class="text-primary hover:underline" data-nav="${makeNav("batch","batch-detail","batch","id",r.batch)}">${r.batch}</a></td><td class="px-3 py-2" title="${r.condition}">${r.condition}</td><td class="px-3 py-2" title="${r.depositOrder || r.order || "--"}">${r.depositOrder || r.order || "--"}</td><td class="px-3 py-2">${r.amount}</td><td class="px-3 py-2">${r.deduct}</td><td class="px-3 py-2">${r.deductType}</td><td class="px-3 py-2">${formatDisplayTime(r.rewardTime)}</td><td class="px-3 py-2">${formatDisplayTime(r.useTime)}</td></tr>`).join("")}</tbody>
           </table>
         </div>
@@ -6263,6 +6378,53 @@
       // Receive filters
       const receiveSearch = document.getElementById("btnReceiveSearch");
       if (receiveSearch) {
+        const attrSafe = (s) => String(s || "").replace(/"/g, "&quot;");
+        const bindPick = (cfg) => {
+          const input = document.getElementById(cfg.inputId);
+          const hidden = document.getElementById(cfg.hiddenId);
+          const dropdown = document.getElementById(cfg.dropdownId);
+          if (!input || !hidden || !dropdown) return;
+          const renderDropdown = () => {
+            const rows = cfg.searchFn(input.value);
+            if (!String(input.value || "").trim()) {
+              dropdown.classList.add("hidden");
+              dropdown.innerHTML = "";
+              return;
+            }
+            if (!rows.length) {
+              dropdown.innerHTML = `<div class="px-3 py-2 text-[12px] text-[#94a3b8]">暂无匹配结果</div>`;
+            } else {
+              dropdown.innerHTML = rows.map(row => `
+                <button type="button" class="w-full px-3 py-2 text-left hover:bg-[#f8fbff] border-b border-line/60 last:border-b-0" data-fuzzy-pick-id="${attrSafe(row.id)}" data-fuzzy-pick-label="${attrSafe(row.label)}">
+                  <div class="flex items-center justify-between gap-3">
+                    <span class="font-medium text-[#1f2a44] truncate">${row.title || row.name || row.label}</span>
+                    <span class="shrink-0 text-[#64748b]">${row.id}</span>
+                  </div>
+                </button>
+              `).join("");
+            }
+            dropdown.classList.remove("hidden");
+            dropdown.querySelectorAll("[data-fuzzy-pick-id]").forEach(btn => {
+              btn.onmousedown = (event) => event.preventDefault();
+              btn.onclick = () => {
+                hidden.value = btn.dataset.fuzzyPickId || "";
+                input.value = btn.dataset.fuzzyPickLabel || hidden.value;
+                dropdown.classList.add("hidden");
+              };
+            });
+          };
+          input.oninput = () => {
+            hidden.value = "";
+            renderDropdown();
+          };
+          input.onfocus = () => {
+            if (input.value.trim()) renderDropdown();
+          };
+          input.onblur = () => setTimeout(() => dropdown.classList.add("hidden"), 120);
+        };
+        bindPick({ inputId: "qReceiveCouponPick", hiddenId: "qReceiveCouponId", dropdownId: "qReceiveCouponDropdown", searchFn: searchReceiveFilterCoupons });
+        bindPick({ inputId: "qReceiveTaskPick", hiddenId: "qReceiveTaskId", dropdownId: "qReceiveTaskDropdown", searchFn: searchReceiveFilterTasks });
+        bindPick({ inputId: "qReceiveCampaignPick", hiddenId: "qReceiveCampaignId", dropdownId: "qReceiveCampaignDropdown", searchFn: searchReceiveFilterCampaigns });
         receiveSearch.onclick = () => {
           const start = domVal("qReceiveStart");
           const end = domVal("qReceiveEnd");
