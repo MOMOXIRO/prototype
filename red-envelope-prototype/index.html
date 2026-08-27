@@ -561,6 +561,19 @@
     // =============================
     const SHOW_FINANCE_TASK = false;
 
+    // =============================
+    // [临时隐藏] 自定义任务样例数据列表展示
+    // 说明：活动发放创建页入口已恢复；列表样例数据仍隐藏。
+    // 下次需要恢复列表时，将 SHOW_CUSTOM_TASK 改为 true。
+    // =============================
+    const SHOW_CUSTOM_TASK = false;
+    const CUSTOM_TASK_KINDS = ["活动", "赔付", "礼品", "资金修正"];
+    const CUSTOM_TASK_KIND_IDS = { 活动: "T0A", 赔付: "T0B", 礼品: "T0C", 资金修正: "T0D" };
+
+    // [临时隐藏] 活动详情 / 任务批次详情 / 使用审核「备注」
+    // 下次需要恢复时，将 SHOW_REMARK_FIELDS 改为 true。
+    const SHOW_REMARK_FIELDS = false;
+
     // 操作日志文案（最简操作，三页统一规范）
     const LOG_TEXT = {
       coupon: {
@@ -589,16 +602,36 @@
       return String(type || "") === "理财";
     }
 
+    function isCustomTaskId(taskId) {
+      const t = String(taskId || "").trim();
+      if (!t || t === "--") return false;
+      return t === "T0" || /^T0[A-D]$/i.test(t) || t === "CUSTOM" || /自定义/.test(t);
+    }
+
+    function isCustomRelatedRow(row = {}) {
+      if (row.custom) return true;
+      if (row.taskType === "自定义任务") return true;
+      if (row.coupon === "自定义" || row.couponId === "自定义" || row.couponType === "自定义红包") return true;
+      if (isCustomTaskId(row.task) || (Array.isArray(row.tasks) && row.tasks.some(isCustomTaskId))) return true;
+      if (/-T0[A-D]?(?:-|$)/.test(String(row.batch || row.id || ""))) return true;
+      return false;
+    }
+
     /** [临时隐藏] 过滤理财任务类型选项；SHOW_FINANCE_TASK=true 时原样返回 */
     function visibleTaskTypeOptions(types) {
       const list = Array.isArray(types) ? types : [];
       return SHOW_FINANCE_TASK ? list : list.filter(t => !isFinanceTaskType(t));
     }
 
-    /** [临时隐藏] 列表行是否展示；理财任务在关闭开关时不展示 */
+    /** [临时隐藏] 列表行是否展示；理财/自定义任务在关闭开关时不展示 */
     function isVisibleTaskRow(row = {}) {
-      if (SHOW_FINANCE_TASK) return true;
-      return !isFinanceTaskType(row.type) && !isFinanceTaskType(row.taskType);
+      if (!SHOW_FINANCE_TASK && (isFinanceTaskType(row.type) || isFinanceTaskType(row.taskType))) return false;
+      if (!SHOW_CUSTOM_TASK && isCustomRelatedRow(row)) return false;
+      return true;
+    }
+
+    function campaignIncludesCustomTask(row = {}) {
+      return isCustomTaskId(row.task) || campaignTaskIds(row).some(id => isCustomTaskId(id));
     }
 
     function taskTypeFilterOptionsHtml(selected = "") {
@@ -756,6 +789,7 @@
         reminderTimezone: "GMT+08:00",
         reminderTime: "10:00:00",
         reminderTemplate: "",
+        customTaskMenuOpen: false,
         taskItems: []
       },
       couponModal: {
@@ -896,6 +930,7 @@
             logs:[{ operator:"Admin", time:"2026-06-25 11:05", content:"创建活动" }] },
           { id:"8", name:"8月定时激活活动", audience:"Recharge_Q2", audienceType:"TagVerse", audienceCount:8200, mode:"普通活动 / 定时发放", deliverTime:"2026-08-05 10:00", task:"T1", tasks:["T1"], batch:"--", project:"Dana", coupons:["1001"], status:"待执行", statuses:["待执行"], createdAt:"2026-07-06 15:00", revokeReason:"--",
             logs:[{ operator:"Jenny", time:"2026-07-06 15:00", content:"活动审核通过" }] },
+          // [临时隐藏] 自定义任务样例数据保留；SHOW_CUSTOM_TASK=false 时列表/入口不展示
           { id:"14", name:"自定义现金补发", audience:"添加3人", audienceType:"添加", audienceCount:3, mode:"普通活动 / 立即发放", deliverTime:"2026-07-06 14:00", task:"T0", tasks:["T0"], batch:"14-T0-1", project:"Dana", coupons:[], status:"完成", statuses:["完成"], createdAt:"2026-07-06 14:00", revokeReason:"--",
             logs:[{ operator:"Jenny", time:"2026-07-06 14:00", content:"创建活动" }] },
           { id:"15", name:"定时特批超时活动", audience:"导入120人", audienceType:"导入", audienceCount:120, importFile:"15_import.xlsx", mode:"特批活动 / 定时发放", deliverTime:"2026-08-01 10:00", task:"T1", tasks:["T1"], batch:"--", project:"Dana", coupons:["1001"], status:"待审核", statuses:["待审核"], createdAt:"2026-07-28 09:00", revokeReason:"--", approvalReason:"定时特批需在发放前完成审批。",
@@ -918,6 +953,7 @@
             logs:[{operator:"Jenny", time:"2026-07-13 10:00", content:"创建循环任务批次（第2次）"}] },
           { id:"4-T4-3", campaign:"4", task:"T4", taskType:"无任务", coupon:"1001", couponType:"现金红包", issue:"58/200", status:"执行中", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-20 10:00", reason:"--", loopRound:3,
             logs:[{operator:"Jenny", time:"2026-07-20 10:00", content:"创建循环任务批次（第3次）"}] },
+          // [临时隐藏] 自定义任务样例数据保留；SHOW_CUSTOM_TASK=false 时列表/入口不展示
           { id:"14-T0-1", campaign:"14", task:"T0", taskType:"无任务", coupon:"自定义", couponType:"自定义红包", issue:"50/50", status:"完成", project:"Dana", region:"+62 [ID]", operator:"Jenny", createdAt:"2026-07-06 14:00", reason:"--", loopRound:1,
             logs:[{operator:"Jenny", time:"2026-07-06 14:00", content:"创建自定义任务批次"}] }
         ],
@@ -928,12 +964,14 @@
           { sid:"26070002", vip:"V2", project:"Dana", region:"+62 [ID]", campaign:"月末冲量活动", task:"实盘2手任务", taskType:"实盘交易", couponId:"2001", coupon:"5元手续费抵扣红包", couponType:"手续费抵扣红包", batch:"8-T5-1", condition:"实盘手数 >= 2", amount:"$5", status:"已使用", receiveType:"系统发放", sent:"30-07-2026 09:45", receive:"30-07-2026 09:45", receiveDate:"2026-07-30", auditType:"人工审核", reviewer:"Jenny", order:"ORD26070002", useTime:"30-07-2026 12:40", reason:"--", verifyStatus:"已实名" },
           { sid:"26070003", vip:"V1", project:"TW", region:"+91 [IN]", campaign:"拉新活动", task:"无任务奖励", taskType:"无任务", couponId:"1002", coupon:"8元盈亏抵扣红包", couponType:"盈亏抵扣红包", batch:"9-T5-1", condition:"--", amount:"$8", status:"激活中", receiveType:"系统发放", sent:"25-06-2026 09:20", receive:"--", receiveDate:"", auditType:"人工审核", reviewer:"Tom", order:"--", useTime:"--", reason:"审核拒绝", verifyStatus:"已实名" },
           { sid:"26070004", vip:"V5", project:"Dana", region:"+880 [BD]", campaign:"提现促活活动", task:"无任务奖励", taskType:"无任务", couponId:"1001", coupon:"提现免佣券", couponType:"提现免佣券", batch:"10-T6-1", condition:"--", amount:"$3", status:"激活中", receiveType:"系统发放", sent:"28-07-2026 11:10", receive:"28-07-2026 11:10", receiveDate:"2026-07-28", auditType:"自动审核", reviewer:"系统", order:"--", useTime:"--", reason:"--", verifyStatus:"已实名" },
+          // [临时隐藏] 自定义任务样例数据保留；SHOW_CUSTOM_TASK=false 时列表/入口不展示
           { sid:"26070005", vip:"V3", project:"Dana", region:"+62 [ID]", campaign:"自定义现金补发", task:"--", taskType:"无任务", couponId:"自定义", coupon:"自定义现金红包", couponType:"自定义红包", batch:"14-T0-1", condition:"--", amount:"$50", status:"已激活", receiveType:"系统发放", sent:"02-08-2026 14:00", receive:"02-08-2026 14:00", receiveDate:"2026-08-02", auditType:"自动审核", reviewer:"系统", order:"--", useTime:"--", reason:"--", verifyStatus:"已实名" }
         ],
         usages: [
           { sid:"880102", vip:"V3", project:"Dana", region:"+62 [ID]", campaign:"6月充值激活活动", task:"充50送现金", taskType:"充值", couponId:"1001", coupon:"新人户现金红包", couponType:"现金红包", batch:"1-T1-1", condition:"充值金额 >= 50", depositOrder:"HCZ1020260714494801", order:"HCZ1020260714494801", amount:"$10", deduct:"$8", deductType:"金额封顶", rewardTime:"01-08-2026 10:23", useTime:"01-08-2026 10:23", useDate:"2026-08-01", status:"自动审核", verifyStatus:"已实名" },
           { sid:"880103", vip:"V1", project:"TW", region:"+91 [IN]", campaign:"6月理财活动", task:"理财任务", taskType:"理财", couponId:"--", coupon:"--", couponType:"--", batch:"2-T3-1", condition:"理财30天", depositOrder:"HCZ1020260714494805", order:"HCZ1020260714494805", amount:"$20", deduct:"$15", deductType:"比例封顶", rewardTime:"30-07-2026 14:15", useTime:"30-07-2026 14:15", useDate:"2026-07-30", status:"人工审核", verifyStatus:"已实名" },
           { sid:"26070002", vip:"V2", project:"Dana", region:"+62 [ID]", campaign:"月末冲量活动", task:"实盘2手任务", taskType:"实盘交易", couponId:"2001", coupon:"5元红包", couponType:"手续费抵扣红包", batch:"8-T5-1", condition:"实盘手数 >= 2", depositOrder:"HCZ1020260714494702", order:"HCZ1020260714494702", amount:"$5", deduct:"$5", deductType:"金额封顶", rewardTime:"29-07-2026 09:45", useTime:"29-07-2026 12:40", useDate:"2026-07-29", status:"人工审核", verifyStatus:"已实名" },
+          // [临时隐藏] 自定义任务样例数据保留；SHOW_CUSTOM_TASK=false 时列表/入口不展示
           { sid:"26070005", vip:"V3", project:"Dana", region:"+62 [ID]", campaign:"自定义现金补发", task:"--", taskType:"无任务", couponId:"自定义", coupon:"自定义现金红包", couponType:"自定义红包", batch:"14-T0-1", condition:"--", depositOrder:"HCZ1020260714494999", order:"HCZ1020260714494999", amount:"$50", deduct:"$50", deductType:"金额封顶", rewardTime:"03-08-2026 14:00", useTime:"03-08-2026 15:20", useDate:"2026-08-03", status:"自动审核", verifyStatus:"已实名" }
         ],
         audits: [
@@ -1730,7 +1768,7 @@
       const batchTaskIds = [];
       draft.taskItems.forEach(item => {
         if (item.custom) {
-          batchTaskIds.push("T0");
+          batchTaskIds.push(customTaskBatchId(customTaskKindOf(item)));
           return;
         }
         const tid = extractTaskIdFromText(item.task);
@@ -1823,6 +1861,62 @@
 
     function campaignHasCustomTask() {
       return (state.campaignDraft.taskItems || []).some(item => item.custom);
+    }
+
+    function customTaskKindOf(item) {
+      if (!item || !item.custom) return "";
+      if (item.customKind && CUSTOM_TASK_KINDS.includes(item.customKind)) return item.customKind;
+      if (CUSTOM_TASK_KINDS.includes(item.type)) return item.type;
+      return CUSTOM_TASK_KINDS[0];
+    }
+
+    function customTaskNameOf(kind) {
+      return `自定义任务（${kind}）`;
+    }
+
+    function customTaskBatchId(kind) {
+      return CUSTOM_TASK_KIND_IDS[kind] || "T0";
+    }
+
+    function campaignHasCustomKind(kind) {
+      return (state.campaignDraft.taskItems || []).some(item => item.custom && customTaskKindOf(item) === kind);
+    }
+
+    let customTaskMenuCloser = null;
+
+    function unbindCustomTaskMenuCloser() {
+      if (!customTaskMenuCloser) return;
+      document.removeEventListener("click", customTaskMenuCloser);
+      customTaskMenuCloser = null;
+    }
+
+    function makeCustomCampaignItem(kind) {
+      const item = {
+        type: kind,
+        customKind: kind,
+        task: customTaskNameOf(kind),
+        reward: "自定义现金红包",
+        taskValid: "--",
+        couponValid: couponValidDaysText(7),
+        custom: true,
+        amount: "",
+        amounts: [""]
+      };
+      syncCampaignCustomReward(item);
+      return item;
+    }
+
+    function addCustomCampaignTask(kind) {
+      if (!CUSTOM_TASK_KINDS.includes(kind)) return notify("error", "请选择自定义任务类型");
+      if (!state.campaignDraft.project) return notify("error", "请先选择项目");
+      if ((state.campaignDraft.taskItems || []).length >= MAX_CAMPAIGN_TASKS) {
+        return notify("warn", `单个活动最多添加${MAX_CAMPAIGN_TASKS}个任务（含自定义任务）`);
+      }
+      if (campaignHasCustomKind(kind)) return notify("warn", `${customTaskNameOf(kind)}已添加`);
+      state.campaignDraft.taskItems.push(makeCustomCampaignItem(kind));
+      state.campaignDraft.customTaskMenuOpen = true;
+      notify("success", `已添加${customTaskNameOf(kind)}`);
+      render();
     }
 
     function campaignCustomAmounts(item = {}) {
@@ -1962,7 +2056,7 @@
     ];
 
     function listColumnsOf(kind) {
-      if (kind === "usage") return USAGE_LIST_COLUMNS;
+      if (kind === "usage") return SHOW_REMARK_FIELDS ? USAGE_LIST_COLUMNS : USAGE_LIST_COLUMNS.filter(col => col.key !== "remark");
       if (kind === "issue") return ISSUE_LIST_COLUMNS;
       return RECEIVE_LIST_COLUMNS;
     }
@@ -2090,7 +2184,7 @@
     }
 
     function buildReceiveAuditRows() {
-      return state.data.audits.filter(a => auditTabOf(a) === "receive").map(a => {
+      return state.data.audits.filter(a => auditTabOf(a) === "receive" && isVisibleTaskRow(a)).map(a => {
         const sid = String(a.sid || a.object || "").replace(/^SID/i, "");
         const coupon = state.data.coupons.find(c => String(c.id) === String(a.couponId));
         const couponType = a.couponType || coupon?.type || "--";
@@ -2119,7 +2213,7 @@
     }
 
     function buildUsageAuditRows() {
-      return state.data.audits.filter(a => auditTabOf(a) === "usage").map(a => {
+      return state.data.audits.filter(a => auditTabOf(a) === "usage" && isVisibleTaskRow(a)).map(a => {
         const sid = String(a.sid || a.object || "").replace(/^SID/i, "");
         const amountNum = Number(String(a.faceValue ?? "").replace(/[^0-9.-]/g, ""));
         return {
@@ -3310,6 +3404,7 @@
       state.data.receives.forEach(r => {
         const id = String(r.couponId || "");
         if (!id || id === "--" || map.has(id)) return;
+        if (!SHOW_CUSTOM_TASK && isCustomRelatedRow(r)) return;
         const title = couponTitleFromRecord(r) || r.coupon || "--";
         const hay = `${id} ${title}`.toLowerCase();
         if (hay.includes(text)) map.set(id, { id, title, label: `${id} / ${title}` });
@@ -3329,8 +3424,9 @@
         if (hay.includes(text)) map.set(id, { id, name, label: `${id} / ${name}` });
       });
       state.data.receives.forEach(r => {
+        if (!SHOW_CUSTOM_TASK && isCustomRelatedRow(r)) return;
         const id = taskIdByDisplayName(r.task, r.batch) || extractTaskIdFromText(r.batch) || "";
-        if (!id || map.has(id)) return;
+        if (!id || map.has(id) || (!SHOW_CUSTOM_TASK && isCustomTaskId(id))) return;
         const name = r.task || "--";
         const hay = `${id} ${name}`.toLowerCase();
         if (hay.includes(text)) map.set(id, { id, name, label: `${id} / ${name}` });
@@ -3344,12 +3440,14 @@
       if (!text) return [];
       const map = new Map();
       state.data.campaigns.forEach(c => {
+        if (!SHOW_CUSTOM_TASK && campaignIncludesCustomTask(c)) return;
         const id = String(c.id);
         const name = c.name || "--";
         const hay = `${id} ${name}`.toLowerCase();
         if (hay.includes(text)) map.set(id, { id, name, label: `${id} / ${name}` });
       });
       state.data.receives.forEach(r => {
+        if (!SHOW_CUSTOM_TASK && isCustomRelatedRow(r)) return;
         const name = r.campaign || "";
         if (!name || name === "--") return;
         const hit = state.data.campaigns.find(c => c.name === name);
@@ -3418,8 +3516,9 @@
         if (hay.includes(text)) map.set(String(c.id), { id: String(c.id), title, label: `${c.id} / ${title}` });
       });
       state.data.batches.forEach(r => {
+        if (!SHOW_CUSTOM_TASK && isCustomRelatedRow(r)) return;
         batchCouponIdList(r).forEach(id => {
-          if (!id || map.has(id)) return;
+          if (!id || map.has(id) || (!SHOW_CUSTOM_TASK && (id === "自定义" || /自定义/.test(id)))) return;
           const title = batchCouponTitleById(id);
           const hay = `${id} ${title}`.toLowerCase();
           if (hay.includes(text)) map.set(id, { id, title, label: `${id} / ${title}` });
@@ -3440,8 +3539,9 @@
         if (hay.includes(text)) map.set(id, { id, name, label: `${id} / ${name}` });
       });
       state.data.batches.forEach(r => {
+        if (!SHOW_CUSTOM_TASK && isCustomRelatedRow(r)) return;
         const { id, name } = batchTaskDisplay(r);
-        if (!id || map.has(id)) return;
+        if (!id || map.has(id) || (!SHOW_CUSTOM_TASK && isCustomTaskId(id))) return;
         const hay = `${id} ${name}`.toLowerCase();
         if (hay.includes(text)) map.set(id, { id, name, label: `${id} / ${name}` });
       });
@@ -3454,12 +3554,14 @@
       if (!text) return [];
       const map = new Map();
       state.data.campaigns.forEach(c => {
+        if (!SHOW_CUSTOM_TASK && campaignIncludesCustomTask(c)) return;
         const id = String(c.id);
         const name = c.name || "--";
         const hay = `${id} ${name}`.toLowerCase();
         if (hay.includes(text)) map.set(id, { id, name, label: `${id} / ${name}` });
       });
       state.data.batches.forEach(r => {
+        if (!SHOW_CUSTOM_TASK && isCustomRelatedRow(r)) return;
         const campaign = batchCampaign(r);
         const id = String(campaign.id || r.campaign || "");
         if (!id || map.has(id)) return;
@@ -3630,9 +3732,10 @@
       if (draft.audienceType === "选择" && !draft.tagVerseName) return "请选择TagVerse人群包";
       if (draft.audienceType === "TagVerse" && !draft.tagVerseName) return "请创建TagVerse人群包";
       if (draft.audienceType === "导入" && !(draft.sidList || []).length) return "请先导入有效名单";
-      if (!draft.taskItems.length) return "请至少添加一个任务或自定义红包";
-      if (draft.taskItems.length > MAX_CAMPAIGN_TASKS) return `单个活动最多添加${MAX_CAMPAIGN_TASKS}个任务（含自定义红包任务）`;
-      if ((draft.taskItems || []).filter(item => item.custom).length > 1) return "自定义任务一次只能添加一个";
+      if (!draft.taskItems.length) return "请至少添加一个任务或自定义任务";
+      if (draft.taskItems.length > MAX_CAMPAIGN_TASKS) return `单个活动最多添加${MAX_CAMPAIGN_TASKS}个任务（含自定义任务）`;
+      const customKinds = (draft.taskItems || []).filter(item => item.custom).map(item => customTaskKindOf(item));
+      if (new Set(customKinds).size !== customKinds.length) return "同一类型的自定义任务不能重复添加";
       for (const item of draft.taskItems || []) {
         if (item.custom) continue;
         const task = state.data.tasks.find(t => t.id === campaignItemTaskId(item));
@@ -3683,6 +3786,7 @@
         reminderTimezone: "GMT+08:00",
         reminderTime: "10:00:00",
         reminderTemplate: "",
+        customTaskMenuOpen: false,
         taskItems: []
       };
     }
@@ -4031,6 +4135,7 @@
         const taskIds = campaignTaskIds(r);
         // [临时隐藏] 关联了理财任务的活动不展示
         if (!SHOW_FINANCE_TASK && campaignIncludesFinanceTask(r)) return false;
+        if (!SHOW_CUSTOM_TASK && campaignIncludesCustomTask(r)) return false;
         return (!activityQ || String(r.id || "").includes(activityQ)) &&
           (!taskQ || taskIds.some(id => String(id || "").includes(taskQ))) &&
           (!f.activityName || r.name.includes(f.activityName)) &&
@@ -4106,7 +4211,6 @@
       const d = state.campaignDraft;
       const hasCampaignProject = !!d.project;
       const canAddCampaignTask = hasCampaignProject && (d.taskItems || []).length < MAX_CAMPAIGN_TASKS;
-      const canAddCustomCampaignTask = canAddCampaignTask && !(d.taskItems || []).some(item => item.custom);
       el.query.innerHTML = "";
       el.action.innerHTML = "";
       const audiencePanel = d.audienceType === "选择" ? `
@@ -4189,7 +4293,16 @@
                 <div id="campaignTaskSearchDropdown" class="hidden absolute left-0 right-0 top-[38px] z-[80] max-h-[220px] overflow-auto rounded border border-line bg-white shadow-pop"></div>
               </div>
               <button id="btnAddTaskItem" class="${btnClass(true,canAddCampaignTask)}">添加任务</button>
-              <button id="btnAddCustomCoupon" class="${btnClass(false,canAddCustomCampaignTask)}">添加自定义任务</button>
+              <div class="relative" id="customTaskKindWrap">
+                <button id="btnAddCustomCoupon" type="button" class="${btnClass(false,hasCampaignProject)}">添加自定义任务</button>
+                <div id="customTaskKindDropdown" class="${d.customTaskMenuOpen ? "" : "hidden"} absolute left-0 top-[38px] z-[80] min-w-[168px] overflow-hidden rounded border border-line bg-white shadow-pop">
+                  ${CUSTOM_TASK_KINDS.map(kind => {
+                    const added = campaignHasCustomKind(kind);
+                    const disabled = added || !canAddCampaignTask;
+                    return `<button type="button" class="w-full px-3 py-2 text-left border-b border-line/60 last:border-b-0 ${disabled ? "text-[#94a3b8] cursor-not-allowed bg-gray-50" : "hover:bg-[#f8fbff] text-[#1f2a44]"}" data-add-custom-kind="${kind}" ${disabled ? "disabled" : ""}>${kind}${added ? "（已添加）" : ""}</button>`;
+                  }).join("")}
+                </div>
+              </div>
               <span class="self-center text-[12px] text-[#64748b]">已添加 ${(d.taskItems || []).length}/${MAX_CAMPAIGN_TASKS} 个任务</span>
             </div>
             <div class="border border-line rounded overflow-auto">
@@ -4199,8 +4312,8 @@
                 <tbody id="campaignTaskTableBody">
                   ${d.taskItems.length ? d.taskItems.map((item, idx) => `
                     <tr class="border-b border-line/60">
-                      <td class="px-3 py-2">${item.custom ? "无任务" : (item.type || "--")}</td>
-                      <td class="px-3 py-2">${item.custom ? (item.task || "自定义任务") : item.task}</td>
+                      <td class="px-3 py-2">${item.custom ? customTaskKindOf(item) : (item.type || "--")}</td>
+                      <td class="px-3 py-2">${item.custom ? customTaskNameOf(customTaskKindOf(item)) : item.task}</td>
                       <td class="px-3 py-2">${item.custom ? `<div class="space-y-1.5">${campaignCustomAmounts(item).map((amt, aIdx) => `<div class="flex items-center gap-1"><input class="border border-line rounded px-2 py-1.5 w-[140px]" data-campaign-custom-amount="${idx}" data-amount-index="${aIdx}" placeholder="请输入红包金额" value="${amt || ""}">${campaignCustomAmounts(item).length > 1 ? `<button type="button" class="text-danger hover:underline whitespace-nowrap" data-remove-custom-amount="${idx}" data-amount-index="${aIdx}">删除</button>` : ""}</div>`).join("")}</div>` : item.reward}</td>
                       <td class="px-3 py-2">${couponValidityValue(item.couponValid)}</td>
                       <td class="px-3 py-2">${item.taskValid}</td>
@@ -4304,7 +4417,7 @@
               <div><div class="text-[#64748b] mb-1">创建人</div><div>Jenny</div></div>
               <div><div class="text-[#64748b] mb-1">创建时间</div><div>${formatDisplayTime(row.createdAt)}</div></div>
               <div><div class="text-[#64748b] mb-1">发放时间</div><div>${campaignDeliverTimeText(row)}</div></div>
-              <div class="col-span-2"><div class="text-[#64748b] mb-1">备注</div><div>${row.revokeReason && row.revokeReason !== "--" ? row.revokeReason : "--"}</div></div>
+              ${SHOW_REMARK_FIELDS ? `<div class="col-span-2"><div class="text-[#64748b] mb-1">备注</div><div>${row.revokeReason && row.revokeReason !== "--" ? row.revokeReason : "--"}</div></div>` : ""}
             </div>
           </div>
         </div>
@@ -4353,6 +4466,7 @@
         const couponType = batchCouponType(r);
         // [临时隐藏] 理财任务批次不展示
         if (!SHOW_FINANCE_TASK && isFinanceTaskType(type)) return false;
+        if (!SHOW_CUSTOM_TASK && isCustomRelatedRow(r)) return false;
         return (!f.campaignId || r.campaign.includes(f.campaignId) || batchIdMatchesFilter(r.id, f.campaignId)) &&
         matchBatchCampaignFilter(r, f) &&
         matchBatchTaskFilter(r, f) &&
@@ -4492,7 +4606,7 @@
             <div>任务名称：${task.name || "--"}</div>
             <div>项目：${row.project || campaign.project || "--"}</div>
             <div>发放时间：${batchDeliverTimeText(row)}</div>
-            <div class="col-span-4">备注：${row.reason && row.reason !== "--" ? row.reason : "--"}</div>
+            ${SHOW_REMARK_FIELDS ? `<div class="col-span-4">备注：${row.reason && row.reason !== "--" ? row.reason : "--"}</div>` : ""}
           </div>
         </div>
       `;
@@ -4936,7 +5050,7 @@
       const isIssue = state.auditTab === "issue";
       const isReceive = state.auditTab === "receive";
       const pendingAuditCounts = AUDIT_TABS.reduce((acc, tab) => {
-        acc[tab.key] = state.data.audits.filter(row => auditTabOf(row) === tab.key && isAuditPending(row.status)).length;
+        acc[tab.key] = state.data.audits.filter(row => auditTabOf(row) === tab.key && isAuditPending(row.status) && isVisibleTaskRow(row)).length;
         return acc;
       }, {});
 
@@ -4972,6 +5086,7 @@
       } else if (isIssue) {
         rows = state.data.audits.filter(r => {
           if (auditTabOf(r) !== "issue") return false;
+          if (!SHOW_CUSTOM_TASK && isCustomRelatedRow(r)) return false;
           if (f.project && auditProject(r) !== f.project) return false;
           if (f.couponId && !String(r.couponId || "").includes(f.couponId)) return false;
           if (f.status && !String(r.status || "").includes(f.status)) return false;
@@ -6417,26 +6532,34 @@
           if (!state.campaignDraft.taskKeyword) return notify("error","请输入任务ID或任务名称");
           addCampaignTaskByKeyword(state.campaignDraft.taskKeyword);
         };
-        document.getElementById("btnAddCustomCoupon").onclick = () => {
+        const btnAddCustomCoupon = document.getElementById("btnAddCustomCoupon");
+        unbindCustomTaskMenuCloser();
+        if (btnAddCustomCoupon) btnAddCustomCoupon.onclick = (event) => {
+          event.stopPropagation();
           syncDraft();
           if (!state.campaignDraft.project) return notify("error", "请先选择项目");
-          if (campaignHasCustomTask()) return notify("warn", "自定义任务一次只能添加一个");
-          if ((state.campaignDraft.taskItems || []).length >= MAX_CAMPAIGN_TASKS) {
-            return notify("warn", `单个活动最多添加${MAX_CAMPAIGN_TASKS}个任务（含自定义红包任务）`);
-          }
-          state.campaignDraft.taskItems.push({
-            type: "无任务",
-            task: "自定义任务",
-            reward: "自定义现金红包",
-            taskValid: "--",
-            couponValid: couponValidDaysText(7),
-            custom: true,
-            amount: "",
-            amounts: [""]
-          });
-          notify("success", "已添加自定义任务");
+          state.campaignDraft.customTaskMenuOpen = !state.campaignDraft.customTaskMenuOpen;
           render();
         };
+        document.querySelectorAll("[data-add-custom-kind]").forEach(btn => {
+          btn.onmousedown = (event) => event.preventDefault();
+          btn.onclick = (event) => {
+            event.stopPropagation();
+            syncDraft();
+            addCustomCampaignTask(btn.dataset.addCustomKind);
+          };
+        });
+        if (state.campaignDraft.customTaskMenuOpen) {
+          customTaskMenuCloser = (event) => {
+            const wrap = document.getElementById("customTaskKindWrap");
+            if (wrap && wrap.contains(event.target)) return;
+            unbindCustomTaskMenuCloser();
+            if (!state.campaignDraft.customTaskMenuOpen) return;
+            state.campaignDraft.customTaskMenuOpen = false;
+            render();
+          };
+          setTimeout(() => document.addEventListener("click", customTaskMenuCloser), 0);
+        }
         document.querySelectorAll("[data-remove-custom-amount]").forEach(btn => btn.onclick = () => {
           syncDraft();
           const item = state.campaignDraft.taskItems[Number(btn.dataset.removeCustomAmount)];
