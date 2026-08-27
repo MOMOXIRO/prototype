@@ -567,8 +567,8 @@
     // 下次需要恢复列表时，将 SHOW_CUSTOM_TASK 改为 true。
     // =============================
     const SHOW_CUSTOM_TASK = false;
-    const CUSTOM_TASK_KINDS = ["活动", "赔付", "礼品", "资金修正"];
-    const CUSTOM_TASK_KIND_IDS = { 活动: "T0A", 赔付: "T0B", 礼品: "T0C", 资金修正: "T0D" };
+    const CUSTOM_TASK_KINDS = ["赔付", "礼品兑换", "活动奖励", "资金修正"];
+    const CUSTOM_TASK_KIND_IDS = { 赔付: "T0B", 礼品兑换: "T0C", 活动奖励: "T0A", 资金修正: "T0D" };
 
     // [临时隐藏] 活动详情 / 任务批次详情 / 使用审核「备注」
     // 下次需要恢复时，将 SHOW_REMARK_FIELDS 改为 true。
@@ -1892,7 +1892,7 @@
 
     function makeCustomCampaignItem(kind) {
       const item = {
-        type: kind,
+        type: "无任务",
         customKind: kind,
         task: customTaskNameOf(kind),
         reward: "自定义现金红包",
@@ -4312,7 +4312,7 @@
                 <tbody id="campaignTaskTableBody">
                   ${d.taskItems.length ? d.taskItems.map((item, idx) => `
                     <tr class="border-b border-line/60">
-                      <td class="px-3 py-2">${item.custom ? customTaskKindOf(item) : (item.type || "--")}</td>
+                      <td class="px-3 py-2">${item.custom ? "无任务" : (item.type || "--")}</td>
                       <td class="px-3 py-2">${item.custom ? customTaskNameOf(customTaskKindOf(item)) : item.task}</td>
                       <td class="px-3 py-2">${item.custom ? `<div class="space-y-1.5">${campaignCustomAmounts(item).map((amt, aIdx) => `<div class="flex items-center gap-1"><input class="border border-line rounded px-2 py-1.5 w-[140px]" data-campaign-custom-amount="${idx}" data-amount-index="${aIdx}" placeholder="请输入红包金额" value="${amt || ""}">${campaignCustomAmounts(item).length > 1 ? `<button type="button" class="text-danger hover:underline whitespace-nowrap" data-remove-custom-amount="${idx}" data-amount-index="${aIdx}">删除</button>` : ""}</div>`).join("")}</div>` : item.reward}</td>
                       <td class="px-3 py-2">${couponValidityValue(item.couponValid)}</td>
