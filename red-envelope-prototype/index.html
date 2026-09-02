@@ -5300,6 +5300,8 @@
       if (pageId === "task-create-modal") {
         const d = normalizeTaskDraft(state.taskModal.draft || {});
         const isEditMode = state.taskModal.mode === "edit";
+        const couponIdColLabel = isEditMode ? "红包ID" : "模板ID";
+        const couponTitleColLabel = isEditMode ? "红包标题" : "模板标题";
         // 编辑任务仅允许改：任务名称、跳转方式、多语言配置
         const lockCls = isEditMode ? "bg-gray-50 text-[#94a3b8]" : "";
         const lockAttr = isEditMode ? "disabled" : "";
@@ -5384,7 +5386,7 @@
                     ${isNoTask ? `<div class="mb-2 text-[12px] text-[#64748b]">已添加 ${couponTotalCount}/${MAX_TASK_COUPONS} 个红包模板</div>` : ""}
                     <div class="border border-line rounded overflow-auto">
                       <table class="w-full text-[12px]">
-                        <thead class="bg-[#f3f6fb]"><tr><th class="text-left px-3 py-2">模板ID</th><th class="text-left px-3 py-2">模板标题</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">数量</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">多语言配置</th>${isEditMode ? "" : `<th class="text-left px-3 py-2">操作</th>`}</tr></thead>
+                        <thead class="bg-[#f3f6fb]"><tr><th class="text-left px-3 py-2">${couponIdColLabel}</th><th class="text-left px-3 py-2">${couponTitleColLabel}</th><th class="text-left px-3 py-2">红包类型</th><th class="text-left px-3 py-2">红包金额</th><th class="text-left px-3 py-2">${couponValidityLabel()}</th><th class="text-left px-3 py-2">数量</th><th class="text-left px-3 py-2">抵扣比例</th><th class="text-left px-3 py-2">多语言配置</th>${isEditMode ? "" : `<th class="text-left px-3 py-2">操作</th>`}</tr></thead>
                         <tbody>${couponGroups.map(([id, count]) => {
                           const c = state.data.coupons.find(item => item.id === id);
                           const quantityCell = (!isEditMode && isNoTask)
