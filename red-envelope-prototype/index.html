@@ -834,7 +834,7 @@
       filters: {
         task: { id: "", name: "", type: "", app: "", status: "" },
         coupon: { id: "", name: "", type: "", status: "", project: "", amountMin: "", amountMax: "" },
-        campaign: { id: "", taskId: "", activityName: "", taskName: "", project: "", statuses: [], start: "", end: "" },
+        campaign: { id: "", taskId: "", activityName: "", taskName: "", project: "", activityType: "", statuses: [], start: "", end: "" },
         batch: emptyBatchFilters(),
         receive: emptyReceiveFilters(),
         usage: emptyUsageFilters(),
@@ -1569,6 +1569,16 @@
 
     function loopPublishTagHtml() {
       return `<span class="badge badge-neutral">循环发布</span>`;
+    }
+
+    function campaignActivityTypeLabel(row = {}) {
+      const source = String(row.activityType || row.mode || "");
+      return /特批/.test(source) ? "特批" : "普通";
+    }
+
+    function campaignActivityTypeBadge(row = {}) {
+      const label = campaignActivityTypeLabel(row);
+      return `<span class="badge ${label === "特批" ? "badge-warn" : "badge-neutral"}">${label}</span>`;
     }
 
     function campaignDeliverTimeText(row = {}) {
@@ -4141,6 +4151,7 @@
           (!f.activityName || r.name.includes(f.activityName)) &&
           (!f.taskName || campaignTaskNames(r).includes(f.taskName)) &&
           (!f.project || r.project === f.project) &&
+          (!f.activityType || campaignActivityTypeLabel(r) === f.activityType) &&
           (!(f.statuses || []).length || (f.statuses || []).some(s => campaignStatuses(r).includes(s))) &&
           (!f.start || comparableDateTime(r.createdAt) >= f.start) &&
           (!f.end || comparableDateTime(r.createdAt) <= `${f.end} 23:59`);
@@ -4162,6 +4173,11 @@
               <option value="">活动状态</option>
               ${statusOptions.map(s => `<option value="${s}" ${(f.statuses || [])[0] === s ? "selected" : ""}>${s}</option>`).join("")}
             </select>
+            <select id="qCampaignActivityType" class="coupon-input">
+              <option value="">活动类型</option>
+              <option value="普通" ${f.activityType==="普通"?"selected":""}>普通</option>
+              <option value="特批" ${f.activityType==="特批"?"selected":""}>特批</option>
+            </select>
             <div class="range-wrap grid-range">
               <input id="qCampaignStart" placeholder="创建开始日期" value="${f.start}">
               <span class="range-mid">~</span>
@@ -4178,8 +4194,8 @@
       el.table.innerHTML = !rows.length ? `<div class="border border-dashed border-line rounded p-12 text-center text-sm text-muted">暂无活动记录</div>` : `
         <div class="coupon-table-wrap overflow-auto">
           <table class="w-full data-table table-fill text-[12px]">
-            ${tableColgroup([6, 7, 14, 10, 11, 9, 11, 11, 21])}
-            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">活动ID</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">关联任务</th><th class="text-left px-3 py-2">发放人群</th><th class="text-left px-3 py-2">活动状态</th><th class="text-left px-3 py-2">发放时间</th><th class="text-left px-3 py-2">创建时间</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
+            ${tableColgroup([6, 7, 12, 7, 9, 10, 8, 10, 10, 21])}
+            <thead class="coupon-head"><tr class="border-b border-line"><th class="text-left px-3 py-2">项目</th><th class="text-left px-3 py-2">活动ID</th><th class="text-left px-3 py-2">活动名称</th><th class="text-left px-3 py-2">活动类型</th><th class="text-left px-3 py-2">关联任务</th><th class="text-left px-3 py-2">发放人群</th><th class="text-left px-3 py-2">活动状态</th><th class="text-left px-3 py-2">发放时间</th><th class="text-left px-3 py-2">创建时间</th><th class="text-left px-3 py-2 col-ops">操作</th></tr></thead>
             <tbody>
               ${rows.map(r => {
                 const taskText = campaignTaskIds(r).join("、") || "--";
@@ -4188,6 +4204,7 @@
                   <td class="px-3 py-2">${r.project || "--"}</td>
                   <td class="px-3 py-2 font-medium"><a class="text-primary hover:underline" data-campaign-detail="${r.id}">${r.id}</a></td>
                   <td class="px-3 py-2" title="${r.name}">${r.name}</td>
+                  <td class="px-3 py-2">${campaignActivityTypeBadge(r)}</td>
                   <td class="px-3 py-2" title="${taskText}">${taskText}</td>
                   <td class="px-3 py-2"><a class="text-primary hover:underline" data-campaign-audience="${r.id}">${campaignAudienceLabel(r)}</a></td>
                   <td class="px-3 py-2"><div class="flex flex-wrap gap-1 items-center">${campaignStatuses(r).map(s => badge(s)).join("")}</div></td>
@@ -6282,18 +6299,22 @@
       const campaignSearch = document.getElementById("btnCampaignSearch");
       if (campaignSearch) {
         campaignSearch.onclick = () => {
+          const nextCampaignFilter = {
+            id: document.getElementById("qCampaignId").value.trim(),
+            taskId: document.getElementById("qCampaignTaskId").value.trim(),
+            activityName: document.getElementById("qCampaignActivityName").value.trim(),
+            taskName: document.getElementById("qCampaignTaskName").value.trim(),
+            project: document.getElementById("qCampaignProject").value.trim(),
+            activityType: document.getElementById("qCampaignActivityType").value.trim(),
+            statuses: document.getElementById("qCampaignStatus").value ? [document.getElementById("qCampaignStatus").value] : [],
+            start: document.getElementById("qCampaignStart").value.trim(),
+            end: document.getElementById("qCampaignEnd").value.trim()
+          };
           withLoading(() => {
-            state.filters.campaign.id = document.getElementById("qCampaignId").value.trim();
-            state.filters.campaign.taskId = document.getElementById("qCampaignTaskId").value.trim();
-            state.filters.campaign.activityName = document.getElementById("qCampaignActivityName").value.trim();
-            state.filters.campaign.taskName = document.getElementById("qCampaignTaskName").value.trim();
-            state.filters.campaign.project = document.getElementById("qCampaignProject").value.trim();
-            state.filters.campaign.statuses = document.getElementById("qCampaignStatus").value ? [document.getElementById("qCampaignStatus").value] : [];
-            state.filters.campaign.start = document.getElementById("qCampaignStart").value.trim();
-            state.filters.campaign.end = document.getElementById("qCampaignEnd").value.trim();
+            state.filters.campaign = nextCampaignFilter;
           }, "查询完成");
         };
-        document.getElementById("btnCampaignReset").onclick = () => { state.filters.campaign = { id:"", taskId:"", activityName:"", taskName:"", project:"", statuses:[], start:"", end:"" }; render(); notify("warn","已重置筛选条件"); };
+        document.getElementById("btnCampaignReset").onclick = () => { state.filters.campaign = { id:"", taskId:"", activityName:"", taskName:"", project:"", activityType:"", statuses:[], start:"", end:"" }; render(); notify("warn","已重置筛选条件"); };
         document.getElementById("btnCampaignCreate").onclick = () => switchPage("campaign-form");
         const campaignLog = document.getElementById("btnCampaignLog");
         if (campaignLog) campaignLog.onclick = () => switchPage("campaign-log-modal");
