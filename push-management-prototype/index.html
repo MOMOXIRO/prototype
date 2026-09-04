@@ -738,7 +738,6 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
             <div class="filter-item"><label>优先级</label>
               <select class="control" id="op-priority-filter" onchange="onOpFilterChange()">
                 <option value="">全部</option>
-                <option value="P0">P0</option>
                 <option value="P1">P1</option>
                 <option value="P2">P2</option>
                 <option value="P3">P3</option>
@@ -797,7 +796,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
             </div>
             <div class="filter-more">
               <div class="filter-item"><label>行情源</label><select class="control"><option value="">全部</option><option>MT5</option><option>内部行情</option></select></div>
-              <div class="filter-item"><label>行情类型</label><select class="control"><option value="">全部</option><option>价格达到</option><option>短时上涨</option><option>短时下跌</option><option>剧烈波动</option><option>成交量异常</option></select></div>
+              <div class="filter-item"><label>行情类型</label><select class="control"><option value="">全部</option><option>整数关口</option><option>时间段</option></select></div>
               <div class="filter-item"><label>通知对象</label><select class="control"><option value="">全部</option><option>关注用户</option><option>订阅用户</option><option>持仓用户</option><option>最近交易</option></select></div>
             </div>
           </div>
@@ -1182,39 +1181,6 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
   </div>
 </div>
 
-<!-- 推送记录 · 未开始批次编辑 -->
-<div class="modal" id="recordEditModal" onclick="if(event.target===this)closeRecordEditModal()">
-  <div class="modal-card" style="width:min(560px,96vw)">
-    <div class="modal-head">
-      <div>
-        <h3>编辑推送批次</h3>
-        <div class="sub" id="recordEditSub">仅未开始且本人创建的批次可编辑</div>
-      </div>
-      <button class="drawer-close" onclick="closeRecordEditModal()" title="关闭">×</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="recordEditId">
-      <div class="field" style="margin-bottom:14px">
-        <label class="label"><span class="req">*</span>发送时间</label>
-        <input class="control" type="datetime-local" step="1" id="recordEditPlan">
-      </div>
-      <div class="field" style="margin-bottom:14px">
-        <label class="label"><span class="req">*</span>标题</label>
-        <input class="control" id="recordEditTitle" maxlength="80" placeholder="请输入推送标题">
-      </div>
-      <div class="field">
-        <label class="label"><span class="req">*</span>正文</label>
-        <textarea class="control" id="recordEditBody" style="height:120px;resize:vertical" maxlength="500" placeholder="请输入推送正文"></textarea>
-      </div>
-      <p class="muted" style="margin:12px 0 0;font-size:12px;line-height:1.5">操作人：<span id="recordEditOperator">—</span> · 仅操作人可保存修改</p>
-    </div>
-    <div class="modal-foot">
-      <button class="btn ghost" onclick="closeRecordEditModal()">取消</button>
-      <button class="btn" onclick="saveRecordEdit()">保存</button>
-    </div>
-  </div>
-</div>
-
 <!-- 多语言内容 · 同步 -->
 <div class="modal" id="langSyncModal" onclick="if(event.target===this)closeLangSyncModal()">
   <div class="modal-card" style="width:min(720px,96vw)">
@@ -1306,7 +1272,7 @@ const I = {
 };
 
 /* ========== State ========== */
-/** 原型演示：当前登录操作人（与推送记录 operator 比对控制编辑权） */
+/** 原型演示：当前登录操作人 */
 const CURRENT_OPERATOR = '张三';
 
 const state = {
@@ -1319,7 +1285,7 @@ const state = {
   mktFilter: { priority:'', symbol:'' },
   page: { business:1, operation:1, market:1, template:1, records:1 },
   pageSize: { business:20, operation:20, market:20, template:20, records:20 },
-  drawer: { open:false, type:null, mode:'create', step:0, detail:null, ui:'drawer', project:'', apps:[], regions:[], msgSendMode:'supplementPush', msgJump:'无跳转', msgGroup:'', msgAppPage:'', msgUrl:'', mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'', jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'', pushIntervalMin:30, bizType:'business', bizRefId:'', bizPriority:'P1', opPriority:'P2' },
+  drawer: { open:false, type:null, mode:'create', step:0, detail:null, ui:'drawer', project:'', apps:[], regions:[], msgSendMode:'supplementPush', msgJump:'跳转私信', msgGroup:'', msgAppPage:'', msgUrl:'', mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'', jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'', pushIntervalMin:30, bizType:'business', bizRefId:'', bizPriority:'P1', opPriority:'P2', statusSetting:'已执行(正式生效)' },
   bizRefEditor: { kind:null, mode:'create', id:null },
   pendingConfirm: null,
   recordsKeyword: '',
@@ -1408,16 +1374,16 @@ const DATA = {
   operation: [
     {id:'OP0091',name:'印尼斋月活动召回',project:'Dana',apps:['DANA App'],opType:'用户召回',category:'用户召回',priority:'P2',audience:'地区：+62 [ID]',audienceMode:'region',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'动态计算',channels:['Push','私信'],plan:'循环发送',loopType:'weekly',weekdays:['周一'],sendTime:'10:00',next:'2026-07-25 10:00:00',batches:12,sent:386200,status:'运行中',operator:'amy.li',creator:'amy.li',created:'2026-07-01 10:00:00',updated:'2026-07-23 15:20:00'},
     {id:'OP0090',name:'VIP3 及以上周末福利',project:'TW',apps:['TW Trade'],opType:'福利通知',category:'福利通知',priority:'P2',audience:'VIP3 及以上',audienceMode:'select',tagVerse:'VIP3 及以上',region:'',regions:[],crowd:'每次执行重新计算',channels:['Push'],plan:'循环发送',loopType:'weekly',weekdays:['周六','周日'],sendTime:'09:00',next:'2026-07-26 09:00:00',batches:4,sent:42880,status:'运行中',operator:'kevin.w',creator:'kevin.w',created:'2026-07-10 09:00:00',updated:'2026-07-22 11:11:11'},
-    {id:'OP0089',name:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',opType:'系统维护',category:'系统维护',priority:'P0',audience:'导入 SID：2,136 人',audienceMode:'import',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'固定名单',channels:['Push','私信'],plan:'单次定时',next:'2026-07-24 22:00:00',batches:0,sent:0,status:'待生效',operator:'ops.admin',creator:'ops.admin',created:'2026-07-24 10:05:00',updated:'2026-07-24 10:05:00'},
+    {id:'OP0089',name:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',opType:'系统维护',category:'系统维护',priority:'P1',audience:'导入 SID：2,136 人',audienceMode:'import',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'固定名单',channels:['Push','私信'],plan:'单次定时',next:'2026-07-24 22:00:00',batches:0,sent:0,status:'待生效',operator:'ops.admin',creator:'ops.admin',created:'2026-07-24 10:05:00',updated:'2026-07-24 10:05:00'},
     {id:'OP0088',name:'全量用户节假日问候',project:'TW',apps:[],opType:'活动通知',category:'活动通知',priority:'P1',audience:'全量用户',audienceMode:'add',region:'',regions:[],crowd:'动态计算',channels:['Push'],plan:'立即发送',next:'--',batches:1,sent:920114,status:'已完成',operator:'mia.chen',creator:'mia.chen',created:'2026-06-28 08:00:00',updated:'2026-07-01 08:30:00'},
     {id:'OP0087',name:'订阅黄金行情用户活动',project:'TW',apps:['TW Trade','TW Lite'],opType:'活动通知',category:'活动通知',priority:'P1',audience:'订阅：黄金主题 / +62 [ID]',audienceMode:'add',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'动态计算',channels:['Push','WhatsApp'],plan:'单次定时',next:'2026-07-28 14:00:00',batches:0,sent:0,status:'待生效',operator:'amy.li',creator:'amy.li',created:'2026-07-20 16:40:00',updated:'2026-07-20 16:40:00'},
     {id:'OP0085',name:'TW 项目地区推广',project:'TW',apps:['TW Trade'],opType:'其他',category:'其他',priority:'P3',audience:'地区：+84 [VN]、+66 [TH]',audienceMode:'region',region:'+84 [VN]、+66 [TH]',regions:['+84 [VN]','+66 [TH]'],crowd:'固定快照',channels:['Push','私信'],plan:'立即发送',next:'--',batches:1,sent:55620,status:'已暂停',operator:'ops.admin',creator:'ops.admin',created:'2026-07-15 13:00:00',updated:'2026-07-18 13:00:00'},
   ],
   market: [
-    {id:'MK0042',name:'BTC 短时暴涨提醒',project:'TW',apps:['TW App','TW Trade','TW Lite','GoTrading'],app:'TW Trade',mktType:'短时上涨',source:'MT5',symbols:['BTCUSD','ETHUSD'],symbol:'BTCUSD',change:'3%',cond:'5 分钟涨幅 ≥ 3%',audience:'按地区 · +62 [ID]、+84 [VN]',audienceMode:'region',regions:['+62 [ID]','+84 [VN]'],marketTagVerse:'',listen:'交易时段',freq:'每 1 分钟',cool:'30 分钟',today:3,last:'2026-07-24 10:18:22',status:'运行中',priority:'P2',created:'2026-07-18 10:00:00'},
-    {id:'MK0041',name:'贵金属跌破关口提醒',project:'Dana',apps:['DANA App','GoCap'],app:'Dana App',mktType:'价格跌破',source:'内部行情',symbols:['XAUUSD','XAGUSD'],symbol:'XAUUSD',change:'2320',cond:'价格跌破关口',audience:'VIP3+',audienceMode:'select',regions:[],marketTagVerse:'VIP3+',tagVerse:'VIP3+',listen:'全天',freq:'实时',cool:'60 分钟',today:2,last:'2026-07-24 07:02:11',status:'运行中',priority:'P2',created:'2026-07-16 09:00:00'},
-    {id:'MK0040',name:'ETH 剧烈波动',project:'TW',apps:['TW Trade','TW Lite'],app:'TW Trade',mktType:'剧烈波动',source:'MT5',symbols:['ETHUSD','BTCUSD'],symbol:'ETHUSD',change:'5%',cond:'15 分钟振幅 ≥ 5%',audience:'按地区 · +66 [TH]、+60 [MY]',audienceMode:'region',regions:['+66 [TH]','+60 [MY]'],marketTagVerse:'',listen:'自定义',freq:'每 5 分钟',cool:'45 分钟',today:0,last:'2026-07-20 21:44:00',status:'已暂停',priority:'P2',created:'2026-07-12 14:00:00'},
-    {id:'MK0039',name:'USOIL 成交量异常',project:'TW',apps:['TW Lite'],app:'TW Lite',mktType:'成交量异常',source:'MT5',symbols:['USOIL'],symbol:'USOIL',change:'80%',cond:'成交量增长 ≥ 80%',audience:'近7日活跃',audienceMode:'select',regions:[],marketTagVerse:'近7日活跃',tagVerse:'近7日活跃',listen:'交易时段',freq:'每 15 分钟',cool:'120 分钟',today:2,last:'2026-07-23 16:30:00',status:'运行中',priority:'P2',created:'2026-07-10 11:00:00'},
+    {id:'MK0042',name:'BTC 短时暴涨提醒',project:'TW',apps:['TW App','TW Trade','TW Lite','GoTrading'],app:'TW Trade',mktType:'时间段',source:'MT5',symbols:['BTCUSD','ETHUSD'],symbol:'BTCUSD',mktUnit:'$',mktGate:'',mktPeriodMin:'5',mktPeriodPreset:'5',change:'3%',cond:'5 分钟 · 涨跌幅 3%',audience:'按地区 · +62 [ID]、+84 [VN]',audienceMode:'region',regions:['+62 [ID]','+84 [VN]'],marketTagVerse:'',listen:'交易时段',freq:'每 5 分钟',cool:'30 分钟',today:3,last:'2026-07-24 10:18:22',status:'运行中',priority:'P2',created:'2026-07-18 10:00:00'},
+    {id:'MK0041',name:'贵金属跌破关口提醒',project:'Dana',apps:['DANA App','GoCap'],app:'Dana App',mktType:'整数关口',source:'内部行情',symbols:['XAUUSD','XAGUSD'],symbol:'XAUUSD',mktUnit:'1',mktGate:'2320',mktPeriodMin:'',change:'2%',cond:'整数关口 2320 · 涨跌幅 2%',audience:'VIP3+',audienceMode:'select',regions:[],marketTagVerse:'VIP3+',tagVerse:'VIP3+',listen:'全天',freq:'实时',cool:'60 分钟',today:2,last:'2026-07-24 07:02:11',status:'运行中',priority:'P2',created:'2026-07-16 09:00:00'},
+    {id:'MK0040',name:'ETH 短时波动提醒',project:'TW',apps:['TW Trade','TW Lite'],app:'TW Trade',mktType:'时间段',source:'MT5',symbols:['ETHUSD','BTCUSD'],symbol:'ETHUSD',mktUnit:'$',mktGate:'',mktPeriodMin:'15',mktPeriodPreset:'15',change:'5%',cond:'15 分钟 · 涨跌幅 5%',audience:'按地区 · +66 [TH]、+60 [MY]',audienceMode:'region',regions:['+66 [TH]','+60 [MY]'],marketTagVerse:'',listen:'自定义',freq:'每 15 分钟',cool:'45 分钟',today:0,last:'2026-07-20 21:44:00',status:'已暂停',priority:'P2',created:'2026-07-12 14:00:00'},
+    {id:'MK0039',name:'USOIL 整数关口提醒',project:'TW',apps:['TW Lite'],app:'TW Lite',mktType:'整数关口',source:'MT5',symbols:['USOIL'],symbol:'USOIL',mktUnit:'1',mktGate:'80',mktPeriodMin:'',change:'1%',cond:'整数关口 80 · 涨跌幅 1%',audience:'近7日活跃',audienceMode:'select',regions:[],marketTagVerse:'近7日活跃',tagVerse:'近7日活跃',listen:'交易时段',freq:'实时',cool:'120 分钟',today:2,last:'2026-07-23 16:30:00',status:'运行中',priority:'P2',created:'2026-07-10 11:00:00'},
   ],
   recordsBatch: [
     /* 业务推送场景批次仍保留在 DATA，推送记录列表按规则过滤不展示 */
@@ -1432,7 +1398,7 @@ const DATA = {
     {id:'RB22074',type:'行情提醒',srcId:'MK0039',srcName:'USOIL 成交量异常',project:'TW',apps:['TW Lite'],priority:'P2',reason:'USOIL 成交量增长达到 86%',channels:['Push'],plan:'2026-07-23 16:30:00',start:'2026-07-23 16:30:01',end:'2026-07-23 16:30:28',target:1520,ok:1508,fail:12,reach:1290,click:188,status:'已完成',operator:'孙琦'},
     {id:'RB22072',type:'行情提醒',srcId:'MK0040',srcName:'ETH 剧烈波动',project:'TW',apps:['TW Trade','TW Lite'],priority:'P2',reason:'ETHUSD 15 分钟振幅达到 5.42%',channels:['Push'],plan:'2026-07-20 21:44:00',start:'2026-07-20 21:44:00',end:'2026-07-20 21:44:28',target:5640,ok:5520,fail:120,reach:4102,click:688,status:'已完成',operator:'林涛'},
     {id:'RB22071',type:'行情提醒',srcId:'MK0040',srcName:'ETH 剧烈波动',project:'TW',apps:['TW Trade','TW Lite'],priority:'P2',reason:'BTCUSD 15 分钟振幅达到 5.11%',channels:['Push'],plan:'2026-07-19 14:12:33',start:'2026-07-19 14:12:33',end:'2026-07-19 14:13:02',target:6120,ok:6010,fail:110,reach:4488,click:720,status:'已完成',operator:'林涛'},
-    {id:'RB22078',type:'运营推送',srcId:'OP0089',srcName:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',priority:'P0',reason:'运营人员手动立即发送',channels:['Push','私信'],plan:'2026-07-24 22:00:00',start:'2026-07-24 22:00:01',end:'--',target:2136,ok:860,fail:12,reach:0,click:0,msgRead:620,status:'执行中',operator:'ops.admin'},
+    {id:'RB22078',type:'运营推送',srcId:'OP0089',srcName:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',priority:'P1',reason:'运营人员手动立即发送',channels:['Push','私信'],plan:'2026-07-24 22:00:00',start:'2026-07-24 22:00:01',end:'--',target:2136,ok:860,fail:12,reach:0,click:0,msgRead:620,status:'执行中',operator:'ops.admin'},
     {id:'RB22077',type:'业务通知',srcId:'BN0017',srcName:'大额充值成功提醒',project:'Dana',apps:['DANA App','GoCap','Partner App'],priority:'P1',reason:'用户完成充值',channels:['Push','私信'],plan:'2026-07-24 08:55:41',start:'2026-07-24 08:55:41',end:'2026-07-24 08:55:42',target:1,ok:0,fail:1,reach:0,click:0,msgRead:0,status:'已完成',operator:'李晨'},
     {id:'RB22066',type:'业务通知',srcId:'BN0012',srcName:'模拟大赛对手匹配',project:'Dana',apps:['DANA App','FDTrek'],priority:'P2',reason:'活动推送触发 · 模拟大赛对手匹配',channels:['Push'],plan:'2026-07-15 09:30:00',start:'2026-07-15 09:30:00',end:'2026-07-15 09:31:18',target:1840,ok:1792,fail:48,reach:1510,click:220,status:'已完成',operator:'王敏'},
     {id:'RB22073',type:'运营推送',srcId:'OP0087',srcName:'订阅黄金行情用户活动',project:'TW',apps:['TW Trade'],priority:'P2',reason:'单次定时待发送',channels:['Push','WhatsApp'],plan:'2026-07-28 14:00:00',start:'--',end:'--',target:18640,ok:0,fail:0,reach:0,click:0,status:'未开始',operator:'张三',title:'黄金行情专属活动',body:'订阅黄金行情的用户专属福利即将开启，记得准时参与。'},
@@ -1616,104 +1582,11 @@ function iconBtn(icon, title, onclick, danger, disabled){
   }
   return `<button type="button" class="icon-btn ${danger?'danger':''}" title="${title}" onclick="${onclick}">${icon}</button>`;
 }
-function currentOperatorName(){
-  return state.currentOperator || CURRENT_OPERATOR || '张三';
-}
 function recordBatchOperator(row){
   return (row && (row.operator || row.creator)) || '';
 }
-/** 未开始 + 当前操作人为该批次操作人 */
-function canEditRecordBatch(row){
-  if(!row || row.status !== '未开始') return false;
-  const op = recordBatchOperator(row);
-  return !!op && op === currentOperatorName();
-}
-function isRecordBatchPending(row){
-  return !!(row && row.status === '未开始');
-}
-function planToDatetimeLocal(plan){
-  const s = String(plan || '').trim();
-  if(!s || s === '--') return '';
-  const m = s.match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2})(?::(\d{2}))?/);
-  if(!m) return '';
-  return m[1] + 'T' + m[2] + ':' + (m[3] || '00');
-}
-function datetimeLocalToPlan(v){
-  const s = String(v || '').trim();
-  if(!s) return '';
-  const m = s.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})(?::(\d{2}))?/);
-  if(!m) return s.replace('T', ' ');
-  return m[1] + ' ' + m[2] + ':' + (m[3] || '00');
-}
 function opsRecords(row){
-  let html = iconBtn(I.list, '查看详情', `openDetail('records','${row.id}')`);
-  if(isRecordBatchPending(row)){
-    if(canEditRecordBatch(row)){
-      html += iconBtn(I.edit, '编辑', `openRecordEditModal('${row.id}')`);
-    } else {
-      html += iconBtn(I.edit, '仅操作人可编辑', '', false, true);
-    }
-  }
-  return html;
-}
-function openRecordEditModal(id){
-  const row = (DATA.recordsBatch || []).find(x => x.id === id);
-  if(!row){ toast('未找到该推送记录'); return; }
-  if(row.status !== '未开始'){ toast('仅未开始的推送记录可编辑'); return; }
-  if(!canEditRecordBatch(row)){ toast('仅操作人可编辑'); return; }
-  const content = batchContentPreview(row);
-  document.getElementById('recordEditId').value = row.id;
-  document.getElementById('recordEditPlan').value = planToDatetimeLocal(row.plan);
-  document.getElementById('recordEditTitle').value = row.title != null ? row.title : (content.title || '');
-  document.getElementById('recordEditBody').value = row.body != null ? row.body : (content.body || '');
-  document.getElementById('recordEditOperator').textContent = recordBatchOperator(row) || '—';
-  document.getElementById('recordEditSub').textContent = row.id + ' · ' + (row.srcName || '');
-  document.getElementById('recordEditModal').classList.add('show');
-}
-function closeRecordEditModal(){
-  const el = document.getElementById('recordEditModal');
-  if(el) el.classList.remove('show');
-}
-function applyRecordEditSave(id, plan, title, body){
-  const row = (DATA.recordsBatch || []).find(x => x.id === id);
-  if(!row) return;
-  row.plan = plan;
-  row.title = title;
-  row.body = body;
-  const userRow = (DATA.recordsUser || []).find(x => x.id === id);
-  if(userRow){
-    userRow.plan = plan;
-    userRow.title = title;
-    userRow.body = body;
-  }
-  closeRecordEditModal();
-  toast('已更新推送批次 ' + id);
-  renderRecords();
-  if(state.drawer.open && state.drawer.type === 'records' && state.drawer.detail && state.drawer.detail.id === id){
-    state.drawer.detail = row;
-    if(typeof renderFormBody === 'function') renderFormBody();
-  }
-}
-function saveRecordEdit(){
-  const id = document.getElementById('recordEditId').value;
-  const row = (DATA.recordsBatch || []).find(x => x.id === id);
-  if(!row){ toast('未找到该推送记录'); return; }
-  if(row.status !== '未开始'){ toast('仅未开始的推送记录可编辑'); return; }
-  if(!canEditRecordBatch(row)){ toast('仅操作人可编辑'); return; }
-  const planRaw = document.getElementById('recordEditPlan').value;
-  const title = (document.getElementById('recordEditTitle').value || '').trim();
-  const body = (document.getElementById('recordEditBody').value || '').trim();
-  if(!planRaw){ toast('请填写发送时间'); return; }
-  if(!title){ toast('请填写标题'); return; }
-  if(!body){ toast('请填写正文'); return; }
-  const plan = datetimeLocalToPlan(planRaw);
-  const timeChanged = plan !== String(row.plan || '').trim();
-  if(timeChanged){
-    state.pendingRecordEdit = { id, plan, title, body };
-    askConfirm('editRecordPlan', 'records', id, `确认将发送时间由「${row.plan}」改为「${plan}」并保存内容吗？`);
-    return;
-  }
-  applyRecordEditSave(id, plan, title, body);
+  return iconBtn(I.view, '查看详情', `openDetail('records','${row.id}')`);
 }
 function suggestedTemplateName(){
   if(state.drawer.type==='business'){
@@ -1789,7 +1662,7 @@ function saveCurrentAsTemplate(){
   }
   if(channels.includes('私信')){
     row.msgSendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels(createFormChannels());
-    row.msgJump = state.drawer.msgJump || '无跳转';
+    row.msgJump = normalizeMsgJump(state.drawer.msgJump);
     row.msgGroup = state.drawer.msgGroup || '';
     row.msgAppPage = state.drawer.msgAppPage || '';
     row.msgUrl = state.drawer.msgUrl || '';
@@ -2064,10 +1937,10 @@ function opsBusiness(row){
          logBtnForRow('business', row);
 }
 function opsOperation(row){
-  // 循环发送可编辑；其余查看详情。不可删除；启停见独立「启停」列
+  // 循环发送可编辑。详情点推送 ID；不可删除；启停见独立「启停」列
   const first = canEditOperation(row)
     ? iconBtn(I.edit,'编辑',`openEditDrawer('operation','${row.id}')`)
-    : iconBtn(I.view,'查看详情',`openDetail('operation','${row.id}')`);
+    : '';
   return first +
          iconBtn(I.copy,'复制',`toast('已复制推送 ${row.id}')`) +
          iconBtn(I.list,'查看记录',`jumpRecords('${row.id}')`) +
@@ -2173,7 +2046,7 @@ function renderTemplates(){
     <th>模板 ID</th><th>名称</th><th>类型</th><th>可用范围</th><th>更新时间</th><th class="ops">操作</th>
   </tr>`;
   const tbody = pageRows.map(r=>`<tr>
-    <td><span class="id-link" onclick="openDetail('template','${r.id}')">${r.id}</span></td>
+    <td>${r.id}</td>
     <td><div class="cell-2line" title="${r.name}">${r.name}</div></td>
     <td><span class="pill info">${r.type}</span></td>
     <td>${tplScopeText(r)}</td>
@@ -2199,8 +2072,29 @@ function pushIntervalText(r){
   const n = r.pushIntervalMin != null ? r.pushIntervalMin : 30;
   return n + ' 分钟';
 }
-function mktTypeText(r){ return r.mktType || '--'; }
-function mktChangeText(r){ return r.change || r.cond || '--'; }
+function mktTypeText(r){
+  if(!r) return '--';
+  return marketTypeLabelFromMode(inferMarketCondMode(r.mktType));
+}
+function isMarketPeriodRow(r){
+  return inferMarketCondMode(r && r.mktType) === 'period';
+}
+function mktUnitCell(r){ return (r && r.mktUnit) ? r.mktUnit : '--'; }
+function mktGateCell(r){
+  if(!r || isMarketPeriodRow(r)) return '--';
+  return r.mktGate || '--';
+}
+function mktPeriodCell(r){
+  if(!r || !isMarketPeriodRow(r)) return '--';
+  const mins = r.mktPeriodMin || r.mktPeriodPreset;
+  if(mins) return String(mins) + '分钟';
+  const pm = String(r.cond||'').match(/(\d+)\s*分钟/);
+  return pm ? (pm[1] + '分钟') : '--';
+}
+function mktChangeCell(r){
+  return (r && (r.change || r.mktChange)) ? (r.change || r.mktChange) : '--';
+}
+function mktChangeText(r){ return mktChangeCell(r); }
 /** 行上品种：优先 symbols 数组，兼容单字段 symbol */
 function rowSymbolsValue(row){
   if(!row) return [];
@@ -2221,23 +2115,18 @@ function formatSymbolsCell(symbols){
 }
 /** 列表「条件」列：关口类展示阈值；时间段类展示「N分钟 · 涨跌幅」 */
 function formatMarketCondCell(r){
-  const type = r.mktType || '';
-  const change = String(r.change || '').trim();
-  const cond = String(r.cond || '').trim();
-  const isPeriod = type === '时间段' || ['短时上涨','短时下跌','剧烈波动','成交量异常'].includes(type);
-  if(!isPeriod){
-    return change || cond || '--';
+  if(isMarketPeriodRow(r)){
+    const period = mktPeriodCell(r);
+    const val = mktChangeCell(r);
+    if(period !== '--' && val !== '--') return period + ' · ' + val;
+    if(period !== '--') return period;
+    return val !== '--' ? val : '--';
   }
-  const pm = cond.match(/(\d+)\s*分钟/);
-  const periodLabel = pm ? (pm[1] + '分钟') : '';
-  let val = change;
-  if(!val){
-    const vm = cond.match(/≥\s*([^\s·]+(?:\s*pips)?)/i);
-    val = vm ? vm[1].trim() : '';
-  }
-  if(periodLabel && val) return periodLabel + ' · ' + val;
-  if(periodLabel) return periodLabel;
-  return val || cond || '--';
+  const gate = mktGateCell(r);
+  const val = mktChangeCell(r);
+  if(gate !== '--' && val !== '--') return gate + ' · ' + val;
+  if(gate !== '--') return gate;
+  return val !== '--' ? val : '--';
 }
 function filterBusiness(rows){
   let list = rows.slice();
@@ -2250,8 +2139,8 @@ function renderBusiness(){
   const rows = filterBusiness(DATA.business);
   const pageRows = slicePage('business', rows);
   const thead = `<tr>
-    <th>任务 ID</th><th>任务名称</th><th>项目</th><th>APP</th><th>地区</th>
-    <th>业务类型</th><th>优先级</th><th>活动 / 业务场景</th><th>通知渠道</th><th>推送间隔</th>
+    <th>任务 ID</th><th>任务名称</th><th>优先级</th><th>项目</th><th>APP</th><th>地区</th>
+    <th>业务类型</th><th>活动 / 业务场景</th><th>通知渠道</th><th>推送间隔</th>
     <th class="col-status">任务状态</th><th class="col-toggle">启停</th><th class="ops">操作</th>
   </tr>`;
   const tbody = pageRows.map(r=>{
@@ -2259,11 +2148,11 @@ function renderBusiness(){
     return `<tr>
     <td><span class="id-link" onclick="openDetail('business','${r.id}')">${r.id}</span></td>
     <td><div class="cell-2line" title="${r.name}">${r.name}</div></td>
+    <td>${priBadge(resolveBizRowPriority(r))}</td>
     <td>${r.project}</td>
     <td><div class="cell-2line" title="${appCell}">${appCell}</div></td>
     <td><div class="cell-2line" title="${bizRegionsText(r.regions)}">${bizRegionsText(r.regions)}</div></td>
     <td>${bizTypePill(r.bizType)}</td>
-    <td>${priBadge(resolveBizRowPriority(r))}</td>
     <td><div class="cell-2line" title="${escHtml(bizRefNameForRow(r))}">${escHtml(bizRefNameForRow(r))}</div></td>
     <td>${channelTags(r.channels)}</td>
     <td>${pushIntervalText(r)}</td>
@@ -2545,7 +2434,8 @@ function renderMarket(){
   const rows = filterMarket(DATA.market);
   const pageRows = slicePage('market', rows);
   const thead = `<tr>
-    <th>提醒 ID</th><th>提醒名称</th><th>项目</th><th>APP</th><th>品种</th><th>行情类型</th><th>条件</th><th>优先级</th>
+    <th>提醒 ID</th><th>提醒名称</th><th>项目</th><th>APP</th><th>品种</th>
+    <th>类型</th><th>报价单位</th><th>整数位</th><th>时间段</th><th>涨跌幅</th><th>优先级</th>
     <th class="col-status">任务状态</th><th class="col-toggle">启停</th><th class="ops">操作</th>
   </tr>`;
   const tbody = pageRows.map(r=>{
@@ -2553,7 +2443,6 @@ function renderMarket(){
     const syms = rowSymbolsValue(r);
     const symCell = formatSymbolsCell(syms);
     const symTitle = syms.join('、');
-    const condCell = formatMarketCondCell(r);
     return `<tr>
     <td><span class="id-link" onclick="openDetail('market','${r.id}')">${r.id}</span></td>
     <td><div class="cell-2line" title="${r.name}">${r.name}</div></td>
@@ -2561,7 +2450,10 @@ function renderMarket(){
     <td><div class="cell-2line" title="${appCell}">${appCell}</div></td>
     <td><strong title="${escHtml(symTitle)}">${escHtml(symCell)}</strong></td>
     <td>${mktTypeText(r)}</td>
-    <td><div class="cell-2line" title="${condCell}">${condCell}</div></td>
+    <td>${escHtml(mktUnitCell(r))}</td>
+    <td>${escHtml(mktGateCell(r))}</td>
+    <td>${escHtml(mktPeriodCell(r))}</td>
+    <td>${escHtml(mktChangeCell(r))}</td>
     <td>${priBadge(marketPriority())}</td>
     <td class="col-status">${statusPill(r.status)}</td>
     <td class="col-toggle">${opsToggle('market', r)}</td>
@@ -2744,7 +2636,7 @@ function renderRecords(){
     const srcType = recordSourceTypeLabel(r);
     const displayId = batchDisplayId(r);
     return `<tr>
-    <td><span class="id-link" onclick="openDetail('records','${r.id}')">${displayId}</span></td>
+    <td>${displayId}</td>
     <td><span class="pill info">${srcType}</span></td>
     <td><div class="cell-2line" title="${r.srcName}">${r.srcName}</div></td>
     <td>${r.project||'—'}</td>
@@ -3238,7 +3130,7 @@ function deleteBizRef(kind, id){
 
 function resolveOpRowPriority(row){
   if(!row) return 'P2';
-  return row.priority || 'P2';
+  return normalizeOpPriority(row.priority, 'P2');
 }
 function normalizeOpPriority(v, fallback){
   const fb = OP_SELECTABLE_PRIORITY.includes(fallback) ? fallback : 'P2';
@@ -3378,7 +3270,6 @@ function askConfirm(action, type, id, msg, opts){
   ok.textContent = isDelete ? '确认删除' : (isToggle ? '确认' : '确定');
   ok.onclick = ()=>{
     const pendingRow = state.pendingCondRow;
-    const recordEditDraft = state.pendingRecordEdit;
     const newTvName = (document.getElementById('newTagVerseName')||{}).value;
     closeConfirm();
     if(action==='sendNow'){ toast('已开始立即发送'); closeForm(); return; }
@@ -3388,12 +3279,6 @@ function askConfirm(action, type, id, msg, opts){
       applyCreatedTagVerse(name, type);
       closeTagVerseCreateModal();
       toast('新的TagVerse创建成功，并已反显到当前页面');
-      return;
-    }
-    if(action==='editRecordPlan'){
-      if(recordEditDraft && recordEditDraft.id === id){
-        applyRecordEditSave(recordEditDraft.id, recordEditDraft.plan, recordEditDraft.title, recordEditDraft.body);
-      }
       return;
     }
     if(action==='deleteTemplate'){ deleteTemplate(id); return; }
@@ -3427,7 +3312,6 @@ function closeConfirm(){
   document.getElementById('confirmModal').classList.remove('show');
   state.pendingCondRow = null;
   state.pendingConfirm = null;
-  state.pendingRecordEdit = null;
   const ok = document.getElementById('confirmOk');
   if(ok) ok.disabled = false;
 }
@@ -4303,18 +4187,19 @@ function openCreatePage(type){
     open:true, type, mode:'create', step:0,
     detail:null, asPage:true, ui:'drawer', lang:'en', contentDraft:null,
     audienceMode:'add', focusChannel:'push', project:'', apps:[], regions:[],
-    msgSendMode:'supplementPush', msgJump:'无跳转', msgGroup:'', msgAppPage:'', msgUrl:'',
+    msgSendMode:'supplementPush', msgJump:'跳转私信', msgGroup:'', msgAppPage:'', msgUrl:'',
     mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'',
     jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'',
-    templateId:''
+    templateId:'', statusSetting: DEFAULT_STATUS_SETTING
   };
   if(type==='business'){
     state.drawer.project = 'Dana';
     state.drawer.apps = ['DANA App','GoCap','Partner App','ForexDana','FDTrek','BtcDana'];
     state.drawer.regions = [];
     state.drawer.emsOpen = { bizAppEms:false };
-    state.drawer.msgJump = '无跳转';
+    state.drawer.msgJump = '跳转私信';
     state.drawer.msgGroup = '【DANA】资金变更';
+    state.drawer.statusSetting = DEFAULT_STATUS_SETTING;
     state.drawer.bizType = 'business';
     state.drawer.bizRefId = selectableScenarios()[0]?.id || '';
     syncBizPriorityFromRef();
@@ -4334,7 +4219,7 @@ function openCreatePage(type){
     state.drawer.name = '';
     state.drawer.opPriority = 'P2';
     state.drawer.lang = 'en';
-    state.drawer.msgJump = '无跳转';
+    state.drawer.msgJump = '跳转私信';
     state.drawer.msgGroup = '【DANA】资金变更';
     ensureOpAudienceState(true);
     ensureOpPlanState(true);
@@ -4350,7 +4235,7 @@ function openCreatePage(type){
     state.drawer.tplProjects = TPL_PROJECT_OPTS.slice();
     state.drawer.tplChannels = normalizeTemplateChannelKeys([], '业务通知');
     state.drawer.tplDesc = '';
-    state.drawer.msgJump = '无跳转';
+    state.drawer.msgJump = '跳转私信';
     state.drawer.msgGroup = '【DANA】资金变更';
     state.drawer.msgAppPage = '';
     state.drawer.msgUrl = '';
@@ -4420,7 +4305,7 @@ function openEditDrawer(type, id){
     open:true, type, mode:'edit', step:0,
     detail:row, asPage:false, ui:'drawer',
     project: row?.project || '', apps, regions:[],
-    msgSendMode:'supplementPush', msgJump:'无跳转',
+    msgSendMode:'supplementPush', msgJump:'跳转私信',
     msgGroup:'', msgAppPage:'', msgUrl:'',
     mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'',
     jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'',
@@ -4438,6 +4323,7 @@ function openEditDrawer(type, id){
     state.drawer.pushIntervalMin = row?.pushIntervalMin != null ? row.pushIntervalMin : 30;
     if(Array.isArray(row?.regions)) state.drawer.regions = regionCodes(row.regions);
     state.drawer.msgGroup = row?.project==='TW' ? '【TW】系统通知' : '【DANA】资金变更';
+    state.drawer.statusSetting = normalizeStatusSetting(row?.statusSetting || row?.status);
     ensureDraftByLang();
     ensureJumpConfigState(true);
     if(isProfitScenarioId(state.drawer.bizRefId)){
@@ -4471,7 +4357,7 @@ function openEditDrawer(type, id){
     state.drawer.name = row?.name || '';
     state.drawer.opPriority = normalizeOpPriority(row?.priority, 'P2');
     state.drawer.lang = 'en';
-    state.drawer.msgJump = row?.msgJump || '无跳转';
+    state.drawer.msgJump = normalizeMsgJump(row?.msgJump);
     state.drawer.msgGroup = row?.msgGroup || (row?.project==='TW' ? '【TW】系统通知' : '【DANA】资金变更');
     state.drawer.msgAppPage = row?.msgAppPage || '';
     state.drawer.msgUrl = row?.msgUrl || '';
@@ -4582,7 +4468,7 @@ function openTemplateEditor(mode, row){
     tplChannels: normalizeTemplateChannelKeys(channelKeysFromLabels(row?.channels), tplType),
     tplDesc: '',
     msgSendMode: isEdit ? (row?.msgSendMode || inferMsgSendModeFromChannels(channelKeysFromLabels(row?.channels))) : 'supplementPush',
-    msgJump: isEdit ? (row?.msgJump || '无跳转') : '无跳转',
+    msgJump: isEdit ? normalizeMsgJump(row?.msgJump) : '跳转私信',
     msgGroup: isEdit ? (row?.msgGroup || '【DANA】资金变更') : '【DANA】资金变更',
     msgAppPage: isEdit ? (row?.msgAppPage || '') : '',
     msgUrl: isEdit ? (row?.msgUrl || '') : '',
@@ -5323,6 +5209,8 @@ function validateEnglishContent(){
 }
 function saveWithEnglishCheck(successMsg, thenClose){
   if(!validateEnglishContent()) return;
+  const statusEl = document.getElementById('statusSetting');
+  if(statusEl) state.drawer.statusSetting = normalizeStatusSetting(statusEl.value);
   if(state.drawer.type==='business'){
     const typeKey = state.drawer.bizType === 'activity' ? 'activity' : 'business';
     ensureBizRefSelection();
@@ -5343,6 +5231,8 @@ function saveWithEnglishCheck(successMsg, thenClose){
       } else {
         delete state.drawer.detail.profitConfig;
       }
+      state.drawer.detail.statusSetting = normalizeStatusSetting(state.drawer.statusSetting);
+      state.drawer.detail.status = statusFromSetting(state.drawer.detail.statusSetting);
       state.drawer.detail.updated = formatNow();
     }
   }
@@ -5355,7 +5245,7 @@ function saveWithEnglishCheck(successMsg, thenClose){
     const draft = state.drawer.contentDraft;
     row.channels = channelLabelsFromKeys((draft && draft.channels) || ['push']);
     row.msgSendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels((draft && draft.channels) || []);
-    row.msgJump = state.drawer.msgJump || '无跳转';
+    row.msgJump = normalizeMsgJump(state.drawer.msgJump);
     row.msgGroup = state.drawer.msgGroup || '';
     row.msgAppPage = state.drawer.msgAppPage || '';
     row.msgUrl = state.drawer.msgUrl || '';
@@ -5458,14 +5348,16 @@ function syncDraftFromInputs(){
   const mailChEl = document.getElementById('mailChannel');
   const mailJumpEl = document.getElementById('mailJump');
   const mailFreqEl = document.getElementById('mailFreq');
+  const statusEl = document.getElementById('statusSetting');
   if(sendModeEl) state.drawer.msgSendMode = sendModeEl.value;
-  if(jumpEl) state.drawer.msgJump = jumpEl.value;
+  if(jumpEl) state.drawer.msgJump = normalizeMsgJump(jumpEl.value);
   if(groupEl) state.drawer.msgGroup = groupEl.value;
   if(msgAppEl) state.drawer.msgAppPage = msgAppEl.value;
   if(msgUrlEl) state.drawer.msgUrl = msgUrlEl.value;
   if(mailChEl) state.drawer.mailChannel = mailChEl.value;
   if(mailJumpEl) state.drawer.mailJump = mailJumpEl.value;
   if(mailFreqEl) state.drawer.mailFreq = mailFreqEl.value;
+  if(statusEl) state.drawer.statusSetting = normalizeStatusSetting(statusEl.value);
   if(!draft) return;
   const titleEl = document.getElementById('draftTitle');
   if(titleEl){
@@ -5636,7 +5528,10 @@ function setMsgSendMode(mode){
 }
 function setMsgJump(mode){
   syncDraftFromInputs();
-  state.drawer.msgJump = mode || '无跳转';
+  const chs = createFormChannels();
+  let next = normalizeMsgJump(mode);
+  if(next==='跟随推送' && !chs.includes('push')) next = '跳转私信';
+  state.drawer.msgJump = next;
   renderFormBody();
 }
 function msgJumpGroupFields(){
@@ -5652,10 +5547,10 @@ function msgJumpGroupFields(){
   let sendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels(chs);
   if(!canSupplementPush) sendMode = 'direct';
   state.drawer.msgSendMode = sendMode;
-  const jump = state.drawer.msgJump || '无跳转';
+  let jump = normalizeMsgJump(state.drawer.msgJump);
+  if(jump==='跟随推送' && !chs.includes('push')) jump = '跳转私信';
+  state.drawer.msgJump = jump;
   const group = state.drawer.msgGroup || groups[0];
-  const appPage = state.drawer.msgAppPage || '';
-  const msgUrl = state.drawer.msgUrl || '';
   const sendModeField = showGroup
     ? ('<div class="field"><label class="label"><span class="req">*</span>私信发送方式' +
         '<span class="help-q" tabindex="0" aria-label="私信发送方式说明" data-tip="【补充Push】仅向 APP Push 未成功触达的用户补发私信，不会对全员再发一遍。<br>【直接发送】对目标用户全员发送私信。" onmouseenter="showHelpTip(this)" onmouseleave="hideHelpTip()" onfocus="showHelpTip(this)" onblur="hideHelpTip()">?</span></label>' +
@@ -5670,38 +5565,18 @@ function msgJumpGroupFields(){
           groups.map(o=>'<option' + (o===group?' selected':'') + '>' + o + '</option>').join('') +
         '</select></div>')
     : '';
+  const canFollowPush = chs.includes('push');
   const jumpField =
     '<div class="field"><label class="label"><span class="req">*</span>私信跳转方式</label>' +
       '<select class="control" id="msgJump" onchange="setMsgJump(this.value)">' +
-        ['私信详情','无跳转','APP 内部跳转','URL 跳转'].map(o=>
-          '<option' + (o===jump?' selected':'') + '>' + o + '</option>'
+        MSG_JUMP_OPTS.map(o=>
+          '<option' + (o===jump?' selected':'') + (o==='跟随推送' && !canFollowPush?' disabled':'') + '>' + o + '</option>'
         ).join('') +
       '</select></div>';
-  let targetField = '';
-  if(jump === 'APP 内部跳转'){
-    targetField =
-      '<div class="field"><label class="label"><span class="req">*</span>跳转地址</label>' +
-        '<select class="control" id="msgAppPage" onchange="state.drawer.msgAppPage=this.value">' +
-          '<option value="">请选择</option>' +
-          JUMP_INTERNAL_ADDR_OPTS.map(o=>
-            '<option value="' + o + '"' + (appPage===o?' selected':'') + '>' + o + '</option>'
-          ).join('') +
-        '</select></div>';
-  } else if(jump === 'URL 跳转'){
-    targetField =
-      '<div class="field"><label class="label"><span class="req">*</span>跳转地址</label>' +
-        '<input class="control" id="msgUrl" value="' + (msgUrl||'').replace(/"/g,'&quot;') + '"' +
-          ' placeholder="请输入跳转链接" oninput="state.drawer.msgUrl=this.value"></div>';
-  } else {
-    targetField =
-      '<div class="field"><label class="label">跳转地址</label>' +
-        '<input class="control" disabled placeholder="—"></div>';
-  }
   if(showGroup){
-    return '<div class="grid2" style="margin-bottom:12px">' + sendModeField + groupField + '</div>' +
-      '<div class="grid2" style="margin-bottom:12px">' + jumpField + targetField + '</div>';
+    return '<div class="grid3" style="margin-bottom:12px">' + sendModeField + groupField + jumpField + '</div>';
   }
-  return '<div style="margin-bottom:12px">' + jumpField + '</div>' + targetField;
+  return '<div style="margin-bottom:12px">' + jumpField + '</div>';
 }
 function mailChannelFields(){
   const channel = state.drawer.mailChannel || 'EMAIL-SES';
@@ -5861,7 +5736,7 @@ function applyTemplateContentToDraft(tplId){
   const curPack = draft.byLang[cur] || draft.byLang.en;
   if(activeChannels.includes('msg')){
     state.drawer.msgSendMode = tpl.msgSendMode || inferMsgSendModeFromChannels(activeChannels);
-    state.drawer.msgJump = tpl.msgJump || '无跳转';
+    state.drawer.msgJump = normalizeMsgJump(tpl.msgJump);
     state.drawer.msgGroup = tpl.msgGroup || state.drawer.msgGroup || '【DANA】资金变更';
     state.drawer.msgAppPage = tpl.msgAppPage || '';
     state.drawer.msgUrl = tpl.msgUrl || '';
@@ -6155,7 +6030,7 @@ function saveTemplateForm(){
       row.projects = saveProjects;
       row.channels = type === '行情提醒' ? [] : channelLabelsFromKeys(channels);
       row.msgSendMode = channels.includes('msg') ? (state.drawer.msgSendMode || inferMsgSendModeFromChannels(channels)) : '';
-      row.msgJump = channels.includes('msg') ? (state.drawer.msgJump || '无跳转') : '';
+      row.msgJump = channels.includes('msg') ? normalizeMsgJump(state.drawer.msgJump) : '';
       row.msgGroup = channels.includes('msg') ? (state.drawer.msgGroup || '') : '';
       row.msgAppPage = channels.includes('msg') ? (state.drawer.msgAppPage || '') : '';
       row.msgUrl = channels.includes('msg') ? (state.drawer.msgUrl || '') : '';
@@ -6186,7 +6061,7 @@ function saveTemplateForm(){
       type,
       channels: type === '行情提醒' ? [] : channelLabelsFromKeys(channels),
       msgSendMode: channels.includes('msg') ? (state.drawer.msgSendMode || inferMsgSendModeFromChannels(channels)) : '',
-      msgJump: channels.includes('msg') ? (state.drawer.msgJump || '无跳转') : '',
+      msgJump: channels.includes('msg') ? normalizeMsgJump(state.drawer.msgJump) : '',
       msgGroup: channels.includes('msg') ? (state.drawer.msgGroup || '') : '',
       msgAppPage: channels.includes('msg') ? (state.drawer.msgAppPage || '') : '',
       msgUrl: channels.includes('msg') ? (state.drawer.msgUrl || '') : '',
@@ -6261,7 +6136,7 @@ function onBizProjectChange(project){
   const mailChEl = document.getElementById('mailChannel');
   const mailJumpEl = document.getElementById('mailJump');
   const mailFreqEl = document.getElementById('mailFreq');
-  if(jumpEl) state.drawer.msgJump = jumpEl.value;
+  if(jumpEl) state.drawer.msgJump = normalizeMsgJump(jumpEl.value);
   if(groupEl) state.drawer.msgGroup = groupEl.value;
   if(mailChEl) state.drawer.mailChannel = mailChEl.value;
   if(mailJumpEl) state.drawer.mailJump = mailJumpEl.value;
@@ -6639,6 +6514,31 @@ function updateOpPlanSummaryCard(){
   if(el) el.textContent = '当前计划：' + opSendPlanSummary();
 }
 const JUMP_INTERNAL_ADDR_OPTS = ['首页','资产页','交易页','盈利排行榜','活动中心','个人中心','消息中心'];
+const STATUS_SETTING_OPTS = ['暂停执行','已执行(正式生效)','测试执行'];
+const DEFAULT_STATUS_SETTING = '已执行(正式生效)';
+function normalizeStatusSetting(v){
+  if(STATUS_SETTING_OPTS.includes(v)) return v;
+  if(v==='已暂停' || v==='禁用' || v==='暂停') return '暂停执行';
+  if(v==='测试' || v==='测试中') return '测试执行';
+  return DEFAULT_STATUS_SETTING;
+}
+function statusFromSetting(setting){
+  return normalizeStatusSetting(setting) === '暂停执行' ? '已暂停' : '运行中';
+}
+function statusSettingSelectHtml(){
+  const cur = normalizeStatusSetting(state.drawer.statusSetting);
+  state.drawer.statusSetting = cur;
+  return '<div class="field"><label class="label"><span class="req">*</span>状态设置</label>' +
+    '<select class="control" id="statusSetting" onchange="state.drawer.statusSetting=this.value">' +
+      STATUS_SETTING_OPTS.map(o=>'<option'+(o===cur?' selected':'')+'>'+o+'</option>').join('') +
+    '</select></div>';
+}
+const MSG_JUMP_OPTS = ['跳转私信','跟随推送'];
+function normalizeMsgJump(v){
+  const s = String(v||'');
+  if(s==='跟随推送' || s==='APP 内部跳转' || s==='URL 跳转' || s==='APP内部跳转' || s==='URL跳转') return '跟随推送';
+  return '跳转私信';
+}
 const PROFIT_SCENARIO_ID = 'SCN009';
 const PROFIT_SCENARIO_NAME = '客户盈利';
 const PROFIT_PERIOD_OPTS = ['日盈利','周盈利','月盈利'];
@@ -6854,6 +6754,7 @@ function renderConfigRight(type){
           expandMultiSelectHtml('bizAppEms','投放 APP', appOptions, apps, !!emsOpen.bizAppEms) +
           pushIntervalMinField() +
           '<div class="field full"><label class="label">任务说明</label><textarea class="control" style="height:64px"></textarea></div>' +
+          statusSettingSelectHtml() +
         '</div>'
       ) +
       configMod('业务类型', bizEventCondBlock());
@@ -7137,8 +7038,8 @@ function batchJumpSummary(batch, src){
       if(mode==='URL跳转') return 'URL跳转 · ' + (src.jumpH5 || src.jumpUrl || '—');
       return 'APP内部跳转 · ' + (src.jumpInternalAddr || '首页');
     }
-    if(src.msgJump && src.msgJump!=='无跳转'){
-      return '私信跳转 · ' + src.msgJump + (src.msgAppPage ? ' · ' + src.msgAppPage : (src.msgUrl ? ' · ' + src.msgUrl : ''));
+    if(src.msgJump && normalizeMsgJump(src.msgJump)==='跟随推送'){
+      return '私信跳转 · 跟随推送';
     }
   }
   if(batch.type==='行情提醒') return 'APP内部跳转 · 品种行情页';
@@ -7342,7 +7243,7 @@ function renderDetailView(){
     <div class="detail-block"><h4>发送计划</h4><div class="kv">
       <div class="k">发送计划</div><div class="v">${d.plan}</div>
       <div class="k">发送时间</div><div class="v">${formatOpSendTime(d)}</div>
-      <div class="k">下一次发送</div><div class="v">${d.next||'--'}</div>
+      ${isLoopOpPush(d) ? '<div class="k">下一次发送</div><div class="v">' + (d.next||'--') + '</div>' : ''}
       <div class="k">创建时间</div><div class="v">${d.created||d.updated||'--'}</div>
       <div class="k">更新时间</div><div class="v">${d.updated||'--'}</div>
     </div></div>
@@ -7361,9 +7262,11 @@ function renderDetailView(){
       <div class="k">状态</div><div class="v">${statusPill(d.status)}</div>
     </div></div>
     <div class="detail-block"><h4>行情条件</h4><div class="kv">
-      <div class="k">行情类型</div><div class="v">${mktTypeText(d)}</div>
-      <div class="k">条件</div><div class="v">${formatMarketCondCell(d)}</div>
-      <div class="k">条件说明</div><div class="v">${d.cond||'-'}</div>
+      <div class="k">类型</div><div class="v">${mktTypeText(d)}</div>
+      <div class="k">报价单位</div><div class="v">${escHtml(mktUnitCell(d))}</div>
+      <div class="k">整数位</div><div class="v">${escHtml(mktGateCell(d))}</div>
+      <div class="k">时间段</div><div class="v">${escHtml(mktPeriodCell(d))}</div>
+      <div class="k">涨跌幅</div><div class="v">${escHtml(mktChangeCell(d))}</div>
     </div></div>
     <div class="detail-block"><h4>选择对象</h4><div class="kv">
       <div class="k">选择对象</div><div class="v">${formatAudienceCell(d)}</div>
@@ -7501,6 +7404,7 @@ function businessStep(step){
         </div>
         ${pushIntervalMinField()}
         <div class="field full"><label class="label">任务说明</label><textarea class="control"></textarea></div>
+        ${statusSettingSelectHtml()}
       </div>
     </div>`;
   if(step===1){
@@ -8010,32 +7914,34 @@ function audienceConfigBlock(){
     '<div id="audPanel">' + opAudiencePanelHtml(mode) + '</div>' +
   '</div>';
 }
-const MKT_TYPE_OPTS_BARRIER = ['价格达到','价格突破','价格跌破'];
-const MKT_TYPE_OPTS_PERIOD = ['短时上涨','短时下跌','剧烈波动','成交量异常'];
+const MKT_TYPE_OPTS_BARRIER = ['整数关口'];
+const MKT_TYPE_OPTS_PERIOD = ['时间段'];
 const MKT_TYPE_OPTS = MKT_TYPE_OPTS_BARRIER.concat(MKT_TYPE_OPTS_PERIOD);
+const MKT_LEGACY_PERIOD_TYPES = ['短时上涨','短时下跌','剧烈波动','成交量异常'];
+const MKT_LEGACY_BARRIER_TYPES = ['价格达到','价格突破','价格跌破'];
 const MKT_SYMBOL_OPTS = ['BTCUSD','ETHUSD','XAUUSD','XAGUSD','USOIL','GBPUSD','EURUSD','USDJPY'];
 const MKT_PERIOD_PRESETS = [
   {v:'1', n:'1 分钟'},
   {v:'5', n:'5 分钟'},
   {v:'15', n:'15 分钟'},
   {v:'30', n:'30 分钟'},
-  {v:'60', n:'60 分钟'},
-  {v:'custom', n:'自定义分钟'}
+  {v:'60', n:'60 分钟'}
 ];
 function marketTypesForMode(mode){
   return mode === 'period' ? MKT_TYPE_OPTS_PERIOD : MKT_TYPE_OPTS_BARRIER;
 }
 function inferMarketCondMode(type){
-  if(type === '时间段' || MKT_TYPE_OPTS_PERIOD.includes(type)) return 'period';
+  if(type === '时间段' || MKT_TYPE_OPTS_PERIOD.includes(type) || MKT_LEGACY_PERIOD_TYPES.includes(type)) return 'period';
   return 'barrier';
+}
+function marketTypeLabelFromMode(mode){
+  return mode === 'period' ? '时间段' : '整数关口';
 }
 function ensureMarketFormState(reset){
   const d = state.drawer;
   if(reset || d.marketCondMode == null) d.marketCondMode = 'barrier';
   if(d.marketCondMode !== 'period') d.marketCondMode = 'barrier';
-  const typeOpts = marketTypesForMode(d.marketCondMode);
-  if(reset || d.mktType == null) d.mktType = typeOpts[0] || '';
-  if(d.mktType && !typeOpts.includes(d.mktType)) d.mktType = typeOpts[0] || '';
+  d.mktType = marketTypeLabelFromMode(d.marketCondMode);
   if(reset || d.mktUnit == null) d.mktUnit = '';
   if(reset || !Array.isArray(d.symbols)){
     if(typeof d.mktSymbol === 'string' && d.mktSymbol) d.symbols = [d.mktSymbol];
@@ -8058,69 +7964,76 @@ function hydrateMarketFormFromRow(row){
   state.drawer.priority = marketPriority();
   const type = row.mktType || '';
   state.drawer.marketCondMode = inferMarketCondMode(type);
-  state.drawer.mktType = type || marketTypesForMode(state.drawer.marketCondMode)[0] || '';
+  state.drawer.mktType = marketTypeLabelFromMode(state.drawer.marketCondMode);
   state.drawer.symbols = rowSymbolsValue(row).filter(s=>MKT_SYMBOL_OPTS.includes(s));
-  state.drawer.mktChange = row.change || '';
-  state.drawer.mktUnit = '';
+  state.drawer.mktUnit = row.mktUnit || '';
   const st = row.status;
   state.drawer.mktStatus = (st==='运行中' || st==='监听中' || st==='启用') ? '启用' : ((st==='已暂停' || st==='禁用') ? '禁用' : '启用');
   const cond = String(row.cond || '');
   const minMatch = cond.match(/(\d+)\s*分钟/);
   if(minMatch){
-    state.drawer.mktPeriodMin = minMatch[1];
-    state.drawer.mktPeriodPreset = MKT_PERIOD_PRESETS.some(p=>p.v===minMatch[1]) ? minMatch[1] : 'custom';
+    const mins = minMatch[1];
+    state.drawer.mktPeriodPreset = MKT_PERIOD_PRESETS.some(p=>p.v===mins) ? mins : '5';
+    state.drawer.mktPeriodMin = state.drawer.mktPeriodPreset;
   }
   const gateMatch = cond.match(/(?:整数关口|价格达到|价格突破|价格跌破)\s*([0-9.]+)/);
-  if(gateMatch) state.drawer.mktGate = gateMatch[1];
+  if(row.mktGate) state.drawer.mktGate = String(row.mktGate);
+  else if(gateMatch) state.drawer.mktGate = gateMatch[1];
   else if(row.change && state.drawer.marketCondMode === 'barrier' && !/%/.test(String(row.change))){
     state.drawer.mktGate = String(row.change).replace(/[^\d.]/g,'') || state.drawer.mktGate;
+  }
+  const rateMatch = cond.match(/涨跌幅\s*([^\s·]+)/);
+  if(state.drawer.marketCondMode === 'barrier'){
+    state.drawer.mktChange = rateMatch ? rateMatch[1] : (row.mktChange || '');
+  } else {
+    state.drawer.mktChange = row.change || row.mktChange || '';
   }
 }
 function syncMarketFormFromInputs(){
   const d = ensureMarketFormState();
   const modeEl = document.getElementById('mktFormCondMode');
-  const typeEl = document.getElementById('mktFormType');
   const unitEl = document.getElementById('mktFormUnit');
   const changeEl = document.getElementById('mktFormChange');
   const presetEl = document.getElementById('mktFormPeriodPreset');
-  const minEl = document.getElementById('mktFormPeriodMin');
   const gateEl = document.getElementById('mktFormGate');
+  const statusEl = document.getElementById('mktFormStatus');
   if(modeEl) d.marketCondMode = modeEl.value === 'period' ? 'period' : 'barrier';
-  if(typeEl) d.mktType = typeEl.value;
+  d.mktType = marketTypeLabelFromMode(d.marketCondMode);
   if(unitEl) d.mktUnit = unitEl.value;
   if(changeEl) d.mktChange = changeEl.value;
-  if(presetEl) d.mktPeriodPreset = presetEl.value;
-  if(minEl) d.mktPeriodMin = minEl.value;
+  if(presetEl){
+    d.mktPeriodPreset = presetEl.value;
+    d.mktPeriodMin = presetEl.value;
+  }
   if(gateEl) d.mktGate = gateEl.value;
+  if(statusEl) d.mktStatus = statusEl.value === '禁用' ? '禁用' : '启用';
 }
 function onMarketCondModeChange(mode){
   syncMarketFormFromInputs();
   const next = mode === 'period' ? 'period' : 'barrier';
   state.drawer.marketCondMode = next;
-  const opts = marketTypesForMode(next);
-  state.drawer.mktType = opts[0] || '';
+  state.drawer.mktType = marketTypeLabelFromMode(next);
   if(next === 'barrier'){
     state.drawer.mktPeriodPreset = '5';
     state.drawer.mktPeriodMin = '5';
-    state.drawer.mktChange = '';
   } else {
     state.drawer.mktGate = '';
-    if(!state.drawer.mktPeriodPreset) state.drawer.mktPeriodPreset = '5';
-    if(!state.drawer.mktPeriodMin || state.drawer.mktPeriodPreset !== 'custom'){
-      if(state.drawer.mktPeriodPreset !== 'custom') state.drawer.mktPeriodMin = state.drawer.mktPeriodPreset || '5';
-    }
+    if(!MKT_PERIOD_PRESETS.some(p=>p.v===String(state.drawer.mktPeriodPreset||''))) state.drawer.mktPeriodPreset = '5';
+    state.drawer.mktPeriodMin = state.drawer.mktPeriodPreset || '5';
   }
   renderFormBody();
 }
 function onMarketFormTypeChange(v){
   syncMarketFormFromInputs();
-  state.drawer.mktType = v || '';
+  const mode = inferMarketCondMode(v);
+  state.drawer.marketCondMode = mode;
+  state.drawer.mktType = marketTypeLabelFromMode(mode);
   renderFormBody();
 }
 function onMarketFormPeriodPresetChange(v){
   syncMarketFormFromInputs();
   state.drawer.mktPeriodPreset = v || '';
-  if(v && v !== 'custom') state.drawer.mktPeriodMin = v;
+  state.drawer.mktPeriodMin = v || '';
   renderFormBody();
 }
 function marketBaseConfigBlock(){
@@ -8137,6 +8050,7 @@ function marketBaseConfigBlock(){
   const emsOpen = state.drawer.emsOpen;
   const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   return '<div class="grid2">' +
+    expandMultiSelectHtml('bizAppEms','APP', appOptions, apps, !!emsOpen.bizAppEms) +
     expandMultiSelectHtml('mktSymbolEms','品种', MKT_SYMBOL_OPTS, symbols, !!emsOpen.mktSymbolEms) +
     '<div class="field"><label class="label"><span class="req">*</span>报价单位</label>' +
       '<input class="control" id="mktFormUnit" value="'+esc(d.mktUnit||'')+'" placeholder="请输入报价单位" oninput="state.drawer.mktUnit=this.value"></div>' +
@@ -8144,54 +8058,45 @@ function marketBaseConfigBlock(){
       '<div class="control" style="display:flex;align-items:center;gap:8px;background:#f8fafc">' +
         priBadge(marketPriority()) +
       '</div></div>' +
-    expandMultiSelectHtml('bizAppEms','APP', appOptions, apps, !!emsOpen.bizAppEms) +
   '</div>';
 }
 function marketConditionConfigBlock(){
   const d = ensureMarketFormState();
   const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   const mode = d.marketCondMode === 'period' ? 'period' : 'barrier';
-  const typeOpts = marketTypesForMode(mode);
-  const type = d.mktType || '';
+  const status = d.mktStatus === '禁用' ? '禁用' : '启用';
   let html = '';
-  /* 1. 条件方式 + 行情类型（同一行） */
   html += '<div class="grid2" style="margin-bottom:14px">' +
-    '<div class="field"><label class="label"><span class="req">*</span>条件方式</label>' +
+    '<div class="field"><label class="label"><span class="req">*</span>类型</label>' +
       '<select class="control" id="mktFormCondMode" onchange="onMarketCondModeChange(this.value)">' +
         '<option value="barrier"'+(mode==='barrier'?' selected':'')+'>整数关口</option>' +
         '<option value="period"'+(mode==='period'?' selected':'')+'>时间段</option>' +
       '</select></div>' +
-    '<div class="field"><label class="label"><span class="req">*</span>行情类型</label>' +
-      '<select class="control" id="mktFormType" onchange="onMarketFormTypeChange(this.value)">' +
-        '<option value="">请选择</option>' +
-        typeOpts.map(o=>'<option value="'+o+'"'+(type===o?' selected':'')+'>'+o+'</option>').join('') +
-      '</select></div>' +
   '</div>';
   if(mode === 'barrier'){
-    html += '<div class="grid2">' +
-      '<div class="field"><label class="label"><span class="req">*</span>关口值</label>' +
-        '<input class="control" id="mktFormGate" type="number" value="'+esc(d.mktGate||'')+'" placeholder="请输入关口值" oninput="state.drawer.mktGate=this.value">' +
+    html += '<div class="grid2" style="margin-bottom:14px">' +
+      '<div class="field"><label class="label"><span class="req">*</span>整数关口</label>' +
+        '<input class="control" id="mktFormGate" type="number" value="'+esc(d.mktGate||'')+'" placeholder="请输入整数关口" oninput="state.drawer.mktGate=this.value">' +
       '</div></div>';
   } else {
-    const isCustom = String(d.mktPeriodPreset) === 'custom';
-    html += '<div class="grid2"'+(isCustom?' style="margin-bottom:14px"':'')+'>' +
-      '<div class="field"><label class="label"><span class="req">*</span>多少时间内</label>' +
+    if(!MKT_PERIOD_PRESETS.some(p=>p.v===String(d.mktPeriodPreset||''))) d.mktPeriodPreset = '5';
+    html += '<div class="grid2" style="margin-bottom:14px">' +
+      '<div class="field"><label class="label"><span class="req">*</span>时间段</label>' +
         '<select class="control" id="mktFormPeriodPreset" onchange="onMarketFormPeriodPresetChange(this.value)">' +
           '<option value="">请选择</option>' +
           MKT_PERIOD_PRESETS.map(p=>'<option value="'+p.v+'"'+(String(d.mktPeriodPreset)===p.v?' selected':'')+'>'+p.n+'</option>').join('') +
         '</select></div>' +
-      '<div class="field"><label class="label"><span class="req">*</span>涨跌幅变化</label>' +
-        '<input class="control" id="mktFormChange" value="'+esc(d.mktChange||'')+'" placeholder="例如 3%" oninput="state.drawer.mktChange=this.value"></div>' +
     '</div>';
-    if(isCustom){
-      html += '<div class="grid2">' +
-        '<div class="field"><label class="label"><span class="req">*</span>自定义分钟</label>' +
-          '<input class="control" type="number" id="mktFormPeriodMin" min="1" value="'+esc(d.mktPeriodMin||'')+'" placeholder="请输入分钟数" oninput="state.drawer.mktPeriodMin=this.value">' +
-        '</div></div>';
-    } else {
-      html += '<input type="hidden" id="mktFormPeriodMin" value="'+esc(d.mktPeriodMin||d.mktPeriodPreset||'')+'">';
-    }
   }
+  html += '<div class="grid2">' +
+    '<div class="field"><label class="label"><span class="req">*</span>涨跌幅</label>' +
+      '<input class="control" id="mktFormChange" value="'+esc(d.mktChange||'')+'" placeholder="请输入涨跌幅" oninput="state.drawer.mktChange=this.value"></div>' +
+    '<div class="field"><label class="label"><span class="req">*</span>状态</label>' +
+      '<select class="control" id="mktFormStatus" onchange="state.drawer.mktStatus=this.value">' +
+        '<option value="启用"'+(status==='启用'?' selected':'')+'>启用</option>' +
+        '<option value="禁用"'+(status==='禁用'?' selected':'')+'>禁用</option>' +
+      '</select></div>' +
+  '</div>';
   return html;
 }
 function validateMarketFormFields(){
@@ -8204,39 +8109,32 @@ function validateMarketFormFields(){
   if(!selApps.length){ toast('请选择 APP'); return false; }
   state.drawer.apps = selApps;
   if(!(d.mktUnit||'').trim()){ toast('请填写报价单位'); return false; }
-  if(d.marketCondMode !== 'barrier' && d.marketCondMode !== 'period'){ toast('请选择条件方式'); return false; }
-  if(!(d.mktType||'').trim()){ toast('请选择行情类型'); return false; }
-  if(!marketTypesForMode(d.marketCondMode).includes(d.mktType)){ toast('请选择与条件方式匹配的行情类型'); return false; }
+  if(d.marketCondMode !== 'barrier' && d.marketCondMode !== 'period'){ toast('请选择类型'); return false; }
+  d.mktType = marketTypeLabelFromMode(d.marketCondMode);
+  if(!(d.mktChange||'').trim()){ toast('请填写涨跌幅'); return false; }
+  if(d.mktStatus !== '启用' && d.mktStatus !== '禁用'){ toast('请选择状态'); return false; }
   if(d.marketCondMode === 'barrier'){
-    if(!(d.mktGate||'').trim()){ toast('请填写关口值'); return false; }
+    if(!(d.mktGate||'').trim()){ toast('请填写整数关口'); return false; }
   } else {
-    if(!(d.mktPeriodPreset||'').trim()){ toast('请选择多少时间内'); return false; }
-    if(d.mktPeriodPreset === 'custom' && !(d.mktPeriodMin||'').trim()){ toast('请填写自定义分钟'); return false; }
-    if(d.mktPeriodPreset !== 'custom') d.mktPeriodMin = d.mktPeriodPreset;
-    if(!(d.mktPeriodMin||'').trim()){ toast('请填写多少时间内'); return false; }
-    if(!(d.mktChange||'').trim()){ toast('请填写涨跌幅变化'); return false; }
+    if(!(d.mktPeriodPreset||'').trim()){ toast('请选择时间段'); return false; }
+    if(!MKT_PERIOD_PRESETS.some(p=>p.v===String(d.mktPeriodPreset))){ toast('请选择时间段'); return false; }
+    d.mktPeriodMin = d.mktPeriodPreset;
   }
   return true;
 }
 function buildMarketCondAndFreq(d){
-  const type = d.mktType;
   const unit = d.mktUnit || '';
   const change = d.mktChange || '';
   const gate = d.mktGate || '';
   const mins = d.mktPeriodMin || '';
-  const mode = d.marketCondMode === 'period' || MKT_TYPE_OPTS_PERIOD.includes(type) ? 'period' : 'barrier';
-  let cond = type;
+  const mode = d.marketCondMode === 'period' ? 'period' : 'barrier';
+  let cond = '';
   let freq = '实时';
   if(mode === 'period'){
     freq = '每 ' + mins + ' 分钟';
-    if(type === '剧烈波动') cond = mins + ' 分钟振幅 ≥ ' + change + (unit ? ' · ' + unit : '');
-    else if(type === '成交量异常') cond = mins + ' 分钟成交量增长 ≥ ' + change + (unit ? ' · ' + unit : '');
-    else if(type === '短时下跌') cond = mins + ' 分钟跌幅 ≥ ' + change + (unit ? ' · ' + unit : '');
-    else cond = mins + ' 分钟涨幅 ≥ ' + change + (unit ? ' · ' + unit : '');
-  } else if(type === '价格达到' || type === '价格突破' || type === '价格跌破'){
-    cond = type + ' ' + gate + (unit ? ' · ' + unit : '');
+    cond = mins + ' 分钟涨幅 ≥ ' + change + (unit ? ' · ' + unit : '');
   } else {
-    cond = type + (gate ? ' ' + gate : '') + (unit ? ' · ' + unit : '');
+    cond = '整数关口 ' + gate + (change ? ' · 涨跌幅 ' + change : '') + (unit ? ' · ' + unit : '');
   }
   return { cond, freq };
 }
@@ -8256,16 +8154,21 @@ function saveMarketForm(){
   const audMode = ['select','tagverse'].includes(state.drawer.audienceMode) ? state.drawer.audienceMode : 'region';
   const mktTv = state.drawer.marketTagVerse || '';
   const mktRegions = regionCodes(state.drawer.regions);
+  const enabled = d.mktStatus !== '禁用';
   const payload = {
     name,
     project,
     apps: apps.length ? apps.slice() : appOpts.slice(),
     app: (apps[0] || appOpts[0] || project),
-    mktType: d.mktType,
+    mktType: marketTypeLabelFromMode(d.marketCondMode),
     source: existing.source || 'MT5',
     symbols: symbols.slice(),
     symbol: symbols[0] || '',
-    change: d.marketCondMode === 'barrier' ? (d.mktGate || d.mktChange || '') : (d.mktChange || ''),
+    mktUnit: d.mktUnit || '',
+    mktGate: d.marketCondMode === 'barrier' ? (d.mktGate || '') : '',
+    mktPeriodMin: d.marketCondMode === 'period' ? (d.mktPeriodMin || d.mktPeriodPreset || '') : '',
+    mktPeriodPreset: d.marketCondMode === 'period' ? (d.mktPeriodPreset || d.mktPeriodMin || '') : '',
+    change: d.mktChange || '',
     cond,
     audience: audMode==='select' ? (mktTv || '选择 · 未选择')
       : (audMode==='tagverse' ? (mktTv || 'TagVerse · 未创建')
@@ -8278,11 +8181,11 @@ function saveMarketForm(){
     freq,
     cool: existing.cool || '30 分钟',
     priority: marketPriority(),
-    status: existing.status === '已暂停' ? '已暂停' : '运行中'
+    status: enabled ? '运行中' : '已暂停'
   };
   if(state.drawer.mode === 'edit' && state.drawer.detail){
     Object.assign(state.drawer.detail, payload);
-    toast('已保存并启用');
+    toast(enabled ? '已保存并启用' : '已保存（已禁用）');
   } else {
     const maxNum = DATA.market.reduce((m,r)=>{
       const n = parseInt(String(r.id).replace(/\D/g,''),10);
@@ -8296,7 +8199,7 @@ function saveMarketForm(){
       created: formatNow()
     }, payload));
     state.page.market = 1;
-    toast('已保存并启用监听');
+    toast(enabled ? '已保存并启用监听' : '已保存（已禁用）');
   }
   closeForm();
   renderCurrent();
@@ -8956,7 +8859,6 @@ function openMarketChartRelatedRecords(){
 document.addEventListener('keydown', e=>{
   if(e.key==='Escape'){
     if(document.getElementById('confirmModal').classList.contains('show')) closeConfirm();
-    else if(document.getElementById('recordEditModal')?.classList.contains('show')) closeRecordEditModal();
     else if(document.getElementById('bizRefEditorModal')?.classList.contains('show')) closeBizRefEditor();
     else if(document.getElementById('detailModal')?.classList.contains('show')) closeDetailModal();
     else if(document.getElementById('marketChartModal')?.classList.contains('show')) closeMarketChartModal();
