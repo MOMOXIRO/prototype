@@ -885,7 +885,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
           <nav class="settings-nav" id="settingsNav">
             <button type="button" class="settings-nav-btn" data-settings="appPush" onclick="switchSettingsSub('appPush')">APP推送能力</button>
             <button type="button" class="settings-nav-btn" data-settings="activityPriority" onclick="switchSettingsSub('activityPriority')">活动优先级</button>
-            <button type="button" class="settings-nav-btn" data-settings="scenarioPriority" onclick="switchSettingsSub('scenarioPriority')">业务场景优先级</button>
+            <button type="button" class="settings-nav-btn" data-settings="scenarioPriority" onclick="switchSettingsSub('scenarioPriority')">业务优先级</button>
             <button type="button" class="settings-nav-btn" data-settings="marketPushRule" onclick="switchSettingsSub('marketPushRule')">行情推送规则</button>
             <button type="button" class="settings-nav-btn active" data-settings="priority" onclick="switchSettingsSub('priority')">优先级管理</button>
           </nav>
@@ -917,7 +917,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
               <div class="settings-pane-hd">
                 <div>
                   <h2>活动优先级</h2>
-                  <p>维护活动名称、所属项目与 P0–P3 优先级；业务通知选择「活动推送」时，仅展示当前项目下的活动。</p>
+                  <p>维护活动名称与 P0–P3 优先级；业务通知选择「活动推送」时可引用已启用的活动。</p>
                 </div>
                 <button class="btn" type="button" onclick="openBizRefEditor('activity')">+ 新增活动</button>
               </div>
@@ -926,7 +926,6 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
                   <thead>
                     <tr>
                       <th>活动名称</th>
-                      <th style="width:120px">项目</th>
                       <th style="width:120px">优先级</th>
                       <th style="width:80px">启停</th>
                       <th class="ops">操作</th>
@@ -939,8 +938,8 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
             <div class="settings-pane hidden" id="settings-pane-scenarioPriority">
               <div class="settings-pane-hd">
                 <div>
-                  <h2>业务场景优先级</h2>
-                  <p>维护业务场景名称、所属项目与 P0–P3 优先级；业务通知选择「业务推送」时，仅展示当前项目下的场景。</p>
+                  <h2>业务优先级</h2>
+                  <p>维护业务场景名称与 P0–P3 优先级；业务通知选择「业务推送」时可引用已启用的场景。</p>
                 </div>
                 <button class="btn" type="button" onclick="openBizRefEditor('scenario')">+ 新增业务场景</button>
               </div>
@@ -949,7 +948,6 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
                   <thead>
                     <tr>
                       <th>业务场景名称</th>
-                      <th style="width:120px">项目</th>
                       <th style="width:120px">优先级</th>
                       <th style="width:80px">启停</th>
                       <th class="ops">操作</th>
@@ -1169,13 +1167,6 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
         <input class="control" id="bizRefName" maxlength="50" placeholder="请输入名称">
       </div>
       <div class="field" style="margin-bottom:14px">
-        <label class="label"><span class="req">*</span>项目</label>
-        <select class="control" id="bizRefProject">
-          <option value="Dana">Dana</option>
-          <option value="TW">TW</option>
-        </select>
-      </div>
-      <div class="field" style="margin-bottom:14px">
         <label class="label"><span class="req">*</span>优先级</label>
         <select class="control" id="bizRefPriority">
           <option value="P0">P0</option>
@@ -1349,7 +1340,7 @@ function defaultTabForRole(){ return roleAllowedTabs()[0] || 'operation'; }
 function clampTabForRole(tab){ return canAccessTab(tab) ? tab : defaultTabForRole(); }
 const TPL_TYPE_OPTS = ['业务通知','运营推送','行情提醒'];
 const TPL_PROJECT_OPTS = ['Dana','TW'];
-const SETTINGS_SUB_LABEL = { appPush:'APP推送能力', activityPriority:'活动优先级', scenarioPriority:'业务场景优先级', marketPushRule:'行情推送规则', priority:'优先级管理' };
+const SETTINGS_SUB_LABEL = { appPush:'APP推送能力', activityPriority:'活动优先级', scenarioPriority:'业务优先级', marketPushRule:'行情推送规则', priority:'优先级管理' };
 const SETTINGS_SUB_KEYS = ['appPush','activityPriority','scenarioPriority','marketPushRule','priority'];
 
 /* ========== Region codes（与 CRM / 运营推送筛选一致） ========== */
@@ -1458,31 +1449,29 @@ const DATA = {
   ],
   priorityTotalDaily: 8,
   activities: [
-    {id:'ACT001', name:'模拟交易大赛', project:'Dana', priority:'P2', status:'启用'},
-    {id:'ACT002', name:'四周年活动', project:'Dana', priority:'P2', status:'启用'},
-    {id:'ACT003', name:'斋月专属活动', project:'Dana', priority:'P3', status:'启用'},
-    {id:'ACT004', name:'新用户迎新礼', project:'TW', priority:'P1', status:'停用'},
-    {id:'ACT005', name:'模拟交易大赛-交易提醒三', project:'Dana', priority:'P2', status:'启用'},
-    {id:'ACT006', name:'模拟交易大赛-对手匹配成功', project:'Dana', priority:'P2', status:'启用'},
-    {id:'ACT007', name:'四周年活动-确认收货地址通知', project:'Dana', priority:'P2', status:'启用'},
-    {id:'ACT008', name:'模拟交易大赛-交易提醒一', project:'Dana', priority:'P2', status:'启用'},
-    {id:'ACT009', name:'模拟交易大赛-交易提醒二', project:'Dana', priority:'P2', status:'启用'},
-    {id:'ACT010', name:'模拟交易大赛-交易提醒四', project:'Dana', priority:'P2', status:'启用'},
-    {id:'ACT011', name:'四周年活动-填写收货地址通知', project:'Dana', priority:'P2', status:'启用'},
-    {id:'ACT012', name:'TW 周末福利活动', project:'TW', priority:'P2', status:'启用'},
+    {id:'ACT001', name:'模拟交易大赛', priority:'P2', status:'启用'},
+    {id:'ACT002', name:'四周年活动', priority:'P2', status:'启用'},
+    {id:'ACT003', name:'斋月专属活动', priority:'P3', status:'启用'},
+    {id:'ACT004', name:'新用户迎新礼', priority:'P1', status:'停用'},
+    {id:'ACT005', name:'模拟交易大赛-交易提醒三', priority:'P2', status:'启用'},
+    {id:'ACT006', name:'模拟交易大赛-对手匹配成功', priority:'P2', status:'启用'},
+    {id:'ACT007', name:'四周年活动-确认收货地址通知', priority:'P2', status:'启用'},
+    {id:'ACT008', name:'模拟交易大赛-交易提醒一', priority:'P2', status:'启用'},
+    {id:'ACT009', name:'模拟交易大赛-交易提醒二', priority:'P2', status:'启用'},
+    {id:'ACT010', name:'模拟交易大赛-交易提醒四', priority:'P2', status:'启用'},
+    {id:'ACT011', name:'四周年活动-填写收货地址通知', priority:'P2', status:'启用'},
+    {id:'ACT012', name:'TW 周末福利活动', priority:'P2', status:'启用'},
   ],
   bizScenarios: [
-    {id:'SCN001', name:'实名认证', project:'Dana', priority:'P1', status:'启用'},
-    {id:'SCN002', name:'充值成功', project:'Dana', priority:'P1', status:'启用'},
-    {id:'SCN003', name:'提现失败', project:'TW', priority:'P0', status:'启用'},
-    {id:'SCN004', name:'异常登录', project:'TW', priority:'P0', status:'启用'},
-    {id:'SCN005', name:'新设备登录', project:'Dana', priority:'P1', status:'启用'},
-    {id:'SCN006', name:'修改密码成功', project:'Dana', priority:'P1', status:'启用'},
-    {id:'SCN007', name:'绑定银行卡成功', project:'Dana', priority:'P1', status:'启用'},
-    {id:'SCN008', name:'账户变更', project:'Dana', priority:'P1', status:'启用'},
-    {id:'SCN009', name:'客户盈利', project:'Dana', priority:'P2', status:'启用'},
-    {id:'SCN010', name:'实名认证', project:'TW', priority:'P1', status:'启用'},
-    {id:'SCN011', name:'充值成功', project:'TW', priority:'P1', status:'启用'},
+    {id:'SCN001', name:'实名认证', priority:'P1', status:'启用'},
+    {id:'SCN002', name:'充值成功', priority:'P1', status:'启用'},
+    {id:'SCN003', name:'提现失败', priority:'P0', status:'启用'},
+    {id:'SCN004', name:'异常登录', priority:'P0', status:'启用'},
+    {id:'SCN005', name:'新设备登录', priority:'P1', status:'启用'},
+    {id:'SCN006', name:'修改密码成功', priority:'P1', status:'启用'},
+    {id:'SCN007', name:'绑定银行卡成功', priority:'P1', status:'启用'},
+    {id:'SCN008', name:'账户变更', priority:'P1', status:'启用'},
+    {id:'SCN009', name:'客户盈利', priority:'P2', status:'启用'},
   ],
 };
 
@@ -2727,7 +2716,7 @@ function priBadge(level){
   const cls = String(level||'').toLowerCase();
   return `<span class="pri-badge ${cls}">${level||'—'}</span>`;
 }
-/** 行情提醒统一固定 P2，不跟随活动/业务场景优先级 */
+/** 行情提醒统一固定 P2，不跟随活动/业务优先级 */
 function marketPriority(){ return 'P2'; }
 function switchSettingsSub(sub){
   if(!SETTINGS_SUB_KEYS.includes(sub)) sub = 'priority';
@@ -2951,43 +2940,20 @@ function normalizeBizPriority(v, fallback){
 }
 function getActivityById(id){ return (DATA.activities||[]).find(a=>a.id===id); }
 function getScenarioById(id){ return (DATA.bizScenarios||[]).find(s=>s.id===id); }
-function normalizeBizRefProject(v){
-  return v === 'TW' ? 'TW' : 'Dana';
-}
-/** 业务通知 / 模板表单中，活动与场景按项目过滤 */
-function resolveBizRefFilterProject(){
-  if(state.drawer?.type === 'business') return state.drawer.project || '';
-  if(state.drawer?.type === 'template'){
-    const ps = (state.drawer.tplProjects || []).filter(Boolean);
-    if(ps.length === 1) return ps[0];
-  }
-  return '';
-}
-function matchBizRefProject(row, project){
-  if(!project) return true;
-  return normalizeBizRefProject(row?.project) === project;
-}
-function selectableActivities(includeId, project){
-  const proj = arguments.length >= 2 ? project : resolveBizRefFilterProject();
+function selectableActivities(includeId){
   return (DATA.activities||[]).filter(a=>{
     if(includeId && a.id === includeId) return true;
-    if(a.status !== '启用') return false;
-    return matchBizRefProject(a, proj);
+    return a.status === '启用';
   });
 }
-function selectableScenarios(includeId, project){
-  const proj = arguments.length >= 2 ? project : resolveBizRefFilterProject();
+function selectableScenarios(includeId){
   return (DATA.bizScenarios||[]).filter(s=>{
     if(includeId && s.id === includeId) return true;
-    if(s.status !== '启用') return false;
-    return matchBizRefProject(s, proj);
+    return s.status === '启用';
   });
 }
 function bizRefOptionLabel(ref){
-  if(!ref) return '';
-  const proj = resolveBizRefFilterProject();
-  if(!proj && ref.project) return ref.name + '（' + ref.project + '）';
-  return ref.name || '';
+  return ref?.name || '';
 }
 function bizRefDisplayById(typeKey, id){
   const ref = typeKey === 'activity' ? getActivityById(id) : getScenarioById(id);
@@ -3111,14 +3077,13 @@ function renderActivityPriority(){
   const rows = DATA.activities || [];
   body.innerHTML = rows.map(r=>`<tr>
     <td>${escHtml(r.name)}</td>
-    <td>${escHtml(normalizeBizRefProject(r.project))}</td>
     <td>${priBadge(normalizeBizPriority(r.priority))}</td>
     <td>${settingsEnableSwitch(r.status==='启用', `askToggleBizRefStatus('activity','${r.id}')`)}</td>
     <td class="ops"><div class="icon-actions">
       ${iconBtn(I.edit,'编辑',`openBizRefEditor('activity','${r.id}')`)}
       ${iconBtn(I.trash,'删除',`askDeleteBizRef('activity','${r.id}')`,true)}
     </div></td>
-  </tr>`).join('') || `<tr><td colspan="5" class="muted" style="text-align:center;height:64px">暂无活动，请点击「新增活动」</td></tr>`;
+  </tr>`).join('') || `<tr><td colspan="4" class="muted" style="text-align:center;height:64px">暂无活动，请点击「新增活动」</td></tr>`;
 }
 function renderScenarioPriority(){
   const body = document.getElementById('scenarioPriorityBody');
@@ -3126,14 +3091,13 @@ function renderScenarioPriority(){
   const rows = DATA.bizScenarios || [];
   body.innerHTML = rows.map(r=>`<tr>
     <td>${escHtml(r.name)}</td>
-    <td>${escHtml(normalizeBizRefProject(r.project))}</td>
     <td>${priBadge(normalizeBizPriority(r.priority))}</td>
     <td>${settingsEnableSwitch(r.status==='启用', `askToggleBizRefStatus('scenario','${r.id}')`)}</td>
     <td class="ops"><div class="icon-actions">
       ${iconBtn(I.edit,'编辑',`openBizRefEditor('scenario','${r.id}')`)}
       ${iconBtn(I.trash,'删除',`askDeleteBizRef('scenario','${r.id}')`,true)}
     </div></td>
-  </tr>`).join('') || `<tr><td colspan="5" class="muted" style="text-align:center;height:64px">暂无业务场景，请点击「新增业务场景」</td></tr>`;
+  </tr>`).join('') || `<tr><td colspan="4" class="muted" style="text-align:center;height:64px">暂无业务场景，请点击「新增业务场景」</td></tr>`;
 }
 function openBizRefEditor(kind, id){
   const isActivity = kind==='activity';
@@ -3145,7 +3109,6 @@ function openBizRefEditor(kind, id){
     : (isActivity ? '新增活动' : '新增业务场景');
   document.getElementById('bizRefNameLabel').innerHTML = '<span class="req">*</span>' + (isActivity ? '活动名称' : '业务场景名称');
   document.getElementById('bizRefName').value = row?.name || '';
-  document.getElementById('bizRefProject').value = normalizeBizRefProject(row?.project);
   document.getElementById('bizRefPriority').value = normalizeBizPriority(row?.priority, isActivity ? 'P2' : 'P1');
   document.getElementById('bizRefEditorModal').classList.add('show');
 }
@@ -3158,21 +3121,20 @@ function saveBizRefEditor(){
   const kind = ed.kind;
   if(kind!=='activity' && kind!=='scenario') return;
   const name = (document.getElementById('bizRefName')?.value || '').trim();
-  const project = normalizeBizRefProject(document.getElementById('bizRefProject')?.value);
   const priority = normalizeBizPriority(document.getElementById('bizRefPriority')?.value);
   if(!name){ toast(kind==='activity' ? '请填写活动名称' : '请填写业务场景名称'); return; }
   const list = kind==='activity' ? DATA.activities : DATA.bizScenarios;
-  const sameName = (x)=> x.name===name && normalizeBizRefProject(x.project)===project;
+  const sameName = (x)=> x.name===name;
   if(ed.mode==='edit' && ed.id){
     const row = list.find(x=>x.id===ed.id);
     if(!row){ toast('记录不存在'); return; }
-    if(list.some(x=>x.id!==ed.id && sameName(x))){ toast('同项目下名称已存在'); return; }
+    if(list.some(x=>x.id!==ed.id && sameName(x))){ toast('名称已存在'); return; }
     row.name = name;
-    row.project = project;
     row.priority = priority;
+    delete row.project;
   } else {
-    if(list.some(sameName)){ toast('同项目下名称已存在'); return; }
-    list.unshift({ id: nextBizRefId(kind), name, project, priority, status: '启用' });
+    if(list.some(sameName)){ toast('名称已存在'); return; }
+    list.unshift({ id: nextBizRefId(kind), name, priority, status: '启用' });
   }
   const savedId = ed.mode==='edit' ? ed.id : list[0]?.id;
   if(savedId){
@@ -5997,10 +5959,9 @@ function tplBizBindFieldsHtml(){
     ? selectableActivities(state.drawer.tplBizRefId)
     : selectableScenarios(state.drawer.tplBizRefId);
   const refLabel = isActivity ? '活动' : '业务场景';
-  const filterProj = resolveBizRefFilterProject();
   const emptyHint = isActivity
-    ? ('暂无可用活动' + (filterProj ? '（' + filterProj + '）' : '') + '，请先在推送设置中配置')
-    : ('暂无可用业务场景' + (filterProj ? '（' + filterProj + '）' : '') + '，请先在推送设置中配置');
+    ? '暂无可用活动，请先在推送设置中配置'
+    : '暂无可用业务场景，请先在推送设置中配置';
   const priHtml = bizRefPriBadgeHtml(type, state.drawer.tplBizRefId);
   return '<div class="grid2">' +
     '<div class="field"><label class="label"><span class="req">*</span>业务类型</label>' +
@@ -7605,8 +7566,8 @@ function bizEventCondBlock(){
     : selectableScenarios(state.drawer.bizRefId);
   const refLabel = isActivity ? '活动' : '业务场景';
   const emptyHint = isActivity
-    ? ('暂无可用活动' + (state.drawer.project ? '（' + state.drawer.project + '）' : '') + '，请先在推送设置中配置')
-    : ('暂无可用业务场景' + (state.drawer.project ? '（' + state.drawer.project + '）' : '') + '，请先在推送设置中配置');
+    ? '暂无可用活动，请先在推送设置中配置'
+    : '暂无可用业务场景，请先在推送设置中配置';
   const priHtml = bizRefPriBadgeHtml(typeKey, state.drawer.bizRefId);
   return '<div class="grid2">' +
     '<div class="field"><label class="label"><span class="req">*</span>业务类型</label>' +
