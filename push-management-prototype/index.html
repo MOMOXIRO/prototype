@@ -659,7 +659,8 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
       <section class="tab-panel" id="panel-business">
         <div class="filter-panel" id="filter-business">
           <div class="filter-grid">
-            <div class="filter-item"><label>任务 ID / 任务名称</label><input class="control" placeholder="ID 精确 / 名称模糊" data-f="q"></div>
+            <div class="filter-item"><label>任务 ID</label><input class="control" id="biz-id-filter" placeholder="精确搜索" data-f="id" onkeydown="if(event.key==='Enter'){event.preventDefault();onBizFilterChange()}"></div>
+            <div class="filter-item"><label>任务名称</label><input class="control" id="biz-name-filter" placeholder="模糊搜索" data-f="name" onkeydown="if(event.key==='Enter'){event.preventDefault();onBizFilterChange()}"></div>
             <div class="filter-item"><label>业务类型</label><select class="control" data-f="bizType"><option value="">全部</option><option>活动推送</option><option>业务推送</option></select></div>
             <div class="filter-item"><label>活动 / 业务场景</label><select class="control" data-f="bizRef"><option value="">全部</option><option>实名认证</option><option>充值成功</option><option>提现失败</option><option>异常登录</option><option>新设备登录</option><option>修改密码成功</option><option>绑定银行卡成功</option><option>客户盈利</option><option>模拟交易大赛</option><option>模拟交易大赛-交易提醒三</option><option>模拟交易大赛-对手匹配成功</option><option>四周年活动</option><option>四周年活动-确认收货地址通知</option></select></div>
             <div class="filter-item"><label>项目</label><select class="control" data-f="project"><option value="">全部</option><option>Dana</option><option>TW</option></select></div>
@@ -673,7 +674,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
               </select>
             </div>
             <div class="filter-more">
-              <div class="filter-item"><label>状态</label><select class="control" data-f="status"><option value="">全部</option><option>待生效</option><option>运行中</option><option>已暂停</option></select></div>
+              <div class="filter-item"><label>状态</label><select class="control" data-f="status"><option value="">全部</option><option>运行中</option><option>已暂停</option></select></div>
               <div class="filter-item"><label>APP</label>
                 <div class="ms-select" id="filterBizApp">
                   <div class="ms-select-trigger" onclick="toggleMultiSelect('filterBizApp')">
@@ -689,7 +690,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
                   </div>
                 </div>
               </div>
-              <div class="filter-item"><label>通知渠道</label><select class="control" data-f="channel"><option value="">全部</option><option>Push</option><option>私信</option></select></div>
+              <div class="filter-item"><label>通知渠道</label><select class="control" data-f="channel"><option value="">全部</option><option>Push</option><option>私信</option><option>邮件</option></select></div>
               <div class="filter-item"><label>更新时间范围</label><div class="range-wrap"><input type="date"><span class="range-mid">至</span><input type="date"></div></div>
             </div>
           </div>
@@ -713,15 +714,13 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
       <section class="tab-panel hidden" id="panel-operation">
         <div class="filter-panel" id="filter-operation">
           <div class="filter-grid">
-            <div class="filter-item"><label>推送 ID / 任务名称</label><input class="control" placeholder="ID / 名称"></div>
+            <div class="filter-item"><label>推送 ID</label><input class="control" id="op-id-filter" placeholder="精确搜索" onkeydown="if(event.key==='Enter'){event.preventDefault();onOpFilterChange()}"></div>
+            <div class="filter-item"><label>任务名称</label><input class="control" id="op-name-filter" placeholder="模糊搜索" onkeydown="if(event.key==='Enter'){event.preventDefault();onOpFilterChange()}"></div>
             <div class="filter-item"><label>项目</label><select class="control"><option value="">全部</option><option>Dana</option><option>TW</option></select></div>
             <div class="filter-item"><label>发送计划</label>
               <select class="control" id="op-plan-filter" onchange="onOpFilterChange()">
                 <option value="">全部</option>
-                <option value="即时发送">即时发送</option>
-                <option value="预约发送">预约发送</option>
-                <option value="立即发送">立即发送</option>
-                <option value="单次定时">单次定时</option>
+                <option value="定时发送">定时发送</option>
                 <option value="循环发送">循环发送</option>
               </select>
             </div>
@@ -755,8 +754,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
               </select>
             </div>
             <div class="filter-more">
-              <div class="filter-item"><label>选择对象方式</label><select class="control"><option value="">全部</option><option>添加</option><option>TagVerse</option><option>导入</option><option>按地区</option></select></div>
-              <div class="filter-item"><label>通知渠道</label><select class="control"><option value="">全部</option><option>Push</option><option>私信</option></select></div>
+              <div class="filter-item"><label>通知渠道</label><select class="control"><option value="">全部</option><option>Push</option><option>私信</option><option>邮件</option></select></div>
               <div class="filter-item"><label>操作人</label><input class="control" id="op-operator-filter" placeholder="操作人" oninput="onOpFilterChange()"></div>
               <div class="filter-item"><label>更新时间范围</label><div class="range-wrap"><input type="date"><span class="range-mid">至</span><input type="date"></div></div>
             </div>
@@ -781,21 +779,24 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
       <section class="tab-panel hidden" id="panel-market">
         <div class="filter-panel" id="filter-market">
           <div class="filter-grid">
-            <div class="filter-item"><label>提醒 ID / 名称</label><input class="control" placeholder="ID / 名称"></div>
+            <div class="filter-item"><label>提醒 ID</label><input class="control" id="mkt-id-filter" placeholder="精确搜索" onkeydown="if(event.key==='Enter'){event.preventDefault();onMarketFilterChange()}"></div>
+            <div class="filter-item"><label>提醒名称</label><input class="control" id="mkt-name-filter" placeholder="模糊搜索" onkeydown="if(event.key==='Enter'){event.preventDefault();onMarketFilterChange()}"></div>
             <div class="filter-item"><label>项目</label><select class="control"><option value="">全部</option><option>Dana</option><option>TW</option></select></div>
-            <div class="filter-item"><label>品种</label><input class="control" id="mkt-symbol-filter" placeholder="如 BTCUSD"></div>
-            <div class="filter-item"><label>状态</label><select class="control"><option value="">全部</option><option>运行中</option><option>已暂停</option><option>已终止</option></select></div>
-            <div class="filter-item"><label>优先级</label>
-              <select class="control" id="mkt-priority-filter" onchange="onMarketFilterChange()">
+            <div class="filter-item"><label>品种</label>
+              <select class="control" id="mkt-symbol-filter" onchange="onMarketFilterChange()">
                 <option value="">全部</option>
-                <option value="P0">P0</option>
-                <option value="P1">P1</option>
-                <option value="P2">P2</option>
-                <option value="P3">P3</option>
+                <option value="BTCUSD">BTCUSD</option>
+                <option value="ETHUSD">ETHUSD</option>
+                <option value="XAUUSD">XAUUSD</option>
+                <option value="XAGUSD">XAGUSD</option>
+                <option value="USOIL">USOIL</option>
+                <option value="GBPUSD">GBPUSD</option>
+                <option value="EURUSD">EURUSD</option>
+                <option value="USDJPY">USDJPY</option>
               </select>
             </div>
+            <div class="filter-item"><label>状态</label><select class="control"><option value="">全部</option><option>运行中</option><option>已暂停</option></select></div>
             <div class="filter-more">
-              <div class="filter-item"><label>行情源</label><select class="control"><option value="">全部</option><option>MT5</option><option>内部行情</option></select></div>
               <div class="filter-item"><label>行情类型</label><select class="control"><option value="">全部</option><option>整数关口</option><option>时间段</option></select></div>
               <div class="filter-item"><label>通知对象</label><select class="control"><option value="">全部</option><option>关注用户</option><option>订阅用户</option><option>持仓用户</option><option>最近交易</option></select></div>
             </div>
@@ -842,7 +843,8 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
       <section class="tab-panel hidden" id="panel-template">
         <div class="filter-panel" id="filter-template">
           <div class="filter-grid">
-            <div class="filter-item"><label>模板 ID / 名称</label><input class="control" id="tplFilterQ" placeholder="ID 精确 / 名称模糊" onkeydown="if(event.key==='Enter'){event.preventDefault();onTplFilterChange()}"></div>
+            <div class="filter-item"><label>模板 ID</label><input class="control" id="tplFilterId" placeholder="精确搜索" onkeydown="if(event.key==='Enter'){event.preventDefault();onTplFilterChange()}"></div>
+            <div class="filter-item"><label>模板名称</label><input class="control" id="tplFilterName" placeholder="模糊搜索" onkeydown="if(event.key==='Enter'){event.preventDefault();onTplFilterChange()}"></div>
             <div class="filter-item"><label>模板类型</label>
               <select class="control" id="tplFilterType" onchange="onTplFilterChange()">
                 <option value="">全部</option>
@@ -915,7 +917,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
               <div class="settings-pane-hd">
                 <div>
                   <h2>活动优先级</h2>
-                  <p>维护活动名称与 P0–P3 优先级；业务通知选择「活动推送」时下拉展示为「活动名-优先级」。</p>
+                  <p>维护活动名称、所属项目与 P0–P3 优先级；业务通知选择「活动推送」时，仅展示当前项目下的活动。</p>
                 </div>
                 <button class="btn" type="button" onclick="openBizRefEditor('activity')">+ 新增活动</button>
               </div>
@@ -924,6 +926,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
                   <thead>
                     <tr>
                       <th>活动名称</th>
+                      <th style="width:120px">项目</th>
                       <th style="width:120px">优先级</th>
                       <th style="width:80px">启停</th>
                       <th class="ops">操作</th>
@@ -937,7 +940,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
               <div class="settings-pane-hd">
                 <div>
                   <h2>业务场景优先级</h2>
-                  <p>维护业务场景名称与 P0–P3 优先级；业务通知选择「业务推送」时下拉展示为「场景名-优先级」。</p>
+                  <p>维护业务场景名称、所属项目与 P0–P3 优先级；业务通知选择「业务推送」时，仅展示当前项目下的场景。</p>
                 </div>
                 <button class="btn" type="button" onclick="openBizRefEditor('scenario')">+ 新增业务场景</button>
               </div>
@@ -946,6 +949,7 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
                   <thead>
                     <tr>
                       <th>业务场景名称</th>
+                      <th style="width:120px">项目</th>
                       <th style="width:120px">优先级</th>
                       <th style="width:80px">启停</th>
                       <th class="ops">操作</th>
@@ -1165,6 +1169,13 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
         <input class="control" id="bizRefName" maxlength="50" placeholder="请输入名称">
       </div>
       <div class="field" style="margin-bottom:14px">
+        <label class="label"><span class="req">*</span>项目</label>
+        <select class="control" id="bizRefProject">
+          <option value="Dana">Dana</option>
+          <option value="TW">TW</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:14px">
         <label class="label"><span class="req">*</span>优先级</label>
         <select class="control" id="bizRefPriority">
           <option value="P0">P0</option>
@@ -1280,9 +1291,9 @@ const state = {
   currentOperator: CURRENT_OPERATOR,
   tab: 'business',
   sub: { records:'batch', settings:'priority' },
-  bizFilter: { priority:'' },
-  opFilter: { plan:'', status:'', priority:'', region:'', operator:'' },
-  mktFilter: { priority:'', symbol:'' },
+  bizFilter: { id:'', name:'', priority:'' },
+  opFilter: { id:'', name:'', plan:'', status:'', priority:'', region:'', operator:'' },
+  mktFilter: { id:'', name:'', symbol:'' },
   page: { business:1, operation:1, market:1, template:1, records:1 },
   pageSize: { business:20, operation:20, market:20, template:20, records:20 },
   drawer: { open:false, type:null, mode:'create', step:0, detail:null, ui:'drawer', project:'', apps:[], regions:[], msgSendMode:'supplementPush', msgJump:'跳转私信', msgGroup:'', msgAppPage:'', msgUrl:'', mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'', jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'', pushIntervalMin:30, bizType:'business', bizRefId:'', bizPriority:'P1', opPriority:'P2', statusSetting:'已执行(正式生效)' },
@@ -1295,8 +1306,9 @@ const state = {
   recordsFilterPriority: '',
   recordsFilterProject: '',
   recordsFilterApp: '',
+  recordsFilterChannel: '',
   marketChartRowId: null,
-  tplFilter: { q:'', type:'', scope:'' },
+  tplFilter: { id:'', name:'', type:'', scope:'' },
   mktCreateTemplateId: '',
   batchPushRules: {
     eligibility: {
@@ -1364,20 +1376,20 @@ function regionCodes(list){
 const DATA = {
   business: [
     {id:'BN0019',name:'客户盈利达标提醒',project:'Dana',app:['DANA App','GoCap'],regions:['+62 [ID]','+84 [VN]'],bizType:'业务推送',scenarioId:'SCN009',channels:['Push','私信'],priority:'P2',pushIntervalMin:1440,last:'2026-07-24 11:20:18',sent:3260,status:'运行中',created:'2026-07-22 10:00:00',updated:'2026-07-24 11:20:18',profitConfig:{profitPeriod:'日盈利',profitThreshold:30000}},
-    {id:'BN0018',name:'实名认证成功通知',project:'Dana',app:['DANA App','GoCap'],regions:['+62 [ID]','+84 [VN]'],bizType:'业务推送',scenarioId:'SCN001',channels:['Push','私信','邮件'],priority:'P1',pushIntervalMin:30,last:'2026-07-24 09:12:03',sent:128420,status:'运行中',created:'2026-07-10 09:00:00',updated:'2026-07-20 14:22:11'},
+    {id:'BN0018',name:'实名认证成功通知',project:'Dana',app:['DANA App','GoCap'],regions:['+62 [ID]','+84 [VN]'],bizType:'业务推送',scenarioId:'SCN001',channels:['Push','私信','邮件'],mailChannel:'EMAIL-SES',priority:'P1',pushIntervalMin:30,last:'2026-07-24 09:12:03',sent:128420,status:'运行中',created:'2026-07-10 09:00:00',updated:'2026-07-20 14:22:11'},
     {id:'BN0017',name:'大额充值成功提醒',project:'Dana',app:['DANA App','GoCap','Partner App'],regions:['+62 [ID]'],bizType:'业务推送',scenarioId:'SCN002',channels:['Push','私信'],priority:'P1',pushIntervalMin:15,last:'2026-07-24 08:55:41',sent:8420,status:'运行中',created:'2026-07-08 11:00:00',updated:'2026-07-18 11:02:00'},
     {id:'BN0016',name:'模拟大赛交易提醒三',project:'Dana',app:['DANA App','ForexDana'],regions:['+62 [ID]','+60 [MY]'],bizType:'活动推送',activityId:'ACT005',channels:['Push','私信'],priority:'P2',pushIntervalMin:60,last:'2026-07-24 10:00:12',sent:15680,status:'运行中',created:'2026-07-15 18:00:00',updated:'2026-07-23 18:20:00'},
     {id:'BN0015',name:'提现失败原因通知',project:'TW',apps:'ALL',app:['TW App','TW Trade','TW Lite','GoTrading'],regions:['+84 [VN]','+66 [TH]'],bizType:'业务推送',scenarioId:'SCN003',channels:['Push','私信','WhatsApp'],priority:'P0',pushIntervalMin:30,last:'2026-07-22 19:03:55',sent:3902,status:'已暂停',created:'2026-07-12 10:00:00',updated:'2026-07-22 19:10:00'},
-    {id:'BN0014',name:'四周年确认收货地址',project:'Dana',app:['DANA App','BtcDana'],regions:['+62 [ID]','+63 [PH]'],bizType:'活动推送',activityId:'ACT007',channels:['Push','邮件'],priority:'P2',pushIntervalMin:120,last:'--',sent:0,status:'待生效',created:'2026-07-21 10:05:33',updated:'2026-07-21 10:05:33'},
+    {id:'BN0014',name:'四周年确认收货地址',project:'Dana',app:['DANA App','BtcDana'],regions:['+62 [ID]','+63 [PH]'],bizType:'活动推送',activityId:'ACT007',channels:['Push','邮件'],mailChannel:'EMAIL-ALI',priority:'P2',pushIntervalMin:120,last:'--',sent:0,status:'已暂停',created:'2026-07-21 10:05:33',updated:'2026-07-21 10:05:33'},
     {id:'BN0012',name:'模拟大赛对手匹配',project:'Dana',app:['DANA App','FDTrek'],regions:['+62 [ID]'],bizType:'活动推送',activityId:'ACT006',channels:['Push'],priority:'P2',pushIntervalMin:45,last:'2026-07-15 09:30:00',sent:6240,status:'已暂停',created:'2026-07-05 11:00:00',updated:'2026-07-16 11:00:00'},
   ],
   operation: [
     {id:'OP0091',name:'印尼斋月活动召回',project:'Dana',apps:['DANA App'],opType:'用户召回',category:'用户召回',priority:'P2',audience:'地区：+62 [ID]',audienceMode:'region',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'动态计算',channels:['Push','私信'],plan:'循环发送',loopType:'weekly',weekdays:['周一'],sendTime:'10:00',next:'2026-07-25 10:00:00',batches:12,sent:386200,status:'运行中',operator:'amy.li',creator:'amy.li',created:'2026-07-01 10:00:00',updated:'2026-07-23 15:20:00'},
     {id:'OP0090',name:'VIP3 及以上周末福利',project:'TW',apps:['TW Trade'],opType:'福利通知',category:'福利通知',priority:'P2',audience:'VIP3 及以上',audienceMode:'select',tagVerse:'VIP3 及以上',region:'',regions:[],crowd:'每次执行重新计算',channels:['Push'],plan:'循环发送',loopType:'weekly',weekdays:['周六','周日'],sendTime:'09:00',next:'2026-07-26 09:00:00',batches:4,sent:42880,status:'运行中',operator:'kevin.w',creator:'kevin.w',created:'2026-07-10 09:00:00',updated:'2026-07-22 11:11:11'},
-    {id:'OP0089',name:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',opType:'系统维护',category:'系统维护',priority:'P1',audience:'导入 SID：2,136 人',audienceMode:'import',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'固定名单',channels:['Push','私信'],plan:'单次定时',next:'2026-07-24 22:00:00',batches:0,sent:0,status:'待生效',operator:'ops.admin',creator:'ops.admin',created:'2026-07-24 10:05:00',updated:'2026-07-24 10:05:00'},
-    {id:'OP0088',name:'全量用户节假日问候',project:'TW',apps:[],opType:'活动通知',category:'活动通知',priority:'P1',audience:'全量用户',audienceMode:'add',region:'',regions:[],crowd:'动态计算',channels:['Push'],plan:'立即发送',next:'--',batches:1,sent:920114,status:'已完成',operator:'mia.chen',creator:'mia.chen',created:'2026-06-28 08:00:00',updated:'2026-07-01 08:30:00'},
-    {id:'OP0087',name:'订阅黄金行情用户活动',project:'TW',apps:['TW Trade','TW Lite'],opType:'活动通知',category:'活动通知',priority:'P1',audience:'订阅：黄金主题 / +62 [ID]',audienceMode:'add',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'动态计算',channels:['Push','WhatsApp'],plan:'单次定时',next:'2026-07-28 14:00:00',batches:0,sent:0,status:'待生效',operator:'amy.li',creator:'amy.li',created:'2026-07-20 16:40:00',updated:'2026-07-20 16:40:00'},
-    {id:'OP0085',name:'TW 项目地区推广',project:'TW',apps:['TW Trade'],opType:'其他',category:'其他',priority:'P3',audience:'地区：+84 [VN]、+66 [TH]',audienceMode:'region',region:'+84 [VN]、+66 [TH]',regions:['+84 [VN]','+66 [TH]'],crowd:'固定快照',channels:['Push','私信'],plan:'立即发送',next:'--',batches:1,sent:55620,status:'已暂停',operator:'ops.admin',creator:'ops.admin',created:'2026-07-15 13:00:00',updated:'2026-07-18 13:00:00'},
+    {id:'OP0089',name:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',opType:'系统维护',category:'系统维护',priority:'P1',audience:'导入 SID：2,136 人',audienceMode:'import',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'固定名单',channels:['Push','私信'],plan:'定时发送',next:'2026-07-24 22:00:00',batches:0,sent:0,status:'待生效',operator:'ops.admin',creator:'ops.admin',created:'2026-07-24 10:05:00',updated:'2026-07-24 10:05:00'},
+    {id:'OP0088',name:'全量用户节假日问候',project:'TW',apps:[],opType:'活动通知',category:'活动通知',priority:'P1',audience:'全量用户',audienceMode:'add',region:'',regions:[],crowd:'动态计算',channels:['Push'],plan:'定时发送',next:'--',batches:1,sent:920114,status:'已完成',operator:'mia.chen',creator:'mia.chen',created:'2026-06-28 08:00:00',updated:'2026-07-01 08:30:00'},
+    {id:'OP0087',name:'订阅黄金行情用户活动',project:'TW',apps:['TW Trade','TW Lite'],opType:'活动通知',category:'活动通知',priority:'P1',audience:'订阅：黄金主题 / +62 [ID]',audienceMode:'add',region:'+62 [ID]',regions:['+62 [ID]'],crowd:'动态计算',channels:['Push','WhatsApp'],plan:'定时发送',next:'2026-07-28 14:00:00',batches:0,sent:0,status:'待生效',operator:'amy.li',creator:'amy.li',created:'2026-07-20 16:40:00',updated:'2026-07-20 16:40:00'},
+    {id:'OP0085',name:'TW 项目地区推广',project:'TW',apps:['TW Trade'],opType:'其他',category:'其他',priority:'P3',audience:'地区：+84 [VN]、+66 [TH]',audienceMode:'region',region:'+84 [VN]、+66 [TH]',regions:['+84 [VN]','+66 [TH]'],crowd:'固定快照',channels:['Push','私信'],plan:'定时发送',next:'--',batches:1,sent:55620,status:'已暂停',operator:'ops.admin',creator:'ops.admin',created:'2026-07-15 13:00:00',updated:'2026-07-18 13:00:00'},
   ],
   market: [
     {id:'MK0042',name:'BTC 短时暴涨提醒',project:'TW',apps:['TW App','TW Trade','TW Lite','GoTrading'],app:'TW Trade',mktType:'时间段',source:'MT5',symbols:['BTCUSD','ETHUSD'],symbol:'BTCUSD',mktUnit:'$',mktGate:'',mktPeriodMin:'5',mktPeriodPreset:'5',change:'3%',cond:'5 分钟 · 涨跌幅 3%',audience:'按地区 · +62 [ID]、+84 [VN]',audienceMode:'region',regions:['+62 [ID]','+84 [VN]'],marketTagVerse:'',listen:'交易时段',freq:'每 5 分钟',cool:'30 分钟',today:3,last:'2026-07-24 10:18:22',status:'运行中',priority:'P2',created:'2026-07-18 10:00:00'},
@@ -1446,28 +1458,31 @@ const DATA = {
   ],
   priorityTotalDaily: 8,
   activities: [
-    {id:'ACT001', name:'模拟交易大赛', priority:'P2', status:'启用'},
-    {id:'ACT002', name:'四周年活动', priority:'P2', status:'启用'},
-    {id:'ACT003', name:'斋月专属活动', priority:'P3', status:'启用'},
-    {id:'ACT004', name:'新用户迎新礼', priority:'P1', status:'停用'},
-    {id:'ACT005', name:'模拟交易大赛-交易提醒三', priority:'P2', status:'启用'},
-    {id:'ACT006', name:'模拟交易大赛-对手匹配成功', priority:'P2', status:'启用'},
-    {id:'ACT007', name:'四周年活动-确认收货地址通知', priority:'P2', status:'启用'},
-    {id:'ACT008', name:'模拟交易大赛-交易提醒一', priority:'P2', status:'启用'},
-    {id:'ACT009', name:'模拟交易大赛-交易提醒二', priority:'P2', status:'启用'},
-    {id:'ACT010', name:'模拟交易大赛-交易提醒四', priority:'P2', status:'启用'},
-    {id:'ACT011', name:'四周年活动-填写收货地址通知', priority:'P2', status:'启用'},
+    {id:'ACT001', name:'模拟交易大赛', project:'Dana', priority:'P2', status:'启用'},
+    {id:'ACT002', name:'四周年活动', project:'Dana', priority:'P2', status:'启用'},
+    {id:'ACT003', name:'斋月专属活动', project:'Dana', priority:'P3', status:'启用'},
+    {id:'ACT004', name:'新用户迎新礼', project:'TW', priority:'P1', status:'停用'},
+    {id:'ACT005', name:'模拟交易大赛-交易提醒三', project:'Dana', priority:'P2', status:'启用'},
+    {id:'ACT006', name:'模拟交易大赛-对手匹配成功', project:'Dana', priority:'P2', status:'启用'},
+    {id:'ACT007', name:'四周年活动-确认收货地址通知', project:'Dana', priority:'P2', status:'启用'},
+    {id:'ACT008', name:'模拟交易大赛-交易提醒一', project:'Dana', priority:'P2', status:'启用'},
+    {id:'ACT009', name:'模拟交易大赛-交易提醒二', project:'Dana', priority:'P2', status:'启用'},
+    {id:'ACT010', name:'模拟交易大赛-交易提醒四', project:'Dana', priority:'P2', status:'启用'},
+    {id:'ACT011', name:'四周年活动-填写收货地址通知', project:'Dana', priority:'P2', status:'启用'},
+    {id:'ACT012', name:'TW 周末福利活动', project:'TW', priority:'P2', status:'启用'},
   ],
   bizScenarios: [
-    {id:'SCN001', name:'实名认证', priority:'P1', status:'启用'},
-    {id:'SCN002', name:'充值成功', priority:'P1', status:'启用'},
-    {id:'SCN003', name:'提现失败', priority:'P0', status:'启用'},
-    {id:'SCN004', name:'异常登录', priority:'P0', status:'启用'},
-    {id:'SCN005', name:'新设备登录', priority:'P1', status:'启用'},
-    {id:'SCN006', name:'修改密码成功', priority:'P1', status:'启用'},
-    {id:'SCN007', name:'绑定银行卡成功', priority:'P1', status:'启用'},
-    {id:'SCN008', name:'账户变更', priority:'P1', status:'启用'},
-    {id:'SCN009', name:'客户盈利', priority:'P2', status:'启用'},
+    {id:'SCN001', name:'实名认证', project:'Dana', priority:'P1', status:'启用'},
+    {id:'SCN002', name:'充值成功', project:'Dana', priority:'P1', status:'启用'},
+    {id:'SCN003', name:'提现失败', project:'TW', priority:'P0', status:'启用'},
+    {id:'SCN004', name:'异常登录', project:'TW', priority:'P0', status:'启用'},
+    {id:'SCN005', name:'新设备登录', project:'Dana', priority:'P1', status:'启用'},
+    {id:'SCN006', name:'修改密码成功', project:'Dana', priority:'P1', status:'启用'},
+    {id:'SCN007', name:'绑定银行卡成功', project:'Dana', priority:'P1', status:'启用'},
+    {id:'SCN008', name:'账户变更', project:'Dana', priority:'P1', status:'启用'},
+    {id:'SCN009', name:'客户盈利', project:'Dana', priority:'P2', status:'启用'},
+    {id:'SCN010', name:'实名认证', project:'TW', priority:'P1', status:'启用'},
+    {id:'SCN011', name:'充值成功', project:'TW', priority:'P1', status:'启用'},
   ],
 };
 
@@ -1667,6 +1682,9 @@ function saveCurrentAsTemplate(){
     row.msgAppPage = state.drawer.msgAppPage || '';
     row.msgUrl = state.drawer.msgUrl || '';
   }
+  if(channels.includes('邮件')){
+    row.mailChannel = state.drawer.mailChannel || 'EMAIL-SES';
+  }
   DATA.templates.unshift(row);
   closeSaveAsTemplateModal();
   toast('已保存为模板：' + nextId);
@@ -1803,25 +1821,37 @@ function matchPriorityFilter(rowPriority, filterVal){
   return normalizePriorityForFilter(rowPriority) === filterVal;
 }
 function onBizFilterChange(){
+  const idEl = document.getElementById('biz-id-filter');
+  const nameEl = document.getElementById('biz-name-filter');
   const priEl = document.getElementById('biz-priority-filter');
+  state.bizFilter.id = idEl ? idEl.value.trim() : '';
+  state.bizFilter.name = nameEl ? nameEl.value.trim() : '';
   state.bizFilter.priority = priEl ? priEl.value : '';
   state.page.business = 1;
   renderCurrent();
 }
 function resetBizFilter(){
+  const idEl = document.getElementById('biz-id-filter');
+  const nameEl = document.getElementById('biz-name-filter');
   const priEl = document.getElementById('biz-priority-filter');
+  if(idEl) idEl.value = '';
+  if(nameEl) nameEl.value = '';
   if(priEl) priEl.value = '';
-  state.bizFilter = { priority:'' };
+  state.bizFilter = { id:'', name:'', priority:'' };
   state.page.business = 1;
   renderCurrent();
   toast('已重置筛选');
 }
 function onOpFilterChange(){
+  const idEl = document.getElementById('op-id-filter');
+  const nameEl = document.getElementById('op-name-filter');
   const planEl = document.getElementById('op-plan-filter');
   const statusEl = document.getElementById('op-status-filter');
   const priEl = document.getElementById('op-priority-filter');
   const regionEl = document.getElementById('op-region-filter');
   const opEl = document.getElementById('op-operator-filter');
+  state.opFilter.id = idEl ? idEl.value.trim() : '';
+  state.opFilter.name = nameEl ? nameEl.value.trim() : '';
   state.opFilter.plan = planEl ? planEl.value : '';
   state.opFilter.status = statusEl ? statusEl.value : '';
   state.opFilter.priority = priEl ? priEl.value : '';
@@ -1831,35 +1861,43 @@ function onOpFilterChange(){
   renderCurrent();
 }
 function resetOpFilter(){
+  const idEl = document.getElementById('op-id-filter');
+  const nameEl = document.getElementById('op-name-filter');
   const planEl = document.getElementById('op-plan-filter');
   const statusEl = document.getElementById('op-status-filter');
   const priEl = document.getElementById('op-priority-filter');
   const regionEl = document.getElementById('op-region-filter');
   const opEl = document.getElementById('op-operator-filter');
+  if(idEl) idEl.value = '';
+  if(nameEl) nameEl.value = '';
   if(planEl) planEl.value = '';
   if(statusEl) statusEl.value = '';
   if(priEl) priEl.value = '';
   if(regionEl) regionEl.value = '';
   if(opEl) opEl.value = '';
-  state.opFilter = { plan:'', status:'', priority:'', region:'', operator:'' };
+  state.opFilter = { id:'', name:'', plan:'', status:'', priority:'', region:'', operator:'' };
   state.page.operation = 1;
   renderCurrent();
   toast('已重置筛选');
 }
 function onMarketFilterChange(){
-  const priEl = document.getElementById('mkt-priority-filter');
+  const idEl = document.getElementById('mkt-id-filter');
+  const nameEl = document.getElementById('mkt-name-filter');
   const symEl = document.getElementById('mkt-symbol-filter');
-  state.mktFilter.priority = priEl ? priEl.value : '';
+  state.mktFilter.id = idEl ? idEl.value.trim() : '';
+  state.mktFilter.name = nameEl ? nameEl.value.trim() : '';
   state.mktFilter.symbol = symEl ? symEl.value.trim() : '';
   state.page.market = 1;
   renderCurrent();
 }
 function resetMarketFilter(){
-  const priEl = document.getElementById('mkt-priority-filter');
+  const idEl = document.getElementById('mkt-id-filter');
+  const nameEl = document.getElementById('mkt-name-filter');
   const symEl = document.getElementById('mkt-symbol-filter');
-  if(priEl) priEl.value = '';
+  if(idEl) idEl.value = '';
+  if(nameEl) nameEl.value = '';
   if(symEl) symEl.value = '';
-  state.mktFilter = { priority:'', symbol:'' };
+  state.mktFilter = { id:'', name:'', symbol:'' };
   state.page.market = 1;
   renderCurrent();
   toast('已重置筛选');
@@ -1871,12 +1909,14 @@ function onRecordsFilterChange(){
   const priEl = document.getElementById('records-priority-filter');
   const projEl = document.getElementById('recordsFilterProject');
   const appEl = document.getElementById('recordsFilterApp');
+  const chEl = document.getElementById('recordsFilterChannel');
   state.recordsBatchKeyword = batchEl ? batchEl.value.trim() : '';
   state.recordsKeyword = srcEl ? srcEl.value.trim() : '';
   state.recordsFilterType = typeEl ? typeEl.value : '';
   state.recordsFilterPriority = priEl ? priEl.value : '';
   state.recordsFilterProject = projEl ? projEl.value : '';
   state.recordsFilterApp = appEl ? appEl.value : '';
+  state.recordsFilterChannel = chEl ? chEl.value : '';
   state.page.records = 1;
   renderRecords();
 }
@@ -1888,6 +1928,7 @@ function resetRecordsFilter(){
   state.recordsFilterPriority = '';
   state.recordsFilterProject = '';
   state.recordsFilterApp = '';
+  state.recordsFilterChannel = '';
   state.page.records = 1;
   renderRecords();
   toast('已重置筛选');
@@ -2002,21 +2043,25 @@ function deleteTemplate(id){
   toast('已删除模板 ' + id);
 }
 function onTplFilterChange(){
-  const qEl = document.getElementById('tplFilterQ');
+  const idEl = document.getElementById('tplFilterId');
+  const nameEl = document.getElementById('tplFilterName');
   const tEl = document.getElementById('tplFilterType');
   const sEl = document.getElementById('tplFilterScope');
-  state.tplFilter.q = qEl ? qEl.value.trim() : '';
+  state.tplFilter.id = idEl ? idEl.value.trim() : '';
+  state.tplFilter.name = nameEl ? nameEl.value.trim() : '';
   state.tplFilter.type = tEl ? tEl.value : '';
   state.tplFilter.scope = sEl ? sEl.value : '';
   state.page.template = 1;
   renderTemplates();
 }
 function resetTplFilter(){
-  state.tplFilter = { q:'', type:'', scope:'' };
-  const qEl = document.getElementById('tplFilterQ');
+  state.tplFilter = { id:'', name:'', type:'', scope:'' };
+  const idEl = document.getElementById('tplFilterId');
+  const nameEl = document.getElementById('tplFilterName');
   const tEl = document.getElementById('tplFilterType');
   const sEl = document.getElementById('tplFilterScope');
-  if(qEl) qEl.value = '';
+  if(idEl) idEl.value = '';
+  if(nameEl) nameEl.value = '';
   if(tEl) tEl.value = '';
   if(sEl) sEl.value = '';
   state.page.template = 1;
@@ -2025,18 +2070,15 @@ function resetTplFilter(){
 }
 function filterTemplates(rows){
   let list = rows.slice();
-  const q = (state.tplFilter.q || '').toLowerCase();
+  const idQ = (state.tplFilter.id || '').toLowerCase();
+  const nameQ = (state.tplFilter.name || '').toLowerCase();
   const type = state.tplFilter.type || '';
   const scope = state.tplFilter.scope || '';
   if(type) list = list.filter(r=>r.type===type);
   if(scope==='公用') list = list.filter(r=>r.scope==='公用' || !(r.projects||[]).length);
   else if(scope) list = list.filter(r=>r.scope==='公用' || !(r.projects||[]).length || (r.projects||[]).includes(scope));
-  if(q){
-    list = list.filter(r=>
-      String(r.id||'').toLowerCase().includes(q) ||
-      String(r.name||'').toLowerCase().includes(q)
-    );
-  }
+  if(idQ) list = list.filter(r=>String(r.id||'').toLowerCase() === idQ);
+  if(nameQ) list = list.filter(r=>String(r.name||'').toLowerCase().includes(nameQ));
   return list;
 }
 function renderTemplates(){
@@ -2130,6 +2172,10 @@ function formatMarketCondCell(r){
 }
 function filterBusiness(rows){
   let list = rows.slice();
+  const idQ = (state.bizFilter.id || '').toLowerCase();
+  const nameQ = (state.bizFilter.name || '').toLowerCase();
+  if(idQ) list = list.filter(r=>String(r.id||'').toLowerCase() === idQ);
+  if(nameQ) list = list.filter(r=>String(r.name||'').toLowerCase().includes(nameQ));
   if(state.bizFilter.priority){
     list = list.filter(r=>matchPriorityFilter(resolveBizRowPriority(r), state.bizFilter.priority));
   }
@@ -2196,7 +2242,11 @@ function opOperatorText(row){
 }
 function filterOperation(rows){
   let list = rows;
-  if(state.opFilter.plan) list = list.filter(r=>r.plan===state.opFilter.plan);
+  const idQ = (state.opFilter.id || '').toLowerCase();
+  const nameQ = (state.opFilter.name || '').toLowerCase();
+  if(idQ) list = list.filter(r=>String(r.id||'').toLowerCase() === idQ);
+  if(nameQ) list = list.filter(r=>String(r.name||'').toLowerCase().includes(nameQ));
+  if(state.opFilter.plan) list = list.filter(r=>formatOpPlanLabel(r)===state.opFilter.plan);
   if(state.opFilter.status) list = list.filter(r=>r.status===state.opFilter.status);
   if(state.opFilter.priority){
     list = list.filter(r=>{
@@ -2214,7 +2264,18 @@ function filterOperation(rows){
   }
   return list;
 }
-/** 运营推送列表「发送时间」展示：循环配置 / 预约时刻 / 立即发送 */
+/** 运营推送「发送计划」仅区分：定时发送 / 循环发送 */
+function isLoopOpPush(row){
+  if(!row) return false;
+  if(row.plan==='循环发送') return true;
+  if(row.loopType && row.loopType!=='none') return true;
+  if(row.opCycle && row.opCycle!=='none') return true;
+  return false;
+}
+function formatOpPlanLabel(row){
+  return isLoopOpPush(row) ? '循环发送' : '定时发送';
+}
+/** 运营推送列表「发送时间」展示：循环配置 / 预约时刻 / 立即 */
 function opSendTimeHm(row){
   if(row.sendTime) return String(row.sendTime).slice(0,5);
   const m = String(row.next||'').match(/\b(\d{2}:\d{2})(?::\d{2})?\b/);
@@ -2240,22 +2301,12 @@ function formatOpLoopSendTime(row){
   return '';
 }
 function formatOpSendTime(row){
-  if(!row || !row.plan) return '--';
-  if(row.plan==='立即发送') return '立即发送';
-  if(row.plan==='单次定时' || row.plan==='预约发送'){
-    return (row.next && row.next!=='--') ? row.next : '--';
-  }
+  if(!row) return '--';
   if(isLoopOpPush(row)){
     return formatOpLoopSendTime(row) || '--';
   }
-  return (row.next && row.next!=='--') ? row.next : '--';
-}
-function isLoopOpPush(row){
-  if(!row) return false;
-  if(row.plan==='循环发送') return true;
-  if(row.loopType && row.loopType!=='none') return true;
-  if(row.opCycle && row.opCycle!=='none') return true;
-  return false;
+  if(row.next && row.next!=='--') return row.next;
+  return '立即发送';
 }
 function canEditOperation(row){
   return isLoopOpPush(row);
@@ -2406,7 +2457,7 @@ function renderOperation(){
     <td><div class="cell-2line" title="${escHtml(regionCell)}">${escHtml(regionCell)}</div></td>
     <td>${formatAudienceCell(r)}</td>
     <td>${operationChannelTags(r.channels)}</td>
-    <td><span class="pill info">${r.plan}</span></td>
+    <td><span class="pill info">${formatOpPlanLabel(r)}</span></td>
     <td>${formatOpSendTime(r)}</td>
     <td>${escHtml(operatorCell)}</td>
     <td class="col-status">${statusPill(r.status)}</td>
@@ -2421,12 +2472,13 @@ function renderOperation(){
 
 function filterMarket(rows){
   let list = rows.slice();
+  const idQ = (state.mktFilter.id || '').toLowerCase();
+  const nameQ = (state.mktFilter.name || '').toLowerCase();
+  if(idQ) list = list.filter(r=>String(r.id||'').toLowerCase() === idQ);
+  if(nameQ) list = list.filter(r=>String(r.name||'').toLowerCase().includes(nameQ));
   const symQ = (state.mktFilter.symbol || '').trim().toUpperCase();
   if(symQ){
-    list = list.filter(r=>rowSymbolsValue(r).some(s=>String(s).toUpperCase().includes(symQ)));
-  }
-  if(state.mktFilter.priority){
-    list = list.filter(r=>matchPriorityFilter(r.priority || marketPriority(), state.mktFilter.priority));
+    list = list.filter(r=>rowSymbolsValue(r).some(s=>String(s).toUpperCase() === symQ));
   }
   return list;
 }
@@ -2490,6 +2542,7 @@ function renderRecordsFilter(){
   const pri = state.recordsFilterPriority || '';
   const proj = state.recordsFilterProject || '';
   const app = state.recordsFilterApp || '';
+  const channel = state.recordsFilterChannel || '';
   const appOpts = recordsAppFilterOptions(proj);
   const appOptsHtml = appOpts.map(a=>`<option value="${a}">${a}</option>`).join('');
   box.innerHTML = `
@@ -2518,7 +2571,7 @@ function renderRecordsFilter(){
         ${appOptsHtml}
       </select>
     </div>
-    <div class="filter-item"><label>通知渠道</label><select class="control"><option value="">全部</option><option>Push</option><option>私信</option></select></div>
+    <div class="filter-item"><label>推送渠道</label><select class="control" id="recordsFilterChannel" onchange="onRecordsFilterChange()"><option value="">全部</option><option>Push</option><option>私信</option><option>邮件</option></select></div>
     <div class="filter-item"><label>执行状态</label><select class="control"><option value="">全部</option><option>未开始</option><option>执行中</option><option>已完成</option></select></div>
     <div class="filter-item"><label>发送时间</label><div class="range-wrap"><input type="date"><span class="range-mid">至</span><input type="date"></div></div>`;
   const typeEl = document.getElementById('recordsFilterType');
@@ -2530,6 +2583,8 @@ function renderRecordsFilter(){
   const appEl = document.getElementById('recordsFilterApp');
   if(appEl && app && appOpts.includes(app)) appEl.value = app;
   else if(app && !appOpts.includes(app)) state.recordsFilterApp = '';
+  const chEl = document.getElementById('recordsFilterChannel');
+  if(chEl && channel) chEl.value = channel;
   applyFilterMoreLayout('records');
 }
 function onRecordsProjectFilterChange(){
@@ -2603,10 +2658,12 @@ function filterRecords(rows){
   const pri = state.recordsFilterPriority || '';
   const proj = state.recordsFilterProject || '';
   const app = state.recordsFilterApp || '';
+  const channel = state.recordsFilterChannel || '';
   if(type) list = list.filter(r=>recordSourceTypeLabel(r)===type);
   if(pri) list = list.filter(r=>matchPriorityFilter(r.priority, pri));
   if(proj) list = list.filter(r=>r.project===proj);
   if(app) list = list.filter(r=>recordMatchesAppFilter(r, app));
+  if(channel) list = list.filter(r=>(r.channels||[]).includes(channel));
   if(kw){
     list = list.filter(r=>String(r.srcName||'').toLowerCase().includes(kw));
   }
@@ -2894,14 +2951,43 @@ function normalizeBizPriority(v, fallback){
 }
 function getActivityById(id){ return (DATA.activities||[]).find(a=>a.id===id); }
 function getScenarioById(id){ return (DATA.bizScenarios||[]).find(s=>s.id===id); }
-function selectableActivities(includeId){
-  return (DATA.activities||[]).filter(a=>a.status==='启用' || a.id===includeId);
+function normalizeBizRefProject(v){
+  return v === 'TW' ? 'TW' : 'Dana';
 }
-function selectableScenarios(includeId){
-  return (DATA.bizScenarios||[]).filter(s=>s.status==='启用' || s.id===includeId);
+/** 业务通知 / 模板表单中，活动与场景按项目过滤 */
+function resolveBizRefFilterProject(){
+  if(state.drawer?.type === 'business') return state.drawer.project || '';
+  if(state.drawer?.type === 'template'){
+    const ps = (state.drawer.tplProjects || []).filter(Boolean);
+    if(ps.length === 1) return ps[0];
+  }
+  return '';
+}
+function matchBizRefProject(row, project){
+  if(!project) return true;
+  return normalizeBizRefProject(row?.project) === project;
+}
+function selectableActivities(includeId, project){
+  const proj = arguments.length >= 2 ? project : resolveBizRefFilterProject();
+  return (DATA.activities||[]).filter(a=>{
+    if(includeId && a.id === includeId) return true;
+    if(a.status !== '启用') return false;
+    return matchBizRefProject(a, proj);
+  });
+}
+function selectableScenarios(includeId, project){
+  const proj = arguments.length >= 2 ? project : resolveBizRefFilterProject();
+  return (DATA.bizScenarios||[]).filter(s=>{
+    if(includeId && s.id === includeId) return true;
+    if(s.status !== '启用') return false;
+    return matchBizRefProject(s, proj);
+  });
 }
 function bizRefOptionLabel(ref){
-  return ref?.name || '';
+  if(!ref) return '';
+  const proj = resolveBizRefFilterProject();
+  if(!proj && ref.project) return ref.name + '（' + ref.project + '）';
+  return ref.name || '';
 }
 function bizRefDisplayById(typeKey, id){
   const ref = typeKey === 'activity' ? getActivityById(id) : getScenarioById(id);
@@ -3025,13 +3111,14 @@ function renderActivityPriority(){
   const rows = DATA.activities || [];
   body.innerHTML = rows.map(r=>`<tr>
     <td>${escHtml(r.name)}</td>
+    <td>${escHtml(normalizeBizRefProject(r.project))}</td>
     <td>${priBadge(normalizeBizPriority(r.priority))}</td>
     <td>${settingsEnableSwitch(r.status==='启用', `askToggleBizRefStatus('activity','${r.id}')`)}</td>
     <td class="ops"><div class="icon-actions">
       ${iconBtn(I.edit,'编辑',`openBizRefEditor('activity','${r.id}')`)}
       ${iconBtn(I.trash,'删除',`askDeleteBizRef('activity','${r.id}')`,true)}
     </div></td>
-  </tr>`).join('') || `<tr><td colspan="4" class="muted" style="text-align:center;height:64px">暂无活动，请点击「新增活动」</td></tr>`;
+  </tr>`).join('') || `<tr><td colspan="5" class="muted" style="text-align:center;height:64px">暂无活动，请点击「新增活动」</td></tr>`;
 }
 function renderScenarioPriority(){
   const body = document.getElementById('scenarioPriorityBody');
@@ -3039,13 +3126,14 @@ function renderScenarioPriority(){
   const rows = DATA.bizScenarios || [];
   body.innerHTML = rows.map(r=>`<tr>
     <td>${escHtml(r.name)}</td>
+    <td>${escHtml(normalizeBizRefProject(r.project))}</td>
     <td>${priBadge(normalizeBizPriority(r.priority))}</td>
     <td>${settingsEnableSwitch(r.status==='启用', `askToggleBizRefStatus('scenario','${r.id}')`)}</td>
     <td class="ops"><div class="icon-actions">
       ${iconBtn(I.edit,'编辑',`openBizRefEditor('scenario','${r.id}')`)}
       ${iconBtn(I.trash,'删除',`askDeleteBizRef('scenario','${r.id}')`,true)}
     </div></td>
-  </tr>`).join('') || `<tr><td colspan="4" class="muted" style="text-align:center;height:64px">暂无业务场景，请点击「新增业务场景」</td></tr>`;
+  </tr>`).join('') || `<tr><td colspan="5" class="muted" style="text-align:center;height:64px">暂无业务场景，请点击「新增业务场景」</td></tr>`;
 }
 function openBizRefEditor(kind, id){
   const isActivity = kind==='activity';
@@ -3057,6 +3145,7 @@ function openBizRefEditor(kind, id){
     : (isActivity ? '新增活动' : '新增业务场景');
   document.getElementById('bizRefNameLabel').innerHTML = '<span class="req">*</span>' + (isActivity ? '活动名称' : '业务场景名称');
   document.getElementById('bizRefName').value = row?.name || '';
+  document.getElementById('bizRefProject').value = normalizeBizRefProject(row?.project);
   document.getElementById('bizRefPriority').value = normalizeBizPriority(row?.priority, isActivity ? 'P2' : 'P1');
   document.getElementById('bizRefEditorModal').classList.add('show');
 }
@@ -3069,18 +3158,21 @@ function saveBizRefEditor(){
   const kind = ed.kind;
   if(kind!=='activity' && kind!=='scenario') return;
   const name = (document.getElementById('bizRefName')?.value || '').trim();
+  const project = normalizeBizRefProject(document.getElementById('bizRefProject')?.value);
   const priority = normalizeBizPriority(document.getElementById('bizRefPriority')?.value);
   if(!name){ toast(kind==='activity' ? '请填写活动名称' : '请填写业务场景名称'); return; }
   const list = kind==='activity' ? DATA.activities : DATA.bizScenarios;
+  const sameName = (x)=> x.name===name && normalizeBizRefProject(x.project)===project;
   if(ed.mode==='edit' && ed.id){
     const row = list.find(x=>x.id===ed.id);
     if(!row){ toast('记录不存在'); return; }
-    if(list.some(x=>x.id!==ed.id && x.name===name)){ toast('名称已存在'); return; }
+    if(list.some(x=>x.id!==ed.id && sameName(x))){ toast('同项目下名称已存在'); return; }
     row.name = name;
+    row.project = project;
     row.priority = priority;
   } else {
-    if(list.some(x=>x.name===name)){ toast('名称已存在'); return; }
-    list.unshift({ id: nextBizRefId(kind), name, priority, status: '启用' });
+    if(list.some(sameName)){ toast('同项目下名称已存在'); return; }
+    list.unshift({ id: nextBizRefId(kind), name, project, priority, status: '启用' });
   }
   const savedId = ed.mode==='edit' ? ed.id : list[0]?.id;
   if(savedId){
@@ -3419,13 +3511,10 @@ function mockTaskLogs(type, row){
   const count = 3 + (seed % 4); // 3–6
   const templates = [
     `创建${typeLabel}`,
-    `编辑${typeLabel}，修改推送文案`,
-    `编辑${typeLabel}，修改推送渠道与跳转`,
-    `启用${typeLabel}，状态由“已暂停”变为“运行中”`,
-    `暂停${typeLabel}，状态由“运行中”变为“已暂停”`,
-    `禁用${typeLabel}，状态由“启用”变为“禁用”`,
-    `编辑${typeLabel}，修改目标人群`,
-    `编辑${typeLabel}，修改发送计划`,
+    `编辑${typeLabel}`,
+    `启用${typeLabel}`,
+    `暂停${typeLabel}`,
+    `禁用${typeLabel}`,
   ];
   const logs = [];
   for(let i=0;i<count;i++){
@@ -3442,7 +3531,7 @@ function mockTaskLogs(type, row){
     logs[logs.length - 1] = {
       operator: operators[seed % operators.length],
       time: logs[logs.length - 1].time,
-      content: `创建${typeLabel}「${(row && row.name) || ''}」`
+      content: `创建${typeLabel}`
     };
   }
   return logs;
@@ -4324,6 +4413,10 @@ function openEditDrawer(type, id){
     if(Array.isArray(row?.regions)) state.drawer.regions = regionCodes(row.regions);
     state.drawer.msgGroup = row?.project==='TW' ? '【TW】系统通知' : '【DANA】资金变更';
     state.drawer.statusSetting = normalizeStatusSetting(row?.statusSetting || row?.status);
+    state.drawer.contentDraft = emptyContentDraft(channelKeysFromLabels(row?.channels));
+    state.drawer.msgSendMode = row?.msgSendMode || inferMsgSendModeFromChannels(state.drawer.contentDraft.channels);
+    state.drawer.msgJump = normalizeMsgJump(row?.msgJump);
+    state.drawer.mailChannel = row?.mailChannel || 'EMAIL-SES';
     ensureDraftByLang();
     ensureJumpConfigState(true);
     if(isProfitScenarioId(state.drawer.bizRefId)){
@@ -4472,6 +4565,7 @@ function openTemplateEditor(mode, row){
     msgGroup: isEdit ? (row?.msgGroup || '【DANA】资金变更') : '【DANA】资金变更',
     msgAppPage: isEdit ? (row?.msgAppPage || '') : '',
     msgUrl: isEdit ? (row?.msgUrl || '') : '',
+    mailChannel: isEdit ? (row?.mailChannel || 'EMAIL-SES') : 'EMAIL-SES',
     contentDraft: emptyContentDraft(['push']),
     templateId:''
   };
@@ -4788,7 +4882,7 @@ const OP_SELECTABLE_CHANNELS = [
   {k:'push', n:'APP Push'},
   {k:'msg', n:'私信'}
 ];
-const CONTENT_EDITOR_CHANNEL_KEYS = ['push','msg'];
+const CONTENT_EDITOR_CHANNEL_KEYS = ['push','msg','mail'];
 function templateChannelOptions(type){
   if(type==='业务通知') return SELECTABLE_CHANNELS;
   if(type==='运营推送') return OP_SELECTABLE_CHANNELS;
@@ -5233,6 +5327,16 @@ function saveWithEnglishCheck(successMsg, thenClose){
       }
       state.drawer.detail.statusSetting = normalizeStatusSetting(state.drawer.statusSetting);
       state.drawer.detail.status = statusFromSetting(state.drawer.detail.statusSetting);
+      const draft = state.drawer.contentDraft;
+      state.drawer.detail.channels = channelLabelsFromKeys((draft && draft.channels) || ['push']);
+      state.drawer.detail.msgSendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels((draft && draft.channels) || []);
+      state.drawer.detail.msgJump = normalizeMsgJump(state.drawer.msgJump);
+      state.drawer.detail.msgGroup = state.drawer.msgGroup || '';
+      if((draft && draft.channels || []).includes('mail')){
+        state.drawer.detail.mailChannel = state.drawer.mailChannel || 'EMAIL-SES';
+      } else {
+        delete state.drawer.detail.mailChannel;
+      }
       state.drawer.detail.updated = formatNow();
     }
   }
@@ -5580,7 +5684,7 @@ function msgJumpGroupFields(){
 }
 function mailChannelFields(){
   const channel = state.drawer.mailChannel || 'EMAIL-SES';
-  return '<div class="field" style="margin-bottom:12px"><label class="label"><span class="req">*</span>邮件渠道</label>' +
+  return '<div class="field"><label class="label"><span class="req">*</span>邮件渠道</label>' +
     '<select class="control" id="mailChannel" onchange="state.drawer.mailChannel=this.value">' +
       ['EMAIL-SES','EMAIL-ALI'].map(o=>
         '<option' + (o===channel?' selected':'') + '>' + o + '</option>'
@@ -5603,17 +5707,22 @@ function channelEditorBlock(ch, content, vars, esc){
     state.drawer.type==='operation' ||
     (state.drawer.type==='template' && state.drawer.tplType==='运营推送')
   );
-  const showMailSettings = isMail && inPushForm;
+  const showMailSettings = isMail && (inPushForm || state.drawer.type==='template');
+  if(isMail){
+    return '<div class="ch-block">' +
+      '<div class="ch-block-hd">' + meta.n + '</div>' +
+      '<div class="ch-block-bd">' +
+        (showMailSettings ? mailChannelFields() : '') +
+      '</div></div>';
+  }
   const bodyHtml = bodyTextToHtml(content.body || '');
   return '<div class="ch-block">' +
     '<div class="ch-block-hd">' + meta.n + '</div>' +
     '<div class="ch-block-bd">' +
       (showPushSettings ? jumpConfigBlock() : '') +
       (showMsgSettings ? msgJumpGroupFields() : '') +
-      (showMailSettings ? mailChannelFields() : '') +
       '<div class="field" style="margin-bottom:12px"><label class="label"><span class="req">*</span>' + meta.bodyLabel + '</label>' +
-        (isMail ? '<div class="rich-toolbar"><span>文件</span><span>编辑</span><span>插入</span><span>格式</span><span>B</span><span>I</span><span>链接</span></div>' : '') +
-        '<div class="control var-body' + (isMail?' rich-body':'') + '" id="draftBody_' + ch + '" contenteditable="true" role="textbox" data-channel="' + ch + '"' +
+        '<div class="control var-body" id="draftBody_' + ch + '" contenteditable="true" role="textbox" data-channel="' + ch + '"' +
           ' onfocus="state.drawer.focusChannel=\'' + ch + '\'"' +
           ' oninput="markDraftDirty()"' +
           ' onblur="retokenizeVarBody(\'' + ch + '\');markDraftDirty()"' +
@@ -5798,6 +5907,7 @@ function onTplProjectChange(){
   }
   state.drawer.tplProjects = vals;
   state.drawer.tplScope = vals.length >= TPL_PROJECT_OPTS.length ? '公用' : '指定项目';
+  ensureTplBizRefSelection();
   if(isTemplateForm()) renderFormBody();
 }
 function onTplContentInput(){
@@ -5887,7 +5997,10 @@ function tplBizBindFieldsHtml(){
     ? selectableActivities(state.drawer.tplBizRefId)
     : selectableScenarios(state.drawer.tplBizRefId);
   const refLabel = isActivity ? '活动' : '业务场景';
-  const emptyHint = isActivity ? '暂无可用活动，请先在推送设置中配置' : '暂无可用业务场景，请先在推送设置中配置';
+  const filterProj = resolveBizRefFilterProject();
+  const emptyHint = isActivity
+    ? ('暂无可用活动' + (filterProj ? '（' + filterProj + '）' : '') + '，请先在推送设置中配置')
+    : ('暂无可用业务场景' + (filterProj ? '（' + filterProj + '）' : '') + '，请先在推送设置中配置');
   const priHtml = bizRefPriBadgeHtml(type, state.drawer.tplBizRefId);
   return '<div class="grid2">' +
     '<div class="field"><label class="label"><span class="req">*</span>业务类型</label>' +
@@ -5933,7 +6046,7 @@ function renderTemplateForm(){
   const tplChannelOpts = templateChannelOptions(tplType);
   const tplChannels = normalizeTemplateChannelKeys(state.drawer.tplChannels, tplType);
   const contentChannels = tplChannels.length ? tplChannels.slice() : ['push'];
-  const editorChannels = contentChannels.filter(ch=>ch!=='mail');
+  const editorChannels = contentChannels.slice();
   state.drawer.tplChannels = tplChannels;
   if(isBizTpl) ensureTplBizRefSelection();
   const tplVars = varsForTemplateForm();
@@ -6034,6 +6147,8 @@ function saveTemplateForm(){
       row.msgGroup = channels.includes('msg') ? (state.drawer.msgGroup || '') : '';
       row.msgAppPage = channels.includes('msg') ? (state.drawer.msgAppPage || '') : '';
       row.msgUrl = channels.includes('msg') ? (state.drawer.msgUrl || '') : '';
+      if(channels.includes('mail')) row.mailChannel = state.drawer.mailChannel || 'EMAIL-SES';
+      else delete row.mailChannel;
       row.desc = '';
       row.byLang = byLang;
       row.updated = formatNow();
@@ -6065,6 +6180,7 @@ function saveTemplateForm(){
       msgGroup: channels.includes('msg') ? (state.drawer.msgGroup || '') : '',
       msgAppPage: channels.includes('msg') ? (state.drawer.msgAppPage || '') : '',
       msgUrl: channels.includes('msg') ? (state.drawer.msgUrl || '') : '',
+      ...(channels.includes('mail') ? { mailChannel: state.drawer.mailChannel || 'EMAIL-SES' } : {}),
       scope,
       projects: saveProjects,
       desc: '',
@@ -6154,6 +6270,7 @@ function onBizProjectChange(project){
   }
   // 模板过滤随项目 / 业务类型变化：若当前绑定模板不可用则解除绑定（内容保留）
   clearMismatchedBizTemplate();
+  ensureBizRefSelection();
   if(!state.drawer.contentDraft) state.drawer.contentDraft = emptyContentDraft(['push']);
   renderFormBody();
   toast(project ? ('已切换项目：' + project) : '请先选择项目');
@@ -6415,8 +6532,8 @@ function channelKeysFromLabels(list){
 function hydrateOpPlanFromRow(row){
   const d = state.drawer;
   const loop = isLoopOpPush(row);
-  const scheduled = row?.plan==='单次定时' || row?.plan==='预约发送' || loop;
-  d.opSendMode = scheduled ? 'schedule' : 'now';
+  const hasScheduleTime = !!(row?.next && row.next!=='--') || !!String(row?.sendTime||'').trim();
+  d.opSendMode = (loop || hasScheduleTime) ? 'schedule' : 'now';
   d.opCycle = loop ? (row.loopType || row.opCycle || 'weekly') : 'none';
   d.opWeekdays = normalizeOpWeekdays(row?.weekdays || row?.opWeekdays);
   d.opMonthDays = normalizeOpMonthDays(row?.monthDays || row?.opMonthDays);
@@ -6441,10 +6558,11 @@ function applyOpPlanToRow(row){
   const when = formatBizPublishAt(d.opPublishAt);
   const hm = (when.match(/\b(\d{2}:\d{2})\b/) || [])[1] || '';
   if(d.opSendMode!=='schedule'){
-    row.plan = '立即发送';
+    row.plan = '定时发送';
     row.loopType = '';
     row.weekdays = [];
     row.sendTime = '';
+    row.next = '--';
     return;
   }
   if(d.opCycle && d.opCycle!=='none'){
@@ -6456,7 +6574,7 @@ function applyOpPlanToRow(row){
     row.next = when || row.next;
     return;
   }
-  row.plan = '单次定时';
+  row.plan = '定时发送';
   row.loopType = '';
   row.weekdays = [];
   row.sendTime = hm;
@@ -7241,7 +7359,7 @@ function renderDetailView(){
       <div class="k">状态</div><div class="v">${statusPill(d.status)}</div>
     </div></div>
     <div class="detail-block"><h4>发送计划</h4><div class="kv">
-      <div class="k">发送计划</div><div class="v">${d.plan}</div>
+      <div class="k">发送计划</div><div class="v">${formatOpPlanLabel(d)}</div>
       <div class="k">发送时间</div><div class="v">${formatOpSendTime(d)}</div>
       ${isLoopOpPush(d) ? '<div class="k">下一次发送</div><div class="v">' + (d.next||'--') + '</div>' : ''}
       <div class="k">创建时间</div><div class="v">${d.created||d.updated||'--'}</div>
@@ -7486,7 +7604,9 @@ function bizEventCondBlock(){
     ? selectableActivities(state.drawer.bizRefId)
     : selectableScenarios(state.drawer.bizRefId);
   const refLabel = isActivity ? '活动' : '业务场景';
-  const emptyHint = isActivity ? '暂无可用活动，请先在推送设置中配置' : '暂无可用业务场景，请先在推送设置中配置';
+  const emptyHint = isActivity
+    ? ('暂无可用活动' + (state.drawer.project ? '（' + state.drawer.project + '）' : '') + '，请先在推送设置中配置')
+    : ('暂无可用业务场景' + (state.drawer.project ? '（' + state.drawer.project + '）' : '') + '，请先在推送设置中配置');
   const priHtml = bizRefPriBadgeHtml(typeKey, state.drawer.bizRefId);
   return '<div class="grid2">' +
     '<div class="field"><label class="label"><span class="req">*</span>业务类型</label>' +
