@@ -66,12 +66,14 @@ a:hover{text-decoration:underline}
 .create-foot{padding:12px 20px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;flex-shrink:0;position:sticky;bottom:0}
 .create-foot .left,.create-foot .right{display:flex;gap:8px;align-items:center}
 
-/* Create split: left content / right config */
-.split-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);min-height:560px;height:100%}
+/* Create split: left content / right config — 约 6:4，右侧两列表单 */
+.split-layout{display:grid;grid-template-columns:minmax(360px,1.2fr) minmax(320px,.8fr);min-height:560px;height:100%}
 .split-left,.split-right{min-width:0;overflow:auto}
-.split-left{padding:18px 20px 24px;border-right:1px solid var(--line);background:#fff}
+.split-left{padding:16px 18px 22px;border-right:1px solid var(--line);background:#fff}
 .split-right{padding:18px 18px 24px;background:#f8fafc}
-.split-right .grid2,.split-right .grid3{grid-template-columns:1fr}
+.split-right .grid2{grid-template-columns:1fr 1fr}
+.split-right .grid3{grid-template-columns:1fr 1fr}
+.split-right .field.full{grid-column:1/-1}
 .split-panel-title{font-size:14px;font-weight:600;margin:0 0 12px;color:#1f2430}
 .split-panel-title .hint{font-weight:400;font-size:12px;color:var(--muted);margin-left:8px}
 .content-mode{display:flex;gap:0;margin-bottom:14px;border:1px solid var(--field-line);border-radius:8px;overflow:hidden;width:fit-content;background:#fff}
@@ -92,8 +94,18 @@ a:hover{text-decoration:underline}
 .lang-editor .editor-body{padding:14px}
 .ch-block{border:1px solid var(--line);border-radius:10px;margin-bottom:12px;overflow:visible;background:#fff}
 .ch-block:last-child{margin-bottom:0}
-.ch-block-hd{padding:8px 12px;background:#f5f8ff;border-bottom:1px solid var(--line);font-size:13px;font-weight:600;color:var(--pri)}
+.ch-block-hd{padding:8px 12px;background:#f5f8ff;border-bottom:1px solid var(--line);font-size:13px;font-weight:600;color:var(--pri);display:flex;align-items:center}
+.ch-block-hd label.ch-toggle{display:inline-flex;align-items:center;gap:8px;margin:0;cursor:pointer;font-weight:600;color:inherit;user-select:none}
+.ch-block-hd label.ch-toggle input{accent-color:var(--pri);width:15px;height:15px;margin:0}
+.config-mod-hd label.ch-toggle{display:inline-flex;align-items:center;gap:8px;margin:0;cursor:pointer;font-weight:600;color:inherit;user-select:none}
+.config-mod-hd label.ch-toggle input{accent-color:var(--pri);width:15px;height:15px;margin:0}
 .ch-block-bd{padding:12px}
+.ch-block.is-disabled{opacity:.55;background:#f8fafc}
+.ch-block.is-disabled .ch-block-hd{color:#94a3b8;background:#f1f5f9}
+.ch-block.is-disabled .var-body,.ch-block.is-disabled .control{pointer-events:none;background:#f8fafc;color:#94a3b8}
+.ch-block.is-disabled .chip-group{pointer-events:none}
+.channel-cfg-disabled{border:none;margin:0;padding:0;min-width:0;opacity:.55}
+.channel-cfg-disabled .control{background:#f8fafc;color:#94a3b8}
 .rich-toolbar{display:flex;flex-wrap:wrap;gap:4px;padding:6px 8px;border:1px solid var(--field-line);border-bottom:none;border-radius:7px 7px 0 0;background:#f8fafc}
 .rich-toolbar span{font-size:11px;color:#64748b;padding:2px 6px;border-radius:4px;background:#fff;border:1px solid #e2e8f0}
 .rich-body{border-radius:0 0 7px 7px!important;border-top-left-radius:0!important;border-top-right-radius:0!important}
@@ -135,7 +147,7 @@ a:hover{text-decoration:underline}
 .op-img-add{width:88px;height:88px;border:1px dashed #c4d0e6;border-radius:8px;background:#fff;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:#64748b;font-size:12px}
 .op-img-add:hover{border-color:var(--pri);color:var(--pri);background:#f5f8ff}
 .op-img-add input{display:none}
-@media (max-width:1100px){
+@media (max-width:1280px){
   .split-layout{grid-template-columns:1fr}
   .split-left{border-right:none;border-bottom:1px solid var(--line)}
 }
@@ -291,6 +303,10 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
 .field.full{grid-column:1/-1}
 .label{font-size:13px;font-weight:500;color:#334155}
 .label .req{color:#ef4444;margin-right:2px}
+.label-row{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:20px}
+.label-row>.label{margin:0}
+.label-check{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:400;color:#64748b;cursor:pointer;user-select:none;white-space:nowrap}
+.label-check input{accent-color:var(--pri);margin:0}
 .help-q{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;margin-left:4px;border:1px solid #94a3b8;border-radius:50%;color:#64748b;font-size:10px;font-weight:700;line-height:1;cursor:help;vertical-align:-1px;background:#fff}
 .help-q:hover,.help-q:focus{color:var(--pri);border-color:var(--pri)}
 .help-q-float{position:fixed;width:268px;padding:8px 10px;background:#1f2937;color:#fff;font-size:12px;font-weight:400;line-height:1.55;border-radius:6px;box-shadow:var(--shadow-pop);z-index:2400;pointer-events:none}
@@ -644,13 +660,12 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
       </div>
     </div>
 
-    <!-- 一级导航顺序：业务通知 → 运营推送 → 行情提醒 → 推送记录 → 模板中心 → 推送设置 -->
+    <!-- 一级导航顺序：业务通知 → 运营推送 → 行情提醒 → 推送记录 → 推送设置 -->
     <div class="primary-tabs" id="primaryTabs">
       <button class="primary-tab active" data-tab="business">业务通知</button>
       <button class="primary-tab" data-tab="operation">运营推送</button>
       <button class="primary-tab" data-tab="market">行情提醒</button>
       <button class="primary-tab" data-tab="records">推送记录</button>
-      <button class="primary-tab" data-tab="template">模板中心</button>
       <button class="primary-tab" data-tab="settings">推送设置</button>
     </div>
 
@@ -839,80 +854,16 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
         <div class="list-pager" id="pager-records"></div>
       </section>
 
-      <!-- ==================== 模板中心 ==================== -->
-      <section class="tab-panel hidden" id="panel-template">
-        <div class="filter-panel" id="filter-template">
-          <div class="filter-grid">
-            <div class="filter-item"><label>模板 ID</label><input class="control" id="tplFilterId" placeholder="精确搜索" onkeydown="if(event.key==='Enter'){event.preventDefault();onTplFilterChange()}"></div>
-            <div class="filter-item"><label>模板名称</label><input class="control" id="tplFilterName" placeholder="模糊搜索" onkeydown="if(event.key==='Enter'){event.preventDefault();onTplFilterChange()}"></div>
-            <div class="filter-item"><label>模板类型</label>
-              <select class="control" id="tplFilterType" onchange="onTplFilterChange()">
-                <option value="">全部</option>
-                <option value="业务通知">业务通知</option>
-                <option value="运营推送">运营推送</option>
-                <option value="行情提醒">行情提醒</option>
-              </select>
-            </div>
-            <div class="filter-item"><label>可用范围</label>
-              <select class="control" id="tplFilterScope" onchange="onTplFilterChange()">
-                <option value="">全部</option>
-                <option value="公用">Dana、TW</option>
-                <option value="Dana">Dana</option>
-                <option value="TW">TW</option>
-              </select>
-            </div>
-            <div class="filter-item"><label>更新时间范围</label><div class="range-wrap"><input type="date"><span class="range-mid">至</span><input type="date"></div></div>
-          </div>
-          <div class="filter-actions">
-            <button type="button" class="link-btn hidden" data-filter-more-btn onclick="toggleFilter('template',this)">更多筛选</button>
-            <button class="btn ghost sm" onclick="resetTplFilter()">重置</button>
-            <button class="btn sm" onclick="onTplFilterChange();toast('已按条件查询')">查询</button>
-          </div>
-        </div>
-        <div class="toolbar">
-          <div class="toolbar-left">
-            <button class="btn" onclick="openCreatePage('template')">+ 新增模板</button>
-          </div>
-          <div class="toolbar-right"></div>
-        </div>
-        <div class="table-wrap"><table class="data-table" id="table-template"><thead></thead><tbody></tbody></table></div>
-        <div class="list-pager" id="pager-template"></div>
-      </section>
-
       <!-- ==================== 推送设置 ==================== -->
       <section class="tab-panel hidden" id="panel-settings">
         <div class="settings-layout">
           <nav class="settings-nav" id="settingsNav">
-            <button type="button" class="settings-nav-btn" data-settings="appPush" onclick="switchSettingsSub('appPush')">APP推送能力</button>
+            <button type="button" class="settings-nav-btn active" data-settings="priority" onclick="switchSettingsSub('priority')">优先级管理</button>
             <button type="button" class="settings-nav-btn" data-settings="activityPriority" onclick="switchSettingsSub('activityPriority')">活动优先级</button>
             <button type="button" class="settings-nav-btn" data-settings="scenarioPriority" onclick="switchSettingsSub('scenarioPriority')">业务优先级</button>
             <button type="button" class="settings-nav-btn" data-settings="marketPushRule" onclick="switchSettingsSub('marketPushRule')">行情推送规则</button>
-            <button type="button" class="settings-nav-btn active" data-settings="priority" onclick="switchSettingsSub('priority')">优先级管理</button>
           </nav>
           <div class="settings-main">
-            <div class="settings-pane hidden" id="settings-pane-appPush">
-              <div class="settings-pane-hd">
-                <div>
-                  <h2>APP推送能力</h2>
-                  <p>按 APP 配置 Android（Firebase）与 iOS（APNS）推送能力。</p>
-                </div>
-              </div>
-              <div class="table-wrap settings-table-wrap">
-                <table class="data-table" id="table-appPush">
-                  <thead>
-                    <tr>
-                      <th>APP名称</th>
-                      <th style="width:90px">项目</th>
-                      <th style="width:140px">Android（Firebase）</th>
-                      <th style="width:130px">iOS（APNS）</th>
-                      <th style="width:100px">推送状态</th>
-                      <th class="ops">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody id="appPushBody"></tbody>
-                </table>
-              </div>
-            </div>
             <div class="settings-pane hidden" id="settings-pane-activityPriority">
               <div class="settings-pane-hd">
                 <div>
@@ -1198,26 +1149,6 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
   </div>
 </div>
 
-<!-- 创建任务 · 保存为模板 -->
-<div class="modal" id="saveAsTemplateModal" onclick="if(event.target===this)closeSaveAsTemplateModal()">
-  <div class="modal-card" style="width:min(480px,96vw)">
-    <div class="modal-head">
-      <h3>保存为模板</h3>
-      <button class="drawer-close" onclick="closeSaveAsTemplateModal()" title="关闭">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="field">
-        <label class="label"><span class="req">*</span>模板名称</label>
-        <input class="control" id="saveAsTemplateName" maxlength="50" placeholder="请输入模板名称">
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn ghost" onclick="closeSaveAsTemplateModal()">取消</button>
-      <button class="btn" onclick="saveCurrentAsTemplate()">保存</button>
-    </div>
-  </div>
-</div>
-
 <!-- 行情变动图 -->
 <div class="modal" id="marketChartModal">
   <div class="modal-card">
@@ -1287,7 +1218,7 @@ const state = {
   mktFilter: { id:'', name:'', symbol:'' },
   page: { business:1, operation:1, market:1, template:1, records:1 },
   pageSize: { business:20, operation:20, market:20, template:20, records:20 },
-  drawer: { open:false, type:null, mode:'create', step:0, detail:null, ui:'drawer', project:'', apps:[], regions:[], msgSendMode:'supplementPush', msgJump:'跳转私信', msgGroup:'', msgAppPage:'', msgUrl:'', mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'', jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'', pushIntervalMin:30, bizType:'business', bizRefId:'', bizPriority:'P1', opPriority:'P2', statusSetting:'已执行(正式生效)' },
+  drawer: { open:false, type:null, mode:'create', step:0, detail:null, ui:'drawer', project:'', apps:[], appsAutoUpdate:false, regions:[], msgSendMode:'supplementPush', msgJump:'跳转私信', msgGroup:'', msgAppPage:'', msgUrl:'', mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'', jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'', pushIntervalMin:30, bizType:'business', bizRefId:'', bizPriority:'P1', opPriority:'P2', statusSetting:'已执行(正式生效)' },
   bizRefEditor: { kind:null, mode:'create', id:null },
   pendingConfirm: null,
   recordsKeyword: '',
@@ -1310,11 +1241,13 @@ const state = {
       ]
     },
     audiencePriority: {
+      // 互斥分层，高优先；第一层～第五层
       tiers: [
-        { level:1, audience:'当前有持仓用户', delayMinutes:0, enabled:true },
-        { level:2, audience:'VIP 等级', vipLevel:2, delayMinutes:1, enabled:true },
-        { level:3, audience:'已转化用户 且 最近30天活跃', delayMinutes:5, enabled:true },
-        { level:4, audience:'注册未转化 且 最近30天活跃', delayMinutes:30, enabled:true }
+        { level:'第一层', audience:'有持仓（真实账户当前持仓笔数 ≥ 1）', delayMinutes:0, enabled:true },
+        { level:'第二层', audience:'V2 及以上用户（V3 及以上不判断 30 天活跃）', vipLevel:2, delayMinutes:1, enabled:true },
+        { level:'第三层', audience:'转化用户且近 30 天活跃（完成首次充值）', delayMinutes:5, enabled:true },
+        { level:'第四层', audience:'注册未转化且最近 7 天活跃（未完成首次充值）', delayMinutes:10, enabled:true },
+        { level:'第五层', audience:'注册未转化且 8–30 天活跃（未完成首次充值）', delayMinutes:30, enabled:true }
       ]
     },
     throttle: {
@@ -1328,20 +1261,20 @@ function currentBatchPushRules(){
   return state.batchPushRules;
 }
 
-const TAB_LABEL = { business:'业务通知', operation:'运营推送', market:'行情提醒', records:'推送记录', template:'模板中心', settings:'推送设置' };
+const TAB_LABEL = { business:'业务通知', operation:'运营推送', market:'行情提醒', records:'推送记录', settings:'推送设置' };
 const ROLE_TABS = {
-  '开发': ['business','operation','market','records','template','settings'],
-  '运营': ['operation','template'],
+  '开发': ['business','operation','market','records','settings'],
+  '运营': ['operation'],
 };
-const ROLE_HINT = { '开发':'全部配置可见', '运营':'仅运营推送、模板中心' };
+const ROLE_HINT = { '开发':'全部配置可见', '运营':'仅运营推送' };
 function roleAllowedTabs(){ return ROLE_TABS[state.role] || ROLE_TABS['开发']; }
 function canAccessTab(tab){ return roleAllowedTabs().includes(tab); }
 function defaultTabForRole(){ return roleAllowedTabs()[0] || 'operation'; }
 function clampTabForRole(tab){ return canAccessTab(tab) ? tab : defaultTabForRole(); }
 const TPL_TYPE_OPTS = ['业务通知','运营推送','行情提醒'];
 const TPL_PROJECT_OPTS = ['Dana','TW'];
-const SETTINGS_SUB_LABEL = { appPush:'APP推送能力', activityPriority:'活动优先级', scenarioPriority:'业务优先级', marketPushRule:'行情推送规则', priority:'优先级管理' };
-const SETTINGS_SUB_KEYS = ['appPush','activityPriority','scenarioPriority','marketPushRule','priority'];
+const SETTINGS_SUB_LABEL = { priority:'优先级管理', activityPriority:'活动优先级', scenarioPriority:'业务优先级', marketPushRule:'行情推送规则' };
+const SETTINGS_SUB_KEYS = ['priority','activityPriority','scenarioPriority','marketPushRule'];
 
 /* ========== Region codes（与 CRM / 运营推送筛选一致） ========== */
 const REGION_CODE = {
@@ -1603,80 +1536,14 @@ function suggestedTemplateName(){
   return '新模板';
 }
 function openSaveAsTemplateModal(){
-  syncDraftFromInputs();
-  const input = document.getElementById('saveAsTemplateName');
-  if(input){
-    input.value = suggestedTemplateName();
-    setTimeout(()=>{ input.focus(); input.select(); }, 0);
-  }
-  document.getElementById('saveAsTemplateModal').classList.add('show');
+  toast('模板中心已下线');
 }
 function closeSaveAsTemplateModal(){
   const el = document.getElementById('saveAsTemplateModal');
   if(el) el.classList.remove('show');
 }
 function saveCurrentAsTemplate(){
-  const input = document.getElementById('saveAsTemplateName');
-  const name = (input?.value || '').trim();
-  if(!name){ toast('请输入模板名称'); return; }
-  if(!validateEnglishContent()) return;
-  syncDraftFromInputs();
-  ensureDraftByLang();
-  const draft = state.drawer.contentDraft || {};
-  const byLang = {};
-  Object.keys(draft.byLang||{}).forEach(k=>{
-    const pack = draft.byLang[k] || {};
-    const title = (pack.title || '').trim();
-    const body = (pack.body || pack.byChannel?.push?.body || '').trim();
-    if(title || body || pack.pushImage) byLang[k] = {
-      title: pack.title||'',
-      body: pack.body || pack.byChannel?.push?.body || '',
-      ...(pack.pushImage ? { pushImage: { name: pack.pushImage.name || '', url: pack.pushImage.url || '' } } : {})
-    };
-  });
-  const typeMap = { business:'业务通知', operation:'运营推送', market:'行情提醒' };
-  const tplType = typeMap[state.drawer.type];
-  if(!tplType){ toast('当前页面不支持保存为模板'); return; }
-  const maxNum = DATA.templates.reduce((m,r)=>{
-    const n = parseInt(String(r.id).replace(/\D/g,''),10);
-    return Number.isFinite(n) ? Math.max(m,n) : m;
-  }, 0);
-  const nextId = 'TP' + String(maxNum + 1).padStart(4,'0');
-  const channels = state.drawer.type==='market'
-    ? []
-    : channelLabelsFromKeys((draft.channels && draft.channels.length) ? draft.channels : ['push']);
-  const project = state.drawer.project || '';
-  const row = {
-    id: nextId,
-    name,
-    type: tplType,
-    channels,
-    scope: project ? '指定项目' : '公用',
-    projects: project ? [project] : [],
-    desc: '',
-    creator: '当前用户',
-    updated: formatNow(),
-    byLang
-  };
-  if(state.drawer.type==='business'){
-    const typeKey = state.drawer.bizType === 'activity' ? 'activity' : 'business';
-    row.bizType = bizTypeLabelFromKey(typeKey);
-    if(typeKey==='activity') row.activityId = state.drawer.bizRefId || '';
-    else row.scenarioId = state.drawer.bizRefId || '';
-  }
-  if(channels.includes('私信')){
-    row.msgSendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels(createFormChannels());
-    row.msgJump = normalizeMsgJump(state.drawer.msgJump);
-    row.msgGroup = state.drawer.msgGroup || '';
-    row.msgAppPage = state.drawer.msgAppPage || '';
-    row.msgUrl = state.drawer.msgUrl || '';
-  }
-  if(channels.includes('邮件')){
-    row.mailChannel = state.drawer.mailChannel || 'EMAIL-SES';
-  }
-  DATA.templates.unshift(row);
-  closeSaveAsTemplateModal();
-  toast('已保存为模板：' + nextId);
+  toast('模板中心已下线');
 }
 function emptyContentDraft(channels){
   const chs = channels && channels.length ? channels.slice() : ['push'];
@@ -1691,7 +1558,7 @@ function toast(msg){
   clearTimeout(toast._t);
   toast._t = setTimeout(()=>el.classList.remove('show'), 2200);
 }
-const FILTER_MORE_PANELS = ['business','operation','market','records','template'];
+const FILTER_MORE_PANELS = ['business','operation','market','records'];
 function filterGridCols(){
   if(window.matchMedia('(max-width:720px)').matches) return 1;
   if(window.matchMedia('(max-width:1100px)').matches) return 2;
@@ -1774,7 +1641,7 @@ function setRole(role){
   if(typeof isDetailModal === 'function' && isDetailModal() && state.drawer.open && state.drawer.mode==='view'){
     renderFormFoot();
   }
-  toast(role === '运营' ? '已切换为运营：仅可使用运营推送、模板中心' : '已切换为开发：全部配置可见');
+  toast(role === '运营' ? '已切换为运营：仅可使用运营推送' : '已切换为开发：全部配置可见');
 }
 function switchTab(tab){
   if(tab === 'overview' || !TAB_LABEL[tab]) tab = defaultTabForRole();
@@ -2174,7 +2041,7 @@ function renderBusiness(){
   const rows = filterBusiness(DATA.business);
   const pageRows = slicePage('business', rows);
   const thead = `<tr>
-    <th>任务 ID</th><th>任务名称</th><th>优先级</th><th>项目</th><th>APP</th><th>地区</th>
+    <th>任务 ID</th><th>任务名称</th><th>优先级</th><th>项目</th><th>APP</th>
     <th>业务类型</th><th>活动 / 业务场景</th><th>通知渠道</th><th>推送间隔</th>
     <th class="col-status">任务状态</th><th class="col-toggle">启停</th><th class="ops">操作</th>
   </tr>`;
@@ -2186,7 +2053,6 @@ function renderBusiness(){
     <td>${priBadge(resolveBizRowPriority(r))}</td>
     <td>${r.project}</td>
     <td><div class="cell-2line" title="${appCell}">${appCell}</div></td>
-    <td><div class="cell-2line" title="${bizRegionsText(r.regions)}">${bizRegionsText(r.regions)}</div></td>
     <td>${bizTypePill(r.bizType)}</td>
     <td><div class="cell-2line" title="${escHtml(bizRefNameForRow(r))}">${escHtml(bizRefNameForRow(r))}</div></td>
     <td>${channelTags(r.channels)}</td>
@@ -2429,13 +2295,12 @@ function renderOperation(){
   const rows = filterOperation(DATA.operation);
   const pageRows = slicePage('operation', rows);
   const thead = `<tr>
-    <th>推送 ID</th><th>任务名称</th><th>优先级</th><th>项目</th><th>APP</th><th>地区</th><th>选择对象</th>
+    <th>推送 ID</th><th>任务名称</th><th>优先级</th><th>项目</th><th>APP</th><th>选择对象</th>
     <th>通知渠道</th><th>发送计划</th><th>发送时间</th><th>操作人</th>
     <th class="col-status">任务状态</th><th class="col-toggle">启停</th><th class="ops">操作</th>
   </tr>`;
   const tbody = pageRows.map(r=>{
     const appCell = formatAppCell(r.project, rowAppsValue(r));
-    const regionCell = opRegionText(r);
     const operatorCell = opOperatorText(r) || '--';
     return `<tr>
     <td><span class="id-link" onclick="openDetail('operation','${r.id}')">${r.id}</span></td>
@@ -2443,7 +2308,6 @@ function renderOperation(){
     <td>${priBadge(resolveOpRowPriority(r))}</td>
     <td>${r.project}</td>
     <td><div class="cell-2line" title="${appCell}">${appCell}</div></td>
-    <td><div class="cell-2line" title="${escHtml(regionCell)}">${escHtml(regionCell)}</div></td>
     <td>${formatAudienceCell(r)}</td>
     <td>${operationChannelTags(r.channels)}</td>
     <td><span class="pill info">${formatOpPlanLabel(r)}</span></td>
@@ -2672,7 +2536,7 @@ function renderRecords(){
   const rows = filterRecords(DATA.recordsBatch);
   const pageRows = slicePage('records', rows);
   table.querySelector('thead').innerHTML = `<tr>
-    <th>推送记录 ID</th><th>推送类型</th><th>推送名称</th><th>项目</th><th>APP</th><th>优先级</th><th>触发原因</th>
+    <th>推送记录 ID</th><th>推送类型</th><th>推送名称</th><th>项目</th><th>APP</th><th>优先级</th>
     <th>通知渠道</th><th>发送时间</th>
     <th>推送人数</th><th>私信已读</th><th>打开推送</th>
     <th>状态</th><th class="ops">操作</th>
@@ -2688,7 +2552,6 @@ function renderRecords(){
     <td>${r.project||'—'}</td>
     <td><div class="cell-2line" title="${appLabel}">${appLabel}</div></td>
     <td>${priBadge(normalizeBizPriority(r.priority, 'P2'))}</td>
-    <td><div class="cell-2line" title="${r.reason}">${r.reason}</div></td>
     <td>${recordChannelTags(r)}</td>
     <td>${r.plan}</td>
     <td>${batchPushPeopleCell(r)}</td>
@@ -2706,7 +2569,6 @@ function renderCurrent(){
   if(t==='business') renderBusiness();
   else if(t==='operation') renderOperation();
   else if(t==='market') renderMarket();
-  else if(t==='template') renderTemplates();
   else if(t==='settings') renderSettings();
   else if(t==='records') renderRecords();
 }
@@ -2740,8 +2602,7 @@ function renderSettings(){
     const pane = document.getElementById('settings-pane-' + k);
     if(pane) pane.classList.toggle('hidden', k!==sub);
   });
-  if(sub==='appPush') renderAppPushSettings();
-  else if(sub==='activityPriority') renderActivityPriority();
+  if(sub==='activityPriority') renderActivityPriority();
   else if(sub==='scenarioPriority') renderScenarioPriority();
   else if(sub==='marketPushRule') renderMarketPushRules();
   else if(sub==='priority') renderPriorityRules();
@@ -2806,37 +2667,31 @@ function setMarketThrottle(key, value){
 }
 function batchPushRulesFormHtml(){
   const rules = state.batchPushRules;
-  const eligibility = rules.eligibility;
   const priority = rules.audiencePriority;
   const throttle = rules.throttle;
-  const vipOptions = selected=>[1,2,3,4,5].map(level=>
-    `<option value="${level}" ${Number(selected)===level?'selected':''}>V${level}</option>`
-  ).join('');
-  const businessRows = eligibility.businessConditions.map((r,i)=>`<tr>
-    <td>${escHtml(r.label)}</td>
-    <td>${r.key==='vipLevel'
-      ? `<div class="market-rule-inline"><span>≥</span><select class="control" onchange="setMarketEligibilityValue(${i},this.value)">${vipOptions(r.value)}</select></div>`
-      : `<div class="market-rule-inline"><input class="control" type="number" min="1" max="365" value="${r.value}" oninput="setMarketEligibilityValue(${i},this.value)"><span>天</span></div>`}</td>
-    <td>${marketRuleSwitch(r.enabled,`toggleMarketEligibility(${i})`)}</td>
-  </tr>`).join('');
+  const tierNames = ['第一层','第二层','第三层','第四层','第五层'];
   const tierRows = priority.tiers.map((r,i)=>`<tr>
-    <td>第${i+1}层</td>
-    <td>${r.vipLevel
-      ? `<div class="market-rule-inline"><span>VIP 等级 ≥</span><select class="control" onchange="setMarketTierVipLevel(${i},this.value)">${vipOptions(r.vipLevel)}</select></div>`
-      : escHtml(r.audience)}</td>
+    <td>${escHtml(r.level || tierNames[i] || ('第'+(i+1)+'层'))}</td>
+    <td>${escHtml(r.audience)}</td>
     <td><select class="control" onchange="setMarketTierDelay(${i},this.value)">${marketTierDelayOptions(r.delayMinutes)}</select></td>
     <td>${marketRuleSwitch(r.enabled,`toggleMarketTier(${i})`)}</td>
   </tr>`).join('');
   return `<div class="market-rule-sec"><div class="market-rule-sec-hd">A. 推送对象规则</div>
-      <div class="market-rule-label">业务条件（满足任一）</div>
-      <div class="table-wrap settings-table-wrap market-rule-table"><table class="data-table">
-        <thead><tr><th style="width:140px">条件</th><th style="width:180px">参数</th><th style="width:72px">状态</th></tr></thead>
-        <tbody>${businessRows}</tbody>
-      </table></div>
+      <div class="info-card" style="margin:0">
+        <div style="margin-bottom:8px"><strong>推送对象说明</strong></div>
+        <div style="font-size:13px;color:#334155;line-height:1.7">
+          行情提醒默认面向满足以下<strong>任一</strong>条件的用户：
+          <ul style="margin:8px 0 0;padding-left:18px">
+            <li>最近 30 天内活跃</li>
+            <li>VIP 等级 ≥ V3</li>
+          </ul>
+        </div>
+      </div>
     </div>
     <div class="market-rule-sec"><div class="market-rule-sec-hd">B. 人群优先级与分批发送</div>
+      <div class="hint" style="margin:0 0 8px">分层互斥，命中多层时仅进入最高优先层级（第一层最高）。</div>
       <div class="table-wrap settings-table-wrap market-rule-table"><table class="data-table">
-        <thead><tr><th style="width:72px">层级</th><th>用户分层</th><th style="width:160px">发送延迟</th><th style="width:72px">状态</th></tr></thead>
+        <thead><tr><th style="width:88px">层级</th><th>用户分层</th><th style="width:160px">发送延迟</th><th style="width:72px">状态</th></tr></thead>
         <tbody>${tierRows}</tbody>
       </table></div>
     </div>
@@ -2866,8 +2721,8 @@ function marketRuleSummaryItems(){
     ? `${Math.min(...delays)===0?'立即发送':Math.min(...delays)+' 分钟'}至 ${Math.max(...delays)} 分钟分层发送`
     : '暂无启用的发送层级';
   return [
-    `人群：${tiers.length} 个人群层级，命中多层时仅进入最高层级`,
-    `发送：${first?first.audience:'—'}优先，${delayText}`,
+    `人群：${tiers.length} 层互斥优先级（第一层～第五层），命中多层时仅进入最高层级`,
+    `发送：${first?(first.level+' · '+first.audience):'—'}优先，${delayText}`,
     `重复：${rules.throttle.dimensionLabel || '同一用户 · 品种 · 提醒'} ${rules.throttle.cooldownMinutes} 分钟内最多 ${rules.throttle.maxCount} 次`
   ];
 }
@@ -3271,7 +3126,7 @@ function batchDisplayId(batch){
 function jumpRecords(srcId, opts){
   opts = opts || {};
   if(!canAccessTab('records')){
-    toast('运营角色无权查看推送记录');
+    openRelatedRecordsModal(srcId, opts);
     return;
   }
   if(typeof closeMarketChartModal === 'function') closeMarketChartModal();
@@ -3294,6 +3149,60 @@ function jumpRecords(srcId, opts){
   if(opts.openBatch && opts.batchId && DATA.recordsBatch.find(x=>x.id===opts.batchId)){
     setTimeout(()=>openDetail('records', opts.batchId), 80);
   }
+}
+function relatedRecordBatches(srcId){
+  return (DATA.recordsBatch || []).filter(b => b.srcId === srcId);
+}
+function relatedRecordsCount(row){
+  if(!row) return 0;
+  const n = relatedRecordBatches(row.id).length;
+  const claimed = Number(row.batches || 0) || 0;
+  return Math.max(n, claimed);
+}
+function formatRelatedRecordsCell(row){
+  const n = relatedRecordsCount(row);
+  if(!n) return '<span class="muted">0</span>';
+  return `<span class="id-link" onclick="event.stopPropagation();openRelatedRecords('${row.id}')">${n}</span>`;
+}
+function openRelatedRecords(srcId, opts){
+  opts = opts || {};
+  if(canAccessTab('records')){
+    jumpRecords(srcId, opts);
+    return;
+  }
+  openRelatedRecordsModal(srcId, opts);
+}
+function openRelatedRecordsModal(srcId, opts){
+  opts = opts || {};
+  const batches = relatedRecordBatches(srcId);
+  const src = (DATA.operation||[]).find(x=>x.id===srcId)
+    || (DATA.business||[]).find(x=>x.id===srcId)
+    || (DATA.market||[]).find(x=>x.id===srcId);
+  const name = (src && src.name) || srcId || '';
+  let body;
+  if(!batches.length){
+    body = '<div class="muted" style="padding:28px;text-align:center">暂无相关推送记录</div>';
+  } else {
+    body = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+      '<th>推送记录 ID</th><th>状态</th><th>通知渠道</th><th>发送时间</th>' +
+      '<th>推送人数</th><th>私信已读</th><th>打开推送</th><th class="ops">操作</th>' +
+    '</tr></thead><tbody>' + batches.map(r=>{
+      const displayId = batchDisplayId(r);
+      return '<tr>' +
+        '<td><span class="id-link" onclick="openDetail(\'records\',\'' + r.id + '\')">' + displayId + '</span></td>' +
+        '<td>' + statusPill(r.status) + '</td>' +
+        '<td>' + recordChannelTags(r) + '</td>' +
+        '<td>' + (r.plan || '—') + '</td>' +
+        '<td>' + batchPushPeopleCell(r) + '</td>' +
+        '<td>' + batchMsgReadCell(r) + '</td>' +
+        '<td>' + Number(r.click||0).toLocaleString() + '</td>' +
+        '<td class="ops"><div class="icon-actions">' + opsRecords(r) + '</div></td>' +
+      '</tr>';
+    }).join('') + '</tbody></table></div>';
+  }
+  const foot = '<div class="left"></div><div class="right"><button class="btn ghost" onclick="closeDetailModal()">关闭</button></div>';
+  openDetailModal('推送记录 · ' + name, body, foot, { wide:true, sub: srcId || '' });
+  if(opts.toast) toast(opts.toast);
 }
 
 /* ========== Confirm ========== */
@@ -4230,6 +4139,10 @@ function formFootEl(){
 function closeForm(){ if(isCreatePage()) closeCreatePage(); else closeSurface(); }
 
 function openCreatePage(type){
+  if(type==='template'){
+    toast('模板中心已下线');
+    return;
+  }
   if(!canAccessTab(type)){
     toast('当前角色无权操作「' + (TAB_LABEL[type] || type) + '」');
     return;
@@ -4237,7 +4150,7 @@ function openCreatePage(type){
   state.drawer = {
     open:true, type, mode:'create', step:0,
     detail:null, asPage:true, ui:'drawer', lang:'en', contentDraft:null,
-    audienceMode:'add', focusChannel:'push', project:'', apps:[], regions:[],
+    audienceMode:'add', focusChannel:'push', project:'', apps:[], appsAutoUpdate:false, regions:[],
     msgSendMode:'supplementPush', msgJump:'跳转私信', msgGroup:'', msgAppPage:'', msgUrl:'',
     mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'',
     jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'',
@@ -4246,6 +4159,7 @@ function openCreatePage(type){
   if(type==='business'){
     state.drawer.project = 'Dana';
     state.drawer.apps = ['DANA App','GoCap','Partner App','ForexDana','FDTrek','BtcDana'];
+    state.drawer.appsAutoUpdate = false;
     state.drawer.regions = [];
     state.drawer.emsOpen = { bizAppEms:false };
     state.drawer.msgJump = '跳转私信';
@@ -4255,7 +4169,7 @@ function openCreatePage(type){
     state.drawer.bizRefId = selectableScenarios()[0]?.id || '';
     syncBizPriorityFromRef();
     state.drawer.pushIntervalMin = 30;
-    if(!state.drawer.contentDraft) state.drawer.contentDraft = emptyContentDraft(['push']);
+    if(!state.drawer.contentDraft) state.drawer.contentDraft = emptyContentDraft(defaultFormChannels());
     ensureDraftByLang();
     ensureJumpConfigState(true);
     if(isProfitScenarioId(state.drawer.bizRefId)){
@@ -4265,6 +4179,7 @@ function openCreatePage(type){
   } else if(type==='operation'){
     state.drawer.project = 'Dana';
     state.drawer.apps = bizAppOptions('Dana').slice();
+    state.drawer.appsAutoUpdate = false;
     state.drawer.regions = [];
     state.drawer.emsOpen = { bizAppEms:false, opRegionEms:false };
     state.drawer.name = '';
@@ -4275,7 +4190,7 @@ function openCreatePage(type){
     ensureOpAudienceState(true);
     ensureOpPlanState(true);
     ensureJumpConfigState(true);
-    state.drawer.contentDraft = emptyContentDraft(['push']);
+    state.drawer.contentDraft = emptyContentDraft(defaultFormChannels());
     ensureDraftByLang();
   } else if(type==='template'){
     state.drawer.tplName = '';
@@ -4296,6 +4211,7 @@ function openCreatePage(type){
   } else if(type==='market'){
     state.drawer.project = 'Dana';
     state.drawer.apps = bizAppOptions('Dana').slice();
+    state.drawer.appsAutoUpdate = false;
     state.drawer.emsOpen = { bizAppEms:false, mktRegionEms:false, mktSymbolEms:false };
     state.drawer.lang = 'en';
     state.drawer.symbols = [];
@@ -4349,13 +4265,13 @@ function openEditDrawer(type, id){
   })();
   if(isDetailModal()) closeDetailModal();
   if(type==='template'){
-    openTemplateEditor('edit', row);
+    toast('模板中心已下线');
     return;
   }
   state.drawer = {
     open:true, type, mode:'edit', step:0,
     detail:row, asPage:false, ui:'drawer',
-    project: row?.project || '', apps, regions:[],
+    project: row?.project || '', apps, appsAutoUpdate: rowAppsAutoUpdate(row), regions:[],
     msgSendMode:'supplementPush', msgJump:'跳转私信',
     msgGroup:'', msgAppPage:'', msgUrl:'',
     mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'',
@@ -4372,7 +4288,7 @@ function openEditDrawer(type, id){
       : (row?.scenarioId || selectableScenarios()[0]?.id || '');
     ensureBizRefSelection();
     state.drawer.pushIntervalMin = row?.pushIntervalMin != null ? row.pushIntervalMin : 30;
-    if(Array.isArray(row?.regions)) state.drawer.regions = regionCodes(row.regions);
+    state.drawer.regions = [];
     state.drawer.msgGroup = row?.project==='TW' ? '【TW】系统通知' : '【DANA】资金变更';
     state.drawer.statusSetting = normalizeStatusSetting(row?.statusSetting || row?.status);
     state.drawer.contentDraft = emptyContentDraft(channelKeysFromLabels(row?.channels));
@@ -4408,6 +4324,7 @@ function openEditDrawer(type, id){
     state.drawer.asPage = true;
     state.drawer.project = state.drawer.project || row?.project || 'Dana';
     state.drawer.apps = apps.length ? apps : bizAppOptions(state.drawer.project).slice();
+    state.drawer.appsAutoUpdate = false;
     state.drawer.emsOpen = { bizAppEms:false, opRegionEms:false };
     state.drawer.name = row?.name || '';
     state.drawer.opPriority = normalizeOpPriority(row?.priority, 'P2');
@@ -4473,7 +4390,8 @@ function openEditDrawer(type, id){
   showDrawer();
 }
 function openDetail(type, id){
-  if(TAB_LABEL[type] && !canAccessTab(type)){
+  // 批次详情对运营角色开放（列表「推送记录」入口）；其它一级 Tab 仍按角色鉴权
+  if(type !== 'records' && TAB_LABEL[type] && !canAccessTab(type)){
     toast('当前角色无权查看「' + TAB_LABEL[type] + '」');
     return;
   }
@@ -4494,92 +4412,13 @@ function beginEditFromDetail(){
     return;
   }
   closeDetailModal();
-  if(['business','operation','market','template'].includes(type) && id) openEditDrawer(type, id);
+  if(['business','operation','market'].includes(type) && id) openEditDrawer(type, id);
 }
 function openTemplateEditor(mode, row){
-  const isEdit = mode==='edit' && row;
-  const tplType = isEdit ? (row.type||'业务通知') : '业务通知';
-  let tplBizType = 'business';
-  let tplBizRefId = '';
-  if(tplType === '业务通知'){
-    if(isEdit){
-      tplBizType = bizTypeKeyFromLabel(row.bizType);
-      tplBizRefId = tplBizType==='activity'
-        ? (row.activityId || selectableActivities()[0]?.id || '')
-        : (row.scenarioId || selectableScenarios()[0]?.id || '');
-    } else {
-      tplBizRefId = selectableScenarios()[0]?.id || '';
-    }
-  }
-  state.drawer = {
-    open:true, type:'template', mode: isEdit ? 'edit' : 'create', step:0,
-    detail: isEdit ? row : null, asPage:true, ui:'drawer', lang:'en',
-    tplName: isEdit ? (row.name||'') : '',
-    tplType,
-    tplBizType,
-    tplBizRefId,
-    tplScope: isEdit ? ((row.scope==='指定项目' || (row.projects||[]).length) ? '指定项目' : '公用') : '公用',
-    tplProjects: isEdit ? tplProjectsForForm(row) : TPL_PROJECT_OPTS.slice(),
-    tplChannels: normalizeTemplateChannelKeys(channelKeysFromLabels(row?.channels), tplType),
-    tplDesc: '',
-    msgSendMode: isEdit ? (row?.msgSendMode || inferMsgSendModeFromChannels(channelKeysFromLabels(row?.channels))) : 'supplementPush',
-    msgJump: isEdit ? normalizeMsgJump(row?.msgJump) : '跳转私信',
-    msgGroup: isEdit ? (row?.msgGroup || '【DANA】资金变更') : '【DANA】资金变更',
-    msgAppPage: isEdit ? (row?.msgAppPage || '') : '',
-    msgUrl: isEdit ? (row?.msgUrl || '') : '',
-    mailChannel: isEdit ? (row?.mailChannel || 'EMAIL-SES') : 'EMAIL-SES',
-    contentDraft: emptyContentDraft(['push']),
-    templateId:''
-  };
-  if(isEdit && row.byLang){
-    const draft = state.drawer.contentDraft;
-    draft.byLang = {};
-    Object.keys(row.byLang).forEach(k=>{
-      const pack = row.byLang[k] || {};
-      draft.byLang[k] = {
-        title: pack.title||'',
-        body: pack.body||'',
-        channels: ['push'],
-        byChannel: { push: { title: pack.title||'', body: pack.body||'' } },
-        pushImage: pack.pushImage ? { name: pack.pushImage.name || '', url: pack.pushImage.url || '' } : null
-      };
-    });
-    const en = draft.byLang.en || Object.values(draft.byLang)[0];
-    if(en) applyLangPack(en);
-  }
-  ensureDraftByLang();
-  const cfg = DRAWER_CFG.template;
-  document.getElementById('listView').classList.add('hidden');
-  document.getElementById('createView').classList.add('show');
-  document.getElementById('createTitle').textContent = isEdit ? cfg.titleEdit : cfg.titleCreate;
-  document.getElementById('createCrumb').textContent = '工作台 / 推送管理 / 模板中心 / ' + (isEdit ? cfg.titleEdit : cfg.titleCreate);
-  const url = new URL(location.href);
-  url.searchParams.set('tab', 'template');
-  url.searchParams.set('page', 'create');
-  history.replaceState(null, '', url);
-  window.scrollTo(0, 0);
-  renderFormSteps();
-  renderFormBody();
-  renderFormFoot();
+  toast('模板中心已下线');
 }
 function copyTemplate(id){
-  const src = (DATA.templates||[]).find(x=>x.id===id);
-  if(!src){ toast('模板不存在'); return; }
-  const maxNum = DATA.templates.reduce((m,r)=>{
-    const n = parseInt(String(r.id).replace(/\D/g,''),10);
-    return Number.isFinite(n) ? Math.max(m,n) : m;
-  }, 0);
-  const nextId = 'TP' + String(maxNum + 1).padStart(4,'0');
-  const clone = JSON.parse(JSON.stringify(src));
-  clone.id = nextId;
-  clone.name = (src.name || '模板') + '（副本）';
-  clone.updated = formatNow();
-  clone.creator = clone.creator || '当前用户';
-  DATA.templates.unshift(clone);
-  state.page.template = 1;
-  if(state.tab==='template') renderTemplates();
-  if(isDetailModal() && state.drawer.type==='template') closeDetailModal();
-  toast('已复制模板 ' + nextId);
+  toast('模板中心已下线');
 }
 function showDrawer(){
   const cfg = DRAWER_CFG[state.drawer.type];
@@ -4778,9 +4617,6 @@ function renderFormFoot(){
   if(isCreateSplit()){
     let left = '';
     let right = '';
-    if(state.drawer.mode==='create' && ['business','operation','market'].includes(type)){
-      left = '<button class="btn soft" onclick="openSaveAsTemplateModal()">保存为模板</button>';
-    }
     if(type==='business'){
       right = '<button class="btn ghost" onclick="' + cancelFn + '">取消</button>' +
         '<button class="btn soft" onclick="openTestPush()">测试推送</button>' +
@@ -4844,7 +4680,7 @@ const OP_SELECTABLE_CHANNELS = [
   {k:'push', n:'APP Push'},
   {k:'msg', n:'私信'}
 ];
-const CONTENT_EDITOR_CHANNEL_KEYS = ['push','msg','mail'];
+const CONTENT_EDITOR_CHANNEL_KEYS = ['push','msg'];
 function templateChannelOptions(type){
   if(type==='业务通知') return SELECTABLE_CHANNELS;
   if(type==='运营推送') return OP_SELECTABLE_CHANNELS;
@@ -4866,6 +4702,12 @@ function formChannelKeys(){
 }
 function formChannelOptions(){
   return state.drawer && state.drawer.type==='operation' ? OP_SELECTABLE_CHANNELS : SELECTABLE_CHANNELS;
+}
+/** 新建业务通知 / 运营推送默认勾选 APP Push + 私信 */
+function defaultFormChannels(){
+  const allowed = new Set(formChannelKeys());
+  const preferred = ['push','msg'].filter(k=>allowed.has(k));
+  return preferred.length ? preferred : ['push'];
 }
 function channelLabelsFromKeys(keys){
   const map = {push:'Push', msg:'私信', mail:'邮件'};
@@ -5289,6 +5131,9 @@ function saveWithEnglishCheck(successMsg, thenClose){
       }
       state.drawer.detail.statusSetting = normalizeStatusSetting(state.drawer.statusSetting);
       state.drawer.detail.status = statusFromSetting(state.drawer.detail.statusSetting);
+      const appSer = serializeDrawerApps();
+      state.drawer.detail.apps = appSer.apps;
+      state.drawer.detail.appsAutoUpdate = appSer.appsAutoUpdate;
       const draft = state.drawer.contentDraft;
       state.drawer.detail.channels = channelLabelsFromKeys((draft && draft.channels) || ['push']);
       state.drawer.detail.msgSendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels((draft && draft.channels) || []);
@@ -5308,6 +5153,10 @@ function saveWithEnglishCheck(successMsg, thenClose){
     row.priority = normalizeOpPriority(state.drawer.opPriority, 'P2');
     applyOpPlanToRow(row);
     applyOpAudienceToRow(row);
+    const appSer = serializeDrawerApps();
+    row.apps = appSer.apps;
+    delete row.appsAutoUpdate;
+    state.drawer.appsAutoUpdate = false;
     const draft = state.drawer.contentDraft;
     row.channels = channelLabelsFromKeys((draft && draft.channels) || ['push']);
     row.msgSendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels((draft && draft.channels) || []);
@@ -5441,12 +5290,14 @@ function syncDraftFromInputs(){
     draft.byChannel.push.body = nextBody;
     draft.byChannel.push.title = draft.title || '';
   }
-  (draft.channels||[]).forEach(ch=>{
+  (formChannelKeys()).forEach(ch=>{
     const bodyEl = document.getElementById('draftBody_' + ch);
     if(!draft.byChannel[ch]) draft.byChannel[ch] = defaultChannelContent(ch);
     if(draft.title && draft.byChannel[ch]) draft.byChannel[ch].title = draft.title;
     if(bodyEl){
-      const next = bodyEl.isContentEditable ? serializeVarBody(bodyEl) : bodyEl.value;
+      const next = (bodyEl.isContentEditable || bodyEl.classList.contains('var-body'))
+        ? serializeVarBody(bodyEl)
+        : bodyEl.value;
       if(next !== draft.byChannel[ch].body) draft.dirty = true;
       draft.byChannel[ch].body = next;
     }
@@ -5572,7 +5423,7 @@ function inferMsgSendModeFromChannels(channels){
   return 'supplementPush';
 }
 function msgSendModeLabel(mode){
-  return mode === 'direct' ? '直接发送' : '补充Push';
+  return mode === 'direct' ? '全量发送' : '补充Push发送';
 }
 function syncMsgSendModeWithChannels(prevChannels){
   const chs = createFormChannels();
@@ -5619,10 +5470,10 @@ function msgJumpGroupFields(){
   const group = state.drawer.msgGroup || groups[0];
   const sendModeField = showGroup
     ? ('<div class="field"><label class="label"><span class="req">*</span>私信发送方式' +
-        '<span class="help-q" tabindex="0" aria-label="私信发送方式说明" data-tip="【补充Push】仅向 APP Push 未成功触达的用户补发私信，不会对全员再发一遍。<br>【直接发送】对目标用户全员发送私信。" onmouseenter="showHelpTip(this)" onmouseleave="hideHelpTip()" onfocus="showHelpTip(this)" onblur="hideHelpTip()">?</span></label>' +
+        '<span class="help-q" tabindex="0" aria-label="私信发送方式说明" data-tip="【补充Push】仅向APP Push发送不成功的用户补发私信，不会对全员再发一遍。<br>【直接发送】对符合条件的目标用户全员发送私信。" onmouseenter="showHelpTip(this)" onmouseleave="hideHelpTip()" onfocus="showHelpTip(this)" onblur="hideHelpTip()">?</span></label>' +
         '<select class="control" id="msgSendMode" onchange="setMsgSendMode(this.value)">' +
-          '<option value="supplementPush"' + (sendMode==='supplementPush'?' selected':'') + (canSupplementPush?'':' disabled') + '>补充Push</option>' +
-          '<option value="direct"' + (sendMode==='direct'?' selected':'') + '>直接发送</option>' +
+          '<option value="supplementPush"' + (sendMode==='supplementPush'?' selected':'') + (canSupplementPush?'':' disabled') + '>补充Push发送</option>' +
+          '<option value="direct"' + (sendMode==='direct'?' selected':'') + '>全量发送</option>' +
         '</select></div>')
     : '';
   const groupField = showGroup
@@ -5644,6 +5495,12 @@ function msgJumpGroupFields(){
   }
   return '<div style="margin-bottom:12px">' + jumpField + '</div>';
 }
+function channelToggleTitleHtml(ch, label, enabled){
+  return '<label class="ch-toggle" onclick="event.stopPropagation()">' +
+    '<input type="checkbox" ' + (enabled ? 'checked' : '') +
+    ' onchange="toggleCreateChannel(\'' + ch + '\', this.checked)">' +
+    '<span>' + label + '</span></label>';
+}
 function mailChannelFields(){
   const channel = state.drawer.mailChannel || 'EMAIL-SES';
   return '<div class="field"><label class="label"><span class="req">*</span>邮件渠道</label>' +
@@ -5653,38 +5510,20 @@ function mailChannelFields(){
       ).join('') +
     '</select></div>';
 }
-function channelEditorBlock(ch, content, vars, esc){
+function channelEditorBlock(ch, content, vars, esc, enabled){
   const meta = CHANNEL_META[ch] || { n:ch, bodyLabel:'正文' };
-  const isMail = ch==='mail';
-  const isMsg = ch==='msg';
   const isPush = ch==='push';
-  const inPushForm = ['business','operation'].includes(state.drawer.type);
-  const showMsgSettings = isMsg && (inPushForm || state.drawer.type==='template');
-  const showPushSettings = isPush && (
-    state.drawer.type==='business' ||
-    state.drawer.type==='operation' ||
-    (state.drawer.type==='template' && state.drawer.tplType!=='行情提醒')
-  );
-  const showPushImage = isPush && (
-    state.drawer.type==='operation' ||
-    (state.drawer.type==='template' && state.drawer.tplType==='运营推送')
-  );
-  const showMailSettings = isMail && (inPushForm || state.drawer.type==='template');
-  if(isMail){
-    return '<div class="ch-block">' +
-      '<div class="ch-block-hd">' + meta.n + '</div>' +
-      '<div class="ch-block-bd">' +
-        (showMailSettings ? mailChannelFields() : '') +
-      '</div></div>';
-  }
+  const on = enabled !== false;
+  const mutedClass = on ? '' : ' is-disabled';
+  const showPushImage = isPush && state.drawer.type==='operation';
   const bodyHtml = bodyTextToHtml(content.body || '');
-  return '<div class="ch-block">' +
-    '<div class="ch-block-hd">' + meta.n + '</div>' +
+  const editable = on ? 'true' : 'false';
+  return '<div class="ch-block' + mutedClass + '">' +
+    '<div class="ch-block-hd">' + channelToggleTitleHtml(ch, meta.n, on) + '</div>' +
     '<div class="ch-block-bd">' +
-      (showPushSettings ? jumpConfigBlock() : '') +
-      (showMsgSettings ? msgJumpGroupFields() : '') +
       '<div class="field" style="margin-bottom:12px"><label class="label"><span class="req">*</span>' + meta.bodyLabel + '</label>' +
-        '<div class="control var-body" id="draftBody_' + ch + '" contenteditable="true" role="textbox" data-channel="' + ch + '"' +
+        '<div class="control var-body" id="draftBody_' + ch + '" contenteditable="' + editable + '" role="textbox" data-channel="' + ch + '"' +
+          (on ? '' : ' aria-disabled="true" tabindex="-1"') +
           ' onfocus="state.drawer.focusChannel=\'' + ch + '\'"' +
           ' oninput="markDraftDirty()"' +
           ' onblur="retokenizeVarBody(\'' + ch + '\');markDraftDirty()"' +
@@ -6162,25 +6001,51 @@ function saveTemplateForm(){
   switchTab('template');
 }
 
+function wrapChannelCfg(enabled, html){
+  if(enabled) return html;
+  return '<fieldset disabled class="channel-cfg-disabled">' + html + '</fieldset>';
+}
+function channelConfigRightMods(){
+  const draft = state.drawer.contentDraft || {};
+  const selected = new Set(draft.channels || []);
+  const type = state.drawer.type;
+  let html = '';
+  formChannelOptions().forEach(c=>{
+    const on = selected.has(c.k);
+    let inner = '';
+    if(c.k==='push') inner = jumpConfigBlock();
+    else if(c.k==='msg') inner = msgJumpGroupFields();
+    else if(c.k==='mail' && type==='business') inner = mailChannelFields();
+    if(!inner) return;
+    html += configMod(channelToggleTitleHtml(c.k, c.n, on), wrapChannelCfg(on, inner));
+  });
+  return html;
+}
 function renderContentLeft(type){
   const project = state.drawer.project || '';
-  if(!state.drawer.contentDraft) state.drawer.contentDraft = emptyContentDraft(['push']);
-  const draft = state.drawer.contentDraft || emptyContentDraft(['push']);
-  const allChannels = SELECTABLE_CHANNELS;
-  const draftChannels = (draft.channels||[]).filter(ch=>SELECTABLE_CHANNEL_KEYS.includes(ch));
-  const selected = new Set(draftChannels.length ? draftChannels : ['push']);
+  if(!state.drawer.contentDraft) state.drawer.contentDraft = emptyContentDraft(defaultFormChannels());
+  const draft = state.drawer.contentDraft || emptyContentDraft(defaultFormChannels());
+  const allowed = formChannelKeys();
+  let draftChannels = (draft.channels||[]).filter(ch=>allowed.includes(ch));
+  if(!draftChannels.length) draftChannels = defaultFormChannels();
+  draft.channels = draftChannels;
+  const selected = new Set(draftChannels);
   const curL = state.drawer.lang || 'en';
   ensureDraftByLang();
   const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   const vars = type==='business' ? varsForCurrentBizForm() : SYSTEM_VAR_KEYS.map(k=>'{'+k+'}');
-  const editorChannels = (draftChannels.length ? draftChannels : ['push']).filter(ch=>CONTENT_EDITOR_CHANNEL_KEYS.includes(ch));
+  if(!draft.byChannel) draft.byChannel = {};
+  const editorChannels = CONTENT_EDITOR_CHANNEL_KEYS.filter(ch=>allowed.includes(ch));
+  editorChannels.forEach(ch=>{
+    if(!draft.byChannel[ch]) draft.byChannel[ch] = defaultChannelContent(ch);
+  });
   const editors = sharedTitleField(draft, esc) +
-    (editorChannels.map(ch=>
-      channelEditorBlock(ch, draft.byChannel[ch] || defaultChannelContent(ch), vars, esc)
-    ).join('') || (draftChannels.length ? '' : '<div class="warn-card">请至少勾选一个通知渠道</div>'));
+    editorChannels.map(ch=>
+      channelEditorBlock(ch, draft.byChannel[ch] || defaultChannelContent(ch), vars, esc, selected.has(ch))
+    ).join('');
 
   const projectField = type==='business'
-    ? ('<div class="field"><label class="label"><span class="req">*</span>项目</label>' +
+    ? ('<div class="field" style="margin-bottom:12px"><label class="label"><span class="req">*</span>项目</label>' +
           '<select class="control" id="bizCreateProject" onchange="onBizProjectChange(this.value)">' +
             '<option value="">请选择项目</option>' +
             '<option value="Dana"' + (project==='Dana'?' selected':'') + '>Dana</option>' +
@@ -6188,18 +6053,9 @@ function renderContentLeft(type){
           '</select></div>')
     : '';
 
-  const tplSelect = (type==='business') ? pushTemplateSelectHtml('业务通知').replace(' style="margin-bottom:14px"','') : '';
   return '<div class="split-left">' +
     '<div class="split-panel-title">推送内容</div>' +
-    (type==='business' ? ('<div class="grid2" style="margin-bottom:12px">' + projectField + tplSelect + '</div>') : '') +
-    '<div class="field" style="margin-bottom:14px">' +
-      '<label class="label"><span class="req">*</span>渠道</label>' +
-      '<div class="channel-bar" style="border:1px solid var(--field-line);border-radius:7px;padding:8px 12px">' +
-        allChannels.map(c=>
-          '<label><input type="checkbox" ' + (selected.has(c.k)?'checked':'') +
-          ' onchange="toggleCreateChannel(\'' + c.k + '\', this.checked)"> ' + c.n + '</label>'
-        ).join('') +
-      '</div></div>' +
+    projectField +
     '<div class="lang-editor">' +
       renderLangTabsBar(curL) +
       '<div class="editor-body">' + editors + '</div>' +
@@ -6229,10 +6085,8 @@ function onBizProjectChange(project){
   } else {
     state.drawer.msgGroup = '';
   }
-  // 模板过滤随项目 / 业务类型变化：若当前绑定模板不可用则解除绑定（内容保留）
-  clearMismatchedBizTemplate();
   ensureBizRefSelection();
-  if(!state.drawer.contentDraft) state.drawer.contentDraft = emptyContentDraft(['push']);
+  if(!state.drawer.contentDraft) state.drawer.contentDraft = emptyContentDraft(defaultFormChannels());
   renderFormBody();
   toast(project ? ('已切换项目：' + project) : '请先选择项目');
 }
@@ -6262,13 +6116,45 @@ function expandMsCountText(selCount, total){
   if(selCount >= total) return '全选 已全选 (' + selCount + ')';
   return '全选 已选 (' + selCount + ')';
 }
+function rowAppsAutoUpdate(row){
+  if(!row) return false;
+  if(row.appsAutoUpdate != null) return !!row.appsAutoUpdate;
+  const apps = row.apps;
+  return apps === 'ALL' || apps === 'all';
+}
+function toggleAppsAutoUpdate(checked){
+  state.drawer.appsAutoUpdate = !!checked;
+}
+function serializeDrawerApps(){
+  const opts = bizAppOptions(state.drawer.project);
+  const apps = (state.drawer.apps || []).filter(a=>opts.includes(a));
+  const auto = state.drawer.type !== 'operation' && !!state.drawer.appsAutoUpdate;
+  if(auto && opts.length && apps.length === opts.length){
+    return { apps:'ALL', appsAutoUpdate:true };
+  }
+  return { apps: apps.slice(), appsAutoUpdate:auto };
+}
+function appsAutoUpdateLabelHtml(){
+  const checked = !!state.drawer.appsAutoUpdate;
+  const tip = '后续新增的 APP 都会自动加入该推送';
+  return '<label class="label-check">' +
+    '<input type="checkbox"' + (checked?' checked':'') + ' onchange="toggleAppsAutoUpdate(this.checked)">' +
+    '自动更新' +
+    '<span class="help-q" tabindex="0" aria-label="自动更新说明" data-tip="' + tip + '"' +
+      ' onmouseenter="showHelpTip(this)" onmouseleave="hideHelpTip()" onfocus="showHelpTip(this)" onblur="hideHelpTip()">?</span>' +
+  '</label>';
+}
 function expandMultiSelectHtml(id, label, options, selected, open){
   const opts = options || [];
   const sel = (selected || []).filter(v=>opts.includes(v));
   const countText = expandMsCountText(sel.length, opts.length);
   const allChecked = opts.length > 0 && sel.length === opts.length;
+  const showAppAutoUpdate = id === 'bizAppEms' && state.drawer.type !== 'operation';
+  const labelHtml = showAppAutoUpdate
+    ? ('<div class="label-row"><label class="label"><span class="req">*</span>' + label + '</label>' + appsAutoUpdateLabelHtml() + '</div>')
+    : ('<label class="label"><span class="req">*</span>' + label + '</label>');
   return '<div class="field">' +
-    '<label class="label"><span class="req">*</span>' + label + '</label>' +
+    labelHtml +
     '<div class="ems' + (open?' open':'') + '" id="' + id + '">' +
       '<div class="ems-hd">' +
         '<label><input type="checkbox" id="' + id + '_all" ' + (allChecked?'checked':'') +
@@ -6451,12 +6337,18 @@ function normalizeOpWeekdays(list){
   return list.map(v=> typeof v==='number' ? (map[v]||'周一') : v).filter(v=>OP_WEEK_OPTS.includes(v));
 }
 function normalizeOpMonthDays(list){
+  // 按月仅支持单选日期
   if(!list || !list.length) return ['1号'];
-  return list.map(v=>{
+  const mapped = list.map(v=>{
     if(typeof v==='number') return v + '号';
     if(/^\d+$/.test(String(v))) return v + '号';
     return String(v);
   }).filter(v=>OP_MONTH_OPTS.includes(v));
+  return mapped.length ? [mapped[0]] : ['1号'];
+}
+function setOpMonthDay(v){
+  state.drawer.opMonthDays = normalizeOpMonthDays([v]);
+  updateOpPlanSummaryCard();
 }
 function ensureOpPlanState(reset){
   const d = state.drawer;
@@ -6530,7 +6422,7 @@ function applyOpPlanToRow(row){
     row.plan = '循环发送';
     row.loopType = d.opCycle;
     row.weekdays = d.opCycle==='weekly' ? (d.opWeekdays||[]).slice() : [];
-    row.monthDays = d.opCycle==='monthly' ? (d.opMonthDays||[]).slice() : [];
+    row.monthDays = d.opCycle==='monthly' ? normalizeOpMonthDays(d.opMonthDays).slice() : [];
     row.sendTime = hm;
     row.next = when || row.next;
     return;
@@ -6593,12 +6485,13 @@ function updateOpPlanSummaryCard(){
   if(el) el.textContent = '当前计划：' + opSendPlanSummary();
 }
 const JUMP_INTERNAL_ADDR_OPTS = ['首页','资产页','交易页','盈利排行榜','活动中心','个人中心','消息中心'];
-const STATUS_SETTING_OPTS = ['暂停执行','已执行(正式生效)','测试执行'];
+const STATUS_SETTING_OPTS = ['暂停执行','已执行(正式生效)'];
 const DEFAULT_STATUS_SETTING = '已执行(正式生效)';
 function normalizeStatusSetting(v){
   if(STATUS_SETTING_OPTS.includes(v)) return v;
   if(v==='已暂停' || v==='禁用' || v==='暂停') return '暂停执行';
-  if(v==='测试' || v==='测试中') return '测试执行';
+  // 历史「测试执行」并入正式生效
+  if(v==='测试执行' || v==='测试' || v==='测试中') return DEFAULT_STATUS_SETTING;
   return DEFAULT_STATUS_SETTING;
 }
 function statusFromSetting(setting){
@@ -6688,7 +6581,7 @@ function applyProfitScenarioDefaults(opts){
   if(!state.drawer.jumpMode) state.drawer.jumpMode = 'APP内部跳转';
   if(!state.drawer.jumpInternalAddr) state.drawer.jumpInternalAddr = '盈利排行榜';
   if(!resetContent) return;
-  if(!state.drawer.contentDraft) state.drawer.contentDraft = emptyContentDraft(['push']);
+  if(!state.drawer.contentDraft) state.drawer.contentDraft = emptyContentDraft(defaultFormChannels());
   const draft = state.drawer.contentDraft;
   const zhTitle = '行情到了';
   const zhBody = '行情到了，{userName}{profitPeriod}盈利{profitAmount}美金，快去看看怎么操作。';
@@ -6696,7 +6589,7 @@ function applyProfitScenarioDefaults(opts){
   const enBody = 'Market is moving — {userName} made {profitAmount} USD profit {profitPeriod}. Check how to trade.';
   draft.title = enTitle;
   draft.body = enBody;
-  draft.channels = draft.channels && draft.channels.length ? draft.channels : ['push'];
+  draft.channels = draft.channels && draft.channels.length ? draft.channels : defaultFormChannels();
   if(!draft.byChannel) draft.byChannel = {};
   draft.channels.forEach(ch=>{
     if(!draft.byChannel[ch]) draft.byChannel[ch] = defaultChannelContent(ch);
@@ -6764,7 +6657,7 @@ function jumpConfigBlock(){
 }
 
 function opSendPlanBlock(){
-  // 顺序：发送方式 + 时区 + 发放时间（同行）→ 循环方式（仅预约）→ 周几/几号
+  // 顺序：发送方式 + 时区 → 发放时间 + 循环方式 → 周几/几号
   const d = ensureOpPlanState();
   const isSchedule = d.opSendMode === 'schedule';
   const cycle = isSchedule ? (d.opCycle || 'none') : 'none';
@@ -6776,19 +6669,11 @@ function opSendPlanBlock(){
       '</select></div>';
   let html;
   if(isSchedule){
-    html =
-      '<div class="grid3" style="margin-bottom:12px">' +
-        sendModeField +
-        '<div class="field"><label class="label"><span class="req">*</span>时区</label>' +
-          '<select class="control" id="opTimezone" onchange="state.drawer.opTimezone=this.value;updateOpPlanSummaryCard()">' +
-            BIZ_TZ_OPTS.map(t=>'<option value="' + t.v + '"' + (d.opTimezone===t.v?' selected':'') + '>' + t.n + '</option>').join('') +
-          '</select></div>' +
-        '<div class="field"><label class="label"><span class="req">*</span>发放时间</label>' +
-          '<input class="control" type="datetime-local" step="1" value="' + (d.opPublishAt||'') + '"' +
-            ' onchange="state.drawer.opPublishAt=this.value;updateOpPlanSummaryCard()">' +
-        '</div>' +
+    const publishField =
+      '<div class="field"><label class="label"><span class="req">*</span>发放时间</label>' +
+        '<input class="control" type="datetime-local" step="1" value="' + (d.opPublishAt||'') + '"' +
+          ' onchange="state.drawer.opPublishAt=this.value;updateOpPlanSummaryCard()">' +
       '</div>';
-
     const cycleSelect =
       '<div class="field"><label class="label"><span class="req">*</span>循环方式</label>' +
         '<select class="control" id="opCycle" onchange="setOpCycle(this.value)">' +
@@ -6797,20 +6682,25 @@ function opSendPlanBlock(){
           '<option value="weekly"' + (cycle==='weekly'?' selected':'') + '>每周</option>' +
           '<option value="monthly"' + (cycle==='monthly'?' selected':'') + '>每月</option>' +
         '</select></div>';
+    html =
+      '<div class="grid2" style="margin-bottom:12px">' +
+        sendModeField +
+        '<div class="field"><label class="label"><span class="req">*</span>时区</label>' +
+          '<select class="control" id="opTimezone" onchange="state.drawer.opTimezone=this.value;updateOpPlanSummaryCard()">' +
+            BIZ_TZ_OPTS.map(t=>'<option value="' + t.v + '"' + (d.opTimezone===t.v?' selected':'') + '>' + t.n + '</option>').join('') +
+          '</select></div>' +
+      '</div>' +
+      '<div class="grid2" style="margin-bottom:12px">' + publishField + cycleSelect + '</div>';
 
-    // 与上方 grid3 对齐：循环方式占 1/3，周几/几号跨后两列占 2/3
     if(cycle==='weekly'){
-      html += '<div class="grid3" style="margin-bottom:12px">' + cycleSelect +
-        multiSelectHtml('opWeekdayMs','选择周几（可多选）', OP_WEEK_OPTS, d.opWeekdays, true)
-          .replace('class="field" style="margin-bottom:12px"','class="field" style="grid-column:span 2"') +
-      '</div>';
+      html += multiSelectHtml('opWeekdayMs','选择周几（可多选）', OP_WEEK_OPTS, d.opWeekdays, true)
+        .replace('class="field" style="margin-bottom:12px"','class="field full" style="margin-bottom:12px"');
     } else if(cycle==='monthly'){
-      html += '<div class="grid3" style="margin-bottom:12px">' + cycleSelect +
-        multiSelectHtml('opMonthDayMs','选择几号（可多选）', OP_MONTH_OPTS, d.opMonthDays, true)
-          .replace('class="field" style="margin-bottom:12px"','class="field" style="grid-column:span 2"') +
-      '</div>';
-    } else {
-      html += '<div class="grid3" style="margin-bottom:12px">' + cycleSelect + '</div>';
+      const monthDay = (d.opMonthDays && d.opMonthDays[0]) || '1号';
+      html += '<div class="field full" style="margin-bottom:12px"><label class="label"><span class="req">*</span>选择几号</label>' +
+        '<select class="control" id="opMonthDay" onchange="setOpMonthDay(this.value)">' +
+          OP_MONTH_OPTS.map(o=>'<option value="' + o + '"' + (o===monthDay?' selected':'') + '>' + o + '</option>').join('') +
+        '</select></div>';
     }
   } else {
     html = '<div style="margin-bottom:12px">' + sendModeField + '</div>';
@@ -6823,20 +6713,18 @@ function renderConfigRight(type){
   if(type==='business'){
     const appOptions = bizAppOptions(state.drawer.project);
     const apps = (state.drawer.apps && state.drawer.apps.length ? state.drawer.apps : appOptions).filter(a=>appOptions.includes(a));
-    const regions = regionCodes(state.drawer.regions);
     const emsOpen = state.drawer.emsOpen || { bizAppEms:false };
     mods =
       configMod('基础信息',
         '<div class="grid2">' +
           '<div class="field"><label class="label"><span class="req">*</span>任务名称</label><input class="control" maxlength="50" placeholder="最多 50 字符"></div>' +
-          multiSelectHtml('bizRegionMs','地区', OP_REGION_OPTS, regions, true).replace('class="field" style="margin-bottom:12px"','class="field"') +
           expandMultiSelectHtml('bizAppEms','投放 APP', appOptions, apps, !!emsOpen.bizAppEms) +
           pushIntervalMinField() +
-          '<div class="field full"><label class="label">任务说明</label><textarea class="control" style="height:64px"></textarea></div>' +
           statusSettingSelectHtml() +
         '</div>'
       ) +
-      configMod('业务类型', bizEventCondBlock());
+      configMod('业务类型', bizEventCondBlock()) +
+      channelConfigRightMods();
   } else if(type==='operation'){
     const appOptions = bizAppOptions(state.drawer.project);
     let apps = (state.drawer.apps || []).filter(a=>appOptions.includes(a));
@@ -6850,11 +6738,12 @@ function renderConfigRight(type){
             '<input class="control" placeholder="请输入任务名称" value="' + opName + '" oninput="state.drawer.name=this.value"></div>' +
           '<div class="field"><label class="label"><span class="req">*</span>优先级</label>' +
             opPrioritySelectHtml() + '</div>' +
-          expandMultiSelectHtml('bizAppEms','APP', appOptions, apps, !!emsOpen.bizAppEms) +
+          expandMultiSelectHtml('bizAppEms','投放 APP', appOptions, apps, !!emsOpen.bizAppEms) +
         '</div>'
       ) +
       configMod('选择对象', audienceConfigBlock()) +
-      configMod('发送计划', opSendPlanBlock());
+      configMod('发送计划', opSendPlanBlock()) +
+      channelConfigRightMods();
   } else if(type==='market'){
     mods =
       configMod('基础信息', marketBaseConfigBlock()) +
@@ -6879,10 +6768,6 @@ function onOpProjectChange(project){
   } else {
     state.drawer.msgGroup = '';
   }
-  if(state.drawer.templateId){
-    const stillOk = templatesForPush('运营推送', project).some(t=>t.id===state.drawer.templateId);
-    if(!stillOk) state.drawer.templateId = '';
-  }
   renderFormBody();
   toast(project ? ('已切换项目：' + project) : '请先选择项目');
 }
@@ -6892,10 +6777,6 @@ function onMarketProjectChange(project){
   state.drawer.project = project || '';
   const nextApps = bizAppOptions(project);
   state.drawer.apps = nextApps.slice();
-  if(state.drawer.templateId){
-    const stillOk = templatesForPush('行情提醒', project).some(t=>t.id===state.drawer.templateId);
-    if(!stillOk) state.drawer.templateId = '';
-  }
   renderFormBody();
   toast(project ? ('已切换项目：' + project) : '请先选择项目');
 }
@@ -6937,14 +6818,13 @@ function renderMarketContentLeft(){
 
   return '<div class="split-left">' +
     '<div class="split-panel-title">提醒内容</div>' +
-    '<div class="grid2" style="margin-bottom:12px">' +
-      '<div class="field"><label class="label"><span class="req">*</span>项目</label>' +
+    '<div class="field" style="margin-bottom:12px">' +
+      '<label class="label"><span class="req">*</span>项目</label>' +
         '<select class="control" id="mktCreateProject" onchange="onMarketProjectChange(this.value)">' +
           '<option value="">请选择项目</option>' +
           '<option value="Dana"' + (project==='Dana'?' selected':'') + '>Dana</option>' +
           '<option value="TW"' + (project==='TW'?' selected':'') + '>TW</option>' +
-        '</select></div>' +
-      pushTemplateSelectHtml('行情提醒').replace(' style="margin-bottom:14px"','') +
+        '</select>' +
     '</div>' +
     '<div class="lang-editor">' +
       renderLangTabsBar(curL) +
@@ -6962,7 +6842,7 @@ function renderMarketContentLeft(){
 function renderOperationContentLeft(){
   const project = state.drawer.project || '';
   if(!state.drawer.contentDraft){
-    state.drawer.contentDraft = emptyContentDraft(['push']);
+    state.drawer.contentDraft = emptyContentDraft(defaultFormChannels());
   }
   if(!state.drawer.lang) state.drawer.lang = 'en';
   const draft = state.drawer.contentDraft;
@@ -6970,38 +6850,29 @@ function renderOperationContentLeft(){
   const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   const curL = state.drawer.lang || 'en';
   const allowed = formChannelKeys();
-  const allChannels = formChannelOptions();
-  const draftChannels = (draft.channels||[]).filter(ch=>allowed.includes(ch));
-  if(!draftChannels.length){
-    draft.channels = ['push'];
-  } else {
-    draft.channels = draftChannels;
-  }
+  let draftChannels = (draft.channels||[]).filter(ch=>allowed.includes(ch));
+  if(!draftChannels.length) draftChannels = defaultFormChannels();
+  draft.channels = draftChannels;
   const selected = new Set(draft.channels);
-  const editorChannels = draft.channels.filter(ch=>CONTENT_EDITOR_CHANNEL_KEYS.includes(ch));
+  if(!draft.byChannel) draft.byChannel = {};
+  const editorChannels = CONTENT_EDITOR_CHANNEL_KEYS.filter(ch=>allowed.includes(ch));
+  editorChannels.forEach(ch=>{
+    if(!draft.byChannel[ch]) draft.byChannel[ch] = defaultChannelContent(ch);
+  });
   const editors = sharedTitleField(draft, esc) +
-    (editorChannels.map(ch=>
-      channelEditorBlock(ch, draft.byChannel[ch] || defaultChannelContent(ch), [], esc)
-    ).join('') || '<div class="warn-card">请至少勾选一个通知渠道</div>');
-  const projectField = '<div class="field"><label class="label"><span class="req">*</span>项目</label>' +
+    editorChannels.map(ch=>
+      channelEditorBlock(ch, draft.byChannel[ch] || defaultChannelContent(ch), [], esc, selected.has(ch))
+    ).join('');
+  const projectField = '<div class="field" style="margin-bottom:12px"><label class="label"><span class="req">*</span>项目</label>' +
       '<select class="control" id="opCreateProject" onchange="onOpProjectChange(this.value)">' +
         '<option value="">请选择项目</option>' +
         '<option value="Dana"' + (project==='Dana'?' selected':'') + '>Dana</option>' +
         '<option value="TW"' + (project==='TW'?' selected':'') + '>TW</option>' +
       '</select></div>';
-  const tplSelect = pushTemplateSelectHtml('运营推送').replace(' style="margin-bottom:14px"','');
 
   return '<div class="split-left">' +
     '<div class="split-panel-title">推送内容</div>' +
-    '<div class="grid2" style="margin-bottom:12px">' + projectField + tplSelect + '</div>' +
-    '<div class="field" style="margin-bottom:14px">' +
-      '<label class="label"><span class="req">*</span>渠道</label>' +
-      '<div class="channel-bar" style="border:1px solid var(--field-line);border-radius:7px;padding:8px 12px">' +
-        allChannels.map(c=>
-          '<label><input type="checkbox" ' + (selected.has(c.k)?'checked':'') +
-          ' onchange="toggleCreateChannel(\'' + c.k + '\', this.checked)"> ' + c.n + '</label>'
-        ).join('') +
-      '</div></div>' +
+    projectField +
     '<div class="lang-editor">' +
       renderLangTabsBar(curL) +
       '<div class="editor-body">' + editors + '</div>' +
@@ -7095,10 +6966,7 @@ function isBizModuleBatch(batch){
 function batchAudienceSummary(batch, src){
   if(src){
     if(isBizModuleBatch(batch)){
-      const regions = bizRegionsText(src.regions);
-      const text = '触发当前' + (bizTypeKeyFromLabel(src.bizType)==='activity'?'活动':'业务场景') + '的用户'
-        + (regions && regions!=='-' && regions!=='—' ? ' · 地区 ' + regions : '');
-      return escHtml(text);
+      return escHtml('触发当前' + (bizTypeKeyFromLabel(src.bizType)==='activity'?'活动':'业务场景') + '的用户');
     }
     if(batch.type==='运营推送' || batch.type==='行情提醒'){
       return formatAudienceCell(src);
@@ -7286,7 +7154,7 @@ function renderDetailView(){
       <div class="k">任务名称</div><div class="v">${d.name||'-'}</div>
       <div class="k">项目</div><div class="v">${d.project||'-'}</div>
       <div class="k">APP</div><div class="v">${formatAppCell(d.project, rowAppsValue(d))}</div>
-      <div class="k">地区</div><div class="v">${bizRegionsText(d.regions)}</div>
+      <div class="k">自动更新</div><div class="v">${rowAppsAutoUpdate(d)?'是':'否'}</div>
       <div class="k">推送间隔</div><div class="v">${pushIntervalText(d)}</div>
       <div class="k">状态</div><div class="v">${statusPill(d.status)}</div>
     </div></div>
@@ -7326,8 +7194,9 @@ function renderDetailView(){
       <div class="k">创建时间</div><div class="v">${d.created||d.updated||'--'}</div>
       <div class="k">更新时间</div><div class="v">${d.updated||'--'}</div>
     </div></div>
-    <div class="detail-block"><h4>执行批次</h4>
-      <button class="btn soft sm" onclick="jumpRecords('${d.id}')">查看相关推送记录</button>
+    <div class="detail-block"><h4>推送记录</h4>
+      <div style="margin-bottom:10px">${formatRelatedRecordsCell(d)} <span class="muted" style="font-size:12px;margin-left:6px">条相关记录</span></div>
+      <button class="btn soft sm" onclick="openRelatedRecords('${d.id}')">查看相关推送记录</button>
     </div>`;
   }
   if(type==='market'){
@@ -7336,6 +7205,7 @@ function renderDetailView(){
       <div class="k">提醒名称</div><div class="v">${d.name}</div>
       <div class="k">项目</div><div class="v">${d.project||'-'}</div>
       <div class="k">APP</div><div class="v">${formatAppCell(d.project, rowAppsValue(d))}</div>
+      <div class="k">自动更新</div><div class="v">${rowAppsAutoUpdate(d)?'是':'否'}</div>
       <div class="k">品种</div><div class="v" title="${escHtml(rowSymbolsValue(d).join('、'))}">${escHtml(formatSymbolsCell(rowSymbolsValue(d)))}</div>
       <div class="k">优先级</div><div class="v">${priBadge(marketPriority())}</div>
       <div class="k">状态</div><div class="v">${statusPill(d.status)}</div>
@@ -7466,13 +7336,11 @@ function businessStep(step){
     ? state.drawer.apps
     : (Array.isArray(state.drawer.detail?.app) ? state.drawer.detail.app : (state.drawer.detail?.app ? [state.drawer.detail.app] : appOptions))
   ).filter(a=>appOptions.includes(a));
-  const regions = regionCodes(state.drawer.regions);
   const emsOpen = state.drawer.emsOpen || { bizAppEms:true };
   if(step===0) return `
     <div class="form-section"><h3>基础字段</h3>
       <div class="grid2">
         <div class="field"><label class="label"><span class="req">*</span>任务名称</label><input class="control" maxlength="50" placeholder="最多 50 字符" value="${state.drawer.detail?.name||''}"></div>
-        ${multiSelectHtml('bizRegionMs','地区', OP_REGION_OPTS, regions, true).replace('class="field" style="margin-bottom:12px"','class="field"')}
         ${expandMultiSelectHtml('bizAppEms','投放 APP', appOptions, apps, !!emsOpen.bizAppEms)}
         ${bizEventCondBlock()}
         <div class="field"><label class="label"><span class="req">*</span>项目</label>
@@ -7482,7 +7350,6 @@ function businessStep(step){
           </select>
         </div>
         ${pushIntervalMinField()}
-        <div class="field full"><label class="label">任务说明</label><textarea class="control"></textarea></div>
         ${statusSettingSelectHtml()}
       </div>
     </div>`;
@@ -7538,7 +7405,6 @@ function setBizType(type){
     ? (selectableActivities()[0]?.id || '')
     : (selectableScenarios()[0]?.id || '');
   syncBizPriorityFromRef();
-  clearMismatchedBizTemplate();
   renderFormBody();
 }
 function setBizRefId(id){
@@ -7546,7 +7412,6 @@ function setBizRefId(id){
   const prevId = state.drawer.bizRefId;
   state.drawer.bizRefId = id || '';
   syncBizPriorityFromRef();
-  clearMismatchedBizTemplate();
   if(state.drawer.bizType === 'business' && isProfitScenarioId(id)){
     const draft = state.drawer.contentDraft;
     const canPrefill = state.drawer.mode === 'create' && (!draft || !draft.dirty) && prevId !== id;
@@ -7627,7 +7492,7 @@ function operationStep(step){
         <div class="field"><label class="label"><span class="req">*</span>优先级</label>
           ${opPrioritySelectHtml()}
         </div>
-        ${expandMultiSelectHtml('bizAppEms','APP', appOptions, apps, !!emsOpen.bizAppEms)}
+        ${expandMultiSelectHtml('bizAppEms','投放 APP', appOptions, apps, !!emsOpen.bizAppEms)}
       </div>
       <div class="field"><label class="label">推送说明</label><textarea class="control"></textarea></div>
     </div>`;
@@ -7893,13 +7758,8 @@ function onMultiSelectChange(id){
     updateOpPlanSummaryCard();
   }
   if(id==='opMonthDayMs'){
-    state.drawer.opMonthDays = vals.length ? vals : ['1号'];
-    if(!vals.length){
-      const first = el.querySelector('input[type=checkbox]');
-      if(first){ first.checked = true; vals.push(first.value); state.drawer.opMonthDays = vals; }
-      if(text){ text.textContent = vals.join('、'); text.className = ''; }
-      toast('至少选择一个日期');
-    }
+    // 按月已改为单选下拉，多选同步逻辑保留兼容
+    state.drawer.opMonthDays = normalizeOpMonthDays(vals);
     updateOpPlanSummaryCard();
   }
   if(id==='regionMs'){
@@ -8131,7 +7991,7 @@ function marketBaseConfigBlock(){
   const emsOpen = state.drawer.emsOpen;
   const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   return '<div class="grid2">' +
-    expandMultiSelectHtml('bizAppEms','APP', appOptions, apps, !!emsOpen.bizAppEms) +
+    expandMultiSelectHtml('bizAppEms','投放 APP', appOptions, apps, !!emsOpen.bizAppEms) +
     expandMultiSelectHtml('mktSymbolEms','品种', MKT_SYMBOL_OPTS, symbols, !!emsOpen.mktSymbolEms) +
     '<div class="field"><label class="label"><span class="req">*</span>报价单位</label>' +
       '<input class="control" id="mktFormUnit" value="'+esc(d.mktUnit||'')+'" placeholder="请输入报价单位" oninput="state.drawer.mktUnit=this.value"></div>' +
@@ -8147,28 +8007,28 @@ function marketConditionConfigBlock(){
   const mode = d.marketCondMode === 'period' ? 'period' : 'barrier';
   const status = d.mktStatus === '禁用' ? '禁用' : '启用';
   let html = '';
-  html += '<div class="grid2" style="margin-bottom:14px">' +
+  const typeField =
     '<div class="field"><label class="label"><span class="req">*</span>类型</label>' +
       '<select class="control" id="mktFormCondMode" onchange="onMarketCondModeChange(this.value)">' +
         '<option value="barrier"'+(mode==='barrier'?' selected':'')+'>整数关口</option>' +
         '<option value="period"'+(mode==='period'?' selected':'')+'>时间段</option>' +
-      '</select></div>' +
-  '</div>';
+      '</select></div>';
+  let condField = '';
   if(mode === 'barrier'){
-    html += '<div class="grid2" style="margin-bottom:14px">' +
+    condField =
       '<div class="field"><label class="label"><span class="req">*</span>整数关口</label>' +
         '<input class="control" id="mktFormGate" type="number" value="'+esc(d.mktGate||'')+'" placeholder="请输入整数关口" oninput="state.drawer.mktGate=this.value">' +
-      '</div></div>';
+      '</div>';
   } else {
     if(!MKT_PERIOD_PRESETS.some(p=>p.v===String(d.mktPeriodPreset||''))) d.mktPeriodPreset = '5';
-    html += '<div class="grid2" style="margin-bottom:14px">' +
+    condField =
       '<div class="field"><label class="label"><span class="req">*</span>时间段</label>' +
         '<select class="control" id="mktFormPeriodPreset" onchange="onMarketFormPeriodPresetChange(this.value)">' +
           '<option value="">请选择</option>' +
           MKT_PERIOD_PRESETS.map(p=>'<option value="'+p.v+'"'+(String(d.mktPeriodPreset)===p.v?' selected':'')+'>'+p.n+'</option>').join('') +
-        '</select></div>' +
-    '</div>';
+        '</select></div>';
   }
+  html += '<div class="grid2" style="margin-bottom:14px">' + typeField + condField + '</div>';
   html += '<div class="grid2">' +
     '<div class="field"><label class="label"><span class="req">*</span>涨跌幅</label>' +
       '<input class="control" id="mktFormChange" value="'+esc(d.mktChange||'')+'" placeholder="请输入涨跌幅" oninput="state.drawer.mktChange=this.value"></div>' +
@@ -8236,11 +8096,13 @@ function saveMarketForm(){
   const mktTv = state.drawer.marketTagVerse || '';
   const mktRegions = regionCodes(state.drawer.regions);
   const enabled = d.mktStatus !== '禁用';
+  const appSer = serializeDrawerApps();
   const payload = {
     name,
     project,
-    apps: apps.length ? apps.slice() : appOpts.slice(),
-    app: (apps[0] || appOpts[0] || project),
+    apps: (Array.isArray(appSer.apps) ? (appSer.apps.length ? appSer.apps : appOpts.slice()) : appSer.apps),
+    appsAutoUpdate: appSer.appsAutoUpdate,
+    app: ((Array.isArray(appSer.apps) ? appSer.apps[0] : null) || apps[0] || appOpts[0] || project),
     mktType: marketTypeLabelFromMode(d.marketCondMode),
     source: existing.source || 'MT5',
     symbols: symbols.slice(),
@@ -8438,7 +8300,7 @@ function initFromUrl(){
   if(tab === 'overview' || (tab && !TAB_LABEL[tab])) state.tab = defaultTabForRole();
   else if(tab && TAB_LABEL[tab]) state.tab = clampTabForRole(tab);
   else state.tab = clampTabForRole(state.tab);
-  return params.get('page') === 'create' && state.tab && DRAWER_CFG[state.tab] && canAccessTab(state.tab) && ['business','operation','market','template'].includes(state.tab);
+  return params.get('page') === 'create' && state.tab && DRAWER_CFG[state.tab] && canAccessTab(state.tab) && ['business','operation','market'].includes(state.tab);
 }
 function init(){
   const openCreate = initFromUrl();
