@@ -66,13 +66,14 @@ a:hover{text-decoration:underline}
 .create-foot{padding:12px 20px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;flex-shrink:0;position:sticky;bottom:0}
 .create-foot .left,.create-foot .right{display:flex;gap:8px;align-items:center}
 
-/* Create split: left content / right config — 约 6:4，右侧两列表单 */
-.split-layout{display:grid;grid-template-columns:minmax(360px,1.2fr) minmax(320px,.8fr);min-height:560px;height:100%}
+/* Create split: left content / right config — 约 7:3，右侧单列 */
+.split-layout{display:grid;grid-template-columns:minmax(0,7fr) minmax(280px,3fr);min-height:560px;height:100%}
 .split-left,.split-right{min-width:0;overflow:auto}
 .split-left{padding:16px 18px 22px;border-right:1px solid var(--line);background:#fff}
+.project-channel-row{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px;align-items:end;margin-bottom:12px}
+.project-channel-row .check-row{min-height:34px}
 .split-right{padding:18px 18px 24px;background:#f8fafc}
-.split-right .grid2{grid-template-columns:1fr 1fr}
-.split-right .grid3{grid-template-columns:1fr 1fr}
+.split-right .grid2,.split-right .grid3{grid-template-columns:1fr}
 .split-right .field.full{grid-column:1/-1}
 .split-panel-title{font-size:14px;font-weight:600;margin:0 0 12px;color:#1f2430}
 .split-panel-title .hint{font-weight:400;font-size:12px;color:var(--muted);margin-left:8px}
@@ -150,6 +151,7 @@ a:hover{text-decoration:underline}
 @media (max-width:1280px){
   .split-layout{grid-template-columns:1fr}
   .split-left{border-right:none;border-bottom:1px solid var(--line)}
+  .project-channel-row{grid-template-columns:1fr}
 }
 
 .btn{height:34px;padding:0 14px;border:1px solid var(--pri);background:var(--pri);border-radius:7px;cursor:pointer;color:#fff;font-size:13px;font-weight:600;box-shadow:0 4px 10px rgba(47,107,255,.24);transition:transform .12s ease,background .12s ease}
@@ -2676,26 +2678,14 @@ function batchPushRulesFormHtml(){
     <td><select class="control" onchange="setMarketTierDelay(${i},this.value)">${marketTierDelayOptions(r.delayMinutes)}</select></td>
     <td>${marketRuleSwitch(r.enabled,`toggleMarketTier(${i})`)}</td>
   </tr>`).join('');
-  return `<div class="market-rule-sec"><div class="market-rule-sec-hd">A. 推送对象规则</div>
-      <div class="info-card" style="margin:0">
-        <div style="margin-bottom:8px"><strong>推送对象说明</strong></div>
-        <div style="font-size:13px;color:#334155;line-height:1.7">
-          行情提醒默认面向满足以下<strong>任一</strong>条件的用户：
-          <ul style="margin:8px 0 0;padding-left:18px">
-            <li>最近 30 天内活跃</li>
-            <li>VIP 等级 ≥ V3</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div class="market-rule-sec"><div class="market-rule-sec-hd">B. 人群优先级与分批发送</div>
+  return `<div class="market-rule-sec"><div class="market-rule-sec-hd">A. 人群优先级与分批发送</div>
       <div class="hint" style="margin:0 0 8px">分层互斥，命中多层时仅进入最高优先层级（第一层最高）。</div>
       <div class="table-wrap settings-table-wrap market-rule-table"><table class="data-table">
         <thead><tr><th style="width:88px">层级</th><th>用户分层</th><th style="width:160px">发送延迟</th><th style="width:72px">状态</th></tr></thead>
         <tbody>${tierRows}</tbody>
       </table></div>
     </div>
-    <div class="market-rule-sec"><div class="market-rule-sec-hd">C. 频控与重复触发抑制</div>
+    <div class="market-rule-sec"><div class="market-rule-sec-hd">B. 频控与重复触发抑制</div>
       <div class="table-wrap settings-table-wrap market-rule-table"><table class="data-table">
         <thead><tr><th style="width:140px">规则</th><th>参数</th></tr></thead>
         <tbody>
@@ -5495,11 +5485,24 @@ function msgJumpGroupFields(){
   }
   return '<div style="margin-bottom:12px">' + jumpField + '</div>';
 }
-function channelToggleTitleHtml(ch, label, enabled){
-  return '<label class="ch-toggle" onclick="event.stopPropagation()">' +
-    '<input type="checkbox" ' + (enabled ? 'checked' : '') +
-    ' onchange="toggleCreateChannel(\'' + ch + '\', this.checked)">' +
-    '<span>' + label + '</span></label>';
+/** 推送渠道勾选：与项目同一排；勾选后才展示对应内容卡 / 配置块 */
+function createChannelChecksFieldHtml(){
+  const draft = state.drawer.contentDraft || {};
+  const selected = new Set(draft.channels || []);
+  return '<div class="field">' +
+    '<label class="label"><span class="req">*</span>推送渠道</label>' +
+    '<div class="check-row">' +
+      formChannelOptions().map(c=>
+        '<label><input type="checkbox"' + (selected.has(c.k)?' checked':'') +
+        ' onchange="toggleCreateChannel(\'' + c.k + '\', this.checked)"> ' + c.n + '</label>'
+      ).join('') +
+    '</div></div>';
+}
+function projectChannelTopRowHtml(projectFieldInner){
+  return '<div class="project-channel-row">' +
+    '<div class="field">' + projectFieldInner + '</div>' +
+    createChannelChecksFieldHtml() +
+  '</div>';
 }
 function mailChannelFields(){
   const channel = state.drawer.mailChannel || 'EMAIL-SES';
@@ -5511,19 +5514,16 @@ function mailChannelFields(){
     '</select></div>';
 }
 function channelEditorBlock(ch, content, vars, esc, enabled){
+  if(enabled === false) return '';
   const meta = CHANNEL_META[ch] || { n:ch, bodyLabel:'正文' };
   const isPush = ch==='push';
-  const on = enabled !== false;
-  const mutedClass = on ? '' : ' is-disabled';
   const showPushImage = isPush && state.drawer.type==='operation';
   const bodyHtml = bodyTextToHtml(content.body || '');
-  const editable = on ? 'true' : 'false';
-  return '<div class="ch-block' + mutedClass + '">' +
-    '<div class="ch-block-hd">' + channelToggleTitleHtml(ch, meta.n, on) + '</div>' +
+  return '<div class="ch-block">' +
+    '<div class="ch-block-hd"><span>' + meta.n + '</span></div>' +
     '<div class="ch-block-bd">' +
       '<div class="field" style="margin-bottom:12px"><label class="label"><span class="req">*</span>' + meta.bodyLabel + '</label>' +
-        '<div class="control var-body" id="draftBody_' + ch + '" contenteditable="' + editable + '" role="textbox" data-channel="' + ch + '"' +
-          (on ? '' : ' aria-disabled="true" tabindex="-1"') +
+        '<div class="control var-body" id="draftBody_' + ch + '" contenteditable="true" role="textbox" data-channel="' + ch + '"' +
           ' onfocus="state.drawer.focusChannel=\'' + ch + '\'"' +
           ' oninput="markDraftDirty()"' +
           ' onblur="retokenizeVarBody(\'' + ch + '\');markDraftDirty()"' +
@@ -6001,23 +6001,19 @@ function saveTemplateForm(){
   switchTab('template');
 }
 
-function wrapChannelCfg(enabled, html){
-  if(enabled) return html;
-  return '<fieldset disabled class="channel-cfg-disabled">' + html + '</fieldset>';
-}
 function channelConfigRightMods(){
   const draft = state.drawer.contentDraft || {};
   const selected = new Set(draft.channels || []);
   const type = state.drawer.type;
   let html = '';
   formChannelOptions().forEach(c=>{
-    const on = selected.has(c.k);
+    if(!selected.has(c.k)) return;
     let inner = '';
     if(c.k==='push') inner = jumpConfigBlock();
     else if(c.k==='msg') inner = msgJumpGroupFields();
     else if(c.k==='mail' && type==='business') inner = mailChannelFields();
     if(!inner) return;
-    html += configMod(channelToggleTitleHtml(c.k, c.n, on), wrapChannelCfg(on, inner));
+    html += configMod(c.n, inner);
   });
   return html;
 }
@@ -6040,17 +6036,19 @@ function renderContentLeft(type){
     if(!draft.byChannel[ch]) draft.byChannel[ch] = defaultChannelContent(ch);
   });
   const editors = sharedTitleField(draft, esc) +
-    editorChannels.map(ch=>
-      channelEditorBlock(ch, draft.byChannel[ch] || defaultChannelContent(ch), vars, esc, selected.has(ch))
+    editorChannels.filter(ch=>selected.has(ch)).map(ch=>
+      channelEditorBlock(ch, draft.byChannel[ch] || defaultChannelContent(ch), vars, esc, true)
     ).join('');
 
   const projectField = type==='business'
-    ? ('<div class="field" style="margin-bottom:12px"><label class="label"><span class="req">*</span>项目</label>' +
-          '<select class="control" id="bizCreateProject" onchange="onBizProjectChange(this.value)">' +
-            '<option value="">请选择项目</option>' +
-            '<option value="Dana"' + (project==='Dana'?' selected':'') + '>Dana</option>' +
-            '<option value="TW"' + (project==='TW'?' selected':'') + '>TW</option>' +
-          '</select></div>')
+    ? projectChannelTopRowHtml(
+        '<label class="label"><span class="req">*</span>项目</label>' +
+        '<select class="control" id="bizCreateProject" onchange="onBizProjectChange(this.value)">' +
+          '<option value="">请选择项目</option>' +
+          '<option value="Dana"' + (project==='Dana'?' selected':'') + '>Dana</option>' +
+          '<option value="TW"' + (project==='TW'?' selected':'') + '>TW</option>' +
+        '</select>'
+      )
     : '';
 
   return '<div class="split-left">' +
@@ -6860,15 +6858,17 @@ function renderOperationContentLeft(){
     if(!draft.byChannel[ch]) draft.byChannel[ch] = defaultChannelContent(ch);
   });
   const editors = sharedTitleField(draft, esc) +
-    editorChannels.map(ch=>
-      channelEditorBlock(ch, draft.byChannel[ch] || defaultChannelContent(ch), [], esc, selected.has(ch))
+    editorChannels.filter(ch=>selected.has(ch)).map(ch=>
+      channelEditorBlock(ch, draft.byChannel[ch] || defaultChannelContent(ch), [], esc, true)
     ).join('');
-  const projectField = '<div class="field" style="margin-bottom:12px"><label class="label"><span class="req">*</span>项目</label>' +
-      '<select class="control" id="opCreateProject" onchange="onOpProjectChange(this.value)">' +
-        '<option value="">请选择项目</option>' +
-        '<option value="Dana"' + (project==='Dana'?' selected':'') + '>Dana</option>' +
-        '<option value="TW"' + (project==='TW'?' selected':'') + '>TW</option>' +
-      '</select></div>';
+  const projectField = projectChannelTopRowHtml(
+    '<label class="label"><span class="req">*</span>项目</label>' +
+    '<select class="control" id="opCreateProject" onchange="onOpProjectChange(this.value)">' +
+      '<option value="">请选择项目</option>' +
+      '<option value="Dana"' + (project==='Dana'?' selected':'') + '>Dana</option>' +
+      '<option value="TW"' + (project==='TW'?' selected':'') + '>TW</option>' +
+    '</select>'
+  );
 
   return '<div class="split-left">' +
     '<div class="split-panel-title">推送内容</div>' +
