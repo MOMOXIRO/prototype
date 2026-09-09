@@ -2678,14 +2678,26 @@ function batchPushRulesFormHtml(){
     <td><select class="control" onchange="setMarketTierDelay(${i},this.value)">${marketTierDelayOptions(r.delayMinutes)}</select></td>
     <td>${marketRuleSwitch(r.enabled,`toggleMarketTier(${i})`)}</td>
   </tr>`).join('');
-  return `<div class="market-rule-sec"><div class="market-rule-sec-hd">A. 人群优先级与分批发送</div>
+  return `<div class="market-rule-sec"><div class="market-rule-sec-hd">A. 推送对象规则</div>
+      <div class="info-card" style="margin:0">
+        <div style="margin-bottom:8px"><strong>推送对象说明</strong></div>
+        <div style="font-size:13px;color:#334155;line-height:1.7">
+          行情提醒默认面向满足以下<strong>任一</strong>条件的用户：
+          <ul style="margin:8px 0 0;padding-left:18px">
+            <li>最近 30 天内活跃</li>
+            <li>VIP 等级 ≥ V3</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="market-rule-sec"><div class="market-rule-sec-hd">B. 人群优先级与分批发送</div>
       <div class="hint" style="margin:0 0 8px">分层互斥，命中多层时仅进入最高优先层级（第一层最高）。</div>
       <div class="table-wrap settings-table-wrap market-rule-table"><table class="data-table">
         <thead><tr><th style="width:88px">层级</th><th>用户分层</th><th style="width:160px">发送延迟</th><th style="width:72px">状态</th></tr></thead>
         <tbody>${tierRows}</tbody>
       </table></div>
     </div>
-    <div class="market-rule-sec"><div class="market-rule-sec-hd">B. 频控与重复触发抑制</div>
+    <div class="market-rule-sec"><div class="market-rule-sec-hd">C. 频控与重复触发抑制</div>
       <div class="table-wrap settings-table-wrap market-rule-table"><table class="data-table">
         <thead><tr><th style="width:140px">规则</th><th>参数</th></tr></thead>
         <tbody>
