@@ -1295,7 +1295,7 @@ const state = {
   mktFilter: { id:'', name:'', symbol:'' },
   page: { business:1, operation:1, market:1, template:1, records:1 },
   pageSize: { business:20, operation:20, market:20, template:20, records:20 },
-  drawer: { open:false, type:null, mode:'create', step:0, detail:null, ui:'drawer', project:'', apps:[], appsAutoUpdate:false, regions:[], msgSendMode:'supplementPush', msgJump:'跳转私信', msgGroup:'', msgAppPage:'', msgUrl:'', mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'', jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'', pushIntervalMin:30, bizType:'business', bizRefId:'', bizPriority:'P1', opPriority:'P2', statusSetting:'已执行(正式生效)' },
+  drawer: { open:false, type:null, mode:'create', step:0, detail:null, ui:'drawer', project:'', apps:[], appsAutoUpdate:false, regions:[], msgJump:'跳转私信', msgGroup:'', msgAppPage:'', msgUrl:'', mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'', jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'', pushIntervalMin:30, bizType:'business', bizRefId:'', bizPriority:'P1', opPriority:'P2', statusSetting:'已执行(正式生效)' },
   bizRefEditor: { kind:null, mode:'create', id:null },
   pendingConfirm: null,
   recordsKeyword: '',
@@ -1342,9 +1342,9 @@ function currentBatchPushRules(){
 const TAB_LABEL = { business:'业务通知', operation:'运营推送', market:'行情提醒', records:'推送批次', settings:'推送设置' };
 const ROLE_TABS = {
   '开发': ['business','operation','market','records','settings'],
-  '运营': ['operation'],
+  '运营': ['operation','records'],
 };
-const ROLE_HINT = { '开发':'全部配置可见', '运营':'仅运营推送' };
+const ROLE_HINT = { '开发':'全部配置可见', '运营':'运营推送 + 推送批次' };
 function roleAllowedTabs(){ return ROLE_TABS[state.role] || ROLE_TABS['开发']; }
 function canAccessTab(tab){ return roleAllowedTabs().includes(tab); }
 function defaultTabForRole(){ return roleAllowedTabs()[0] || 'operation'; }
@@ -1756,7 +1756,7 @@ function setRole(role){
   if(typeof isDetailModal === 'function' && isDetailModal() && state.drawer.open && state.drawer.mode==='view'){
     renderFormFoot();
   }
-  toast(role === '运营' ? '已切换为运营：仅可使用运营推送' : '已切换为开发：全部配置可见');
+  toast(role === '运营' ? '已切换为运营：可使用运营推送与推送批次' : '已切换为开发：全部配置可见');
 }
 function switchTab(tab){
   if(tab === 'overview' || !TAB_LABEL[tab]) tab = defaultTabForRole();
@@ -4430,7 +4430,7 @@ function openCreatePage(type){
     open:true, type, mode:'create', step:0,
     detail:null, asPage:true, ui:'drawer', lang:'en', contentDraft:null,
     audienceMode:'add', focusChannel:'push', project:'', apps:[], appsAutoUpdate:false, regions:[],
-    msgSendMode:'supplementPush', msgJump:'跳转私信', msgGroup:'', msgAppPage:'', msgUrl:'',
+    msgJump:'跳转私信', msgGroup:'', msgAppPage:'', msgUrl:'',
     mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'',
     jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'',
     templateId:'', statusSetting: DEFAULT_STATUS_SETTING
@@ -4549,7 +4549,7 @@ function openEditDrawer(type, id){
     open:true, type, mode:'edit', step:0,
     detail:row, asPage:false, ui:'drawer',
     project: row?.project || '', apps, appsAutoUpdate: rowAppsAutoUpdate(row), regions:[],
-    msgSendMode:'supplementPush', msgJump:'跳转私信',
+    msgJump:'跳转私信',
     msgGroup:'', msgAppPage:'', msgUrl:'',
     mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'',
     jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'',
@@ -4570,7 +4570,6 @@ function openEditDrawer(type, id){
     state.drawer.msgGroup = row?.project==='TW' ? '【TW】系统通知' : '【DANA】资金变更';
     state.drawer.statusSetting = normalizeStatusSetting(row?.statusSetting || row?.status);
     state.drawer.contentDraft = emptyContentDraft(channelKeysFromLabels(row?.channels));
-    state.drawer.msgSendMode = row?.msgSendMode || inferMsgSendModeFromChannels(state.drawer.contentDraft.channels);
     state.drawer.msgJump = normalizeMsgJump(row?.msgJump);
     state.drawer.mailChannel = row?.mailChannel || 'EMAIL-SES';
     ensureDraftByLang();
@@ -4608,7 +4607,6 @@ function openEditDrawer(type, id){
     state.drawer.msgAppPage = row?.msgAppPage || '';
     state.drawer.msgUrl = row?.msgUrl || '';
     state.drawer.contentDraft = emptyContentDraft(channelKeysFromLabels(row?.channels));
-    state.drawer.msgSendMode = row?.msgSendMode || inferMsgSendModeFromChannels(state.drawer.contentDraft.channels);
     hydrateOpAudienceFromRow(row);
     hydrateOpPlanFromRow(row);
     enforceNoMsgForRegionAudience({ toast:false });
@@ -4994,7 +4992,6 @@ function enforceNoMsgForRegionAudience(opts){
   if(!prev.includes('msg')) return false;
   draft.channels = formChannelKeys().filter(k=>prev.includes(k) && k!=='msg');
   if(!draft.channels.length) draft.channels = ['push'];
-  syncMsgSendModeWithChannels(prev);
   if(opts.toast !== false) toast('按地区推送不可选择私信，已取消勾选');
   return true;
 }
@@ -5477,7 +5474,6 @@ function saveWithEnglishCheck(successMsg, thenClose){
       state.drawer.detail.appsAutoUpdate = appSer.appsAutoUpdate;
       const draft = state.drawer.contentDraft;
       state.drawer.detail.channels = channelLabelsFromKeys((draft && draft.channels) || ['push']);
-      state.drawer.detail.msgSendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels((draft && draft.channels) || []);
       state.drawer.detail.msgJump = normalizeMsgJump(state.drawer.msgJump);
       state.drawer.detail.msgGroup = state.drawer.msgGroup || '';
       if((draft && draft.channels || []).includes('mail')){
@@ -5501,7 +5497,6 @@ function saveWithEnglishCheck(successMsg, thenClose){
     state.drawer.appsAutoUpdate = appSer.appsAutoUpdate;
     const draft = state.drawer.contentDraft;
     row.channels = channelLabelsFromKeys((draft && draft.channels) || ['push']);
-    row.msgSendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels((draft && draft.channels) || []);
     row.msgJump = normalizeMsgJump(state.drawer.msgJump);
     row.msgGroup = state.drawer.msgGroup || '';
     row.msgAppPage = state.drawer.msgAppPage || '';
@@ -5596,7 +5591,6 @@ function toggleCreateChannel(ch, checked){
     return;
   }
   const draft = state.drawer.contentDraft || ensureContentDraft();
-  const prevChannels = (draft.channels || []).slice();
   const set = new Set(draft.channels || []);
   if(checked){
     set.add(ch);
@@ -5609,7 +5603,6 @@ function toggleCreateChannel(ch, checked){
     set.delete(ch);
   }
   draft.channels = formChannelKeys().filter(k=>set.has(k));
-  syncMsgSendModeWithChannels(prevChannels);
   draft.dirty = true;
   state.drawer.focusChannel = draft.channels[0];
   renderFormBody();
@@ -5637,7 +5630,6 @@ function ensureContentDraft(){
 }
 function syncDraftFromInputs(){
   const draft = state.drawer.contentDraft;
-  const sendModeEl = document.getElementById('msgSendMode');
   const jumpEl = document.getElementById('msgJump');
   const groupEl = document.getElementById('msgGroup');
   const msgAppEl = document.getElementById('msgAppPage');
@@ -5646,7 +5638,6 @@ function syncDraftFromInputs(){
   const mailJumpEl = document.getElementById('mailJump');
   const mailFreqEl = document.getElementById('mailFreq');
   const statusEl = document.getElementById('statusSetting');
-  if(sendModeEl) state.drawer.msgSendMode = sendModeEl.value;
   if(jumpEl) state.drawer.msgJump = normalizeMsgJump(jumpEl.value);
   if(groupEl) state.drawer.msgGroup = groupEl.value;
   if(msgAppEl) state.drawer.msgAppPage = msgAppEl.value;
@@ -5798,33 +5789,6 @@ function hideHelpTip(){
   const pop = document.getElementById('helpTipFloat');
   if(pop) pop.remove();
 }
-function inferMsgSendModeFromChannels(channels){
-  const chs = channels || [];
-  if(chs.includes('msg') && !chs.includes('push')) return 'direct';
-  if(chs.includes('push') && chs.includes('msg')) return 'supplementPush';
-  return 'supplementPush';
-}
-function msgSendModeLabel(mode){
-  return mode === 'direct' ? '全量发送' : '补充Push发送';
-}
-function syncMsgSendModeWithChannels(prevChannels){
-  const chs = createFormChannels();
-  if(!chs.includes('msg')) return;
-  const hadPush = (prevChannels || []).includes('push');
-  const hasPush = chs.includes('push');
-  if(!hasPush){
-    state.drawer.msgSendMode = 'direct';
-  } else if(!hadPush || !state.drawer.msgSendMode){
-    state.drawer.msgSendMode = 'supplementPush';
-  }
-}
-function setMsgSendMode(mode){
-  syncDraftFromInputs();
-  const chs = createFormChannels();
-  if(!chs.includes('push') && mode === 'supplementPush') return;
-  state.drawer.msgSendMode = mode || 'direct';
-  markDraftDirty();
-}
 function setMsgJump(mode){
   syncDraftFromInputs();
   const chs = createFormChannels();
@@ -5842,22 +5806,10 @@ function msgJumpGroupFields(){
     ? ['【TW】系统通知','【TW】账户安全','【TW】资金变更','【TW】活动消息']
     : ['【DANA】资金变更','【DANA】账户安全','【DANA】系统通知','【DANA】活动消息'];
   const chs = createFormChannels();
-  const canSupplementPush = chs.includes('push');
-  let sendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels(chs);
-  if(!canSupplementPush) sendMode = 'direct';
-  state.drawer.msgSendMode = sendMode;
   let jump = normalizeMsgJump(state.drawer.msgJump);
   if(jump==='跟随推送' && !chs.includes('push')) jump = '跳转私信';
   state.drawer.msgJump = jump;
   const group = state.drawer.msgGroup || groups[0];
-  const sendModeField = showGroup
-    ? ('<div class="field"><label class="label"><span class="req">*</span>私信发送方式' +
-        '<span class="help-q" tabindex="0" aria-label="私信发送方式说明" data-tip="【补充Push】仅向APP Push发送不成功的用户补发私信，不会对全员再发一遍。<br>【直接发送】对符合条件的目标用户全员发送私信。" onmouseenter="showHelpTip(this)" onmouseleave="hideHelpTip()" onfocus="showHelpTip(this)" onblur="hideHelpTip()">?</span></label>' +
-        '<select class="control" id="msgSendMode" onchange="setMsgSendMode(this.value)">' +
-          '<option value="supplementPush"' + (sendMode==='supplementPush'?' selected':'') + (canSupplementPush?'':' disabled') + '>补充Push发送</option>' +
-          '<option value="direct"' + (sendMode==='direct'?' selected':'') + '>全量发送</option>' +
-        '</select></div>')
-    : '';
   const groupField = showGroup
     ? ('<div class="field"><label class="label"><span class="req">*</span>私信组别</label>' +
         '<select class="control" id="msgGroup" onchange="state.drawer.msgGroup=this.value">' +
@@ -5873,7 +5825,7 @@ function msgJumpGroupFields(){
         ).join('') +
       '</select></div>';
   if(showGroup){
-    return '<div class="grid3" style="margin-bottom:12px">' + sendModeField + groupField + jumpField + '</div>';
+    return '<div class="grid2" style="margin-bottom:12px">' + groupField + jumpField + '</div>';
   }
   return '<div style="margin-bottom:12px">' + jumpField + '</div>';
 }
@@ -5906,21 +5858,12 @@ function msgConfigInlineHtml(){
     ? ['【TW】系统通知','【TW】账户安全','【TW】资金变更','【TW】活动消息']
     : ['【DANA】资金变更','【DANA】账户安全','【DANA】系统通知','【DANA】活动消息'];
   const chs = createFormChannels();
-  const canSupplementPush = chs.includes('push');
-  let sendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels(chs);
-  if(!canSupplementPush) sendMode = 'direct';
-  state.drawer.msgSendMode = sendMode;
   let jump = normalizeMsgJump(state.drawer.msgJump);
   if(jump==='跟随推送' && !chs.includes('push')) jump = '跳转私信';
   state.drawer.msgJump = jump;
   const group = state.drawer.msgGroup || groups[0];
   const canFollowPush = chs.includes('push');
-  return '<select class="control" id="msgSendMode" title="私信发送方式" onchange="setMsgSendMode(this.value)">' +
-      '<option value="supplementPush"' + (sendMode==='supplementPush'?' selected':'') + (canSupplementPush?'':' disabled') + '>补充Push发送</option>' +
-      '<option value="direct"' + (sendMode==='direct'?' selected':'') + '>全量发送</option>' +
-    '</select>' +
-    '<span class="help-q" tabindex="0" aria-label="私信发送方式说明" data-tip="【补充Push】仅向APP Push发送不成功的用户补发私信，不会对全员再发一遍。<br>【直接发送】对符合条件的目标用户全员发送私信。" onmouseenter="showHelpTip(this)" onmouseleave="hideHelpTip()" onfocus="showHelpTip(this)" onblur="hideHelpTip()">?</span>' +
-    '<select class="control" id="msgGroup" title="私信组别" onchange="state.drawer.msgGroup=this.value">' +
+  return '<select class="control" id="msgGroup" title="私信组别" onchange="state.drawer.msgGroup=this.value">' +
       groups.map(o=>'<option' + (o===group?' selected':'') + '>' + o + '</option>').join('') +
     '</select>' +
     '<select class="control" id="msgJump" title="私信跳转方式" onchange="setMsgJump(this.value)">' +
@@ -6038,22 +5981,12 @@ function msgConfigSideFieldsHtml(){
     ? ['【TW】系统通知','【TW】账户安全','【TW】资金变更','【TW】活动消息']
     : ['【DANA】资金变更','【DANA】账户安全','【DANA】系统通知','【DANA】活动消息'];
   const chs = createFormChannels();
-  const canSupplementPush = chs.includes('push');
-  let sendMode = state.drawer.msgSendMode || inferMsgSendModeFromChannels(chs);
-  if(!canSupplementPush) sendMode = 'direct';
-  state.drawer.msgSendMode = sendMode;
   let jump = normalizeMsgJump(state.drawer.msgJump);
   if(jump==='跟随推送' && !chs.includes('push')) jump = '跳转私信';
   state.drawer.msgJump = jump;
   const group = state.drawer.msgGroup || groups[0];
   const canFollowPush = chs.includes('push');
-  return '<div class="field"><label class="label"><span class="req">*</span>私信发送方式' +
-      '<span class="help-q" tabindex="0" aria-label="私信发送方式说明" data-tip="【补充Push】仅向APP Push发送不成功的用户补发私信，不会对全员再发一遍。<br>【直接发送】对符合条件的目标用户全员发送私信。" onmouseenter="showHelpTip(this)" onmouseleave="hideHelpTip()" onfocus="showHelpTip(this)" onblur="hideHelpTip()">?</span></label>' +
-      '<select class="control" id="msgSendMode" onchange="setMsgSendMode(this.value)">' +
-        '<option value="supplementPush"' + (sendMode==='supplementPush'?' selected':'') + (canSupplementPush?'':' disabled') + '>补充Push发送</option>' +
-        '<option value="direct"' + (sendMode==='direct'?' selected':'') + '>全量发送</option>' +
-      '</select></div>' +
-    '<div class="field"><label class="label"><span class="req">*</span>私信组别</label>' +
+  return '<div class="field"><label class="label"><span class="req">*</span>私信组别</label>' +
       '<select class="control" id="msgGroup" onchange="state.drawer.msgGroup=this.value">' +
         groups.map(o=>'<option' + (o===group?' selected':'') + '>' + o + '</option>').join('') +
       '</select></div>' +
@@ -6459,7 +6392,6 @@ function applyTemplateContentToDraft(tplId){
   const cur = state.drawer.lang || 'en';
   const curPack = draft.byLang[cur] || draft.byLang.en;
   if(activeChannels.includes('msg')){
-    state.drawer.msgSendMode = tpl.msgSendMode || inferMsgSendModeFromChannels(activeChannels);
     state.drawer.msgJump = normalizeMsgJump(tpl.msgJump);
     state.drawer.msgGroup = tpl.msgGroup || state.drawer.msgGroup || '【DANA】资金变更';
     state.drawer.msgAppPage = tpl.msgAppPage || '';
@@ -6556,7 +6488,6 @@ function onTplTypeChange(){
 }
 function onTplChannelChange(){
   syncDraftFromInputs();
-  const prevChannels = createFormChannels();
   const vals = [...document.querySelectorAll('#tplChannelMs input[type=checkbox]:checked')].map(i=>i.value);
   const type = state.drawer.tplType || '业务通知';
   if(!vals.length){
@@ -6568,13 +6499,11 @@ function onTplChannelChange(){
     } else {
       state.drawer.tplChannels = normalizeTemplateChannelKeys([], type);
     }
-    syncMsgSendModeWithChannels(prevChannels);
     renderFormBody();
     return;
   }
   state.drawer.tplChannels = normalizeTemplateChannelKeys(vals, type);
   if(state.drawer.contentDraft) state.drawer.contentDraft.channels = state.drawer.tplChannels.slice();
-  syncMsgSendModeWithChannels(prevChannels);
   renderFormBody();
 }
 function ensureTplBizRefSelection(){
@@ -6758,11 +6687,11 @@ function saveTemplateForm(){
       row.scope = scope;
       row.projects = saveProjects;
       row.channels = type === '行情提醒' ? [] : channelLabelsFromKeys(channels);
-      row.msgSendMode = channels.includes('msg') ? (state.drawer.msgSendMode || inferMsgSendModeFromChannels(channels)) : '';
       row.msgJump = channels.includes('msg') ? normalizeMsgJump(state.drawer.msgJump) : '';
       row.msgGroup = channels.includes('msg') ? (state.drawer.msgGroup || '') : '';
       row.msgAppPage = channels.includes('msg') ? (state.drawer.msgAppPage || '') : '';
       row.msgUrl = channels.includes('msg') ? (state.drawer.msgUrl || '') : '';
+      delete row.msgSendMode;
       if(channels.includes('mail')) row.mailChannel = state.drawer.mailChannel || 'EMAIL-SES';
       else delete row.mailChannel;
       row.desc = '';
@@ -6791,7 +6720,6 @@ function saveTemplateForm(){
       name,
       type,
       channels: type === '行情提醒' ? [] : channelLabelsFromKeys(channels),
-      msgSendMode: channels.includes('msg') ? (state.drawer.msgSendMode || inferMsgSendModeFromChannels(channels)) : '',
       msgJump: channels.includes('msg') ? normalizeMsgJump(state.drawer.msgJump) : '',
       msgGroup: channels.includes('msg') ? (state.drawer.msgGroup || '') : '',
       msgAppPage: channels.includes('msg') ? (state.drawer.msgAppPage || '') : '',
