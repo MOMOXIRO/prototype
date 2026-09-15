@@ -1403,14 +1403,20 @@ const DATA = {
     {id:'RB22081',type:'业务通知',srcId:'18',srcName:'实名认证成功通知',project:'Dana',apps:['DANA App','GoCap'],priority:'P1',reason:'用户完成实名认证',channels:['Push','私信','邮件'],plan:'2026-07-24 09:12:03',start:'2026-07-24 09:12:03',end:'2026-07-24 09:12:08',target:1,ok:1,fail:0,reach:1,click:0,msgRead:1,status:'已完成',operator:'wendy.w'},
     {id:'RB22082',type:'业务通知',srcId:'16',srcName:'模拟大赛交易提醒三',project:'Dana',apps:['DANA App','ForexDana'],priority:'P2',reason:'活动推送触发 · 模拟大赛交易提醒三',channels:['Push','私信'],plan:'2026-07-24 10:00:12',start:'2026-07-24 10:00:12',end:'2026-07-24 10:02:40',target:3260,ok:3188,fail:72,reach:2740,click:486,msgRead:2388,status:'已完成',operator:'wendy.w'},
     {id:'RB22080',type:'运营推送',srcId:'OP0091',srcName:'印尼斋月活动召回',project:'Dana',apps:['Dana App'],priority:'P1',reason:'每周一 10:00 定时执行',channels:['Push'],plan:'2026-07-21 10:00:00',start:'2026-07-21 10:00:02',end:'2026-07-21 10:08:41',target:128420,ok:126880,fail:1540,reach:110204,click:18220,msgRead:0,status:'已完成',operator:'amy.li'},
-    {id:'RB22079',type:'行情提醒',srcId:'MK0042',srcName:'BTC 短时暴涨提醒',project:'TW',apps:['TW Trade'],priority:'P2',reason:'BTCUSD 5 分钟涨幅达到 3.18%',channels:['Push'],plan:'2026-07-24 10:18:22',start:'2026-07-24 10:18:22',end:'2026-07-24 10:18:55',target:8420,ok:8390,fail:30,reach:7102,click:1204,status:'已完成',operator:'tao.lin'},
-    {id:'RB22076',type:'行情提醒',srcId:'MK0042',srcName:'BTC 短时暴涨提醒',project:'TW',apps:['TW Trade'],priority:'P2',reason:'BTCUSD 5 分钟涨幅达到 3.05%',channels:['Push'],plan:'2026-07-24 08:42:10',start:'2026-07-24 08:42:10',end:'2026-07-24 08:42:40',target:8210,ok:8188,fail:22,reach:6901,click:980,status:'已完成',operator:'tao.lin'},
-    {id:'RB22075',type:'行情提醒',srcId:'MK0041',srcName:'贵金属跌破关口提醒',project:'Dana',apps:['Dana App'],priority:'P2',reason:'XAUUSD 价格跌破 2320',channels:['Push'],plan:'2026-07-24 07:02:11',start:'2026-07-24 07:02:11',end:'2026-07-24 07:02:35',target:3260,ok:3244,fail:16,reach:2810,click:412,status:'已完成',operator:'qi.sun'},
-    {id:'RB22069',type:'行情提醒',srcId:'MK0041',srcName:'贵金属跌破关口提醒',project:'Dana',apps:['Dana App'],priority:'P2',reason:'XAGUSD 价格跌破 28.50',channels:['Push'],plan:'2026-07-23 21:18:40',start:'2026-07-23 21:18:40',end:'2026-07-23 21:19:05',target:2980,ok:2955,fail:25,reach:2510,click:366,status:'已完成',operator:'qi.sun'},
-    {id:'RB22068',type:'行情提醒',srcId:'MK0042',srcName:'BTC 短时暴涨提醒',project:'TW',apps:['TW Trade'],priority:'P2',reason:'ETHUSD 5 分钟涨幅达到 3.22%',channels:['Push'],plan:'2026-07-24 09:05:18',start:'2026-07-24 09:05:18',end:'2026-07-24 09:05:48',target:7650,ok:7602,fail:48,reach:6420,click:1108,status:'已完成',operator:'tao.lin'},
-    {id:'RB22074',type:'行情提醒',srcId:'MK0039',srcName:'USOIL 成交量异常',project:'TW',apps:['TW Lite'],priority:'P2',reason:'USOIL 成交量增长达到 86%',channels:['Push'],plan:'2026-07-23 16:30:00',start:'2026-07-23 16:30:01',end:'2026-07-23 16:30:28',target:1520,ok:1508,fail:12,reach:1290,click:188,status:'已完成',operator:'qi.sun'},
-    {id:'RB22072',type:'行情提醒',srcId:'MK0040',srcName:'ETH 剧烈波动',project:'TW',apps:['TW Trade','TW Lite'],priority:'P2',reason:'ETHUSD 15 分钟振幅达到 5.42%',channels:['Push'],plan:'2026-07-20 21:44:00',start:'2026-07-20 21:44:00',end:'2026-07-20 21:44:28',target:5640,ok:5520,fail:120,reach:4102,click:688,status:'已完成',operator:'tao.lin'},
-    {id:'RB22071',type:'行情提醒',srcId:'MK0040',srcName:'ETH 剧烈波动',project:'TW',apps:['TW Trade','TW Lite'],priority:'P2',reason:'BTCUSD 15 分钟振幅达到 5.11%',channels:['Push'],plan:'2026-07-19 14:12:33',start:'2026-07-19 14:12:33',end:'2026-07-19 14:13:02',target:6120,ok:6010,fail:110,reach:4488,click:720,status:'已完成',operator:'tao.lin'},
+    {id:'RB22079',type:'行情提醒',srcId:'MK0042',srcName:'BTC 短时暴涨提醒',project:'TW',apps:['TW Trade'],reason:'BTCUSD 5 分钟涨幅达到 3.18%',channels:['Push'],plan:'2026-07-24 10:18:22',start:'2026-07-24 10:18:22',end:'2026-07-24 10:48:55',target:8420,ok:8390,fail:30,reach:7102,click:1204,status:'已完成',operator:'tao.lin',tiers:[
+      {level:'第一层',audience:'有持仓（真实账户当前持仓笔数 ≥ 1）',delayMinutes:0,click:410,status:'已完成'},
+      {level:'第二层',audience:'V3 及以上用户（V3 及以上不判断 30 天活跃）',delayMinutes:1,click:288,status:'已完成'},
+      {level:'第三层',audience:'转化用户且近 30 天活跃（完成首次充值）',delayMinutes:5,click:246,status:'已完成'},
+      {level:'第四层',audience:'注册未转化且最近 7 天活跃（未完成首次充值）',delayMinutes:10,click:160,status:'已完成'},
+      {level:'第五层',audience:'注册未转化且 8–30 天活跃（未完成首次充值）',delayMinutes:30,click:100,status:'已完成'}
+    ]},
+    {id:'RB22076',type:'行情提醒',srcId:'MK0042',srcName:'BTC 短时暴涨提醒',project:'TW',apps:['TW Trade'],reason:'BTCUSD 5 分钟涨幅达到 3.05%',channels:['Push'],plan:'2026-07-24 08:42:10',start:'2026-07-24 08:42:10',end:'2026-07-24 09:12:40',target:8210,ok:8188,fail:22,reach:6901,click:980,status:'已完成',operator:'tao.lin'},
+    {id:'RB22075',type:'行情提醒',srcId:'MK0041',srcName:'贵金属跌破关口提醒',project:'Dana',apps:['Dana App'],reason:'XAUUSD 价格跌破 2320',channels:['Push'],plan:'2026-07-24 07:02:11',start:'2026-07-24 07:02:11',end:'2026-07-24 07:32:35',target:3260,ok:3244,fail:16,reach:2810,click:412,status:'已完成',operator:'qi.sun'},
+    {id:'RB22069',type:'行情提醒',srcId:'MK0041',srcName:'贵金属跌破关口提醒',project:'Dana',apps:['Dana App'],reason:'XAGUSD 价格跌破 28.50',channels:['Push'],plan:'2026-07-23 21:18:40',start:'2026-07-23 21:18:40',end:'2026-07-23 21:49:05',target:2980,ok:2955,fail:25,reach:2510,click:366,status:'已完成',operator:'qi.sun'},
+    {id:'RB22068',type:'行情提醒',srcId:'MK0042',srcName:'BTC 短时暴涨提醒',project:'TW',apps:['TW Trade'],reason:'ETHUSD 5 分钟涨幅达到 3.22%',channels:['Push'],plan:'2026-07-24 09:05:18',start:'2026-07-24 09:05:18',end:'2026-07-24 09:35:48',target:7650,ok:7602,fail:48,reach:6420,click:1108,status:'已完成',operator:'tao.lin'},
+    {id:'RB22074',type:'行情提醒',srcId:'MK0039',srcName:'USOIL 成交量异常',project:'TW',apps:['TW Lite'],reason:'USOIL 成交量增长达到 86%',channels:['Push'],plan:'2026-07-23 16:30:00',start:'2026-07-23 16:30:01',end:'2026-07-23 17:00:28',target:1520,ok:1508,fail:12,reach:1290,click:188,status:'已完成',operator:'qi.sun'},
+    {id:'RB22072',type:'行情提醒',srcId:'MK0040',srcName:'ETH 剧烈波动',project:'TW',apps:['TW Trade','TW Lite'],reason:'ETHUSD 15 分钟振幅达到 5.42%',channels:['Push'],plan:'2026-07-20 21:44:00',start:'2026-07-20 21:44:00',end:'2026-07-20 22:14:28',target:5640,ok:5520,fail:120,reach:4102,click:688,status:'已完成',operator:'tao.lin'},
+    {id:'RB22071',type:'行情提醒',srcId:'MK0040',srcName:'ETH 剧烈波动',project:'TW',apps:['TW Trade','TW Lite'],reason:'BTCUSD 15 分钟振幅达到 5.11%',channels:['Push'],plan:'2026-07-19 14:12:33',start:'2026-07-19 14:12:33',end:'2026-07-19 14:43:02',target:6120,ok:6010,fail:110,reach:4488,click:720,status:'已完成',operator:'tao.lin'},
     {id:'RB22078',type:'运营推送',srcId:'OP0089',srcName:'指定 SID 系统维护通知',project:'Dana',apps:'ALL',priority:'P1',reason:'运营人员手动立即发送',channels:['Push','私信'],plan:'2026-07-24 22:00:00',start:'2026-07-24 22:00:01',end:'--',target:2136,ok:860,fail:12,reach:0,click:0,msgRead:620,status:'执行中',operator:'ops.admin'},
     {id:'RB22077',type:'业务通知',srcId:'17',srcName:'大额充值成功提醒',project:'Dana',apps:['DANA App','GoCap','Partner App'],priority:'P1',reason:'用户完成充值',channels:['Push','私信'],plan:'2026-07-24 08:55:41',start:'2026-07-24 08:55:41',end:'2026-07-24 08:55:42',target:1,ok:0,fail:1,reach:0,click:0,msgRead:0,status:'已完成',operator:'chen.li'},
     {id:'RB22066',type:'业务通知',srcId:'12',srcName:'模拟大赛对手匹配',project:'Dana',apps:['DANA App','FDTrek'],priority:'P2',reason:'活动推送触发 · 模拟大赛对手匹配',channels:['Push'],plan:'2026-07-15 09:30:00',start:'2026-07-15 09:30:00',end:'2026-07-15 09:31:18',target:1840,ok:1792,fail:48,reach:1510,click:220,status:'已完成',operator:'wendy.w'},
@@ -2794,6 +2800,81 @@ function batchPriorityCell(batch){
   if(!batch) return '<span class="muted">—</span>';
   if(batch.type==='行情提醒' || recordSourceTypeLabel(batch)==='行情提醒') return '<span class="muted">—</span>';
   return priBadge(normalizeBizPriority(batch.priority, 'P2'));
+}
+/** 行情批次分层发送数据：优先用批次快照，否则按全局分层规则拆分合计 */
+function resolveBatchMarketTiers(batch){
+  const plan = batch?.plan || '';
+  if(batch && Array.isArray(batch.tiers) && batch.tiers.length){
+    return batch.tiers.map(t=>{
+      const delayMinutes = normalizeMarketTierDelay(t.delayMinutes);
+      const status = t.status || batch.status || '—';
+      return {
+        level: t.level || '',
+        audience: t.audience || '',
+        delayMinutes,
+        click: Number(t.click||0),
+        sentAt: t.sentAt || (status==='待发送' ? '' : addMinutesToDateTime(plan, delayMinutes)),
+        status
+      };
+    });
+  }
+  const ruleTiers = ((currentBatchPushRules().audiencePriority || {}).tiers || []).filter(t=>t.enabled);
+  if(!ruleTiers.length) return [];
+  const totalClick = Number(batch?.click||0);
+  const weights = [0.28, 0.22, 0.20, 0.16, 0.14];
+  const batchStatus = batch?.status || '—';
+  let usedC = 0;
+  return ruleTiers.map((t, i)=>{
+    const w = weights[i] != null ? weights[i] : (1 / ruleTiers.length);
+    const isLast = i === ruleTiers.length - 1;
+    const delayMinutes = normalizeMarketTierDelay(t.delayMinutes);
+    const click = isLast ? Math.max(0, totalClick - usedC) : Math.round(totalClick * w);
+    usedC += click;
+    let status = batchStatus;
+    if(batchStatus==='执行中' && delayMinutes > 0 && i > 0) status = '待发送';
+    else if(batchStatus==='已完成') status = '已完成';
+    return {
+      level: t.level || ('第'+(i+1)+'层'),
+      audience: t.audience || '',
+      delayMinutes,
+      click,
+      sentAt: status==='待发送' ? '' : addMinutesToDateTime(plan, delayMinutes),
+      status
+    };
+  });
+}
+function addMinutesToDateTime(plan, minutes){
+  const raw = String(plan || '').trim();
+  if(!raw || raw==='—' || raw==='--') return '';
+  const m = raw.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+  if(!m) return raw;
+  const d = new Date(Number(m[1]), Number(m[2])-1, Number(m[3]), Number(m[4]), Number(m[5]), Number(m[6]||0));
+  if(Number.isNaN(d.getTime())) return raw;
+  d.setMinutes(d.getMinutes() + (Number(minutes)||0));
+  const pad = n => String(n).padStart(2,'0');
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' +
+    pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+}
+function batchMarketTierTableHtml(batch){
+  const tiers = resolveBatchMarketTiers(batch);
+  if(!tiers.length) return '';
+  const n = v => Number(v||0).toLocaleString();
+  const rows = tiers.map(t=>`<tr>
+    <td>${escHtml(t.level)}</td>
+    <td><div class="cell-2line" title="${escHtml(t.audience)}">${escHtml(t.audience||'—')}</div></td>
+    <td>${escHtml(marketTierDelayLabel(t.delayMinutes))}</td>
+    <td>${n(t.click)}</td>
+    <td>${escHtml(t.sentAt || '—')}</td>
+    <td>${statusPill(t.status)}</td>
+  </tr>`).join('');
+  return `<div class="table-wrap settings-table-wrap market-rule-table" style="max-width:100%;margin-top:10px"><table class="data-table">
+      <thead><tr>
+        <th style="width:72px">层级</th><th>用户分层</th><th style="width:88px">发送延迟</th>
+        <th style="width:88px">打开推送</th><th style="width:160px">实际推送时间</th><th style="width:88px">状态</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+    <div class="hint" style="margin:8px 0 0">行情提醒按人群层级分批发送，命中多层时仅进入最高优先层级；上表为各层实际发送快照。</div>`;
 }
 function switchSettingsSub(sub){
   if(!SETTINGS_SUB_KEYS.includes(sub)) sub = 'priority';
@@ -7705,41 +7786,25 @@ function batchContentPreview(batch){
 function renderRecordsBatchDetail(d){
   const appLabel = formatAppCell(d.project, rowAppsValue(d));
   const src = resolveBatchSourceRow(d);
-  const audienceHtml = batchAudienceSummary(d, src);
   const jumpText = batchJumpSummary(d, src);
-  const content = batchContentPreview(d);
   const n = v => Number(v||0).toLocaleString();
-  const summaryFull = ['推送信息', '触发原因'];
-  const srcTypeLabel = recordSourceTypeLabel(d) || d.type || '—';
-  const summaryBlock = `<div class="detail-block compact"><h4>批次摘要</h4>${kv2colHtml([
+  const isMarket = d.type==='行情提醒' || recordSourceTypeLabel(d)==='行情提醒';
+  const summaryPairs = [
     ['推送批次 ID', batchDisplayId(d)],
     ['状态', statusPill(d.status)],
-    ['推送信息', `${srcTypeLabel} · ${escHtml(d.srcName||'')}`],
+    ['推送名称', escHtml(d.srcName||'—')],
     ['项目', d.project||'—'],
     ['APP', appLabel],
-    ['优先级', batchPriorityCell(d)],
-    ['操作人', escHtml(recordBatchOperator(d)||'—')],
-    ['触发原因', escHtml(d.reason||'')],
-  ], summaryFull)}</div>`;
-  const sendBlock = `<div class="detail-block compact"><h4>发送数据</h4>${kv2colHtml([
-    ['通知渠道', recordChannelTags(d)],
-    ['发送时间', d.plan||'—'],
-    ['实际发送时间', d.start||'—'],
-    ['结束时间', d.end||'—'],
-    ['推送人数', batchPushPeopleCell(d)],
-    ['私信已读', batchMsgReadCell(d)],
-    ['打开推送', n(d.click)],
-  ])}</div>`;
-  const audiencePairs = [
-    ['受众摘要', audienceHtml],
   ];
-  if(src && src.crowd) audiencePairs.push(['人群策略', escHtml(src.crowd)]);
-  const audienceBlock = `<div class="detail-block compact"><h4>选择对象</h4>${kv2colHtml(audiencePairs, ['受众摘要'])}</div>`;
-  const jumpBlock = `<div class="detail-block compact"><h4>跳转信息</h4>${kv2colHtml([
-    ['跳转方式', escHtml(jumpText)],
-  ])}</div>`;
+  if(!isMarket) summaryPairs.push(['优先级', batchPriorityCell(d)]);
+  summaryPairs.push(
+    ['操作人', escHtml(recordBatchOperator(d)||'—')],
+    ['触发原因', escHtml(d.reason||'—')],
+    ['跳转方式', escHtml(jumpText)]
+  );
+  const summaryBlock = `<div class="detail-block compact"><h4>批次摘要</h4>${kv2colHtml(summaryPairs)}</div>`;
   let marketBlock = '';
-  if(d.type==='行情提醒'){
+  if(isMarket){
     const mx = parseMarketTriggerExtras(d, src);
     marketBlock = `<div class="detail-block compact"><h4>行情触发</h4>${kv2colHtml([
       ['品种', escHtml(mx.symbol)],
@@ -7747,17 +7812,25 @@ function renderRecordsBatchDetail(d){
       ['监听条件', escHtml(mx.cond)],
       ['阈值', escHtml(String(mx.threshold))],
       ['实际触发值', escHtml(String(mx.actual))],
-      ['行情源', escHtml(mx.source)],
-    ], ['监听条件'])}</div>`;
+    ])}</div>`;
   }
-  const contentBlock = `<div class="detail-block compact"><h4>内容摘要</h4>
-      <div class="muted" style="margin:0 0 6px;font-size:12px">${escHtml(content.hint||'')}</div>
-      <div class="preview-notice">
-        <h4>${escHtml(content.title)}</h4>
-        <p>${escHtml(content.body)}</p>
-      </div>
-    </div>`;
-  return summaryBlock + sendBlock + audienceBlock + jumpBlock + marketBlock + contentBlock;
+  let sendBlock = '';
+  if(isMarket){
+    sendBlock = `<div class="detail-block compact"><h4>发送数据</h4>${kv2colHtml([
+      ['通知渠道', recordChannelTags(d)],
+      ['发送时间', d.plan||'—'],
+      ['打开推送合计', n(d.click)],
+    ])}${batchMarketTierTableHtml(d)}</div>`;
+  } else {
+    sendBlock = `<div class="detail-block compact"><h4>发送数据</h4>${kv2colHtml([
+      ['通知渠道', recordChannelTags(d)],
+      ['发送时间', d.plan||'—'],
+      ['推送人数', batchPushPeopleCell(d)],
+      ['私信已读', batchMsgReadCell(d)],
+      ['打开推送', n(d.click)],
+    ])}</div>`;
+  }
+  return summaryBlock + marketBlock + sendBlock;
 }
 
 function renderDetailView(){
