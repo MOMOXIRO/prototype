@@ -5096,8 +5096,8 @@
           if (f.couponType && r.couponType !== f.couponType) return false;
           if (f.region && r.region !== f.region) return false;
           if (f.auditMethod && r.auditMethod !== f.auditMethod) return false;
-          if (f.reviewStart && (!(r.reviewTime && r.reviewTime !== "--") || comparableDateTime(r.reviewTime) < f.reviewStart)) return false;
-          if (f.reviewEnd && (!(r.reviewTime && r.reviewTime !== "--") || comparableDateTime(r.reviewTime) > `${f.reviewEnd} 23:59`)) return false;
+          if (f.start && (!(r.useTime && r.useTime !== "--") || comparableDateTime(r.useTime) < f.start)) return false;
+          if (f.end && (!(r.useTime && r.useTime !== "--") || comparableDateTime(r.useTime) > `${f.end} 23:59`)) return false;
           return true;
         });
       } else if (isIssue) {
@@ -5157,9 +5157,9 @@
               <input id="qAuditDepositOrder" class="coupon-input" placeholder="入金订单" value="${f.depositOrder || ""}">
               <select id="qAuditCouponType" class="coupon-input"><option value="">红包类型</option><option ${f.couponType==="现金红包"?"selected":""}>现金红包</option><option ${f.couponType==="手续费抵扣红包"?"selected":""}>手续费抵扣红包</option><option ${f.couponType==="盈亏抵扣红包"?"selected":""}>盈亏抵扣红包</option><option ${f.couponType==="提现免佣券"?"selected":""}>提现免佣券</option></select>
               <div class="range-wrap grid-range">
-                <input id="qAuditReviewStart" placeholder="审核开始日期" value="${f.reviewStart}">
+                <input id="qAuditStart" placeholder="使用开始日期" value="${f.start}">
                 <span class="range-mid">~</span>
-                <input id="qAuditReviewEnd" placeholder="审核结束日期" value="${f.reviewEnd}">
+                <input id="qAuditEnd" placeholder="使用结束日期" value="${f.end}">
               </div>
               <select id="qAuditRegion" class="coupon-input"><option value="">认证地区</option><option ${f.region==="+880 [BD]"?"selected":""}>+880 [BD]</option><option ${f.region==="+234 [NG]"?"selected":""}>+234 [NG]</option><option ${f.region==="+95 [MM]"?"selected":""}>+95 [MM]</option><option ${f.region==="+92 [PK]"?"selected":""}>+92 [PK]</option><option ${f.region==="+91 [IN]"?"selected":""}>+91 [IN]</option><option ${f.region==="+86 [CN]"?"selected":""}>+86 [CN]</option><option ${f.region==="+84 [VN]"?"selected":""}>+84 [VN]</option><option ${f.region==="+62 [ID]"?"selected":""}>+62 [ID]</option></select>
               <select id="qAuditStatus" class="coupon-input"><option value="">审核状态</option><option ${f.status==="待审核"?"selected":""}>待审核</option><option ${f.status==="审核通过"?"selected":""}>审核通过</option><option ${f.status==="审核拒绝"?"selected":""}>审核拒绝</option></select>
@@ -6801,30 +6801,34 @@
           render();
         });
         auditSearch.onclick = () => {
-          withLoading(() => {
-            const next = emptyAuditFilters();
-            next.project = document.getElementById("qAuditProject")?.value.trim() || "";
-            next.couponId = document.getElementById("qAuditCouponId")?.value.trim() || "";
-            next.status = document.getElementById("qAuditStatus")?.value.trim() || "";
+          const next = emptyAuditFilters();
+          next.project = document.getElementById("qAuditProject")?.value.trim() || "";
+          next.couponId = document.getElementById("qAuditCouponId")?.value.trim() || "";
+          next.status = document.getElementById("qAuditStatus")?.value.trim() || "";
+          if (state.auditTab === "usage") {
+            next.sid = document.getElementById("qAuditSid")?.value.trim() || "";
+            next.couponType = document.getElementById("qAuditCouponType")?.value || "";
+            next.region = document.getElementById("qAuditRegion")?.value || "";
+            next.auditMethod = document.getElementById("qAuditMethod")?.value || "";
+            next.depositOrder = document.getElementById("qAuditDepositOrder")?.value.trim() || "";
+            next.start = document.getElementById("qAuditStart")?.value.trim() || "";
+            next.end = document.getElementById("qAuditEnd")?.value.trim() || "";
+          } else if (state.auditTab === "receive") {
+            next.sid = document.getElementById("qAuditSid")?.value.trim() || "";
+            next.object = document.getElementById("qAuditObject")?.value.trim() || "";
+            next.couponType = document.getElementById("qAuditCouponType")?.value || "";
+            next.start = document.getElementById("qAuditStart")?.value.trim() || "";
+            next.end = document.getElementById("qAuditEnd")?.value.trim() || "";
             next.reviewStart = document.getElementById("qAuditReviewStart")?.value.trim() || "";
             next.reviewEnd = document.getElementById("qAuditReviewEnd")?.value.trim() || "";
-            if (state.auditTab === "usage") {
-              next.sid = document.getElementById("qAuditSid")?.value.trim() || "";
-              next.couponType = document.getElementById("qAuditCouponType")?.value || "";
-              next.region = document.getElementById("qAuditRegion")?.value || "";
-              next.auditMethod = document.getElementById("qAuditMethod")?.value || "";
-              next.depositOrder = document.getElementById("qAuditDepositOrder")?.value.trim() || "";
-            } else if (state.auditTab === "receive") {
-              next.sid = document.getElementById("qAuditSid")?.value.trim() || "";
-              next.object = document.getElementById("qAuditObject")?.value.trim() || "";
-              next.couponType = document.getElementById("qAuditCouponType")?.value || "";
-              next.start = document.getElementById("qAuditStart")?.value.trim() || "";
-              next.end = document.getElementById("qAuditEnd")?.value.trim() || "";
-            } else {
-              next.object = document.getElementById("qAuditObject")?.value.trim() || "";
-              next.start = document.getElementById("qAuditStart")?.value.trim() || "";
-              next.end = document.getElementById("qAuditEnd")?.value.trim() || "";
-            }
+          } else {
+            next.object = document.getElementById("qAuditObject")?.value.trim() || "";
+            next.start = document.getElementById("qAuditStart")?.value.trim() || "";
+            next.end = document.getElementById("qAuditEnd")?.value.trim() || "";
+            next.reviewStart = document.getElementById("qAuditReviewStart")?.value.trim() || "";
+            next.reviewEnd = document.getElementById("qAuditReviewEnd")?.value.trim() || "";
+          }
+          withLoading(() => {
             state.filters.audit = next;
           }, "查询完成");
         };
