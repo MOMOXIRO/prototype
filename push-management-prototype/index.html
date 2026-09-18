@@ -477,6 +477,10 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
 .modal-body{padding:18px 20px;font-size:14px;line-height:1.7;color:#334155}
 .modal-foot{padding:12px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;align-items:center}
 .modal-foot .left,.modal-foot .right{display:flex;gap:8px;align-items:center}
+.log-table-wrap{border:1px solid var(--line);border-radius:8px;overflow:auto}
+.log-table{width:100%;border-collapse:collapse;font-size:13px}
+.log-table thead th{text-align:left;padding:10px 12px;background:var(--head-bg);color:#334155;font-weight:600;white-space:nowrap}
+.log-table tbody td{padding:10px 12px;color:#1f2937;border-top:1px solid #edf1f7;vertical-align:top}
 .mkt-form{display:flex;flex-direction:column;gap:14px}
 .mkt-form-row{display:flex;align-items:flex-start;gap:12px;min-width:0}
 .mkt-form-row>.label{width:110px;flex-shrink:0;padding-top:8px;text-align:right;line-height:1.3}
@@ -1275,6 +1279,7 @@ const I = {
   stop:`<svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>`,
   trash:`<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>`,
   list:`<svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg>`,
+  log:`<svg viewBox="0 0 24 24"><path d="M3 4h18v16H3z"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>`,
   chart:`<svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>`,
   more:`<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>`,
   version:`<svg viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>`,
@@ -1958,10 +1963,9 @@ function operatorCellHtml(row){
   return '<td class="col-operator">' + escHtml(opOperatorText(row) || '—') + '</td>';
 }
 function opsBusiness(row){
-  // 操作：编辑 → 复制 → 记录；业务通知不可删除；启停见独立「启停」列
+  // 操作：编辑 → 复制；业务通知无批次；启停见独立「启停」列
   return iconBtn(I.edit,'编辑',`openEditDrawer('business','${row.id}')`) +
-         iconBtn(I.copy,'复制',`toast('已复制任务 ${row.id}')`) +
-         iconBtn(I.list,'查看批次',`jumpRecords('${row.id}')`);
+         iconBtn(I.copy,'复制',`openCopyPage('business','${row.id}')`);
 }
 function opsOperation(row){
   // 循环发送可编辑。详情点推送 ID；不可删除；启停见独立「启停」列
@@ -1969,14 +1973,14 @@ function opsOperation(row){
     ? iconBtn(I.edit,'编辑',`openEditDrawer('operation','${row.id}')`)
     : '';
   return first +
-         iconBtn(I.copy,'复制',`toast('已复制推送 ${row.id}')`) +
+         iconBtn(I.copy,'复制',`openCopyPage('operation','${row.id}')`) +
          iconBtn(I.list,'查看批次',`jumpRecords('${row.id}')`);
 }
 function opsMarket(row){
   // 操作：编辑（全状态）→ 行情图 → 复制 → 记录；启停见独立「启停」列
   return iconBtn(I.edit,'编辑',`openEditDrawer('market','${row.id}')`) +
          iconBtn(I.chart,'行情图',`openMarketChartModal('${row.id}')`) +
-         iconBtn(I.copy,'复制',`toast('已复制提醒 ${row.id}')`) +
+         iconBtn(I.copy,'复制',`openCopyPage('market','${row.id}')`) +
          iconBtn(I.list,'查看批次',`jumpRecords('${row.id}')`);
 }
 function tplScopeText(row){
@@ -3786,6 +3790,58 @@ function closeSurface(){
   if(isDetailModal()) closeDetailModal();
   else closeDrawer();
 }
+function seedFromId(id){
+  let n = 0;
+  String(id||'').replace(/\d/g, d=>{ n = (n*10 + (+d)) % 100000; });
+  return n || 1;
+}
+function mockTaskLogs(type, row){
+  const typeLabel = {business:'业务通知',operation:'运营推送',market:'行情提醒'}[type] || '推送任务';
+  const operators = ['王敏','李晨','陈浩','赵雪','Ahmad R.','系统'];
+  const seed = seedFromId(row && row.id);
+  const count = 3 + (seed % 4); // 3–6
+  const templates = [
+    `创建${typeLabel}`,
+    `编辑${typeLabel}`,
+    `启用${typeLabel}`,
+    `暂停${typeLabel}`,
+    `禁用${typeLabel}`,
+  ];
+  const logs = [];
+  for(let i=0;i<count;i++){
+    const day = Math.max(1, 24 - i);
+    const hour = 9 + ((seed + i) % 10);
+    const min = (seed * 3 + i * 7) % 60;
+    logs.push({
+      operator: operators[(seed + i) % operators.length],
+      time: `2026-07-${String(day).padStart(2,'0')} ${String(hour).padStart(2,'0')}:${String(min).padStart(2,'0')}:00`,
+      content: templates[(seed + i) % templates.length]
+    });
+  }
+  if(logs.length){
+    logs[logs.length - 1] = {
+      operator: operators[seed % operators.length],
+      time: logs[logs.length - 1].time,
+      content: `创建${typeLabel}`
+    };
+  }
+  return logs;
+}
+function openTaskLogModal(type, id){
+  let row = null;
+  if(type==='business') row = DATA.business.find(x=>x.id===id);
+  if(type==='operation') row = DATA.operation.find(x=>x.id===id);
+  if(type==='market') row = DATA.market.find(x=>x.id===id);
+  if(!row){ toast('未找到任务'); return; }
+  const logs = mockTaskLogs(type, row);
+  const body = `<div class="log-table-wrap"><table class="log-table">
+    <thead><tr><th>操作人</th><th>操作时间</th><th>操作内容</th></tr></thead>
+    <tbody>${logs.map(l=>`<tr><td>${l.operator}</td><td>${l.time}</td><td>${l.content}</td></tr>`).join('')}</tbody>
+  </table></div>`;
+  const foot = `<div class="left"><span class="muted">共 ${logs.length} 条</span></div>` +
+    `<div class="right"><button class="btn ghost" onclick="closeDetailModal()">关闭</button></div>`;
+  openDetailModal('操作日志', body, foot, { sub: `${row.id} ${row.name||''}` });
+}
 /** 通用详情弹窗：title + bodyHtml + footHtml；opts.wide / opts.sub */
 function openDetailModal(title, html, footHtml, opts){
   opts = opts || {};
@@ -4606,15 +4662,20 @@ function closeCreatePage(){
   history.replaceState(null, '', url);
   renderCurrent();
 }
-function openEditDrawer(type, id){
+function openCopyPage(type, id){
+  openEditDrawer(type, id, { copy:true });
+}
+function openEditDrawer(type, id, opts){
+  opts = opts || {};
+  const asCopy = !!opts.copy;
   if(TAB_LABEL[type] && !canAccessTab(type)){
     toast('当前角色无权操作「' + TAB_LABEL[type] + '」');
     return;
   }
   const map = {business:DATA.business, operation:DATA.operation, market:DATA.market, template:DATA.templates};
   const row = (map[type]||[]).find(x=>x.id===id);
+  if(!row){ toast('未找到任务'); return; }
   const apps = (()=>{
-    if(!row) return [];
     const raw = rowAppsValue(row);
     if(raw === 'ALL' || raw === 'all') return bizAppOptions(row.project || '').slice();
     if(Array.isArray(raw)) return raw.length ? raw.slice() : bizAppOptions(row.project || '').slice();
@@ -4626,91 +4687,90 @@ function openEditDrawer(type, id){
     toast('模板中心已下线');
     return;
   }
+  const formMode = asCopy ? 'create' : 'edit';
   state.drawer = {
-    open:true, type, mode:'edit', step:0,
-    detail:row, asPage:false, ui:'drawer',
-    project: row?.project || '', apps, appsAutoUpdate: rowAppsAutoUpdate(row), regions:[],
+    open:true, type, mode:formMode, step:0,
+    detail: asCopy ? null : row, asPage:false, ui:'drawer',
+    project: row.project || '', apps, appsAutoUpdate: rowAppsAutoUpdate(row), regions:[],
     msgJump:'跳转私信',
     msgGroup:'', msgAppPage:'', msgUrl:'',
     mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'',
     jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'',
     contentDraft: emptyContentDraft(['push']), lang:'en', templateId:''
   };
-  if(type==='business'){
-    state.drawer.asPage = true;
-    state.drawer.emsOpen = { bizAppEms:false };
-    state.drawer.name = row?.name || '';
-    const typeKey = bizTypeKeyFromLabel(row?.bizType);
-    state.drawer.bizType = typeKey;
-    state.drawer.bizRefId = typeKey==='activity'
-      ? (row?.activityId || selectableActivities()[0]?.id || '')
-      : (row?.scenarioId || selectableScenarios()[0]?.id || '');
-    ensureBizRefSelection();
-    state.drawer.pushIntervalMin = row?.pushIntervalMin != null ? row.pushIntervalMin : 30;
-    state.drawer.regions = [];
-    state.drawer.msgGroup = row?.project==='TW' ? '【TW】系统通知' : '【DANA】资金变更';
-    state.drawer.statusSetting = normalizeStatusSetting(row?.statusSetting || row?.status);
-    state.drawer.contentDraft = emptyContentDraft(channelKeysFromLabels(row?.channels));
-    state.drawer.msgJump = normalizeMsgJump(row?.msgJump);
-    state.drawer.mailChannel = row?.mailChannel || 'EMAIL-SES';
-    ensureDraftByLang();
-    ensureJumpConfigState(true);
-    const cfg = DRAWER_CFG.business;
+  const copyName = (name)=>{
+    const base = (name || '').trim();
+    if(!base) return '';
+    return /（副本）$/.test(base) ? base : (base + '（副本）');
+  };
+  const showCreateForm = (cfg, tabKey, tabLabel)=>{
+    const title = asCopy ? cfg.titleCreate : cfg.titleEdit;
     document.getElementById('listView').classList.add('hidden');
     document.getElementById('createView').classList.add('show');
-    document.getElementById('createTitle').textContent = cfg.titleEdit;
-    document.getElementById('createCrumb').textContent = '工作台 / 推送管理 / 业务通知 / ' + cfg.titleEdit;
+    document.getElementById('createTitle').textContent = title;
+    document.getElementById('createCrumb').textContent = '工作台 / 推送管理 / ' + tabLabel + ' / ' + title;
     const url = new URL(location.href);
-    url.searchParams.set('tab', 'business');
+    url.searchParams.set('tab', tabKey);
     url.searchParams.set('page', 'create');
     history.replaceState(null, '', url);
     window.scrollTo(0, 0);
     renderFormSteps();
     renderFormBody();
     renderFormFoot();
+  };
+  if(type==='business'){
+    state.drawer.asPage = true;
+    state.drawer.emsOpen = { bizAppEms:false };
+    state.drawer.name = asCopy ? copyName(row.name) : (row.name || '');
+    const typeKey = bizTypeKeyFromLabel(row.bizType);
+    state.drawer.bizType = typeKey;
+    state.drawer.bizRefId = typeKey==='activity'
+      ? (row.activityId || selectableActivities()[0]?.id || '')
+      : (row.scenarioId || selectableScenarios()[0]?.id || '');
+    ensureBizRefSelection();
+    state.drawer.pushIntervalMin = row.pushIntervalMin != null ? row.pushIntervalMin : 30;
+    state.drawer.regions = [];
+    state.drawer.msgGroup = row.project==='TW' ? '【TW】系统通知' : '【DANA】资金变更';
+    state.drawer.statusSetting = asCopy
+      ? DEFAULT_STATUS_SETTING
+      : normalizeStatusSetting(row.statusSetting || row.status);
+    state.drawer.contentDraft = emptyContentDraft(channelKeysFromLabels(row.channels));
+    state.drawer.msgJump = normalizeMsgJump(row.msgJump);
+    state.drawer.mailChannel = row.mailChannel || 'EMAIL-SES';
+    ensureDraftByLang();
+    ensureJumpConfigState(true);
+    showCreateForm(DRAWER_CFG.business, 'business', '业务通知');
     return;
   }
   if(type==='operation'){
-    if(!canEditOperation(row)){
+    if(!asCopy && !canEditOperation(row)){
       toast('仅循环发送的运营推送支持编辑');
       return;
     }
     state.drawer.asPage = true;
-    state.drawer.project = state.drawer.project || row?.project || 'Dana';
+    state.drawer.project = state.drawer.project || row.project || 'Dana';
     state.drawer.apps = apps.length ? apps : bizAppOptions(state.drawer.project).slice();
     state.drawer.appsAutoUpdate = rowAppsAutoUpdate(row);
     state.drawer.emsOpen = { bizAppEms:false, opRegionEms:false };
-    state.drawer.name = row?.name || '';
-    state.drawer.opPriority = normalizeOpPriority(row?.priority, 'P2');
+    state.drawer.name = asCopy ? copyName(row.name) : (row.name || '');
+    state.drawer.opPriority = normalizeOpPriority(row.priority, 'P2');
     state.drawer.lang = 'en';
-    state.drawer.msgJump = normalizeMsgJump(row?.msgJump);
-    state.drawer.msgGroup = row?.msgGroup || (row?.project==='TW' ? '【TW】系统通知' : '【DANA】资金变更');
-    state.drawer.msgAppPage = row?.msgAppPage || '';
-    state.drawer.msgUrl = row?.msgUrl || '';
-    state.drawer.contentDraft = emptyContentDraft(channelKeysFromLabels(row?.channels));
+    state.drawer.msgJump = normalizeMsgJump(row.msgJump);
+    state.drawer.msgGroup = row.msgGroup || (row.project==='TW' ? '【TW】系统通知' : '【DANA】资金变更');
+    state.drawer.msgAppPage = row.msgAppPage || '';
+    state.drawer.msgUrl = row.msgUrl || '';
+    state.drawer.contentDraft = emptyContentDraft(channelKeysFromLabels(row.channels));
     hydrateOpAudienceFromRow(row);
     hydrateOpPlanFromRow(row);
     enforceNoMsgForRegionAudience({ toast:false });
     ensureJumpConfigState(true);
     ensureDraftByLang();
-    const cfg = DRAWER_CFG.operation;
-    document.getElementById('listView').classList.add('hidden');
-    document.getElementById('createView').classList.add('show');
-    document.getElementById('createTitle').textContent = cfg.titleEdit;
-    document.getElementById('createCrumb').textContent = '工作台 / 推送管理 / 运营推送 / ' + cfg.titleEdit;
-    const url = new URL(location.href);
-    url.searchParams.set('tab', 'operation');
-    url.searchParams.set('page', 'create');
-    history.replaceState(null, '', url);
-    window.scrollTo(0, 0);
-    renderFormSteps();
-    renderFormBody();
-    renderFormFoot();
+    showCreateForm(DRAWER_CFG.operation, 'operation', '运营推送');
     return;
   }
   if(type==='market'){
     state.drawer.asPage = true;
-    state.drawer.project = row?.project || 'Dana';
+    state.drawer.project = row.project || 'Dana';
     const appOpts = bizAppOptions(state.drawer.project);
     const rawApps = rowAppsValue(row);
     let mktApps;
@@ -4722,26 +4782,14 @@ function openEditDrawer(type, id){
     } else mktApps = [];
     state.drawer.apps = mktApps.length ? mktApps : appOpts.slice();
     state.drawer.appsAutoUpdate = rowAppsAutoUpdate(row);
-    state.drawer.name = row?.name || '';
+    state.drawer.name = asCopy ? copyName(row.name) : (row.name || '');
     state.drawer.emsOpen = Object.assign(state.drawer.emsOpen || {}, { bizAppEms:false, mktRegionEms:false, mktSymbolEms:false });
     state.drawer.lang = 'en';
     hydrateMarketAudienceFromRow(row);
     hydrateMarketFormFromRow(row);
     enforceNoMsgForRegionAudience({ toast:false });
     ensureDraftByLang();
-    const cfg = DRAWER_CFG.market;
-    document.getElementById('listView').classList.add('hidden');
-    document.getElementById('createView').classList.add('show');
-    document.getElementById('createTitle').textContent = cfg.titleEdit;
-    document.getElementById('createCrumb').textContent = '工作台 / 推送管理 / 行情提醒 / ' + cfg.titleEdit;
-    const url = new URL(location.href);
-    url.searchParams.set('tab', 'market');
-    url.searchParams.set('page', 'create');
-    history.replaceState(null, '', url);
-    window.scrollTo(0, 0);
-    renderFormSteps();
-    renderFormBody();
-    renderFormFoot();
+    showCreateForm(DRAWER_CFG.market, 'market', '行情提醒');
     return;
   }
   showDrawer();
