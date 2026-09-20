@@ -2252,7 +2252,7 @@ function filterOperation(rows){
   }
   return list;
 }
-/** 运营推送「发送计划」仅区分：定时发送 / 循环发送 */
+/** 运营推送「发送计划」仅区分：定时发送 / 循环发送（表单发送方式含即时 / 预约 / 循环发放） */
 function isLoopOpPush(row){
   if(!row) return false;
   if(row.plan==='循环发送') return true;
@@ -7202,18 +7202,36 @@ function setOpMonthDay(v){
   state.drawer.opMonthDays = normalizeOpMonthDays([v]);
   updateOpPlanSummaryCard();
 }
+function defaultOpLoopTime(){
+  return '10:00';
+}
+function normalizeOpLoopTime(v){
+  const m = String(v||'').trim().match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+  if(!m) return defaultOpLoopTime();
+  return String(Math.min(23, +m[1])).padStart(2,'0') + ':' + String(Math.min(59, +m[2])).padStart(2,'0');
+}
 function ensureOpPlanState(reset){
   const d = state.drawer;
   if(reset || !d.opSendMode) d.opSendMode = 'now';
-  if(reset || !d.opCycle) d.opCycle = 'none';
-  // 即时发送不支持循环：状态强制为不循环
-  if(d.opSendMode !== 'schedule'){
+  // 兼容旧态：预约 + 循环 → 循环发放
+  if(d.opSendMode === 'schedule' && d.opCycle && d.opCycle !== 'none'){
+    d.opSendMode = 'loop';
+  }
+  if(d.opSendMode === 'loop'){
+    if(reset || !d.opCycle || d.opCycle === 'none') d.opCycle = 'daily';
+    if(!['daily','weekly','monthly'].includes(d.opCycle)) d.opCycle = 'daily';
+    d.opWeekdays = normalizeOpWeekdays(d.opWeekdays);
+    d.opMonthDays = normalizeOpMonthDays(d.opMonthDays);
+    if(reset || !d.opSendTime){
+      const hm = (String(d.opPublishAt||'').match(/T(\d{2}:\d{2})/) || [])[1];
+      d.opSendTime = normalizeOpLoopTime(hm || defaultOpLoopTime());
+    } else {
+      d.opSendTime = normalizeOpLoopTime(d.opSendTime);
+    }
+  } else {
     d.opCycle = 'none';
     d.opWeekdays = [];
     d.opMonthDays = [];
-  } else {
-    d.opWeekdays = normalizeOpWeekdays(d.opWeekdays);
-    d.opMonthDays = normalizeOpMonthDays(d.opMonthDays);
   }
   if(reset || !d.opTimezone) d.opTimezone = 'UTC+8';
   if(reset || !d.opPublishAt) d.opPublishAt = defaultBizPublishAt();
@@ -7237,11 +7255,24 @@ function channelKeysFromLabels(list){
 function hydrateOpPlanFromRow(row){
   const d = state.drawer;
   const loop = isLoopOpPush(row);
-  const hasScheduleTime = !!(row?.next && row.next!=='--') || !!String(row?.sendTime||'').trim();
-  d.opSendMode = (loop || hasScheduleTime) ? 'schedule' : 'now';
-  d.opCycle = loop ? (row.loopType || row.opCycle || 'weekly') : 'none';
-  d.opWeekdays = normalizeOpWeekdays(row?.weekdays || row?.opWeekdays);
-  d.opMonthDays = normalizeOpMonthDays(row?.monthDays || row?.opMonthDays);
+  const hasScheduleTime = !!(row?.next && row.next!=='--');
+  if(loop){
+    d.opSendMode = 'loop';
+    d.opCycle = row.loopType || row.opCycle || 'weekly';
+    d.opWeekdays = normalizeOpWeekdays(row?.weekdays || row?.opWeekdays);
+    d.opMonthDays = normalizeOpMonthDays(row?.monthDays || row?.opMonthDays);
+    d.opSendTime = normalizeOpLoopTime(row?.sendTime || opSendTimeHm(row) || defaultOpLoopTime());
+  } else if(hasScheduleTime){
+    d.opSendMode = 'schedule';
+    d.opCycle = 'none';
+    d.opWeekdays = [];
+    d.opMonthDays = [];
+  } else {
+    d.opSendMode = 'now';
+    d.opCycle = 'none';
+    d.opWeekdays = [];
+    d.opMonthDays = [];
+  }
   d.opTimezone = row?.timezone || 'UTC+8';
   d.opPublishAt = nextToDatetimeLocal(row?.next, row?.sendTime);
   ensureOpPlanState();
@@ -7266,28 +7297,34 @@ function applyOpPlanToRow(row){
   const d = ensureOpPlanState();
   const when = formatBizPublishAt(d.opPublishAt);
   const hm = (when.match(/\b(\d{2}:\d{2})\b/) || [])[1] || '';
-  if(d.opSendMode!=='schedule'){
+  if(d.opSendMode === 'loop'){
+    const loopHm = normalizeOpLoopTime(d.opSendTime || hm);
+    row.plan = '循环发送';
+    row.loopType = d.opCycle || 'daily';
+    row.weekdays = d.opCycle==='weekly' ? (d.opWeekdays||[]).slice() : [];
+    row.monthDays = d.opCycle==='monthly' ? normalizeOpMonthDays(d.opMonthDays).slice() : [];
+    row.sendTime = loopHm;
+    row.timezone = d.opTimezone || 'UTC+8';
+    const base = when || formatBizPublishAt(defaultBizPublishAt());
+    row.next = base.replace(/\b\d{2}:\d{2}(:\d{2})?\b/, loopHm + ':00');
+    return;
+  }
+  if(d.opSendMode === 'schedule'){
     row.plan = '定时发送';
     row.loopType = '';
     row.weekdays = [];
-    row.sendTime = '';
-    row.next = '--';
-    return;
-  }
-  if(d.opCycle && d.opCycle!=='none'){
-    row.plan = '循环发送';
-    row.loopType = d.opCycle;
-    row.weekdays = d.opCycle==='weekly' ? (d.opWeekdays||[]).slice() : [];
-    row.monthDays = d.opCycle==='monthly' ? normalizeOpMonthDays(d.opMonthDays).slice() : [];
+    row.monthDays = [];
     row.sendTime = hm;
+    row.timezone = d.opTimezone || 'UTC+8';
     row.next = when || row.next;
     return;
   }
   row.plan = '定时发送';
   row.loopType = '';
   row.weekdays = [];
-  row.sendTime = hm;
-  row.next = when || row.next;
+  row.monthDays = [];
+  row.sendTime = '';
+  row.next = '--';
 }
 function applyOpAudienceToRow(row){
   ensureOpAudienceState();
@@ -7328,37 +7365,50 @@ function applyOpAudienceToRow(row){
 }
 function setOpSendMode(mode){
   ensureOpPlanState();
-  state.drawer.opSendMode = mode;
-  if(mode === 'now'){
+  const next = (mode === 'loop' || mode === 'schedule') ? mode : 'now';
+  state.drawer.opSendMode = next;
+  if(next === 'loop'){
+    if(!state.drawer.opCycle || state.drawer.opCycle === 'none') state.drawer.opCycle = 'daily';
+    state.drawer.opWeekdays = normalizeOpWeekdays(state.drawer.opWeekdays);
+    state.drawer.opMonthDays = normalizeOpMonthDays(state.drawer.opMonthDays);
+    if(!state.drawer.opSendTime) state.drawer.opSendTime = defaultOpLoopTime();
+  } else if(next === 'schedule'){
     state.drawer.opCycle = 'none';
     state.drawer.opWeekdays = [];
     state.drawer.opMonthDays = [];
-  } else if(mode === 'schedule' && !state.drawer.opPublishAt){
-    state.drawer.opPublishAt = defaultBizPublishAt();
+    if(!state.drawer.opPublishAt) state.drawer.opPublishAt = defaultBizPublishAt();
+  } else {
+    state.drawer.opCycle = 'none';
+    state.drawer.opWeekdays = [];
+    state.drawer.opMonthDays = [];
   }
   renderFormBody();
 }
 function setOpCycle(cycle){
   ensureOpPlanState();
-  if(state.drawer.opSendMode !== 'schedule'){
+  if(state.drawer.opSendMode !== 'loop'){
     state.drawer.opCycle = 'none';
     renderFormBody();
     return;
   }
-  state.drawer.opCycle = cycle;
+  state.drawer.opCycle = ['daily','weekly','monthly'].includes(cycle) ? cycle : 'daily';
+  if(state.drawer.opCycle === 'weekly') state.drawer.opWeekdays = normalizeOpWeekdays(state.drawer.opWeekdays);
+  if(state.drawer.opCycle === 'monthly') state.drawer.opMonthDays = normalizeOpMonthDays(state.drawer.opMonthDays);
   renderFormBody();
 }
 function opSendPlanSummary(){
   const d = ensureOpPlanState();
-  const mode = d.opSendMode === 'schedule' ? '预约发送' : '即时发送';
-  if(d.opSendMode !== 'schedule') return mode;
-  const when = (d.opTimezone||'UTC+8') + ' ' + formatBizPublishAt(d.opPublishAt);
-  let cycleText = '不循环';
-  if(d.opCycle==='daily') cycleText = '每日';
-  else if(d.opCycle==='weekly') cycleText = '每周 ' + ((d.opWeekdays||[]).join('、') || '未选');
+  if(d.opSendMode === 'now') return '即时发送';
+  if(d.opSendMode === 'schedule'){
+    return '预约发送 · ' + (d.opTimezone||'UTC+8') + ' ' + formatBizPublishAt(d.opPublishAt);
+  }
+  const tz = d.opTimezone || 'UTC+8';
+  const hm = normalizeOpLoopTime(d.opSendTime);
+  let cycleText = '每日';
+  if(d.opCycle==='weekly') cycleText = '每周 ' + ((d.opWeekdays||[]).join('、') || '未选');
   else if(d.opCycle==='monthly') cycleText = '每月 ' + ((d.opMonthDays||[]).join('、') || '未选');
-  else if(d.opCycle==='none') cycleText = '不循环';
-  return mode + ' · ' + when + ' · ' + cycleText;
+  else if(d.opCycle==='daily') cycleText = '每日';
+  return '循环发放 · ' + cycleText + ' · ' + tz + ' ' + hm;
 }
 function updateOpPlanSummaryCard(){
   const el = document.getElementById('opPlanSummary');
@@ -7432,47 +7482,50 @@ function jumpConfigBlock(){
 }
 
 function opSendPlanBlock(){
-  // 预约发送：发送方式 / 时区 / 发放时间 / 循环方式 固定四栏一行
+  // 发送方式：即时 / 预约 / 循环发放；循环不再单独「循环方式」字段
   const d = ensureOpPlanState();
-  const isSchedule = d.opSendMode === 'schedule';
-  const cycle = isSchedule ? (d.opCycle || 'none') : 'none';
+  const mode = d.opSendMode === 'loop' ? 'loop' : (d.opSendMode === 'schedule' ? 'schedule' : 'now');
+  const cycle = mode === 'loop' ? (d.opCycle || 'daily') : 'none';
   const sendModeField =
     '<div class="field"><label class="label"><span class="req">*</span>发送方式</label>' +
       '<select class="control" id="opSendMode" onchange="setOpSendMode(this.value)">' +
-        '<option value="now"' + (!isSchedule?' selected':'') + '>即时发送</option>' +
-        '<option value="schedule"' + (isSchedule?' selected':'') + '>预约发送</option>' +
+        '<option value="now"' + (mode==='now'?' selected':'') + '>即时发送</option>' +
+        '<option value="schedule"' + (mode==='schedule'?' selected':'') + '>预约发送</option>' +
+        '<option value="loop"' + (mode==='loop'?' selected':'') + '>循环发放</option>' +
+      '</select></div>';
+  const tzField =
+    '<div class="field"><label class="label"><span class="req">*</span>时区</label>' +
+      '<select class="control" id="opTimezone" onchange="state.drawer.opTimezone=this.value;updateOpPlanSummaryCard()">' +
+        BIZ_TZ_OPTS.map(t=>'<option value="' + t.v + '"' + (d.opTimezone===t.v?' selected':'') + '>' + t.n + '</option>').join('') +
       '</select></div>';
   let html;
-  if(isSchedule){
-    const tzField =
-      '<div class="field"><label class="label"><span class="req">*</span>时区</label>' +
-        '<select class="control" id="opTimezone" onchange="state.drawer.opTimezone=this.value;updateOpPlanSummaryCard()">' +
-          BIZ_TZ_OPTS.map(t=>'<option value="' + t.v + '"' + (d.opTimezone===t.v?' selected':'') + '>' + t.n + '</option>').join('') +
-        '</select></div>';
+  if(mode === 'schedule'){
     const publishField =
       '<div class="field"><label class="label"><span class="req">*</span>发放时间</label>' +
         '<input class="control" type="datetime-local" step="1" value="' + (d.opPublishAt||'') + '"' +
           ' onchange="state.drawer.opPublishAt=this.value;updateOpPlanSummaryCard()">' +
       '</div>';
+    html = '<div class="basic-grid">' + sendModeField + tzField + publishField + '</div>';
+  } else if(mode === 'loop'){
     const cycleSelect =
-      '<div class="field"><label class="label"><span class="req">*</span>循环方式</label>' +
+      '<div class="field"><label class="label"><span class="req">*</span>循环类型</label>' +
         '<select class="control" id="opCycle" onchange="setOpCycle(this.value)">' +
-          '<option value="none"' + (cycle==='none'?' selected':'') + '>不循环</option>' +
           '<option value="daily"' + (cycle==='daily'?' selected':'') + '>每日</option>' +
           '<option value="weekly"' + (cycle==='weekly'?' selected':'') + '>每周</option>' +
           '<option value="monthly"' + (cycle==='monthly'?' selected':'') + '>每月</option>' +
         '</select></div>';
-    html =
-      '<div class="basic-grid">' +
-        sendModeField + tzField + publishField + cycleSelect +
+    const timeField =
+      '<div class="field"><label class="label"><span class="req">*</span>发放时间</label>' +
+        '<input class="control" type="time" step="60" value="' + normalizeOpLoopTime(d.opSendTime) + '"' +
+          ' onchange="state.drawer.opSendTime=normalizeOpLoopTime(this.value);updateOpPlanSummaryCard()">' +
       '</div>';
-
-    if(cycle==='weekly'){
+    html = '<div class="basic-grid">' + sendModeField + cycleSelect + tzField + timeField + '</div>';
+    if(cycle === 'weekly'){
       html += multiSelectHtml('opWeekdayMs','选择周几（可多选）', OP_WEEK_OPTS, d.opWeekdays, true)
         .replace('class="field" style="margin-bottom:12px"','class="field full" style="margin-top:12px;margin-bottom:0"');
-    } else if(cycle==='monthly'){
+    } else if(cycle === 'monthly'){
       const monthDay = (d.opMonthDays && d.opMonthDays[0]) || '1号';
-      html += '<div class="field full" style="margin-top:12px"><label class="label"><span class="req">*</span>选择几号</label>' +
+      html += '<div class="field full" style="margin-top:12px"><label class="label"><span class="req">*</span>每月几号</label>' +
         '<select class="control" id="opMonthDay" onchange="setOpMonthDay(this.value)">' +
           OP_MONTH_OPTS.map(o=>'<option value="' + o + '"' + (o===monthDay?' selected':'') + '>' + o + '</option>').join('') +
         '</select></div>';
