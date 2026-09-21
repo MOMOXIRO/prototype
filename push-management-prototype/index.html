@@ -541,7 +541,8 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
 .mkt-trigger-row .go:hover{text-decoration:underline}
 .mkt-trigger-row .tags{flex-wrap:nowrap}
 #detailModal.over-market-chart{z-index:1150}
-#marketChartModal .modal-card{width:min(920px,96vw)}
+#marketChartModal .modal-card{width:min(1240px,98vw)}
+#marketChartModal .mkt-chart-wrap svg{max-height:320px}
 
 .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-20px);background:#1f2937;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:1200;opacity:0;pointer-events:none;transition:.2s}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -1245,17 +1246,17 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
         <div class="mkt-chart-range">
           <label for="marketChartRange">时间范围</label>
           <select class="control" id="marketChartRange" onchange="onMarketChartRangeChange(this.value)">
-            <option value="3" selected>最近3天</option>
+            <option value="1" selected>最近1天</option>
+            <option value="3">最近3天</option>
             <option value="7">最近7天</option>
-            <option value="30">最近一个月</option>
           </select>
         </div>
       </div>
       <div class="mkt-chart-wrap" id="marketChartSvg"></div>
       <div class="mkt-chart-legend">
         <span><i class="lg-price"></i>价格走势</span>
-        <span><i class="lg-trig"></i>触发提醒</span>
-        <span style="color:var(--muted)">点击标记定位触发记录；点击「查看详情」打开推送批次</span>
+        <span><i class="lg-trig"></i>触发提醒（红点上方为推送记录次数）</span>
+        <span style="color:var(--muted)">点击标记定位触发记录；同节点次数已合并；点击「查看详情」打开推送批次</span>
       </div>
       <div class="mkt-trigger-hd">触发记录 <span id="marketTriggerCount"></span></div>
       <div class="mkt-trigger-list" id="marketTriggerList"></div>
@@ -9072,10 +9073,27 @@ window.addEventListener('resize', ()=>{
 document.addEventListener('DOMContentLoaded', init);
 /* ========== 行情变动图 ========== */
 let marketChartCache = null;
-/** 弹层会话内时间范围（天），切品种保持；默认最近 3 天 */
-let marketChartRangeDays = 3;
+/** 弹层会话内时间范围（天）：1 / 3 / 7；切品种保持；默认最近 1 天 */
+let marketChartRangeDays = 1;
 /** 固定 mock「当前时间」，筛选窗口相对此刻计算 */
 const MKT_CHART_NOW_MS = new Date('2026-07-24T12:00:00').getTime();
+const MKT_CHART_RANGE_OPTS = [1, 3, 7];
+
+function normalizeMarketChartRangeDays(v){
+  const n = Number(v);
+  return MKT_CHART_RANGE_OPTS.includes(n) ? n : 1;
+}
+function mktChartRangeLabel(days){
+  const d = normalizeMarketChartRangeDays(days);
+  return d === 1 ? '最近1天' : (d === 7 ? '最近7天' : '最近3天');
+}
+/** 采样间隔：1 天按小时；3 天每 4 小时；7 天按天 */
+function mktChartStepMs(rangeDays){
+  const d = normalizeMarketChartRangeDays(rangeDays);
+  if(d === 1) return 60 * 60 * 1000;
+  if(d === 3) return 4 * 60 * 60 * 1000;
+  return 24 * 60 * 60 * 1000;
+}
 
 function mktHashSeed(str){
   let h = 2166136261;
@@ -9151,49 +9169,25 @@ function mktNearestPointIdx(points, ms){
   return best;
 }
 function buildMarketChartData(row, symbol, rangeDays){
-  const days = Number(rangeDays) || marketChartRangeDays || 3;
+  const days = normalizeMarketChartRangeDays(rangeDays || marketChartRangeDays);
   const symbols = rowSymbolsValue(row);
   const activeSymbol = symbol || symbols[0] || row.symbol || '';
-  const seed = mktHashSeed(row.id + '|' + activeSymbol);
+  const seed = mktHashSeed(row.id + '|' + activeSymbol + '|r' + days);
   const rand = mktRand(seed || 1);
   const endMs = MKT_CHART_NOW_MS;
   const winStartMs = endMs - days * 24 * 60 * 60 * 1000;
-  /* 高密度 30 天序列再按窗口截取；短窗口保留更多点，切范围时走势连贯且视觉密度不同 */
-  const fullDays = 30;
-  const fullStart = endMs - fullDays * 24 * 60 * 60 * 1000;
-  const ptsPerDay = 16;
-  const fullN = fullDays * ptsPerDay + 1;
-  const fullStep = (endMs - fullStart) / (fullN - 1);
+  const stepMs = mktChartStepMs(days);
+  const nSteps = Math.max(1, Math.round((endMs - winStartMs) / stepMs));
+  const pointN = nSteps + 1;
   let price = mktBasePrice(activeSymbol, seed);
-  const allPoints = [];
-  for(let i=0;i<fullN;i++){
-    const drift = (rand() - 0.48) * price * 0.0042;
+  const driftScale = days === 1 ? 0.0035 : (days === 3 ? 0.006 : 0.012);
+  const points = [];
+  for(let i=0;i<pointN;i++){
+    const ms = i === pointN - 1 ? endMs : (winStartMs + i * stepMs);
+    const drift = (rand() - 0.48) * price * driftScale;
     price = Math.max(price * 0.2, price + drift);
-    const ms = fullStart + i * fullStep;
-    allPoints.push({ t: new Date(ms), price, ms });
+    points.push({ t: new Date(ms), price, ms, i });
   }
-  let points = allPoints.filter(p => p.ms >= winStartMs - fullStep * 0.25 && p.ms <= endMs + fullStep * 0.25);
-  /* 短窗口多采样（更密），长窗口再抽稀，避免整图看起来一样 */
-  const targetN = days <= 3 ? 56 : (days <= 7 ? 64 : 72);
-  if(points.length > targetN){
-    const sampled = [];
-    for(let i=0;i<targetN;i++){
-      const j = Math.round(i * (points.length - 1) / (targetN - 1));
-      sampled.push(points[j]);
-    }
-    points = sampled;
-  }
-  if(points.length < 2){
-    const fallbackN = Math.min(targetN, allPoints.length);
-    points = allPoints.slice(-fallbackN);
-  }
-  /* 首尾贴齐窗口，便于按时间域铺满 X 轴 */
-  if(points.length >= 2){
-    const head = points[0], tail = points[points.length - 1];
-    points[0] = { t: new Date(winStartMs), price: head.price, ms: winStartMs };
-    points[points.length - 1] = { t: new Date(endMs), price: tail.price, ms: endMs };
-  }
-  points.forEach((p,i)=>{ p.i = i; });
   const n = points.length;
 
   const knownAll = mktBatchesForSymbol(row, activeSymbol);
@@ -9202,15 +9196,13 @@ function buildMarketChartData(row, symbol, rangeDays){
     .filter(x => x.ms != null && x.ms >= winStartMs && x.ms <= endMs)
     .sort((a,b)=>a.ms - b.ms);
 
-  const maxTrig = days <= 3 ? 4 : (days <= 7 ? 6 : 8);
+  const maxTrig = days === 1 ? 5 : (days === 3 ? 6 : 8);
   const trigN = Math.min(maxTrig, Math.max(known.length || 0, Math.min((row.today|0) || (2 + seed % 3), maxTrig), 2));
-  const used = new Set();
   const triggers = [];
 
-  known.forEach(({ batch, ms }, k)=>{
+  known.forEach(({ batch, ms })=>{
     if(triggers.length >= trigN) return;
     const idx = mktNearestPointIdx(points, ms);
-    used.add(idx);
     const pt = points[idx];
     const timeText = mktFmtTime(new Date(ms));
     triggers.push({
@@ -9237,16 +9229,16 @@ function buildMarketChartData(row, symbol, rangeDays){
     });
   });
 
+  /* 合成触发：部分故意落在同节点，便于演示次数合并 */
   let synK = 0;
-  while(triggers.length < trigN && used.size < Math.max(1, n - 2)){
-    let idx = Math.floor(rand() * Math.max(1, n - 4)) + 2;
-    let tries = 0;
-    while(used.has(idx) && tries < 48){
-      idx = Math.floor(rand() * Math.max(1, n - 4)) + 2;
-      tries++;
+  const preferredShareIdx = n > 4 ? (n - 2 - (seed % 2)) : Math.max(0, n - 1);
+  while(triggers.length < trigN){
+    let idx;
+    if(synK < 2 && n > 3){
+      idx = preferredShareIdx;
+    } else {
+      idx = Math.floor(rand() * Math.max(1, n - 2)) + 1;
     }
-    if(used.has(idx)) break;
-    used.add(idx);
     const pt = points[idx];
     const timeText = mktFmtTime(pt.t);
     const batch = mktSyntheticPush(row, activeSymbol, synK, seed, rand, timeText);
@@ -9284,6 +9276,7 @@ function buildMarketChartData(row, symbol, rangeDays){
   return {
     points, triggers,
     rangeDays: days,
+    stepMs,
     winStartMs, winEndMs: endMs,
     symbol: activeSymbol,
     symbols,
@@ -9297,13 +9290,26 @@ function buildMarketChartData(row, symbol, rangeDays){
 function mktChartXLabel(ms, rangeDays){
   const d = new Date(ms);
   const p = n => String(n).padStart(2,'0');
-  if(rangeDays <= 3) return `${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-  if(rangeDays <= 7) return `${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:00`;
-  return `${p(d.getMonth()+1)}-${p(d.getDate())}`;
+  const days = normalizeMarketChartRangeDays(rangeDays);
+  if(days === 1) return `${p(d.getHours())}`;
+  if(days === 3) return `${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}h`;
+  return `${p(d.getMonth()+1)}/${p(d.getDate())}`;
+}
+/** 坐标文字抽稀：走势仍按 1h/4h/天采样，标签少标几档 */
+function mktChartXLabelIndices(pointCount, rangeDays){
+  const n = pointCount;
+  if(n <= 2) return [0, n - 1];
+  const days = normalizeMarketChartRangeDays(rangeDays);
+  const step = days === 1 ? 4 : (days === 3 ? 3 : 1);
+  const idx = [];
+  for(let i=0;i<n;i+=step) idx.push(i);
+  if(idx[idx.length - 1] !== n - 1) idx.push(n - 1);
+  return idx;
 }
 function renderMarketChartSvg(data){
-  const W = 700, H = 260;
-  const pad = { l:52, r:16, t:18, b:32 };
+  const W = 1080, H = 280;
+  const rangeDays = normalizeMarketChartRangeDays(data.rangeDays || marketChartRangeDays);
+  const pad = { l:48, r:18, t:16, b:28 };
   const pts = data.points || [];
   if(pts.length < 2){
     return `<svg viewBox="0 0 ${W} ${H}" role="img"><text class="mkt-axis" x="${W/2}" y="${H/2}" text-anchor="middle">暂无行情数据</text></svg>`;
@@ -9311,12 +9317,10 @@ function renderMarketChartSvg(data){
   const winStart = data.winStartMs != null ? data.winStartMs : pts[0].ms;
   const winEnd = data.winEndMs != null ? data.winEndMs : pts[pts.length - 1].ms;
   const span = Math.max(1, winEnd - winStart);
-  const rangeDays = Number(data.rangeDays) || marketChartRangeDays || 3;
   const prices = pts.map(p=>p.price);
   let min = Math.min(...prices), max = Math.max(...prices);
   const padY = (max - min) * 0.12 || max * 0.01 || 1;
   min -= padY; max += padY;
-  /* 按时间映射 X，切换 3/7/30 天会明显缩放，而不是按序号铺满 */
   const xAtMs = ms => {
     const t = Math.min(winEnd, Math.max(winStart, ms));
     return pad.l + ((t - winStart) / span) * (W - pad.l - pad.r);
@@ -9324,34 +9328,48 @@ function renderMarketChartSvg(data){
   const yAt = v => pad.t + (1 - (v - min) / (max - min)) * (H - pad.t - pad.b);
   const line = pts.map((p,i)=>`${i?'L':'M'}${xAtMs(p.ms).toFixed(1)},${yAt(p.price).toFixed(1)}`).join(' ');
   const area = `${line} L${xAtMs(pts[pts.length-1].ms).toFixed(1)},${(H-pad.b).toFixed(1)} L${xAtMs(pts[0].ms).toFixed(1)},${(H-pad.b).toFixed(1)} Z`;
-  const gridYs = [0,0.25,0.5,0.75,1].map(r=>{
+  /* Y 轴只保留 高 / 中 / 低 三档 */
+  const gridYs = [0, 0.5, 1].map(r=>{
     const v = min + (max - min) * (1 - r);
     const y = pad.t + r * (H - pad.t - pad.b);
     return `<line class="mkt-grid" x1="${pad.l}" y1="${y.toFixed(1)}" x2="${W-pad.r}" y2="${y.toFixed(1)}"/>
       <text class="mkt-axis" x="${pad.l-8}" y="${(y+3).toFixed(1)}" text-anchor="end">${mktFmtPrice(data.symbol, v)}</text>`;
   }).join('');
-  const tickN = rangeDays <= 3 ? 4 : (rangeDays <= 7 ? 5 : 6);
-  const xLabels = Array.from({ length: tickN }, (_, i) => {
-    const ms = winStart + (span * i) / (tickN - 1);
-    const anchor = i === 0 ? 'start' : (i === tickN - 1 ? 'end' : 'middle');
-    return `<text class="mkt-axis" x="${xAtMs(ms).toFixed(1)}" y="${H-8}" text-anchor="${anchor}">${mktChartXLabel(ms, rangeDays)}</text>`;
+  const labelIdx = new Set(mktChartXLabelIndices(pts.length, rangeDays));
+  const xLabels = pts.map((p, i) => {
+    if(!labelIdx.has(i)) return '';
+    const x = xAtMs(p.ms);
+    const anchor = i === 0 ? 'start' : (i === pts.length - 1 ? 'end' : 'middle');
+    return `<text class="mkt-axis" x="${x.toFixed(1)}" y="${H-8}" text-anchor="${anchor}">${mktChartXLabel(p.ms, rangeDays)}</text>`;
   }).join('');
-  const markers = (data.triggers || []).map(tr=>{
-    const ms = tr.ms != null ? tr.ms : (pts[tr.idx] && pts[tr.idx].ms);
-    const price = tr.price != null ? tr.price : (pts[tr.idx] && pts[tr.idx].price);
+  /* 同节点合并：红点上方展示推送记录次数汇总 */
+  const byIdx = new Map();
+  (data.triggers || []).forEach(tr=>{
+    const key = tr.idx;
+    if(key == null) return;
+    if(!byIdx.has(key)) byIdx.set(key, []);
+    byIdx.get(key).push(tr);
+  });
+  const markers = [...byIdx.entries()].map(([idx, list])=>{
+    const primary = list[0];
+    const count = list.length;
+    const ms = primary.ms != null ? primary.ms : (pts[idx] && pts[idx].ms);
+    const price = primary.price != null ? primary.price : (pts[idx] && pts[idx].price);
     if(ms == null || price == null) return '';
     const x = xAtMs(ms), y = yAt(price);
-    const tip = `${tr.time} · 价格 ${tr.priceText} · ${tr.batchId} · ${tr.reason}`
+    const tip = (count > 1
+      ? `该节点 ${count} 条推送记录 · ${primary.time} · 价格 ${primary.priceText}`
+      : `${primary.time} · 价格 ${primary.priceText} · ${primary.batchId} · ${primary.reason}`)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    return `<g class="mkt-marker" data-tr="${tr.id}" onclick="onMarketChartTriggerClick('${tr.id}')">
+    return `<g class="mkt-marker" data-tr="${primary.id}" data-idx="${idx}" data-count="${count}" onclick="onMarketChartTriggerClick('${primary.id}')">
       <title>${tip}</title>
       <line x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${x.toFixed(1)}" y2="${(y-16).toFixed(1)}" stroke="#ef4444" stroke-width="1.5"/>
       <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5"/>
-      <text class="mkt-marker-flag" x="${x.toFixed(1)}" y="${(y-20).toFixed(1)}" text-anchor="middle">${tr.no}</text>
+      <text class="mkt-marker-flag" x="${x.toFixed(1)}" y="${(y-20).toFixed(1)}" text-anchor="middle">${count}</text>
     </g>`;
   }).join('');
   const gradId = 'mktChartGrad-' + String(data.symbol || 'x').replace(/[^a-zA-Z0-9_-]/g,'') + '-d' + rangeDays;
-  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${data.symbol} 行情变动图 · 最近${rangeDays}天">
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${data.symbol} 行情变动图 · ${mktChartRangeLabel(rangeDays)}">
     <defs><linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#2f6bff" stop-opacity=".28"/><stop offset="100%" stop-color="#2f6bff" stop-opacity="0"/>
     </linearGradient></defs>
@@ -9399,17 +9417,29 @@ function renderMarketTriggerList(data, activeId){
 }
 function highlightMarketChartTrigger(trId, opts){
   opts = opts || {};
+  const tr = marketChartCache && marketChartCache.triggers
+    ? marketChartCache.triggers.find(x=>x.id===trId)
+    : null;
+  const nodeIdx = tr && tr.idx != null ? tr.idx : null;
   document.querySelectorAll('#marketChartSvg .mkt-marker').forEach(el=>{
-    el.classList.toggle('active', el.getAttribute('data-tr')===trId);
+    const sameNode = nodeIdx != null && Number(el.getAttribute('data-idx')) === nodeIdx;
+    const sameTr = el.getAttribute('data-tr')===trId;
+    el.classList.toggle('active', sameNode || sameTr);
   });
+  let scrolled = false;
   document.querySelectorAll('#marketTriggerList .mkt-trigger-row').forEach(el=>{
-    const on = el.getAttribute('data-tr')===trId;
+    const id = el.getAttribute('data-tr');
+    const rowTr = marketChartCache && marketChartCache.triggers
+      ? marketChartCache.triggers.find(x=>x.id===id)
+      : null;
+    const on = id===trId || (nodeIdx != null && rowTr && rowTr.idx === nodeIdx);
     el.classList.toggle('active', on);
     el.classList.remove('flash');
-    if(on && opts.scroll !== false){
+    if(on && opts.scroll !== false && !scrolled){
       el.scrollIntoView({ block:'nearest', behavior:'smooth' });
       void el.offsetWidth;
       el.classList.add('flash');
+      scrolled = true;
     }
   });
   if(marketChartCache) marketChartCache.activeTriggerId = trId || null;
@@ -9417,17 +9447,18 @@ function highlightMarketChartTrigger(trId, opts){
 function syncMarketChartRangeSelect(){
   const sel = document.getElementById('marketChartRange');
   if(!sel) return;
-  const v = String(marketChartRangeDays || 3);
+  const v = String(normalizeMarketChartRangeDays(marketChartRangeDays));
   if(sel.value !== v) sel.value = v;
 }
 function refreshMarketChartView(activeId){
   if(!marketChartCache) return;
-  const days = Number(marketChartCache.rangeDays) || marketChartRangeDays || 3;
+  const days = normalizeMarketChartRangeDays(marketChartCache.rangeDays || marketChartRangeDays);
   marketChartRangeDays = days;
+  marketChartCache.rangeDays = days;
   document.getElementById('marketChartTitle').textContent = `行情变动图 · ${marketChartCache.symbol}`;
   renderMarketChartSymbolTabs(marketChartCache.symbols, marketChartCache.symbol);
   syncMarketChartRangeSelect();
-  const rangeLabel = days === 7 ? '最近7天' : (days === 30 ? '最近一个月' : '最近3天');
+  const rangeLabel = mktChartRangeLabel(days);
   document.getElementById('marketChartMeta').innerHTML = `
     <span>提醒 <strong>${marketChartCache.id}</strong> ${marketChartCache.name}</span>
     <span>品种 <strong>${marketChartCache.symbol}</strong></span>
@@ -9438,14 +9469,15 @@ function refreshMarketChartView(activeId){
   const svgHost = document.getElementById('marketChartSvg');
   svgHost.innerHTML = '';
   svgHost.innerHTML = renderMarketChartSvg(marketChartCache);
+  const nodeN = new Set((marketChartCache.triggers||[]).map(t=>t.idx)).size;
   document.getElementById('marketTriggerCount').textContent =
-    `共 ${marketChartCache.triggers.length} 条 · 点击标记可定位列表`;
+    `共 ${marketChartCache.triggers.length} 条 · 图上 ${nodeN} 个节点（同节点次数已合并）`;
   renderMarketTriggerList(marketChartCache, activeId || null);
   if(activeId) highlightMarketChartTrigger(activeId, { scroll:false });
   else if(marketChartCache.activeTriggerId) marketChartCache.activeTriggerId = null;
 }
 function onMarketChartRangeChange(val){
-  const days = Number(val) === 7 || Number(val) === 30 ? Number(val) : 3;
+  const days = normalizeMarketChartRangeDays(val);
   marketChartRangeDays = days;
   const row = DATA.market.find(x=>x.id===state.marketChartRowId);
   if(!row || !marketChartCache) return;
@@ -9456,9 +9488,10 @@ function onMarketChartRangeChange(val){
   refreshMarketChartView(still);
 }
 function switchMarketChartRange(val){
+  const days = normalizeMarketChartRangeDays(val);
   const sel = document.getElementById('marketChartRange');
-  if(sel) sel.value = String(Number(val) === 7 || Number(val) === 30 ? Number(val) : 3);
-  onMarketChartRangeChange(val);
+  if(sel) sel.value = String(days);
+  onMarketChartRangeChange(days);
 }
 function switchMarketChartSymbol(symbol){
   const row = DATA.market.find(x=>x.id===state.marketChartRowId);
@@ -9473,7 +9506,7 @@ function openMarketChartModal(id){
   const row = DATA.market.find(x=>x.id===id);
   if(!row){ toast('未找到行情提醒'); return; }
   state.marketChartRowId = id;
-  marketChartRangeDays = 3;
+  marketChartRangeDays = 1;
   const symbols = rowSymbolsValue(row);
   const startSymbol = symbols[0] || row.symbol || '';
   marketChartCache = buildMarketChartData(row, startSymbol, marketChartRangeDays);
@@ -9488,7 +9521,7 @@ function closeMarketChartModal(){
   document.getElementById('detailModal')?.classList.remove('over-market-chart');
   state.marketChartRowId = null;
   marketChartCache = null;
-  marketChartRangeDays = 3;
+  marketChartRangeDays = 1;
 }
 window.switchMarketChartSymbol = switchMarketChartSymbol;
 window.switchMarketChartRange = switchMarketChartRange;
