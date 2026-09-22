@@ -1595,7 +1595,7 @@ function opsToggle(type, row){
   const label = on ? '停用' : '启用';
   return `<span class="exec-switch"><button type="button" class="sw${on?' on':''}" title="${label}" aria-label="${label}" onclick="askExecToggle('${type}','${row.id}')"></button></span>`;
 }
-/** 列表启停开关：直接切换任务状态（无二次确认） */
+/** 列表启停开关：二次确认后切换任务状态 */
 function askExecToggle(type, id){
   const list = type==='business' ? DATA.business : type==='operation' ? DATA.operation : DATA.market;
   const row = (list||[]).find(x=>x.id===id);
@@ -1605,12 +1605,29 @@ function askExecToggle(type, id){
     return;
   }
   const isOn = row.status==='运行中';
-  const action = isOn ? 'pause' : 'resume';
-  const map = {pause:'已停用', resume:'已启用'};
-  toast((map[action]||'操作成功') + '：' + id);
-  if(action==='pause') row.status='已暂停';
-  else row.status='运行中';
+  const enabling = !isOn;
+  const typeLabel = {business:'业务通知', operation:'运营推送', market:'行情提醒'}[type] || '任务';
+  const name = row.name || id;
+  const title = enabling ? '启用确认' : '停用确认';
+  const note = enabling
+    ? `启用后该${typeLabel}将恢复运行。`
+    : `停用后该${typeLabel}将暂停执行，已发出的推送不受影响。`;
+  const html = `<p class="confirm-q">确认${enabling?'启用':'停用'}该${typeLabel}「${escHtml(name)}」？</p><p class="confirm-note">${note}</p>`;
+  askConfirm(enabling ? 'enableTask' : 'disableTask', type, id, html, { html:true, title });
+}
+function applyExecToggle(type, id){
+  const list = type==='business' ? DATA.business : type==='operation' ? DATA.operation : DATA.market;
+  const row = (list||[]).find(x=>x.id===id);
+  if(!row) return;
+  if(type==='operation' && !isLoopOpPush(row)){
+    toast('仅循环发送的运营推送支持启停');
+    return;
+  }
+  const isOn = row.status==='运行中';
+  if(isOn) row.status = '已暂停';
+  else row.status = '运行中';
   row.operator = CURRENT_OPERATOR;
+  toast((isOn ? '已停用' : '已启用') + '：' + id);
   renderCurrent();
 }
 function iconBtn(icon, title, onclick, danger, disabled){
@@ -3630,19 +3647,20 @@ function isDeleteConfirmAction(action){
     || action==='removeOpSid' || action==='removePushImage' || action==='removeOpImage' || action==='removeCond';
 }
 function isToggleConfirmAction(action){
-  return action==='enableSettings' || action==='disableSettings';
+  return action==='enableSettings' || action==='disableSettings'
+    || action==='enableTask' || action==='disableTask';
 }
 function askConfirm(action, type, id, msg, opts){
   opts = opts || {};
   state.pendingConfirm = {action, type, id};
   const isDelete = isDeleteConfirmAction(action);
   const isToggle = isToggleConfirmAction(action);
-  const isDanger = action==='stop'||action==='disable'||action==='disableSettings'||action==='interruptBatch'||isDelete;
+  const isDanger = action==='stop'||action==='disable'||action==='disableSettings'||action==='disableTask'||action==='interruptBatch'||isDelete;
   const defaultTitle = action==='sendNow' ? '立即发送确认'
     : (action==='interruptBatch' ? '中断批次确认'
     : (isDelete ? '删除确认'
-    : (action==='disableSettings' ? '停用确认'
-    : (action==='enableSettings' ? '启用确认' : '二次确认'))));
+    : (action==='disableSettings' || action==='disableTask' ? '停用确认'
+    : (action==='enableSettings' || action==='enableTask' ? '启用确认' : '二次确认'))));
   document.getElementById('confirmTitle').textContent = opts.title || defaultTitle;
   const bodyEl = document.getElementById('confirmBody');
   if(opts.html) bodyEl.innerHTML = msg;
@@ -3675,6 +3693,10 @@ function askConfirm(action, type, id, msg, opts){
     }
     if(action==='enableSettings' || action==='disableSettings'){
       if(type==='activity' || type==='scenario') toggleBizRefStatus(type, id);
+      return;
+    }
+    if(action==='enableTask' || action==='disableTask'){
+      applyExecToggle(type, id);
       return;
     }
     const map = {stop:'已终止', disable:'已禁用', retry:'已提交失败重试', retryBatch:'已提交批量重试'};
@@ -5036,8 +5058,7 @@ function renderFormFoot(){
       } else {
         right = '<button class="btn ghost" onclick="' + cancelFn + '">取消</button>' +
           '<button class="btn soft" onclick="openTestPush()">测试推送</button>' +
-          '<button class="btn soft" onclick="if(validateEnglishContent()){toast(\'已保存并等待执行\');' + doneFn + '}">保存并等待执行</button>' +
-          '<button class="btn" onclick="if(validateEnglishContent())askConfirm(\'sendNow\',\'operation\',\'NEW\',\'预计向 128,420 名用户发送，确认立即执行吗？\')">立即发送</button>';
+          '<button class="btn" onclick="saveWithEnglishCheck(\'已提交\', true)">提交</button>';
       }
     } else if(type==='market'){
       right = '<button class="btn ghost" onclick="' + cancelFn + '">取消</button>' +
@@ -5061,8 +5082,7 @@ function renderFormFoot(){
   } else if(type==='operation'){
     right = '<button class="btn ghost" onclick="' + cancelFn + '">取消</button>' +
       '<button class="btn soft" onclick="openTestPush()">测试推送</button>' +
-      '<button class="btn soft" onclick="if(validateEnglishContent()){toast(\'已保存并等待执行\');' + doneFn + '}">保存并等待执行</button>' +
-      '<button class="btn" onclick="if(validateEnglishContent())askConfirm(\'sendNow\',\'operation\',\'NEW\',\'预计向 128,420 名用户发送，确认立即执行吗？\')">立即发送</button>';
+      '<button class="btn" onclick="saveWithEnglishCheck(\'已提交\', true)">提交</button>';
   } else if(type==='market'){
     right = '<button class="btn ghost" onclick="' + cancelFn + '">取消</button>' +
       '<button class="btn soft" onclick="openTestPush()">测试推送</button>' +
