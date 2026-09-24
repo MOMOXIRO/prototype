@@ -273,8 +273,8 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
 #table-market .col-status{right:332px}
 .th-help{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;margin-left:4px;border-radius:50%;border:1px solid #94a3b8;color:#64748b;font-size:10px;font-weight:700;line-height:1;cursor:help;vertical-align:middle}
 .cell-2line{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;line-height:1.4;max-width:220px;min-width:120px}
-.id-link{color:var(--pri);font-weight:600;cursor:pointer}
-.id-link:hover{text-decoration:underline}
+.id-link{color:var(--pri)!important;font-weight:600;cursor:pointer;text-decoration:none}
+.id-link:hover,.id-link:focus{text-decoration:underline;outline:none}
 .muted{color:var(--muted)}
 .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--pri);font-weight:600}
 .tags{display:flex;flex-wrap:wrap;gap:4px}
@@ -758,7 +758,13 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
               </select>
             </div>
             <div class="filter-more">
-              <div class="filter-item"><label>状态</label><select class="control" data-f="status"><option value="">全部</option><option>运行中</option><option>已暂停</option></select></div>
+              <div class="filter-item"><label>状态</label>
+                <select class="control" id="biz-status-filter" data-f="status" onchange="onBizFilterChange()">
+                  <option value="">全部</option>
+                  <option value="运行中">运行中</option>
+                  <option value="已暂停">已暂停</option>
+                </select>
+              </div>
               <div class="filter-item"><label>APP</label>
                 <div class="ms-select" id="filterBizApp">
                   <div class="ms-select-trigger" onclick="toggleMultiSelect('filterBizApp')">
@@ -808,14 +814,19 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
                 <option value="循环发送">循环发送</option>
               </select>
             </div>
-            <div class="filter-item"><label>状态</label>
+            <div class="filter-item"><label>任务状态</label>
               <select class="control" id="op-status-filter" onchange="onOpFilterChange()">
                 <option value="">全部</option>
                 <option value="待生效">待生效</option>
                 <option value="运行中">运行中</option>
-                <option value="已暂停">已暂停</option>
                 <option value="已完成">已完成</option>
-                <option value="已终止">已终止</option>
+              </select>
+            </div>
+            <div class="filter-item"><label>启停状态</label>
+              <select class="control" id="op-exec-filter" onchange="onOpFilterChange()">
+                <option value="">全部</option>
+                <option value="启用">启用</option>
+                <option value="停用">停用</option>
               </select>
             </div>
             <div class="filter-item"><label>优先级</label>
@@ -879,7 +890,13 @@ textarea.control{height:88px;padding:10px;line-height:1.6;resize:vertical}
                 <option value="USDJPY">USDJPY</option>
               </select>
             </div>
-            <div class="filter-item"><label>状态</label><select class="control"><option value="">全部</option><option>运行中</option><option>已暂停</option></select></div>
+            <div class="filter-item"><label>状态</label>
+              <select class="control" id="mkt-status-filter" onchange="onMarketFilterChange()">
+                <option value="">全部</option>
+                <option value="运行中">运行中</option>
+                <option value="已暂停">已暂停</option>
+              </select>
+            </div>
             <div class="filter-more">
               <div class="filter-item"><label>行情类型</label><select class="control"><option value="">全部</option><option>整数关口</option><option>时间段</option></select></div>
               <div class="filter-item"><label>通知对象</label><select class="control"><option value="">全部</option><option>关注用户</option><option>订阅用户</option><option>持仓用户</option><option>最近交易</option></select></div>
@@ -1296,9 +1313,9 @@ const state = {
   currentOperator: CURRENT_OPERATOR,
   tab: 'business',
   sub: { records:'batch', settings:'priority' },
-  bizFilter: { id:'', name:'', priority:'' },
-  opFilter: { id:'', name:'', plan:'', status:'', priority:'', region:'', operator:'' },
-  mktFilter: { id:'', name:'', symbol:'' },
+  bizFilter: { id:'', name:'', priority:'', status:'' },
+  opFilter: { id:'', name:'', plan:'', status:'', exec:'', priority:'', region:'', operator:'' },
+  mktFilter: { id:'', name:'', symbol:'', status:'' },
   page: { business:1, operation:1, market:1, template:1, records:1 },
   pageSize: { business:20, operation:20, market:20, template:20, records:20 },
   drawer: { open:false, type:null, mode:'create', step:0, detail:null, ui:'drawer', project:'', apps:[], appsAutoUpdate:false, regions:[], msgJump:'跳转私信', msgGroup:'', msgAppPage:'', msgUrl:'', mailChannel:'EMAIL-SES', mailJump:'APP 内部跳转', mailFreq:'', jumpMode:'APP内部跳转', jumpInternalAddr:'', jumpH5:'', pushIntervalMin:30, bizType:'business', bizRefId:'', bizPriority:'P1', opPriority:'P2', statusSetting:'已执行(正式生效)' },
@@ -1595,6 +1612,15 @@ function opsToggle(type, row){
   const label = on ? '停用' : '启用';
   return `<span class="exec-switch"><button type="button" class="sw${on?' on':''}" title="${label}" aria-label="${label}" onclick="askExecToggle('${type}','${row.id}')"></button></span>`;
 }
+/** 启停筛选口径：启用=运行中，停用=已暂停；其它任务状态无启停开关，不命中启用/停用 */
+function matchExecFilter(row, execFilter, type){
+  if(!execFilter) return true;
+  if(type==='operation' && !isLoopOpPush(row)) return false;
+  const st = row && row.status;
+  if(execFilter==='启用') return st==='运行中';
+  if(execFilter==='停用') return st==='已暂停';
+  return true;
+}
 /** 列表启停开关：二次确认后切换任务状态 */
 function askExecToggle(type, id){
   const list = type==='business' ? DATA.business : type==='operation' ? DATA.operation : DATA.market;
@@ -1824,9 +1850,11 @@ function onBizFilterChange(){
   const idEl = document.getElementById('biz-id-filter');
   const nameEl = document.getElementById('biz-name-filter');
   const priEl = document.getElementById('biz-priority-filter');
+  const statusEl = document.getElementById('biz-status-filter');
   state.bizFilter.id = idEl ? idEl.value.trim() : '';
   state.bizFilter.name = nameEl ? nameEl.value.trim() : '';
   state.bizFilter.priority = priEl ? priEl.value : '';
+  state.bizFilter.status = statusEl ? statusEl.value : '';
   state.page.business = 1;
   renderCurrent();
 }
@@ -1834,10 +1862,12 @@ function resetBizFilter(){
   const idEl = document.getElementById('biz-id-filter');
   const nameEl = document.getElementById('biz-name-filter');
   const priEl = document.getElementById('biz-priority-filter');
+  const statusEl = document.getElementById('biz-status-filter');
   if(idEl) idEl.value = '';
   if(nameEl) nameEl.value = '';
   if(priEl) priEl.value = '';
-  state.bizFilter = { id:'', name:'', priority:'' };
+  if(statusEl) statusEl.value = '';
+  state.bizFilter = { id:'', name:'', priority:'', status:'' };
   state.page.business = 1;
   renderCurrent();
   toast('已重置筛选');
@@ -1847,6 +1877,7 @@ function onOpFilterChange(){
   const nameEl = document.getElementById('op-name-filter');
   const planEl = document.getElementById('op-plan-filter');
   const statusEl = document.getElementById('op-status-filter');
+  const execEl = document.getElementById('op-exec-filter');
   const priEl = document.getElementById('op-priority-filter');
   const regionEl = document.getElementById('op-region-filter');
   const opEl = document.getElementById('op-operator-filter');
@@ -1854,6 +1885,7 @@ function onOpFilterChange(){
   state.opFilter.name = nameEl ? nameEl.value.trim() : '';
   state.opFilter.plan = planEl ? planEl.value : '';
   state.opFilter.status = statusEl ? statusEl.value : '';
+  state.opFilter.exec = execEl ? execEl.value : '';
   state.opFilter.priority = priEl ? priEl.value : '';
   state.opFilter.region = regionEl ? regionEl.value : '';
   state.opFilter.operator = opEl ? opEl.value.trim() : '';
@@ -1865,6 +1897,7 @@ function resetOpFilter(){
   const nameEl = document.getElementById('op-name-filter');
   const planEl = document.getElementById('op-plan-filter');
   const statusEl = document.getElementById('op-status-filter');
+  const execEl = document.getElementById('op-exec-filter');
   const priEl = document.getElementById('op-priority-filter');
   const regionEl = document.getElementById('op-region-filter');
   const opEl = document.getElementById('op-operator-filter');
@@ -1872,10 +1905,11 @@ function resetOpFilter(){
   if(nameEl) nameEl.value = '';
   if(planEl) planEl.value = '';
   if(statusEl) statusEl.value = '';
+  if(execEl) execEl.value = '';
   if(priEl) priEl.value = '';
   if(regionEl) regionEl.value = '';
   if(opEl) opEl.value = '';
-  state.opFilter = { id:'', name:'', plan:'', status:'', priority:'', region:'', operator:'' };
+  state.opFilter = { id:'', name:'', plan:'', status:'', exec:'', priority:'', region:'', operator:'' };
   state.page.operation = 1;
   renderCurrent();
   toast('已重置筛选');
@@ -1884,9 +1918,11 @@ function onMarketFilterChange(){
   const idEl = document.getElementById('mkt-id-filter');
   const nameEl = document.getElementById('mkt-name-filter');
   const symEl = document.getElementById('mkt-symbol-filter');
+  const statusEl = document.getElementById('mkt-status-filter');
   state.mktFilter.id = idEl ? idEl.value.trim() : '';
   state.mktFilter.name = nameEl ? nameEl.value.trim() : '';
   state.mktFilter.symbol = symEl ? symEl.value.trim() : '';
+  state.mktFilter.status = statusEl ? statusEl.value : '';
   state.page.market = 1;
   renderCurrent();
 }
@@ -1894,10 +1930,12 @@ function resetMarketFilter(){
   const idEl = document.getElementById('mkt-id-filter');
   const nameEl = document.getElementById('mkt-name-filter');
   const symEl = document.getElementById('mkt-symbol-filter');
+  const statusEl = document.getElementById('mkt-status-filter');
   if(idEl) idEl.value = '';
   if(nameEl) nameEl.value = '';
   if(symEl) symEl.value = '';
-  state.mktFilter = { id:'', name:'', symbol:'' };
+  if(statusEl) statusEl.value = '';
+  state.mktFilter = { id:'', name:'', symbol:'', status:'' };
   state.page.market = 1;
   renderCurrent();
   toast('已重置筛选');
@@ -1986,7 +2024,7 @@ function opsBusiness(row){
          iconBtn(I.copy,'复制',`openCopyPage('business','${row.id}')`);
 }
 function opsOperation(row){
-  // 循环发送可编辑。详情点推送 ID；不可删除；启停见独立「启停」列
+  // 循环发送可编辑。列表 ID 不可点开详情；不可删除；启停见独立「启停」列
   const first = canEditOperation(row)
     ? iconBtn(I.edit,'编辑',`openEditDrawer('operation','${row.id}')`)
     : '';
@@ -2185,6 +2223,7 @@ function filterBusiness(rows){
   if(state.bizFilter.priority){
     list = list.filter(r=>matchPriorityFilter(resolveBizRowPriority(r), state.bizFilter.priority));
   }
+  if(state.bizFilter.status) list = list.filter(r=>r.status===state.bizFilter.status);
   return list;
 }
 function renderBusiness(){
@@ -2198,7 +2237,7 @@ function renderBusiness(){
   const tbody = pageRows.map(r=>{
     const appCell = formatAppCell(r.project, rowAppsValue(r));
     return `<tr>
-    <td>${r.id}</td>
+    <td>${escHtml(r.id)}</td>
     <td><div class="cell-2line" title="${r.name}">${r.name}</div></td>
     <td>${priBadge(resolveBizRowPriority(r))}</td>
     <td>${r.project}</td>
@@ -2254,6 +2293,7 @@ function filterOperation(rows){
   if(nameQ) list = list.filter(r=>String(r.name||'').toLowerCase().includes(nameQ));
   if(state.opFilter.plan) list = list.filter(r=>formatOpPlanLabel(r)===state.opFilter.plan);
   if(state.opFilter.status) list = list.filter(r=>r.status===state.opFilter.status);
+  if(state.opFilter.exec) list = list.filter(r=>matchExecFilter(r, state.opFilter.exec, 'operation'));
   if(state.opFilter.priority){
     list = list.filter(r=>{
       const resolved = (typeof resolveOpRowPriority==='function') ? resolveOpRowPriority(r) : r.priority;
@@ -2537,7 +2577,7 @@ function renderOperation(){
   const tbody = pageRows.map(r=>{
     const appCell = formatAppCell(r.project, rowAppsValue(r));
     return `<tr>
-    <td>${r.id}</td>
+    <td>${escHtml(r.id)}</td>
     <td><div class="cell-2line" title="${r.name}">${r.name}</div></td>
     <td>${priBadge(resolveOpRowPriority(r))}</td>
     <td>${r.project}</td>
@@ -2567,6 +2607,7 @@ function filterMarket(rows){
   if(symQ){
     list = list.filter(r=>rowSymbolsValue(r).some(s=>String(s).toUpperCase() === symQ));
   }
+  if(state.mktFilter.status) list = list.filter(r=>r.status===state.mktFilter.status);
   return list;
 }
 function renderMarket(){
@@ -2583,7 +2624,7 @@ function renderMarket(){
     const symCell = formatSymbolsCell(syms);
     const symTitle = syms.join('、');
     return `<tr>
-    <td>${r.id}</td>
+    <td>${escHtml(r.id)}</td>
     <td><div class="cell-2line" title="${r.name}">${r.name}</div></td>
     <td>${r.project}</td>
     <td><div class="cell-2line" title="${appCell}">${appCell}</div></td>
@@ -2784,7 +2825,7 @@ function renderRecords(){
       ? '<span class="muted">—</span>'
       : priBadge(normalizeBizPriority(r.priority, 'P2'));
     return `<tr>
-    <td>${displayId}</td>
+    <td>${escHtml(displayId)}</td>
     <td><span class="pill info">${srcType}</span></td>
     <td><div class="cell-2line" title="${r.srcName}">${r.srcName}</div></td>
     <td>${r.project||'—'}</td>
@@ -3625,7 +3666,7 @@ function openRelatedRecordsModal(srcId, opts){
     '</tr></thead><tbody>' + batches.map(r=>{
       const displayId = batchDisplayId(r);
       return '<tr>' +
-        '<td><span class="id-link" onclick="openDetail(\'records\',\'' + r.id + '\')">' + displayId + '</span></td>' +
+        '<td>' + escHtml(displayId) + '</td>' +
         '<td>' + statusPill(r.status) + '</td>' +
         '<td>' + recordChannelTags(r) + '</td>' +
         '<td>' + (r.plan || '—') + '</td>' +
@@ -4990,7 +5031,9 @@ function renderFormFoot(){
       right += '<button class="btn soft" onclick="beginEditFromDetail()">编辑</button>';
       if(tid) right += `<button class="btn" onclick="copyTemplate('${tid}')">复制</button>`;
       if(tid && canDeleteTemplate()) right += iconBtn(I.trash,'删除',`askDeleteTemplate('${tid}')`,true);
-    } else if(['business','market'].includes(state.drawer.type)){
+    } else if(state.drawer.type==='business'){
+      right += '<button class="btn soft" onclick="beginEditFromDetail()">编辑</button>';
+    } else if(state.drawer.type==='market'){
       right += `<button class="btn soft" onclick="jumpRecords('${tid}')">查看批次</button>`;
       right += '<button class="btn soft" onclick="beginEditFromDetail()">编辑</button>';
     } else if(state.drawer.type==='operation'){
