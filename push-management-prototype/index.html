@@ -1600,23 +1600,24 @@ function formatAppCell(project, apps){
   if(full.length && list.length >= full.length && full.every(a=>list.includes(a))) return 'ALL';
   return list.join('、');
 }
-/** 启停列：开关；仅运行中/已暂停展示；运营推送仅循环发送可启停 */
+/** 启停列：开关；运行中/已暂停/待生效展示；运营推送：循环发送可启停，待生效（含立即/预约）亦可启停 */
 function opsToggle(type, row){
-  if(type==='operation' && !isLoopOpPush(row)) return '';
   const st = row.status;
+  if(type==='operation' && !isLoopOpPush(row) && st!=='待生效') return '';
   let on = false;
   if(type==='business' || type==='operation' || type==='market'){
     if(st==='运行中') on = true;
+    else if(st==='待生效') on = false;
     else if(st!=='已暂停') return '';
   } else return '';
   const label = on ? '停用' : '启用';
   return `<span class="exec-switch"><button type="button" class="sw${on?' on':''}" title="${label}" aria-label="${label}" onclick="askExecToggle('${type}','${row.id}')"></button></span>`;
 }
-/** 启停筛选口径：启用=运行中，停用=已暂停；其它任务状态无启停开关，不命中启用/停用 */
+/** 启停筛选口径：启用=运行中，停用=已暂停；待生效不命中启用/停用 */
 function matchExecFilter(row, execFilter, type){
   if(!execFilter) return true;
-  if(type==='operation' && !isLoopOpPush(row)) return false;
   const st = row && row.status;
+  if(type==='operation' && !isLoopOpPush(row) && st!=='待生效') return false;
   if(execFilter==='启用') return st==='运行中';
   if(execFilter==='停用') return st==='已暂停';
   return true;
@@ -1626,8 +1627,8 @@ function askExecToggle(type, id){
   const list = type==='business' ? DATA.business : type==='operation' ? DATA.operation : DATA.market;
   const row = (list||[]).find(x=>x.id===id);
   if(!row) return;
-  if(type==='operation' && !isLoopOpPush(row)){
-    toast('仅循环发送的运营推送支持启停');
+  if(type==='operation' && !isLoopOpPush(row) && row.status!=='待生效'){
+    toast('仅循环发送或待生效的运营推送支持启停');
     return;
   }
   const isOn = row.status==='运行中';
@@ -1645,8 +1646,8 @@ function applyExecToggle(type, id){
   const list = type==='business' ? DATA.business : type==='operation' ? DATA.operation : DATA.market;
   const row = (list||[]).find(x=>x.id===id);
   if(!row) return;
-  if(type==='operation' && !isLoopOpPush(row)){
-    toast('仅循环发送的运营推送支持启停');
+  if(type==='operation' && !isLoopOpPush(row) && row.status!=='待生效'){
+    toast('仅循环发送或待生效的运营推送支持启停');
     return;
   }
   const isOn = row.status==='运行中';
@@ -2024,7 +2025,7 @@ function opsBusiness(row){
          iconBtn(I.copy,'复制',`openCopyPage('business','${row.id}')`);
 }
 function opsOperation(row){
-  // 循环发送可编辑。列表 ID 不可点开详情；不可删除；启停见独立「启停」列
+  // 待生效均可编；循环发送且非已完成/已终止可编；立即/预约执行中不可编。列表 ID 不可点开详情；启停见独立「启停」列
   const first = canEditOperation(row)
     ? iconBtn(I.edit,'编辑',`openEditDrawer('operation','${row.id}')`)
     : '';
@@ -2354,8 +2355,18 @@ function formatOpSendTime(row){
   if(row.next && row.next!=='--') return row.next;
   return '立即发送';
 }
+/** 运营推送编辑：待生效均可编；已完成/已终止不可编；立即/预约执行中不可编；循环发送（运行中/已暂停）可编 */
 function canEditOperation(row){
+  if(!row) return false;
+  const st = String(row.status || '');
+  if(st==='已完成' || st==='已终止') return false;
+  if(st==='待生效') return true;
   return isLoopOpPush(row);
+}
+function opEditDeniedToast(row){
+  const st = String(row && row.status || '');
+  if(st==='已完成' || st==='已终止') return '已完成/已终止的任务不可编辑';
+  return '立即/预约发送的执行中任务不可编辑，仅循环发送或待生效支持编辑';
 }
 const TAGVERSE_OPTS = ['VIP3 及以上','VIP3+','沉默 30 天','近7日活跃','印尼新注册','高净值用户','Recharge_Q2'];
 const TV_FILTER_TAGS_DEFAULT = ['自动提现黑名单','用户提现黑名单','代理提现黑名单','绿色名单','禁止登录','限制充值','禁止充值','限制交易','禁止交易'];
@@ -4808,7 +4819,7 @@ function openEditDrawer(type, id, opts){
   }
   if(type==='operation'){
     if(!asCopy && !canEditOperation(row)){
-      toast('仅循环发送的运营推送支持编辑');
+      toast(opEditDeniedToast(row));
       return;
     }
     state.drawer.asPage = true;
@@ -4877,7 +4888,7 @@ function beginEditFromDetail(){
   const type = state.drawer.type;
   const id = state.drawer.detail?.id;
   if(type==='operation' && !canEditOperation(state.drawer.detail)){
-    toast('仅循环发送的运营推送支持编辑');
+    toast(opEditDeniedToast(state.drawer.detail));
     return;
   }
   closeDetailModal();
