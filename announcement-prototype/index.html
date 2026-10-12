@@ -63,9 +63,11 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none;box-shadow:var
 .duration-wrap{display:flex;gap:8px;align-items:center;width:100%}
 .duration-wrap .control.num{flex:1 1 0;min-width:0}
 .duration-wrap .control.unit{flex:0 0 90px;width:90px;padding:0 8px}
-.maint-title-time-row{display:grid;grid-template-columns:minmax(0,3fr) minmax(240px,1fr);gap:16px;align-items:end}
-.maint-title-time-row .duration-wrap .control.num{flex:0 0 56px;width:56px;min-width:56px}
-.maint-title-time-row .duration-wrap .control.unit{flex:0 0 72px;width:72px}
+.maint-basic-times{margin-top:14px;align-items:end}
+.maint-basic-times .duration-wrap{gap:6px;flex-wrap:nowrap}
+.maint-basic-times .duration-wrap .control.num{flex:0 0 52px;width:52px;min-width:52px;padding:0 6px}
+.maint-basic-times .duration-wrap .control.unit{flex:0 0 68px;width:68px;padding:0 4px}
+.maint-basic-times .maint-check-row{height:34px;align-items:center;padding:0;flex-wrap:nowrap;gap:12px}
 .duration-unit-text{flex:0 0 auto;color:#475569;font-size:13px;font-weight:500;min-width:1.5em}
 .field{display:flex;flex-direction:column;gap:6px;min-width:0}
 .label{font-size:13px;font-weight:500;color:#334155}
@@ -351,7 +353,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .card-head-switch{display:inline-flex;align-items:center;gap:8px}
 
 @media(max-width:1000px){.layout{grid-template-columns:1fr}.preview{position:static}.target-check-row,.grid4{grid-template-columns:1fr 1fr}}
-@media(max-width:720px){.grid2,.grid3,.grid4,.target-check-row,.tpl-popup-row,.maint-title-time-row{grid-template-columns:1fr}.page{padding:12px}.filter-actions{margin-left:0;width:100%}.name-filter,.project-filter,.status-filter,.date-filter{width:100%}.recurrence-inline .control{min-width:100%;flex:1 1 100%}.lang-sync-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.check-panel-body{grid-template-columns:repeat(2,minmax(0,1fr))}.tpl-popup-row .tpl-popup-check .label{display:none}}
+@media(max-width:720px){.grid2,.grid3,.grid4,.target-check-row,.tpl-popup-row{grid-template-columns:1fr}.page{padding:12px}.filter-actions{margin-left:0;width:100%}.name-filter,.project-filter,.status-filter,.date-filter{width:100%}.recurrence-inline .control{min-width:100%;flex:1 1 100%}.lang-sync-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.check-panel-body{grid-template-columns:repeat(2,minmax(0,1fr))}.tpl-popup-row .tpl-popup-check .label{display:none}}
 </style>
 </head>
 <body>
@@ -833,12 +835,32 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
               <input id="maintEndInput" class="control" type="datetime-local" onchange="onMaintTimeChange()">
             </div>
           </div>
-          <div class="field" style="margin-top:14px">
-            <label class="label"><span class="req">*</span>适用项目</label>
-            <div class="maint-check-row" id="maintProjectChecks">
-              <label class="check-row"><input type="checkbox" value="BD" checked>BD</label>
-              <label class="check-row"><input type="checkbox" value="TW" checked>TW</label>
-              <label class="check-row"><input type="checkbox" value="代理后台" checked>代理后台</label>
+          <div class="grid3 maint-basic-times">
+            <div class="field">
+              <label class="label"><span class="req">*</span>提前通知时间</label>
+              <div class="duration-wrap">
+                <span class="duration-unit-text">停服前</span>
+                <input id="maintBeforeLead" class="control num" type="number" min="1" value="30">
+                <select id="maintBeforeUnit" class="control unit"><option selected>分钟</option><option>小时</option><option>天</option></select>
+                <span class="duration-unit-text">开始展示</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label"><span class="req">*</span>恢复后展示时长</label>
+              <div class="duration-wrap">
+                <span class="duration-unit-text">恢复后</span>
+                <input id="maintAfterLead" class="control num" type="number" min="1" value="60">
+                <select id="maintAfterUnit" class="control unit"><option selected>分钟</option><option>小时</option></select>
+                <span class="duration-unit-text">内展示</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label"><span class="req">*</span>适用项目</label>
+              <div class="maint-check-row" id="maintProjectChecks">
+                <label class="check-row"><input type="checkbox" value="BD" checked>BD</label>
+                <label class="check-row"><input type="checkbox" value="TW" checked>TW</label>
+                <label class="check-row"><input type="checkbox" value="代理后台" checked>代理后台</label>
+              </div>
             </div>
           </div>
         </div>
@@ -859,20 +881,9 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
           <div><div class="title"><span class="pill phase-before">停服前</span> 预告通知</div></div>
         </div>
         <div class="body maint-phase-body" id="maintBeforeBody">
-          <div class="maint-title-time-row">
-            <div class="field">
-              <label class="label"><span class="req">*</span>标题</label>
-              <input id="maintBeforeTitle" class="control" placeholder="请填写标题" oninput="onMaintCopyInput()">
-            </div>
-            <div class="field">
-              <label class="label"><span class="req">*</span>提前通知时间</label>
-              <div class="duration-wrap">
-                <span class="duration-unit-text">停服前</span>
-                <input id="maintBeforeLead" class="control num" type="number" min="1" value="30">
-                <select id="maintBeforeUnit" class="control unit"><option selected>分钟</option><option>小时</option><option>天</option></select>
-                <span class="duration-unit-text">开始展示</span>
-              </div>
-            </div>
+          <div class="field">
+            <label class="label"><span class="req">*</span>标题</label>
+            <input id="maintBeforeTitle" class="control" placeholder="请填写标题" oninput="onMaintCopyInput()">
           </div>
           <div class="field" style="margin-top:14px">
             <label class="label"><span class="req">*</span>内容</label>
@@ -902,20 +913,9 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
           <div><div class="title"><span class="pill phase-after">停服后</span> 恢复通知</div></div>
         </div>
         <div class="body maint-phase-body" id="maintAfterBody">
-          <div class="maint-title-time-row">
-            <div class="field">
-              <label class="label"><span class="req">*</span>标题</label>
-              <input id="maintAfterTitle" class="control" placeholder="请填写标题" oninput="onMaintCopyInput()">
-            </div>
-            <div class="field">
-              <label class="label"><span class="req">*</span>恢复后展示时长</label>
-              <div class="duration-wrap">
-                <span class="duration-unit-text">恢复后</span>
-                <input id="maintAfterLead" class="control num" type="number" min="1" value="60">
-                <select id="maintAfterUnit" class="control unit"><option selected>分钟</option><option>小时</option></select>
-                <span class="duration-unit-text">内展示</span>
-              </div>
-            </div>
+          <div class="field">
+            <label class="label"><span class="req">*</span>标题</label>
+            <input id="maintAfterTitle" class="control" placeholder="请填写标题" oninput="onMaintCopyInput()">
           </div>
           <div class="field" style="margin-top:14px">
             <label class="label"><span class="req">*</span>内容</label>
