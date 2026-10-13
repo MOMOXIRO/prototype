@@ -24,6 +24,12 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none;box-shadow:var
 
 .shell{background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow-panel);overflow:hidden;min-height:720px}
 .meta-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:1px solid var(--line);background:#fbfcff;font-size:11px;color:var(--muted)}
+.primary-tabs{display:flex;align-items:center;gap:32px;padding:0 20px;height:48px;border-bottom:1px solid var(--line);background:#fff}
+.primary-tab{border:none;background:transparent;height:48px;padding:0 2px;cursor:pointer;color:#475569;font-size:14px;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;box-shadow:none}
+.primary-tab:hover{color:var(--pri)}
+.primary-tab:focus{box-shadow:none}
+.primary-tab.active{color:var(--pri);font-weight:600;border-bottom-color:var(--pri)}
+.batch-hint{font-size:13px;color:var(--muted);line-height:30px}
 .meta-crumb{display:flex;align-items:center;gap:8px}
 .meta-tag{padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--pri);font-weight:600}
 .shell-body{padding:16px}
@@ -42,6 +48,7 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none;box-shadow:var
 .btn.ghost{background:#fff;border-color:var(--field-line);color:#475569;box-shadow:none;font-weight:500}
 .btn.ghost:hover{color:var(--pri);border-color:#c4d0e6;background:#fff}
 .btn.compact{height:30px;padding:0 14px;font-size:12px}
+.btn:disabled{opacity:.55;cursor:not-allowed}
 .head-actions{display:flex;align-items:center;gap:8px}
 .lang-sync-hint{font-size:13px;color:#64748b;line-height:1.7;margin-bottom:14px}
 .lang-sync-all{margin-bottom:14px}
@@ -180,7 +187,8 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .box{margin-top:14px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;font-size:13px}
 .alert{padding:10px 12px;border-radius:8px;border:1px solid #fde68a;background:#fffbeb;color:#92400e;font-size:12px}
 .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--pri)}
-
+.data-table td.cell-clip{width:148px;max-width:148px}
+.data-table td.cell-clip .clip{display:block;max-width:148px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .param-range{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0;width:100%}
 .param-range .control{min-width:0;width:100%;flex:none}
 .param-range .range-mid{flex:0 0 auto;align-self:center;line-height:1;color:#9aa5b6;font-weight:600}
@@ -270,6 +278,15 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .popup-validity{display:flex;flex-direction:column;gap:12px;margin-top:12px}
 .popup-validity.hidden{display:none !important}
 .popup-hint{font-size:12px;color:#64748b;line-height:1.4}
+.sid-add-row{display:flex;gap:8px;align-items:center}
+.sid-add-row .control{flex:1;min-width:0}
+.sid-add-row .btn{flex:0 0 auto}
+.sid-list{margin-top:10px;border:1px solid var(--field-line);border-radius:8px;max-height:220px;overflow:auto;background:#fff}
+.sid-item{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:40px;padding:0 12px;border-bottom:1px solid #edf1f7}
+.sid-item:last-child{border-bottom:none}
+.sid-item .sid-text{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:#1f2937}
+.sid-item .sid-empty{color:#94a3b8;font-size:13px}
+.sid-del{border:none;background:transparent;color:#b91c1c;cursor:pointer;font-size:13px;padding:4px 0}
 .field-err{display:none;margin-top:6px;font-size:12px;color:#ef4444;line-height:1.4}
 .field-err.show{display:block}
 .control.is-error,.check-panel.is-error{border-color:#ef4444}
@@ -353,7 +370,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .card-head-switch{display:inline-flex;align-items:center;gap:8px}
 
 @media(max-width:1000px){.layout{grid-template-columns:1fr}.preview{position:static}.target-check-row,.grid4{grid-template-columns:1fr 1fr}}
-@media(max-width:720px){.grid2,.grid3,.grid4,.target-check-row,.tpl-popup-row{grid-template-columns:1fr}.page{padding:12px}.filter-actions{margin-left:0;width:100%}.name-filter,.project-filter,.status-filter,.date-filter{width:100%}.recurrence-inline .control{min-width:100%;flex:1 1 100%}.lang-sync-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.check-panel-body{grid-template-columns:repeat(2,minmax(0,1fr))}.tpl-popup-row .tpl-popup-check .label{display:none}}
+@media(max-width:720px){.primary-tabs{gap:20px;overflow-x:auto}.grid2,.grid3,.grid4,.target-check-row,.tpl-popup-row{grid-template-columns:1fr}.page{padding:12px}.filter-actions{margin-left:0;width:100%}.name-filter,.project-filter,.status-filter,.date-filter{width:100%}.recurrence-inline .control{min-width:100%;flex:1 1 100%}.lang-sync-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.check-panel-body{grid-template-columns:repeat(2,minmax(0,1fr))}.tpl-popup-row .tpl-popup-check .label{display:none}}
 </style>
 </head>
 <body>
@@ -367,8 +384,13 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
     <div class="meta-bar">
       <div class="meta-crumb">
         <span>工作台</span>
-        <span class="meta-tag" id="metaTag">公告列表</span>
+        <span class="meta-tag" id="metaTag">公告管理</span>
       </div>
+    </div>
+    <div class="primary-tabs" id="primaryTabs">
+      <button type="button" class="primary-tab active" data-tab="config" onclick="switchPrimaryTab('config')">公告管理</button>
+      <button type="button" class="primary-tab" data-tab="batch" onclick="switchPrimaryTab('batch')">公告批次</button>
+      <button type="button" class="primary-tab" data-tab="maint" onclick="switchPrimaryTab('maint')">系统维护</button>
     </div>
     <div class="shell-body">
 
@@ -442,15 +464,71 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
   <div class="list-actions">
     <button class="btn primary compact" onclick="openCreate()">＋ 新增公告</button>
     <button class="btn compact" onclick="showPage('templates')">公告模板</button>
-    <button class="btn compact" onclick="openMaintList()">系统维护</button>
   </div>
   <div class="table-wrap">
     <table class="data-table">
-      <thead><tr><th>公告ID</th><th>公告标题</th><th>所属项目</th><th>发布方式</th><th>发布时间</th><th>到期时间</th><th>状态</th><th>循环状态</th><th>弹窗</th><th>创建人</th><th>创建时间</th><th>上下架</th><th>操作</th></tr></thead>
+      <thead><tr><th>公告ID</th><th>公告标题</th><th>所属项目</th><th>发布方式</th><th>发布时间</th><th>到期时间</th><th>状态</th><th>循环状态</th><th>弹窗</th><th>创建人</th><th>创建时间</th><th>操作</th></tr></thead>
       <tbody id="noticeRows"></tbody>
     </table>
   </div>
   <div class="list-pager" id="noticePager"></div>
+</section>
+
+<section id="batchPage" class="hidden">
+  <div class="filter-panel">
+    <div class="filter-bar">
+      <div class="filter-item name-filter">
+        <input class="control" id="batchIdFilter" placeholder="批次ID / 公告ID">
+      </div>
+      <div class="filter-item name-filter">
+        <input class="control" id="batchNameFilter" placeholder="公告标题">
+      </div>
+      <div class="filter-item project-filter">
+        <select class="control" id="batchProjectFilter">
+          <option>所属项目</option>
+          <option>Dana</option>
+          <option>TW</option>
+        </select>
+      </div>
+      <div class="filter-item status-filter">
+        <select class="control" id="batchCreatorFilter">
+          <option>创建人</option>
+          <option>Admin</option>
+          <option>Jenny</option>
+          <option>Ken</option>
+          <option>Leo</option>
+          <option>Mina</option>
+        </select>
+      </div>
+      <div class="filter-item status-filter">
+        <select class="control" id="batchStatusFilter">
+          <option>发送状态</option>
+          <option>已发送</option>
+        </select>
+      </div>
+      <div class="filter-item date-range-filter">
+        <div class="range-wrap">
+          <input id="batchFrom" type="text" title="发送开始日期" placeholder="发送开始日期">
+          <span class="range-mid">~</span>
+          <input id="batchTo" type="text" title="发送结束日期" placeholder="发送结束日期">
+        </div>
+      </div>
+      <div class="filter-actions">
+        <button class="btn ghost" type="button" onclick="resetBatchFilters()">重置</button>
+        <button class="btn primary" onclick="searchBatches()">查询</button>
+      </div>
+    </div>
+  </div>
+  <div class="list-actions">
+    <span class="batch-hint">实际发送后生成一条记录，批次ID = 公告ID-循环次数。</span>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>批次ID</th><th>公告ID</th><th>公告标题</th><th>所属项目</th><th>APP</th><th>地区</th><th>创建人</th><th>发送时间</th><th>发送状态</th></tr></thead>
+      <tbody id="batchRows"></tbody>
+    </table>
+  </div>
+  <div class="list-pager" id="batchPager"></div>
 </section>
 
 <section id="editorPage" class="hidden">
@@ -667,6 +745,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
   </div>
   <div class="footer-bar">
     <button class="btn ghost" onclick="cancelEdit()">取消</button>
+    <button class="btn ghost compact" type="button" onclick="openSimSend('notice')">模拟发送</button>
     <button class="btn primary compact" onclick="saveNotice()">保存</button>
   </div>
 </section>
@@ -810,9 +889,6 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
     </table>
   </div>
   <div class="list-pager" id="maintPager"></div>
-  <div class="footer-bar">
-    <button class="btn ghost" onclick="showPage('list')">返回公告列表</button>
-  </div>
 </section>
 
 <section id="maintEditorPage" class="hidden">
@@ -953,6 +1029,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
   </div>
   <div class="footer-bar">
     <button class="btn ghost" onclick="showPage('maint')">取消</button>
+    <button class="btn ghost compact" type="button" onclick="openSimSend('maint')">模拟发送</button>
     <button class="btn primary compact" onclick="saveMaint()">保存</button>
   </div>
 </section>
@@ -1229,8 +1306,8 @@ let templates=[
 ];
 let templateSeq=11;
 
-// 公告列表：一条公告一条记录；循环为公告属性，不按期次拆分行
-// 公告ID展示：数字流水号-循环次数（如 0006-5）；无循环次数为 1
+// 公告管理：一条公告一条记录，展示公告ID（如 A0006）。未实际发送前不生成批次。
+// 公告批次：每次发送一条记录，批次ID = 公告ID-循环次数（如 A0006-5）
 // 公告主状态：待发布 | 展示中 | 已下架 | 已归档
 // 循环状态：无循环 | 循环中 | 已停止（仅人工停止；默认无限循环）
 let baseIdSeq=21;
@@ -1257,7 +1334,10 @@ function getCycleCount(n){
   return Number.isFinite(count)&&count>=1?count:1;
 }
 function formatNoticeIdDisplay(n){
-  return `${noticeSeq(n)}-${getCycleCount(n)}`;
+  return String(n?.noticeId||n?.baseId||noticeSeq(n));
+}
+function formatBatchId(n,index){
+  return `${formatNoticeIdDisplay(n)}-${index}`;
 }
 let noticeRecords=[
   {noticeId:'A0001',baseId:'A0001',name:'夏日嘉年华活动',project:'TW',publishMode:'定时发布',publishTime:'2026-08-01 10:00',expireTime:'2026-08-07 22:00',cycleId:'',cycleSummary:'',enablePopup:true,popupCycleSummary:'不循环',status:'待发布',creator:'Jenny',createdAt:'2026-07-10 16:08'},
@@ -1386,7 +1466,8 @@ function getCheckedValues(panelId){
 
 function showPage(p){
   const pageMap={
-    list:['listPage','公告列表'],
+    list:['listPage','公告管理'],
+    batch:['batchPage','公告批次'],
     editor:['editorPage','公告编辑'],
     templates:['templatesPage','公告模板'],
     templateEditor:['templateEditorPage','模板编辑'],
@@ -1399,7 +1480,10 @@ function showPage(p){
   });
   const metaTag=document.getElementById('metaTag');
   if(metaTag) metaTag.textContent=(pageMap[p]&&pageMap[p][1])||'公告编辑';
+  const tab=p==='batch'?'batch':(p==='maint'||p==='maintEditor')?'maint':'config';
+  document.querySelectorAll('.primary-tab').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===tab));
   if(p==='templates') renderTemplates();
+  if(p==='batch') renderBatchList(false);
   if(p==='maint') renderMaintList();
   if(modalMask&&p!=='editor'&&p!=='templateEditor'){
     modalMask.classList.add('hidden');
@@ -1410,6 +1494,11 @@ function showPage(p){
   if(p==='templateEditor') paramSource='template';
   if(p==='list') applyNoticeFilters(false);
   scrollTo(0,0)
+}
+function switchPrimaryTab(tab){
+  if(tab==='batch') showPage('batch');
+  else if(tab==='maint') showPage('maint');
+  else showPage('list');
 }
 function loadInputs(){
   if(!copy[lang]) copy[lang]={title:'',body:'',popup:''};
@@ -2338,7 +2427,10 @@ function buildNoticeFromEditor(title){
     popupCycleSummary:enablePopupDisplay?buildPopupCycleSummary():'',
     status,
     creator:'Admin',
-    createdAt:currentCreatedAt()
+    createdAt:currentCreatedAt(),
+    apps:getCheckedValues('targetAppPanel'),
+    regions:getCheckedValues('targetRegionPanel'),
+    copy:deepCopy(copy)
   };
   if(repeat!=='none'){
     const summary=repeatSummaryShort()||'循环';
@@ -2373,8 +2465,11 @@ function saveNotice(){
     const exist=getNoticeById(editingNoticeId);
     if(exist){
       if(editingLimited){
-        exist.name=title;
-        applyPopupFieldsToNotice(exist);
+      exist.name=title;
+      exist.apps=getCheckedValues('targetAppPanel');
+      exist.regions=getCheckedValues('targetRegionPanel');
+      exist.copy=deepCopy(copy);
+      applyPopupFieldsToNotice(exist);
       }else{
       syncCoreTimesFromConfig();
       const validity=validityType?.value||'';
@@ -2413,9 +2508,12 @@ function saveNotice(){
           };
           exist.cycleId=cycleKey;
         }
-        exist.cycleSummary=summary;
-        if(!exist.cycleCount) exist.cycleCount=1;
+      exist.cycleSummary=summary;
+      if(!exist.cycleCount) exist.cycleCount=1;
       }
+      exist.apps=getCheckedValues('targetAppPanel');
+      exist.regions=getCheckedValues('targetRegionPanel');
+      exist.copy=deepCopy(copy);
       if(exist.status==='待发布'||exist.status==='展示中'){
         const nextStatus=calcStatus();
         if(nextStatus==='待发布'||nextStatus==='展示中'||nextStatus==='已归档') exist.status=nextStatus;
@@ -2568,7 +2666,7 @@ function renderNoticeList(showResultToast,resetPage){
   const pageList=list.slice(start,start+NOTICE_PAGE_SIZE);
   rows.innerHTML=pageList.length
     ?pageList.map(n=>`<tr data-id="${n.noticeId}" data-status="${n.status}" data-base-id="${n.baseId||''}" data-cycle-id="${n.cycleId||''}">${buildNoticeRow(n)}</tr>`).join('')
-    :`<tr><td colspan="13" style="text-align:center;color:#94a3b8;padding:28px 12px">暂无公告数据</td></tr>`;
+    :`<tr><td colspan="12" style="text-align:center;color:#94a3b8;padding:28px 12px">暂无公告数据</td></tr>`;
   renderNoticePager(list.length,noticePage,pageCount);
 }
 function searchNotices(){ renderNoticeList(true,true); }
@@ -2621,6 +2719,9 @@ function openModal(title,sub,body,primaryText,primaryHandler,cancelText){
 
 function closeModal(event){
   if(event && event.target!==modalMask) return;
+  simSendToken++;
+  simSendBusy=false;
+  if(modalPrimary) modalPrimary.disabled=false;
   modalMask.classList.add('hidden');
   paramManagerOpen=false;
   paramEditIndex=null;
@@ -2628,6 +2729,120 @@ function closeModal(event){
   if(modalPanel) modalPanel.style.width='';
   const closeBtn=document.getElementById('modalClose');
   if(closeBtn) closeBtn.textContent='关闭';
+}
+
+let simSendKind='notice';
+let simSendBusy=false;
+let simSendToken=0;
+let simSendSids=[];
+
+function parseSimSendSids(text){
+  const seen=new Set();
+  const list=[];
+  String(text||'').split(/[\s,，;；]+/).forEach(part=>{
+    const sid=part.trim();
+    if(!sid||seen.has(sid)) return;
+    seen.add(sid);
+    list.push(sid);
+  });
+  return list;
+}
+function escapeSidText(value){
+  return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function renderSimSendList(){
+  const box=document.getElementById('simSendList');
+  const countEl=document.getElementById('simSendCount');
+  if(countEl){
+    countEl.textContent=`已添加 ${simSendSids.length}/20`;
+    countEl.style.color=simSendSids.length>=20?'#c2410c':'#64748b';
+  }
+  if(!box) return;
+  box.innerHTML=simSendSids.length
+    ?simSendSids.map((sid,i)=>`<div class="sid-item"><span class="sid-text">${escapeSidText(sid)}</span><button type="button" class="sid-del" onclick="removeSimSendSid(${i})">删除</button></div>`).join('')
+    :'<div class="sid-item"><span class="sid-empty">暂无 SID，输入后点击添加</span></div>';
+}
+function addSimSendSid(){
+  const input=document.getElementById('simSendSid');
+  const incoming=parseSimSendSids(input?.value);
+  if(!incoming.length){
+    markControlError(input,'请填写 SID');
+    input?.focus();
+    return;
+  }
+  const fresh=incoming.filter(sid=>!simSendSids.includes(sid));
+  if(!fresh.length){
+    markControlError(input,'该 SID 已在列表中');
+    input?.focus();
+    return;
+  }
+  const room=20-simSendSids.length;
+  if(room<=0){
+    markControlError(input,'最多添加 20 个 SID');
+    input?.focus();
+    return;
+  }
+  const accepted=fresh.slice(0,room);
+  simSendSids=simSendSids.concat(accepted);
+  if(input) input.value='';
+  markControlError(input,fresh.length>room?'最多添加 20 个 SID':'');
+  renderSimSendList();
+  input?.focus();
+}
+function removeSimSendSid(index){
+  if(index<0||index>=simSendSids.length) return;
+  simSendSids.splice(index,1);
+  markControlError(document.getElementById('simSendSid'),'');
+  renderSimSendList();
+}
+function openSimSend(kind){
+  simSendKind=kind==='maint'?'maint':'notice';
+  simSendBusy=false;
+  simSendToken++;
+  simSendSids=[];
+  const what=simSendKind==='maint'?'维护通知':'公告';
+  const body=`
+    <div class="field">
+      <label class="label"><span class="req">*</span>SID</label>
+      <div class="sid-add-row">
+        <input id="simSendSid" class="control" placeholder="请输入 SID" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addSimSendSid();}">
+        <button type="button" class="btn ghost" onclick="addSimSendSid()">添加</button>
+      </div>
+      <div class="sid-list" id="simSendList"></div>
+      <div class="popup-hint" id="simSendCount" style="margin-top:8px">已添加 0/20</div>
+      <div class="popup-hint">最多 20 个。向列表中的 SID 发送当前${what}预览，发送完成后仍停留在本页，不会保存。</div>
+    </div>`;
+  if(modalPanel) modalPanel.style.width='min(480px,100%)';
+  openModal('模拟发送','',body,'发送',confirmSimSend,'取消');
+  renderSimSendList();
+  setTimeout(()=>document.getElementById('simSendSid')?.focus(),0);
+}
+
+function confirmSimSend(){
+  if(simSendBusy) return;
+  const input=document.getElementById('simSendSid');
+  const err=!simSendSids.length?'请添加 SID':'';
+  markControlError(input,err);
+  if(err){
+    input?.focus();
+    return;
+  }
+  const sids=simSendSids.slice();
+  const token=++simSendToken;
+  simSendBusy=true;
+  if(modalPrimary){
+    modalPrimary.disabled=true;
+    modalPrimary.textContent='发送中';
+  }
+  setTimeout(()=>{
+    if(token!==simSendToken) return;
+    simSendBusy=false;
+    if(modalPrimary) modalPrimary.disabled=false;
+    closeModal();
+    const what=simSendKind==='maint'?'维护通知':'公告';
+    const target=sids.length===1?`SID ${sids[0]}`:`${sids.length} 个 SID`;
+    showToast(`已向 ${target} 模拟发送${what}，未保存`);
+  },480);
 }
 
 let langSyncOpen=false;
@@ -2809,6 +3024,7 @@ function toggleNoticeShelf(input){
     n.status=willOn?'展示中':'已下架';
     closeModal();
     renderNoticeList(false);
+    renderBatchList(false);
     showToast(willOn?'公告已上架':'公告已下架');
   },'返回');
 }
@@ -2827,7 +3043,7 @@ function viewCycleRule(button){
     <div><span>创建人</span><strong>${rule.creator||n.creator}</strong></div>
     <div><span>创建时间</span><strong>${rule.createdAt||n.createdAt}</strong></div>
   </div>
-  <div class="alert" style="margin-top:12px">公告ID统一为 A+4位流水号；循环为公告属性，修改循环方式不更换公告ID、不按期次拆分记录。</div>`;
+  <div class="alert" style="margin-top:12px">公告管理按公告ID管理，修改循环方式不更换公告ID。实际发送后在「公告批次」生成一条记录，批次ID为公告ID-循环次数。未发送的公告不生成批次。</div>`;
   openModal('查看循环规则',n.name,body);
 }
 
@@ -2858,18 +3074,17 @@ function editFutureCycle(button){
   },'取消');
 }
 
-function cancelPublishNotice(button){
+function cancelNoticeSend(button){
   const n=getNoticeFromButton(button);
-  if(!n)return;
-  const perms=getAnnouncementPermissions(n);
-  if(!perms.canCancelPublish) return;
+  if(!n||n.status!=='待发布'||n.sendCancelled) return;
   if(modalPanel) modalPanel.style.width='min(460px,100%)';
-  openModal('取消发布','',`<div class="confirm-text">确认取消该公告的发布计划吗？取消后该公告将不会按原计划发布。</div>`,'确认取消',()=>{
+  openModal('取消发送','',`<div class="confirm-text">确认取消公告 <strong>${formatNoticeIdDisplay(n)}</strong> 的发送吗？取消后不会发出，公告仍保留在公告管理。</div>`,'确认取消',()=>{
     if(n.cycleId&&cycleRules[n.cycleId]) cycleRules[n.cycleId].terminated=true;
+    n.sendCancelled=true;
     n.status='已归档';
     closeModal();
     renderNoticeList(false);
-    showToast('发布计划已取消');
+    showToast('该公告已取消发送');
   },'返回');
 }
 
@@ -3529,7 +3744,7 @@ function buildActionButtons(n){
   const btns=[];
   if(perms.canEdit) btns.push(iconActionBtn('编辑',`openEdit(this)`,ACTION_ICONS.edit));
   if(perms.canCopy) btns.push(iconActionBtn('复制公告',`copyNotice(this)`,ACTION_ICONS.copy));
-  if(perms.canCancelPublish) btns.push(iconActionBtn('取消发布',`cancelPublishNotice(this)`,ACTION_ICONS.cancelPublish,true));
+  if(perms.canCancelPublish) btns.push(iconActionBtn('取消发送',`cancelNoticeSend(this)`,ACTION_ICONS.cancelPublish,true));
   if(perms.canStopCycle) btns.push(iconActionBtn('停止循环',`stopCycleNotice(this)`,ACTION_ICONS.stopCycle,true));
   if(perms.canViewLog) btns.push(iconActionBtn('查看操作记录',`viewOperationLog(this)`,ACTION_ICONS.log));
   return `<div class="icon-actions">${btns.join('')}</div>`;
@@ -3543,7 +3758,8 @@ const ACTION_ICONS={
   close:`<svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
   cancelPublish:`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12h6"/></svg>`,
   stopCycle:`<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>`,
-  log:`<svg viewBox="0 0 24 24"><path d="M8 6h11"/><path d="M8 12h11"/><path d="M8 18h11"/><path d="M4 6h.01"/><path d="M4 12h.01"/><path d="M4 18h.01"/></svg>`
+  log:`<svg viewBox="0 0 24 24"><path d="M8 6h11"/><path d="M8 12h11"/><path d="M8 18h11"/><path d="M4 6h.01"/><path d="M4 12h.01"/><path d="M4 18h.01"/></svg>`,
+  view:`<svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>`
 };
 
 function iconActionBtn(title,onclick,icon,danger){
@@ -3561,11 +3777,166 @@ function buildNoticeRow(n){
   const cycleStatus=getCycleStatus(n);
   const hasPopup=!!n.enablePopup;
   const popupPill=`<span class="pill ${hasPopup?'ok':'draft'}">${hasPopup?'有弹窗':'无弹窗'}</span>`;
-  return `<td><span class="mono">${formatNoticeIdDisplay(n)}</span></td><td>${n.name}</td><td>${n.project}</td><td>${n.publishMode}</td><td>${formatListDisplayTime(n.publishTime)}</td><td>${expire}</td><td><span class="pill ${statusClassName(n.status)}">${n.status}</span></td><td><span class="pill ${cycleStatusClassName(cycleStatus)}">${cycleStatus}</span></td><td>${popupPill}</td><td>${n.creator}</td><td>${formatListDisplayTime(n.createdAt)}</td><td>${buildShelfSwitch(n)}</td><td>${buildActionButtons(n)}</td>`;
+  return `<td><span class="mono">${formatNoticeIdDisplay(n)}</span></td><td>${n.name}</td><td>${n.project}</td><td>${n.publishMode}</td><td>${formatListDisplayTime(n.publishTime)}</td><td>${expire}</td><td><span class="pill ${statusClassName(n.status)}">${n.status}</span></td><td><span class="pill ${cycleStatusClassName(cycleStatus)}">${cycleStatus}</span></td><td>${popupPill}</td><td>${n.creator}</td><td>${formatListDisplayTime(n.createdAt)}</td><td>${buildActionButtons(n)}</td>`;
 }
 
 function renderSampleNotices(){
   renderNoticeList(false);
+}
+
+/* ========== 公告批次 ========== */
+const BATCH_PAGE_SIZE=20;
+let batchPage=1;
+function cycleStep(n){
+  const type=n?.cycleId?cycleRules[n.cycleId]?.repeatType:'';
+  if(type==='weekly') return {unit:'weekly',days:7};
+  if(type==='monthly_day'||type==='monthly_nth') return {unit:'monthly',days:0};
+  if(type==='daily'||type==='weekdays') return {unit:'daily',days:1};
+  return null;
+}
+function shiftWallTime(text,delta,step){
+  const m=String(text||'').match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/);
+  if(!m||!delta||!step) return text||'—';
+  const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]),Number(m[4]||0),Number(m[5]||0));
+  if(step.unit==='monthly') d.setMonth(d.getMonth()+delta);
+  else d.setDate(d.getDate()+delta*(step.days||1));
+  const pad=n=>String(n).padStart(2,'0');
+  const hm=m[4]?` ${pad(d.getHours())}:${pad(d.getMinutes())}`:'';
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}${hm}`;
+}
+function noticeApps(n){
+  if(Array.isArray(n?.apps)&&n.apps.length) return n.apps;
+  return n?.project==='TW'?['TW App']:['DANA App','ForexDana'];
+}
+function noticeRegions(n){
+  if(Array.isArray(n?.regions)&&n.regions.length) return n.regions;
+  return n?.project==='TW'?['+62 [ID]','+84 [VN]','+63 [PH]']:['+91 [IN]','+234 [NG]'];
+}
+function buildNoticeBatches(){
+  const rows=[];
+  noticeRecords.forEach(n=>{
+    const count=getCycleCount(n);
+    const step=cycleStep(n);
+    for(let i=1;i<=count;i++){
+      const sendTime=step?shiftWallTime(n.publishTime,i-count,step):(n.publishTime||'—');
+      const status=n.sendCancelled&&i===count?'已取消':i<count?'已发送':(n.status==='待发布'?'待发送':'已发送');
+      if(status!=='已发送') continue;
+      rows.push({
+        batchId:formatBatchId(n,i),
+        noticeId:formatNoticeIdDisplay(n),
+        rawId:n.noticeId,
+        name:n.name,
+        project:n.project,
+        apps:noticeApps(n),
+        regions:noticeRegions(n),
+        creator:n.creator||'—',
+        sendTime,
+        status
+      });
+    }
+  });
+  return rows.sort((a,b)=>{
+    const ta=a.sendTime||'';
+    const tb=b.sendTime||'';
+    if(ta!==tb) return tb.localeCompare(ta);
+    return (b.batchId||'').localeCompare(a.batchId||'');
+  });
+}
+function batchStatusClass(status){
+  return status==='已发送'?'ok':status==='待发送'?'warn':'draft';
+}
+function matchBatchFilters(row){
+  const id=(document.getElementById('batchIdFilter')?.value||'').trim().toLowerCase();
+  const name=(document.getElementById('batchNameFilter')?.value||'').trim().toLowerCase();
+  const project=document.getElementById('batchProjectFilter')?.value||'所属项目';
+  const creator=document.getElementById('batchCreatorFilter')?.value||'创建人';
+  const status=document.getElementById('batchStatusFilter')?.value||'发送状态';
+  const from=document.getElementById('batchFrom')?.value||'';
+  const to=document.getElementById('batchTo')?.value||'';
+  const day=(row.sendTime||'').slice(0,10);
+  if(id&&!row.batchId.toLowerCase().includes(id)&&!row.noticeId.toLowerCase().includes(id)) return false;
+  if(name&&!(row.name||'').toLowerCase().includes(name)) return false;
+  if(project!=='所属项目'&&row.project!==project) return false;
+  if(creator!=='创建人'&&row.creator!==creator) return false;
+  if(status!=='发送状态'&&row.status!==status) return false;
+  if(from&&day&&day<from) return false;
+  if(to&&day&&day>to) return false;
+  return true;
+}
+function renderBatchPager(total,page,pageCount){
+  const pager=document.getElementById('batchPager');
+  if(!pager)return;
+  if(!total){pager.innerHTML='<div class="list-pager-info">共 0 条</div>';return;}
+  const start=(page-1)*BATCH_PAGE_SIZE+1;
+  const end=Math.min(page*BATCH_PAGE_SIZE,total);
+  let pages='';
+  const maxButtons=7;
+  let from=Math.max(1,page-Math.floor(maxButtons/2));
+  let to=Math.min(pageCount,from+maxButtons-1);
+  from=Math.max(1,to-maxButtons+1);
+  for(let i=from;i<=to;i++){
+    pages+=`<button type="button" class="pager-btn${i===page?' active':''}" onclick="goBatchPage(${i})">${i}</button>`;
+  }
+  pager.innerHTML=`<div class="list-pager-info">共 ${total} 条，第 ${start}-${end} 条</div>
+    <button type="button" class="pager-btn" onclick="goBatchPage(${page-1})" ${page<=1?'disabled':''}>上一页</button>
+    ${pages}
+    <button type="button" class="pager-btn" onclick="goBatchPage(${page+1})" ${page>=pageCount?'disabled':''}>下一页</button>`;
+}
+function goBatchPage(page){
+  const list=buildNoticeBatches().filter(matchBatchFilters);
+  const pageCount=Math.max(1,Math.ceil(list.length/BATCH_PAGE_SIZE)||1);
+  batchPage=Math.min(Math.max(1,page),pageCount);
+  renderBatchList(false);
+}
+function renderBatchList(resetPage){
+  const from=document.getElementById('batchFrom')?.value||'';
+  const to=document.getElementById('batchTo')?.value||'';
+  document.querySelectorAll('#batchPage .js-req-err').forEach(n=>n.remove());
+  document.querySelectorAll('#batchPage .range-wrap').forEach(el=>el.classList.remove('is-error'));
+  if(from&&to&&from>to){
+    const fromEl=document.getElementById('batchFrom');
+    fromEl?.closest('.range-wrap')?.classList.add('is-error');
+    const item=fromEl?.closest('.filter-item');
+    if(item){
+      const err=document.createElement('div');
+      err.className='field-err js-req-err show';
+      err.textContent='结束时间必须晚于开始时间';
+      item.appendChild(err);
+    }
+    return;
+  }
+  const rows=document.getElementById('batchRows');
+  if(!rows)return;
+  if(resetPage) batchPage=1;
+  const list=buildNoticeBatches().filter(matchBatchFilters);
+  const pageCount=Math.max(1,Math.ceil(list.length/BATCH_PAGE_SIZE)||1);
+  if(batchPage>pageCount) batchPage=pageCount;
+  if(batchPage<1) batchPage=1;
+  const pageList=list.slice((batchPage-1)*BATCH_PAGE_SIZE,batchPage*BATCH_PAGE_SIZE);
+  rows.innerHTML=pageList.length
+    ?pageList.map(r=>`<tr>
+        <td>${r.batchId}</td>
+        <td>${r.noticeId}</td>
+        <td>${r.name}</td>
+        <td>${r.project}</td>
+        <td class="cell-clip"><span class="clip" title="${escapeSidText(r.apps.join('、'))}">${escapeSidText(r.apps.join('、'))}</span></td>
+        <td class="cell-clip"><span class="clip" title="${escapeSidText(r.regions.join('、'))}">${escapeSidText(r.regions.join('、'))}</span></td>
+        <td>${r.creator}</td>
+        <td>${formatListDisplayTime(r.sendTime)}</td>
+        <td><span class="pill ${batchStatusClass(r.status)}">${r.status}</span></td>
+      </tr>`).join('')
+    :`<tr><td colspan="9" style="text-align:center;color:#94a3b8;padding:28px 12px">暂无公告批次</td></tr>`;
+  renderBatchPager(list.length,batchPage,pageCount);
+}
+function searchBatches(){ renderBatchList(true); }
+function resetBatchFilters(){
+  ['batchIdFilter','batchNameFilter','batchFrom','batchTo'].forEach(id=>{const el=document.getElementById(id);if(el) el.value='';});
+  const project=document.getElementById('batchProjectFilter'); if(project) project.value='所属项目';
+  const creator=document.getElementById('batchCreatorFilter'); if(creator) creator.value='创建人';
+  const status=document.getElementById('batchStatusFilter'); if(status) status.value='发送状态';
+  batchPage=1;
+  renderBatchList(false);
+  showToast('已重置筛选条件');
 }
 
 /* ========== 系统维护 ========== */
@@ -3609,8 +3980,15 @@ const SAMPLE_MAINT_COPY={
   urgentDuring:sampleMaintPhaseCopy('Urgent Maintenance In Progress','Urgent maintenance is in progress until {end_time}.','緊急維護進行中','緊急維護進行中，預計 {end_time} 結束。'),
   urgentAfter:sampleMaintPhaseCopy('Urgent Maintenance Completed','Urgent maintenance has completed. Services restored at {end_time}.','緊急維護完成','緊急維護已完成，服務已於 {end_time} 恢復。')
 };
-let maintSeq=6;
+function maintWallFromNow(minutes){
+  return fmtInput(new Date(Date.now()+minutes*60*1000), BASE_TZ);
+}
+let maintSeq=10;
 let maintRecords=[
+  {id:'M0006',name:'版本发布前维护',startTime:maintWallFromNow(2*24*60),endTime:maintWallFromNow(2*24*60+120),projects:['BD','TW'],beforeEnabled:true,beforeLead:30,beforeUnit:'分钟',beforeCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.before),duringEnabled:true,duringCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.during),afterEnabled:true,afterLead:60,afterUnit:'分钟',afterCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.after),creator:'Admin',createdAt:'2026-10-13 17:10'},
+  {id:'M0007',name:'通道切换预告',startTime:maintWallFromNow(25),endTime:maintWallFromNow(85),projects:['TW'],beforeEnabled:true,beforeLead:60,beforeUnit:'分钟',beforeCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.before),duringEnabled:true,duringCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.during),afterEnabled:true,afterLead:60,afterUnit:'分钟',afterCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.after),creator:'Jenny',createdAt:'2026-10-13 17:30'},
+  {id:'M0008',name:'核心服务维护中',startTime:maintWallFromNow(-40),endTime:maintWallFromNow(80),projects:['BD'],beforeEnabled:true,beforeLead:30,beforeUnit:'分钟',beforeCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.urgentBefore),duringEnabled:true,duringCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.urgentDuring),afterEnabled:true,afterLead:60,afterUnit:'分钟',afterCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.urgentAfter),creator:'Mina',createdAt:'2026-10-13 17:40'},
+  {id:'M0009',name:'结算窗口恢复',startTime:maintWallFromNow(-180),endTime:maintWallFromNow(-20),projects:['代理后台'],beforeEnabled:true,beforeLead:30,beforeUnit:'分钟',beforeCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.before),duringEnabled:true,duringCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.during),afterEnabled:true,afterLead:120,afterUnit:'分钟',afterCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.after),creator:'Ken',createdAt:'2026-10-13 17:20'},
   {id:'M0001',name:'v3.5.0 版本更新维护',startTime:'2026-08-23T02:00',endTime:'2026-08-23T06:00',projects:['BD','TW','代理后台'],beforeEnabled:true,beforeLead:30,beforeUnit:'分钟',beforeCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.before),duringEnabled:true,duringCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.during),afterEnabled:true,afterLead:60,afterUnit:'分钟',afterCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.after),creator:'Admin',createdAt:'2026-08-20 10:00'},
   {id:'M0002',name:'支付通道临时维护',startTime:'2026-08-24T01:00',endTime:'2026-08-24T03:00',projects:['BD'],beforeEnabled:true,beforeLead:2,beforeUnit:'小时',beforeCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.before),duringEnabled:true,duringCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.during),afterEnabled:true,afterLead:60,afterUnit:'分钟',afterCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.after),creator:'Mina',createdAt:'2026-08-21 14:20'},
   {id:'M0003',name:'欧洲区假期停服',startTime:'2026-08-23T09:00',endTime:'2026-08-23T18:00',projects:['TW'],beforeEnabled:true,beforeLead:1,beforeUnit:'天',beforeCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.urgentBefore),duringEnabled:true,duringCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.urgentDuring),afterEnabled:true,afterLead:2,afterUnit:'小时',afterCopy:ensureMaintCopy(SAMPLE_MAINT_COPY.urgentAfter),creator:'Leo',createdAt:'2026-08-19 11:05'},
@@ -3727,10 +4105,11 @@ function renderMaintList(){
     ?pageList.map(r=>{
       const status=maintStatus(r);
       const canEdit=status!=='已结束';
+      const canDelete=status==='已结束';
       const ops=[];
       if(canEdit) ops.push(iconActionBtn('编辑',`openMaintEditor('${r.id}')`,ACTION_ICONS.edit));
       ops.push(iconActionBtn('复制',`copyMaint('${r.id}')`,ACTION_ICONS.copy));
-      ops.push(iconActionBtn('删除',`deleteMaint('${r.id}')`,ACTION_ICONS.del,true));
+      if(canDelete) ops.push(iconActionBtn('删除',`deleteMaint('${r.id}')`,ACTION_ICONS.del,true));
       return `<tr data-id="${r.id}">
         <td><span class="mono">${r.id}</span></td>
         <td>${r.name}</td>
@@ -3849,6 +4228,7 @@ function copyMaint(id){
 function deleteMaint(id){
   const r=maintRecords.find(x=>x.id===id);
   if(!r)return;
+  if(maintStatus(r)!=='已结束'){showToast('仅已结束的系统维护可以删除');return;}
   openModal('删除系统维护',r.name,`<div class="confirm-text">确认删除系统维护 <strong>${r.name}</strong> 吗？删除后不可恢复。</div>`,'确认删除',()=>{
     maintRecords=maintRecords.filter(x=>x.id!==id);
     closeModal();
