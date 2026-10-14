@@ -859,11 +859,9 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
       <div class="filter-item status-filter">
         <select class="control" id="maintStatusFilter">
           <option>维护状态</option>
-          <option>待开始</option>
-          <option>预告中</option>
-          <option>维护中</option>
-          <option>恢复中</option>
-          <option>已结束</option>
+          <option>未开始</option>
+          <option>进行中</option>
+          <option>已完成</option>
         </select>
       </div>
       <div class="filter-item date-range-filter">
@@ -884,7 +882,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
   </div>
   <div class="table-wrap">
     <table class="data-table">
-      <thead><tr><th>维护ID</th><th>维护名称</th><th>适用项目</th><th>开始时间</th><th>结束时间</th><th>当前阶段</th><th>状态</th><th>创建人</th><th>创建时间</th><th>操作</th></tr></thead>
+      <thead><tr><th>维护ID</th><th>维护名称</th><th>适用项目</th><th>开始时间</th><th>结束时间</th><th>状态</th><th>创建人</th><th>创建时间</th><th>操作</th></tr></thead>
       <tbody id="maintRows"></tbody>
     </table>
   </div>
@@ -4015,40 +4013,17 @@ const MAINT_COPY_FIELDS={
   after:{title:'maintAfterTitle',body:'maintAfterContent'}
 };
 
-function leadToMinutes(n,unit){
-  const v=Number(n)||0;
-  if(unit==='天') return v*24*60;
-  if(unit==='小时') return v*60;
-  return v;
-}
 function maintStatus(rec){
   const start=parse(rec.startTime,baseTz);
   const end=parse(rec.endTime,baseTz);
-  if(isNaN(+start)||isNaN(+end)) return '待开始';
+  if(isNaN(+start)||isNaN(+end)) return '未开始';
   const now=Date.now();
-  const noticeStart=start.getTime()-leadToMinutes(rec.beforeLead,rec.beforeUnit)*60*1000;
-  const restoreEnd=end.getTime()+leadToMinutes(rec.afterLead,rec.afterUnit)*60*1000;
-  if(now>=noticeStart&&now<start.getTime()) return '预告中';
-  if(now>=start.getTime()&&now<end.getTime()) return '维护中';
-  if(now>=end.getTime()&&now<restoreEnd) return '恢复中';
-  if(now<start.getTime()) return '待开始';
-  return '已结束';
+  if(now<start.getTime()) return '未开始';
+  if(now<end.getTime()) return '进行中';
+  return '已完成';
 }
 function maintStatusClass(status){
-  return status==='维护中'?'off'
-    :status==='预告中'?'warn'
-    :status==='恢复中'?'ok'
-    :status==='待开始'?'cycle-on'
-    :'draft';
-}
-function maintCurrentPhase(rec){
-  const s=maintStatus(rec);
-  return s==='预告中'?'停服前':s==='维护中'?'停服中':s==='恢复中'?'停服后':'—';
-}
-function maintPhasePill(phase){
-  const p=MAINT_PHASES.find(x=>x.label===phase||x.key===phase);
-  if(!p) return `<span class="pill draft">—</span>`;
-  return `<span class="pill ${p.pill}">${p.label}</span>`;
+  return status==='进行中'?'warn':status==='未开始'?'cycle-on':'draft';
 }
 function openMaintList(){
   showPage('maint');
@@ -4112,8 +4087,8 @@ function renderMaintList(){
   rows.innerHTML=pageList.length
     ?pageList.map(r=>{
       const status=maintStatus(r);
-      const canEdit=status!=='已结束';
-      const canDelete=status==='已结束';
+      const canEdit=status!=='已完成';
+      const canDelete=status==='已完成';
       const ops=[];
       if(canEdit) ops.push(iconActionBtn('编辑',`openMaintEditor('${r.id}')`,ACTION_ICONS.edit));
       ops.push(iconActionBtn('复制',`copyMaint('${r.id}')`,ACTION_ICONS.copy));
@@ -4124,14 +4099,13 @@ function renderMaintList(){
         <td>${(r.projects||[]).join(' / ')}</td>
         <td>${fmtListTime(r.startTime)}</td>
         <td>${fmtListTime(r.endTime)}</td>
-        <td>${maintPhasePill(maintCurrentPhase(r))}</td>
         <td><span class="pill ${maintStatusClass(status)}">${status}</span></td>
         <td>${r.creator}</td>
         <td>${fmtListTime(r.createdAt)}</td>
         <td><div class="icon-actions">${ops.join('')}</div></td>
       </tr>`;
     }).join('')
-    :`<tr><td colspan="10" style="text-align:center;color:#94a3b8;padding:28px 12px">暂无系统维护记录</td></tr>`;
+    :`<tr><td colspan="9" style="text-align:center;color:#94a3b8;padding:28px 12px">暂无系统维护记录</td></tr>`;
   renderMaintPager(filtered.length,maintPage,pageCount);
 }
 function searchMaints(){ maintPage=1; renderMaintList(); }
@@ -4236,7 +4210,7 @@ function copyMaint(id){
 function deleteMaint(id){
   const r=maintRecords.find(x=>x.id===id);
   if(!r)return;
-  if(maintStatus(r)!=='已结束'){showToast('仅已结束的系统维护可以删除');return;}
+  if(maintStatus(r)!=='已完成'){showToast('仅已完成的系统维护可以删除');return;}
   openModal('删除系统维护',r.name,`<div class="confirm-text">确认删除系统维护 <strong>${r.name}</strong> 吗？删除后不可恢复。</div>`,'确认删除',()=>{
     maintRecords=maintRecords.filter(x=>x.id!==id);
     closeModal();
