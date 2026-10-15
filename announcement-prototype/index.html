@@ -101,14 +101,17 @@ input:focus,select:focus,textarea:focus,button:focus{outline:none;box-shadow:var
 .char-count.is-full{color:#ef4444}
 .input-count{position:relative}
 .input-count>.control{padding-right:68px}
-.input-count>textarea.control{padding-right:12px;padding-bottom:26px}
+.input-count>textarea.control,.input-count>.rich-text.control{padding:10px 12px 26px}
 .input-count>.char-count{position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none}
 .input-count>.char-count.is-area{top:auto;bottom:8px;transform:none}
 .label .req{color:#ef4444;margin-right:2px;font-weight:700}
 .control{height:34px;border:1px solid var(--field-line);border-radius:7px;padding:0 10px;width:100%;background:#fff;color:#1f2937;font-size:14px;transition:border-color .15s ease,box-shadow .15s ease}
 .control:hover{border-color:#c4d0e6}
 .control:focus{border-color:var(--pri)}
-textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
+textarea.control,.rich-text.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
+.rich-text.control{overflow:auto;white-space:pre-wrap;word-break:break-word}
+.rich-text.is-empty:before{content:attr(data-placeholder);color:var(--muted);pointer-events:none}
+.inline-param{display:inline-block;margin:0 2px;padding:0 8px;height:22px;line-height:20px;border:1px solid var(--field-line);border-radius:6px;background:#fff;color:#475569;font-size:12px;font-weight:500;vertical-align:baseline;user-select:none;cursor:default}
 
 .filter-panel{border:1px solid #dfe5f0;border-radius:10px;background:linear-gradient(180deg,#fbfdff 0%,#f8fbff 100%);box-shadow:inset 0 1px 0 #fff;padding:14px}
 .filter-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -192,6 +195,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .hidden{display:none}
 .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .layout{display:block}
+#editorPage .layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
 .stack{display:flex;flex-direction:column;gap:16px}
 .tabs{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:0 18px;gap:4px 10px;background:#fff}
 .tab{border:none;background:transparent;padding:10px 4px;cursor:pointer;color:#334155;border-bottom:2px solid transparent;font-size:13px;font-weight:500;white-space:nowrap}
@@ -199,9 +203,15 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .lang-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);background:#fff;padding:0 18px}
 .lang-toolbar .tabs{flex:1 1 auto;min-width:0;border-bottom:none;padding:0;background:transparent}
 .lang-toolbar .head-actions{flex:0 0 auto;padding-bottom:8px;align-self:center}
-.tokens{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.tokens{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
+.token-label{font-size:12px;color:var(--muted);line-height:30px}
+.token-split{width:1px;height:16px;background:var(--line);margin:0 2px}
 .token{height:30px;padding:0 12px;border:1px solid var(--field-line);background:#fff;color:#475569;border-radius:7px;cursor:pointer;font-size:12px;font-weight:500;box-shadow:none}
 .token:hover{color:var(--pri);border-color:#c4d0e6;background:#fff}
+.token.is-stamp{color:var(--pri);border-color:#b9ccff;background:var(--soft)}
+.stamp-pop{position:fixed;z-index:80;display:flex;align-items:center;gap:8px;padding:8px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow-pop)}
+.stamp-pop.hidden{display:none}
+.stamp-pop .control{width:196px}
 
 .preview{position:sticky;top:16px}
 .phone{margin:16px;background:#eef2f7;border:8px solid #111827;border-radius:28px;min-height:560px;overflow:hidden;display:flex;flex-direction:column}
@@ -394,11 +404,11 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
 .pill.phase-after{background:#dcfce7;color:var(--ok)}
 .maint-phase-body{padding-top:0}
 .maint-phase-body.hidden{display:none !important}
-.maint-phase-body textarea.control{height:110px}
+.maint-phase-body textarea.control,.maint-phase-body .rich-text.control{height:110px}
 .maint-check-row{display:flex;flex-wrap:wrap;gap:16px;padding:6px 0}
 .card-head-switch{display:inline-flex;align-items:center;gap:8px}
 
-@media(max-width:1000px){.target-check-row,.grid4{grid-template-columns:1fr 1fr}.maint-split-row,.maint-basic-row{grid-template-columns:1fr}.maint-lang-gap{display:none}}
+@media(max-width:1000px){.target-check-row,.grid4{grid-template-columns:1fr 1fr}.maint-split-row,.maint-basic-row,#editorPage .layout{grid-template-columns:1fr}.maint-lang-gap{display:none}}
 @media(max-width:720px){.primary-tabs{gap:20px;overflow-x:auto}.grid2,.grid3,.grid4,.target-check-row,.tpl-popup-row{grid-template-columns:1fr}.page{padding:12px}.filter-actions{margin-left:0;width:100%}.name-filter,.project-filter,.status-filter,.date-filter{width:100%}.recurrence-inline .control{min-width:100%;flex:1 1 100%}.lang-sync-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.check-panel-body{grid-template-columns:repeat(2,minmax(0,1fr))}.tpl-popup-row .tpl-popup-check .label{display:none}}
 </style>
 </head>
@@ -664,7 +674,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
               <label class="label"><span class="req">*</span>公告正文</label>
               <div class="tokens" id="tokenBar" style="margin:0 0 10px"></div>
               <div class="input-count">
-                <textarea id="bodyInput" class="control" maxlength="2000" placeholder="请输入公告正文"></textarea>
+                <div id="bodyInput" class="control rich-text is-empty" contenteditable="true" maxlength="2000" data-max="2000" data-placeholder="请输入公告正文"></div>
                 <span class="char-count is-area" id="bodyCount">0/2000</span>
               </div>
             </div>
@@ -734,7 +744,7 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
               <label class="label"><span class="req">*</span>弹窗展示内容</label>
               <div class="tokens" id="popupTokenBar" style="margin:0 0 10px"></div>
               <div class="input-count">
-                <textarea id="popupInput" class="control" maxlength="200" placeholder="请输入弹窗展示内容，可插入参数"></textarea>
+                <div id="popupInput" class="control rich-text is-empty" contenteditable="true" maxlength="200" data-max="200" data-placeholder="请输入弹窗展示内容，可插入参数"></div>
                 <span class="char-count is-area" id="popupCount">0/200</span>
               </div>
             </div>
@@ -743,6 +753,38 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
       </div>
 
     </div>
+
+    <aside class="card preview">
+      <div class="head"><div><div class="title">用户端预览</div></div></div>
+      <div class="body" style="padding-bottom:0">
+        <div class="preview-tz-row">
+          <span class="label">预览时区</span>
+          <select id="previewTzSelect" class="control" onchange="onPreviewTzChange(this)"></select>
+        </div>
+        <div class="preview-mode" id="previewModeBar">
+          <button type="button" class="preview-mode-btn active" id="previewModeBodyBtn" onclick="setPreviewMode('body')">公告正文预览</button>
+          <button type="button" class="preview-mode-btn" id="previewModePopupBtn" onclick="setPreviewMode('popup')" disabled title="请先将「是否需要弹窗」设为是">弹窗预览</button>
+        </div>
+      </div>
+      <div class="phone">
+        <div class="phoneTop">10:28</div>
+        <div class="phoneBody">
+          <div id="previewBodyView" class="preview-body-view">
+            <div class="article-view">
+              <h3 class="article-title" id="previewTitle"></h3>
+              <p class="article-body" id="previewBody"></p>
+            </div>
+          </div>
+          <div id="previewPopupView" class="preview-popup-view hidden">
+            <div class="popup-card-demo">
+              <div class="popup-title" id="previewPopupTitle">弹窗预览</div>
+              <p class="popup-text" id="previewPopup"></p>
+              <div class="popup-actions"><button type="button" class="popup-detail-btn" title="查看公告详情" aria-label="查看公告详情"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
   </div>
   <div class="footer-bar">
     <button class="btn ghost" onclick="cancelEdit()">取消</button>
@@ -853,8 +895,9 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
             </div>
             <div class="field" style="margin-top:14px">
               <label class="label"><span class="req">*</span>内容</label>
+              <div class="tokens" id="maintBeforeTokens" style="margin:0 0 10px"></div>
               <div class="input-count">
-                <textarea id="maintBeforeContent" class="control" maxlength="2000" placeholder="可使用 {start_time}、{end_time}" oninput="onMaintCopyInput()"></textarea>
+                <div id="maintBeforeContent" class="control rich-text is-empty" contenteditable="true" maxlength="2000" data-max="2000" data-placeholder="可插入姓名、时区，或添加时间" oninput="onMaintCopyInput()"></div>
                 <span class="char-count is-area">0/2000</span>
               </div>
             </div>
@@ -892,8 +935,9 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
             </div>
             <div class="field" style="margin-top:14px">
               <label class="label"><span class="req">*</span>内容</label>
+              <div class="tokens" id="maintDuringTokens" style="margin:0 0 10px"></div>
               <div class="input-count">
-                <textarea id="maintDuringContent" class="control" maxlength="2000" placeholder="可使用 {start_time}、{end_time}" oninput="onMaintCopyInput()"></textarea>
+                <div id="maintDuringContent" class="control rich-text is-empty" contenteditable="true" maxlength="2000" data-max="2000" data-placeholder="可插入姓名、时区，或添加时间" oninput="onMaintCopyInput()"></div>
                 <span class="char-count is-area">0/2000</span>
               </div>
             </div>
@@ -930,8 +974,9 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
             </div>
             <div class="field" style="margin-top:14px">
               <label class="label"><span class="req">*</span>内容</label>
+              <div class="tokens" id="maintAfterTokens" style="margin:0 0 10px"></div>
               <div class="input-count">
-                <textarea id="maintAfterContent" class="control" maxlength="2000" placeholder="可使用 {start_time}、{end_time}" oninput="onMaintCopyInput()"></textarea>
+                <div id="maintAfterContent" class="control rich-text is-empty" contenteditable="true" maxlength="2000" data-max="2000" data-placeholder="可插入姓名、时区，或添加时间" oninput="onMaintCopyInput()"></div>
                 <span class="char-count is-area">0/2000</span>
               </div>
             </div>
@@ -960,6 +1005,10 @@ textarea.control{height:150px;padding:10px;line-height:1.7;resize:vertical}
     </div>
   </section>
 
+<div id="stampPop" class="stamp-pop hidden">
+  <input id="stampPicker" class="control" type="time">
+  <button type="button" class="btn primary compact" onclick="confirmStamp()">插入</button>
+</div>
 <div id="modalMask" class="modal-mask hidden" onclick="closeModal(event)">
   <div class="modal-panel" id="modalPanel" onclick="event.stopPropagation()">
     <div class="modal-head">
@@ -1428,13 +1477,98 @@ function clampText(value,max){
   const text=value||'';
   return text.length>max?text.slice(0,max):text;
 }
+const richLast=new WeakMap();
+function visibleText(stored){
+  return String(stored||'').replace(/\u0001[td]:([^\u0001]*)\u0001/g,'$1');
+}
+function visibleLen(stored){ return visibleText(stored).length; }
+function makeTimeChip(kind,value){
+  const span=document.createElement('span');
+  span.className='inline-param';
+  span.contentEditable='false';
+  span.dataset.kind=kind==='d'?'d':'t';
+  span.dataset.value=value;
+  span.textContent=value;
+  span.title='不可修改';
+  return span;
+}
+function serializeRich(el){
+  if(!el) return '';
+  if(el.childNodes.length===1&&el.firstChild.tagName==='BR') return '';
+  let out='';
+  const walk=node=>{
+    node.childNodes.forEach(child=>{
+      if(child.nodeType===3){ out+=child.nodeValue.replace(/\u0001/g,'').replace(/\u00a0/g,' '); return; }
+      if(child.nodeType!==1) return;
+      if(child.classList&&child.classList.contains('inline-param')){
+        const kind=child.dataset.kind==='d'?'d':'t';
+        const value=(child.dataset.value||child.textContent||'').replace(/[\u0001]/g,'');
+        out+='\u0001'+kind+':'+value+'\u0001';
+        return;
+      }
+      if(child.tagName==='BR'){ out+='\n'; return; }
+      if(child.tagName==='DIV'||child.tagName==='P'){
+        if(out&&!out.endsWith('\n')) out+='\n';
+        walk(child);
+        return;
+      }
+      walk(child);
+    });
+  };
+  walk(el);
+  return out.replace(/\n$/,'');
+}
+function renderRich(el,stored){
+  if(!el) return;
+  const text=stored||'';
+  el.innerHTML='';
+  const re=/\u0001([td]):([^\u0001]*)\u0001/g;
+  let last=0,m;
+  const append=s=>{
+    if(!s) return;
+    s.split('\n').forEach((part,i)=>{
+      if(i) el.appendChild(document.createElement('br'));
+      if(part) el.appendChild(document.createTextNode(part));
+    });
+  };
+  while((m=re.exec(text))){
+    append(text.slice(last,m.index));
+    el.appendChild(makeTimeChip(m[1],m[2]));
+    last=m.index+m[0].length;
+  }
+  append(text.slice(last));
+  el.classList.toggle('is-empty',!text);
+  richLast.set(el,text);
+}
+function readRich(el){
+  if(!el) return '';
+  if(!el.classList.contains('rich-text')) return el.value||'';
+  let stored=serializeRich(el);
+  const drifted=[...el.querySelectorAll('.inline-param')].some(chip=>chip.textContent!==(chip.dataset.value||''));
+  if(drifted) renderRich(el,stored);
+  const max=Number(el.dataset.max||el.getAttribute('maxlength'))||0;
+  if(max&&visibleLen(stored)>max){
+    stored=richLast.get(el)||'';
+    renderRich(el,stored);
+    showToast('最多 '+max+' 字');
+  }else{
+    richLast.set(el,stored);
+    el.classList.toggle('is-empty',!stored);
+  }
+  return stored;
+}
+function writeRich(el,text){
+  if(!el) return;
+  if(!el.classList.contains('rich-text')){ el.value=text||''; return; }
+  renderRich(el,text||'');
+}
 function refreshTextLimits(){
   document.querySelectorAll('.input-count').forEach(wrap=>{
-    const el=wrap.querySelector('input,textarea');
+    const el=wrap.querySelector('input,textarea,.rich-text');
     const count=wrap.querySelector('.char-count');
     if(!el||!count) return;
-    const max=Number(el.getAttribute('maxlength'))||0;
-    const n=(el.value||'').length;
+    const max=Number(el.getAttribute('maxlength')||el.dataset.max)||0;
+    const n=el.classList.contains('rich-text')?visibleLen(serializeRich(el)):(el.value||'').length;
     count.textContent=n+'/'+max;
     count.classList.toggle('is-full',!!max&&n>=max);
   });
@@ -1445,7 +1579,8 @@ function findOverLimitLang(copyObj,includePopup){
   for(const {code} of LANGS){
     const c=copyObj?.[code]||{};
     for(const [field,max,label] of fields){
-      if((c[field]||'').length>max) return {code,field,max,label};
+      const len=(field==='body'||field==='popup')?visibleLen(c[field]):(c[field]||'').length;
+      if(len>max) return {code,field,max,label};
     }
   }
   return null;
@@ -1453,14 +1588,15 @@ function findOverLimitLang(copyObj,includePopup){
 function loadInputs(){
   if(!copy[lang]) copy[lang]={title:'',body:'',popup:''};
   titleInput.value=clampText(copy[lang].title,TEXT_LIMITS.title);
-  bodyInput.value=clampText(copy[lang].body,TEXT_LIMITS.body);
-  if(popupInput) popupInput.value=clampText(copy[lang].popup,TEXT_LIMITS.popup);
+  writeRich(bodyInput,copy[lang].body);
+  if(popupInput) writeRich(popupInput,copy[lang].popup);
   refreshTextLimits();
   syncDisplayFormatUI(false);
 }
 function resetEditor(){
   copy=emptyCopy();
   enablePopupDisplay=false;
+  loadInputs();
   const nowInput=fmtInput(new Date(),baseTz);
   const endDefault=addMinutesToInput(nowInput,60);
   noticeParams=ensureFixedParams([
@@ -1638,11 +1774,9 @@ function setLang(v){
 function saveCopy(){
   if(!titleInput||!copy[lang])return;
   const title=clampText(titleInput.value,TEXT_LIMITS.title);
-  const body=clampText(bodyInput.value,TEXT_LIMITS.body);
-  const popup=popupInput?clampText(popupInput.value,TEXT_LIMITS.popup):'';
+  const body=readRich(bodyInput);
+  const popup=popupInput?readRich(popupInput):'';
   if(titleInput.value!==title) titleInput.value=title;
-  if(bodyInput.value!==body) bodyInput.value=body;
-  if(popupInput&&popupInput.value!==popup) popupInput.value=popup;
   copy[lang].title=title;
   copy[lang].body=body;
   if(popupInput) copy[lang].popup=popup;
@@ -1665,10 +1799,45 @@ function renderLangSwitchers(){
   const templatePreviewLangEl=document.getElementById('templatePreviewLang');
   if(templatePreviewLangEl) templatePreviewLangEl.innerHTML=buildLangOptionsHtml(templateLang||DEFAULT_LANG);
 }
+function insertRichPiece(el,node){
+  if(!el) return;
+  el.focus();
+  const sel=window.getSelection();
+  let range=null;
+  if(sel&&sel.rangeCount&&el.contains(sel.getRangeAt(0).startContainer)) range=sel.getRangeAt(0);
+  else if(el._caretRange) range=el._caretRange;
+  if(!range){
+    range=document.createRange();
+    range.selectNodeContents(el);
+    range.collapse(false);
+  }
+  range.deleteContents();
+  range.insertNode(node);
+  range.setStartAfter(node);
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
+  el._caretRange=range.cloneRange();
+  el.dispatchEvent(new Event('input',{bubbles:true}));
+}
+function rememberRichCaret(el){
+  const sel=window.getSelection();
+  if(!sel||!sel.rangeCount||!el) return;
+  const range=sel.getRangeAt(0);
+  if(el.contains(range.startContainer)) el._caretRange=range.cloneRange();
+}
 function insertToken(t,target='body'){
   const el=target==='popup'?popupInput:bodyInput;
   if(!el)return;
   const max=target==='popup'?TEXT_LIMITS.popup:TEXT_LIMITS.body;
+  if(el.classList.contains('rich-text')){
+    if(visibleLen(serializeRich(el))+t.length>max){
+      showToast((target==='popup'?'弹窗内容':'公告正文')+'最多 '+max+' 字');
+      return;
+    }
+    insertRichPiece(el,document.createTextNode(t));
+    return;
+  }
   const s=el.selectionStart??el.value.length,e=el.selectionEnd??el.value.length;
   const next=el.value.slice(0,s)+t+el.value.slice(e);
   if(next.length>max){
@@ -1681,6 +1850,123 @@ function insertToken(t,target='body'){
   el.setSelectionRange(pos,pos);
   saveCopy();renderPreview();
 }
+function insertIntoField(id,text){
+  const el=document.getElementById(id);
+  if(!el) return;
+  const max=Number(el.dataset.max||el.getAttribute('maxlength'))||0;
+  if(el.classList.contains('rich-text')){
+    if(visibleLen(serializeRich(el))+text.length>max){ showToast('最多 '+max+' 字'); return; }
+    insertRichPiece(el,document.createTextNode(text));
+    return;
+  }
+  const s=el.selectionStart??el.value.length,e=el.selectionEnd??el.value.length;
+  const next=(el.value||'').slice(0,s)+text+(el.value||'').slice(e);
+  if(max&&next.length>max){ showToast('最多 '+max+' 字'); return; }
+  el.value=next;
+  el.focus();
+  const pos=s+text.length;
+  try{ el.setSelectionRange(pos,pos); }catch(err){}
+  el.dispatchEvent(new Event('input',{bubbles:true}));
+}
+function tokenBarHtml(target){
+  const fixed=(noticeParams.length?noticeParams:FIXED_PARAMS).filter(isFixedParam);
+  const chips=fixed.map(p=>{
+    const token=paramToken(p.name).replace(/'/g,'');
+    const click=(target==='body'||target==='popup')
+      ? `insertToken('${token}','${target}')`
+      : `insertIntoField('${target}','${token}')`;
+    return `<button type="button" class="token" onmousedown="event.preventDefault()" onclick="${click}">${p.desc||p.name}</button>`;
+  }).join('');
+  const stamp=(kind,label)=>`<button type="button" class="token is-stamp" data-stamp="${target}" data-kind="${kind}" onmousedown="event.preventDefault()" onclick="openStampPicker(this)">${label}</button>`;
+  return chips+stamp('t','添加时间')+stamp('d','添加日期与时间');
+}
+let stampCtx=null;
+function stampField(target){
+  if(target==='body') return document.getElementById('bodyInput');
+  if(target==='popup') return document.getElementById('popupInput');
+  return document.getElementById(target);
+}
+function openStampPicker(btn){
+  const target=btn?.dataset?.stamp||'body';
+  const kind=btn?.dataset?.kind==='d'?'d':'t';
+  const el=stampField(target);
+  if(!el) return;
+  rememberRichCaret(el);
+  stampCtx={target,kind,range:el._caretRange?el._caretRange.cloneRange():null};
+  const pop=document.getElementById('stampPop');
+  const picker=document.getElementById('stampPicker');
+  if(!pop||!picker) return;
+  picker.type=kind==='t'?'time':'datetime-local';
+  picker.value=kind==='t'?fmt(new Date(),baseTz).slice(11,16):fmtInput(new Date(),baseTz);
+  const rect=btn.getBoundingClientRect();
+  pop.style.left=Math.max(8,Math.min(rect.left,window.innerWidth-320))+'px';
+  pop.style.top=(rect.bottom+6)+'px';
+  pop.classList.remove('hidden');
+  picker.focus();
+  if(typeof picker.showPicker==='function'){
+    try{ picker.showPicker(); }catch(err){}
+  }
+}
+function confirmStamp(){
+  if(!stampCtx) return;
+  const picker=document.getElementById('stampPicker');
+  const ctx=stampCtx;
+  if(!picker||!picker.value) return;
+  stampCtx=null;
+  const el=stampField(ctx.target);
+  if(!el){ closeStampPop(); return; }
+  const value=ctx.kind==='t'?picker.value.slice(0,5):picker.value.replace('T',' ').slice(0,16);
+  const max=Number(el.dataset.max||el.getAttribute('maxlength'))||0;
+  if(max&&visibleLen(serializeRich(el))+value.length>max){
+    showToast('最多 '+max+' 字');
+    closeStampPop();
+    return;
+  }
+  if(ctx.range) el._caretRange=ctx.range;
+  insertRichPiece(el,makeTimeChip(ctx.kind,value));
+  closeStampPop();
+}
+function closeStampPop(){
+  document.getElementById('stampPop')?.classList.add('hidden');
+  stampCtx=null;
+}
+document.getElementById('stampPicker')?.addEventListener('change',()=>{ if(stampCtx) confirmStamp(); });
+document.addEventListener('selectionchange',()=>{
+  const sel=window.getSelection();
+  if(!sel||!sel.rangeCount) return;
+  const node=sel.anchorNode;
+  const rich=node&&(node.nodeType===1?node:node.parentElement)?.closest?.('.rich-text');
+  if(rich) rememberRichCaret(rich);
+});
+document.addEventListener('beforeinput',e=>{
+  const el=e.target?.closest?.('.rich-text');
+  if(!el||!String(e.inputType||'').startsWith('insert')) return;
+  const sel=window.getSelection();
+  if(!sel||!sel.rangeCount) return;
+  const range=sel.getRangeAt(0);
+  const frag=range.cloneContents();
+  if(frag.querySelector&&frag.querySelector('.inline-param')){ e.preventDefault(); return; }
+  const node=range.startContainer;
+  const chip=(node.nodeType===1?node:node.parentElement)?.closest?.('.inline-param');
+  if(chip&&el.contains(chip)) e.preventDefault();
+});
+document.addEventListener('paste',e=>{
+  const el=e.target?.closest?.('.rich-text');
+  if(!el) return;
+  e.preventDefault();
+  const text=(e.clipboardData||window.clipboardData).getData('text/plain').replace(/\u0001/g,'');
+  if(!text) return;
+  const max=Number(el.dataset.max)||0;
+  if(max&&visibleLen(serializeRich(el))+text.length>max){ showToast('最多 '+max+' 字'); return; }
+  insertRichPiece(el,document.createTextNode(text));
+});
+document.addEventListener('mousedown',e=>{
+  const pop=document.getElementById('stampPop');
+  if(!pop||pop.classList.contains('hidden')) return;
+  if(pop.contains(e.target)) return;
+  if(e.target.closest&&e.target.closest('[data-stamp]')) return;
+  setTimeout(()=>{ if(!pop.contains(document.activeElement)) closeStampPop(); },0);
+});
 function onPopupReminderChange(fromUser=true){
   enablePopupDisplay=enablePopupCheck?.value==='yes';
   if(!enablePopupDisplay){
@@ -1792,7 +2078,7 @@ function resolveParams(text,tz){
   syncCoreTimesFromConfig();
   syncImmediatePublishTime();
   const displayTz=tz||previewTz||baseTz;
-  let out=text||'';
+  let out=visibleText(text||'');
   noticeParams.forEach(p=>{
     out=out.replaceAll(paramToken(p.name),formatParamDisplay(p,displayTz));
   });
@@ -3197,16 +3483,15 @@ function renderNoticeParams(){
 }
 
 function renderTokenBar(){
-  const html=noticeParams.length
-    ?noticeParams.map(p=>`<button class="token" onclick="insertToken('${paramToken(p.name)}','body')" title="${paramToken(p.name)}">${p.desc||p.name}</button>`).join('')
-    :'<span style="color:var(--muted);font-size:12px">请先在参数管理中新增参数</span>';
-  const popupHtml=noticeParams.length
-    ?noticeParams.map(p=>`<button class="token" onclick="insertToken('${paramToken(p.name)}','popup')" title="${paramToken(p.name)}">${p.desc||p.name}</button>`).join('')
-    :'<span style="color:var(--muted);font-size:12px">请先在参数管理中新增参数</span>';
   const bar=document.getElementById('tokenBar');
   const popupBar=document.getElementById('popupTokenBar');
-  if(bar) bar.innerHTML=html;
-  if(popupBar) popupBar.innerHTML=popupHtml;
+  if(bar) bar.innerHTML=tokenBarHtml('body');
+  if(popupBar) popupBar.innerHTML=tokenBarHtml('popup');
+  const maintMap={maintBeforeTokens:'maintBeforeContent',maintDuringTokens:'maintDuringContent',maintAfterTokens:'maintAfterContent'};
+  Object.keys(maintMap).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=tokenBarHtml(maintMap[id]);
+  });
 }
 
 function openParamManager(source){
@@ -4092,9 +4377,8 @@ function saveMaintCopyInputs(){
     const titleEl=document.getElementById(ids.title);
     const bodyEl=document.getElementById(ids.body);
     const title=clampText(titleEl?.value,TEXT_LIMITS.title);
-    const body=clampText(bodyEl?.value,TEXT_LIMITS.body);
+    const body=readRich(bodyEl);
     if(titleEl&&titleEl.value!==title) titleEl.value=title;
-    if(bodyEl&&bodyEl.value!==body) bodyEl.value=body;
     maintDraft[phase][maintCopyLang].title=title;
     maintDraft[phase][maintCopyLang].body=body;
   });
@@ -4107,7 +4391,7 @@ function loadMaintCopyInputs(){
     const title=document.getElementById(ids.title);
     const body=document.getElementById(ids.body);
     if(title) title.value=clampText(c.title,TEXT_LIMITS.title);
-    if(body) body.value=clampText(c.body,TEXT_LIMITS.body);
+    if(body) writeRich(body,c.body);
   });
   refreshTextLimits();
   renderMaintPreview();
@@ -4198,6 +4482,7 @@ function openMaintEditor(id){
     applyMaintRecordToEditor(r,false);
   }
   showPage('maintEditor');
+  renderTokenBar();
 }
 function copyMaint(id){
   const r=maintRecords.find(x=>x.id===id);
@@ -4239,7 +4524,7 @@ function formatMaintWall(inputVal,tz){
 function applyMaintPlaceholders(text){
   const start=formatMaintWall(document.getElementById('maintStartInput')?.value,previewTz);
   const end=formatMaintWall(document.getElementById('maintEndInput')?.value,previewTz);
-  return String(text||'').replace(/\{start_time\}|\$\{start_time\}/g,start).replace(/\{end_time\}|\$\{end_time\}/g,end);
+  return visibleText(text).replace(/\{start_time\}|\$\{start_time\}/g,start).replace(/\{end_time\}|\$\{end_time\}/g,end);
 }
 function renderMaintPreview(){
   ['before','during','after'].forEach(phase=>{
