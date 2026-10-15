@@ -897,7 +897,7 @@ textarea.control,.rich-text.control{height:150px;padding:10px;line-height:1.7;re
               <label class="label"><span class="req">*</span>内容</label>
               <div class="tokens" id="maintBeforeTokens" style="margin:0 0 10px"></div>
               <div class="input-count">
-                <div id="maintBeforeContent" class="control rich-text is-empty" contenteditable="true" maxlength="2000" data-max="2000" data-placeholder="可插入姓名、时区，或添加时间" oninput="onMaintCopyInput()"></div>
+                <div id="maintBeforeContent" class="control rich-text is-empty" contenteditable="true" maxlength="2000" data-max="2000" data-placeholder="可插入姓名、时区、维护开始时间、维护结束时间，或添加时间" oninput="onMaintCopyInput()"></div>
                 <span class="char-count is-area">0/2000</span>
               </div>
             </div>
@@ -937,7 +937,7 @@ textarea.control,.rich-text.control{height:150px;padding:10px;line-height:1.7;re
               <label class="label"><span class="req">*</span>内容</label>
               <div class="tokens" id="maintDuringTokens" style="margin:0 0 10px"></div>
               <div class="input-count">
-                <div id="maintDuringContent" class="control rich-text is-empty" contenteditable="true" maxlength="2000" data-max="2000" data-placeholder="可插入姓名、时区，或添加时间" oninput="onMaintCopyInput()"></div>
+                <div id="maintDuringContent" class="control rich-text is-empty" contenteditable="true" maxlength="2000" data-max="2000" data-placeholder="可插入姓名、时区、维护开始时间、维护结束时间，或添加时间" oninput="onMaintCopyInput()"></div>
                 <span class="char-count is-area">0/2000</span>
               </div>
             </div>
@@ -976,7 +976,7 @@ textarea.control,.rich-text.control{height:150px;padding:10px;line-height:1.7;re
               <label class="label"><span class="req">*</span>内容</label>
               <div class="tokens" id="maintAfterTokens" style="margin:0 0 10px"></div>
               <div class="input-count">
-                <div id="maintAfterContent" class="control rich-text is-empty" contenteditable="true" maxlength="2000" data-max="2000" data-placeholder="可插入姓名、时区，或添加时间" oninput="onMaintCopyInput()"></div>
+                <div id="maintAfterContent" class="control rich-text is-empty" contenteditable="true" maxlength="2000" data-max="2000" data-placeholder="可插入姓名、时区、维护开始时间、维护结束时间，或添加时间" oninput="onMaintCopyInput()"></div>
                 <span class="char-count is-area">0/2000</span>
               </div>
             </div>
@@ -1219,6 +1219,13 @@ function ensureFixedParams(list){
 }
 function paramToken(name){
   return '${'+name+'}';
+}
+const MAINT_FIXED_PARAMS=[
+  {name:'start_time',desc:'维护开始时间'},
+  {name:'end_time',desc:'维护结束时间'}
+];
+function isMaintTokenTarget(target){
+  return target==='maintBeforeContent'||target==='maintDuringContent'||target==='maintAfterContent';
 }
 
 // 公告自定义参数：时间 / 时间区间；精度：日期 / 日期时间 / 时间
@@ -1870,7 +1877,8 @@ function insertIntoField(id,text){
 }
 function tokenBarHtml(target){
   const fixed=(noticeParams.length?noticeParams:FIXED_PARAMS).filter(isFixedParam);
-  const chips=fixed.map(p=>{
+  const params=isMaintTokenTarget(target)?fixed.concat(MAINT_FIXED_PARAMS):fixed;
+  const chips=params.map(p=>{
     const token=paramToken(p.name).replace(/'/g,'');
     const click=(target==='body'||target==='popup')
       ? `insertToken('${token}','${target}')`
